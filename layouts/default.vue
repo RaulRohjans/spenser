@@ -1,5 +1,5 @@
 <template>
-    <v-app>
+    <div>
         <slot />
-    </v-app>
+    </div>
 </template>
