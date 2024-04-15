@@ -7,7 +7,9 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "prettier": "prettier .",
+    "prettier:fix": "prettier . --write"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
@@ -21,6 +23,7 @@
     "@nuxtjs/tailwindcss": "^6.11.4",
     "@sidebase/nuxt-auth": "^0.7.1",
     "@types/bcrypt": "^5.0.2",
-    "@types/jsonwebtoken": "^9.0.6"
+    "@types/jsonwebtoken": "^9.0.6",
+    "prettier": "3.2.5"
   }
 }
