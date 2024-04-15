@@ -1,10 +1,18 @@
 <script setup lang="ts">
+    const { signIn } = useAuth()
     const username: Ref<string> = ref('')
     const password: Ref<string> = ref('')
-    const rememberMe: Ref<boolean> = ref(false)
+
+    const onLogin = function() {
+        signIn({ username: username.value, password: password.value }, { callbackUrl: '/' })
+    }
 
     definePageMeta({
-        layout: 'auth'
+        layout: 'auth',
+        auth: {
+            unauthenticatedOnly: true,
+            navigateAuthenticatedTo: '/'
+        }
     })
 </script>
 
@@ -16,9 +24,6 @@
         <div class="mb-6">
             <TextInput label="Password" v-model="password" password required />
         </div>
-        <div class="flex items-start mb-6">
-            <CheckBox label="Remember Me" v-model="rememberMe" />
-        </div>
-        <Button text="Submit" />
+        <Button text="Submit" @click="onLogin" />
     </form>
 </template>
