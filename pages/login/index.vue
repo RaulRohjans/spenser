@@ -24,7 +24,7 @@
         <div class="mb-6">
             <TextInput
                 label="Username"
-                placeholder="MasterExpTracker101"
+                placeholder="AmazingUser24"
                 v-model="username"
                 required />
         </div>
