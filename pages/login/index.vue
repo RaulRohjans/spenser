@@ -3,8 +3,11 @@
     const username: Ref<string> = ref('')
     const password: Ref<string> = ref('')
 
-    const onLogin = function() {
-        signIn({ username: username.value, password: password.value }, { callbackUrl: '/' })
+    const onLogin = function () {
+        signIn(
+            { username: username.value, password: password.value },
+            { callbackUrl: '/' }
+        )
     }
 
     definePageMeta({
@@ -16,10 +19,14 @@
     })
 </script>
 
-<template>    
+<template>
     <form>
         <div class="mb-6">
-            <TextInput label="Username" placeholder="MasterExpTracker101" v-model="username" required />
+            <TextInput
+                label="Username"
+                placeholder="MasterExpTracker101"
+                v-model="username"
+                required />
         </div>
         <div class="mb-6">
             <TextInput label="Password" v-model="password" password required />

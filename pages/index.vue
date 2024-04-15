@@ -1,13 +1,13 @@
 <script setup lang="ts">
-const {
-  signIn,
-  token,
-  data,
-  status,
-  lastRefreshedAt,
-  signOut,
-  getSession
-} = useAuth()
+    const {
+        signIn,
+        token,
+        data,
+        status,
+        lastRefreshedAt,
+        signOut,
+        getSession
+    } = useAuth()
 </script>
 
 <template>
@@ -19,6 +19,6 @@ const {
     <pre>JWT token: {{ token || 'no token present, are you logged in?' }}</pre>
 
     <button data-testid="signout" @click="signOut({ callbackUrl: '/login' })">
-      sign out
+        sign out
     </button>
 </template>
