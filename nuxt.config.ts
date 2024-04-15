@@ -1,30 +1,29 @@
 export default defineNuxtConfig({
-    modules: [
-        '@nuxtjs/tailwindcss',
-        '@sidebase/nuxt-auth'
-    ],
+    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth'],
     auth: {
         provider: {
-          type: 'refresh',
-          endpoints: {
-            getSession: { path: '/user' },
-            refresh: { path: '/refresh', method: 'post' }
-          },
-          pages: {
-            login: '/login'
-          },
-          token: {
-            signInResponseTokenPointer: '/token/accessToken',
-            maxAgeInSeconds: process.env.JWT_EXPIRATION ? Number(process.env.JWT_EXPIRATION) : 900,
-            sameSiteAttribute: 'lax'
-          },
-          refreshToken: {
-            signInResponseRefreshTokenPointer: '/token/refreshToken',
-            refreshRequestTokenPointer: '/refreshToken'
-          }
+            type: 'refresh',
+            endpoints: {
+                getSession: { path: '/user' },
+                refresh: { path: '/refresh', method: 'post' }
+            },
+            pages: {
+                login: '/login'
+            },
+            token: {
+                signInResponseTokenPointer: '/token/accessToken',
+                maxAgeInSeconds: process.env.JWT_EXPIRATION
+                    ? Number(process.env.JWT_EXPIRATION)
+                    : 900,
+                sameSiteAttribute: 'lax'
+            },
+            refreshToken: {
+                signInResponseRefreshTokenPointer: '/token/refreshToken',
+                refreshRequestTokenPointer: '/refreshToken'
+            }
         },
         globalAppMiddleware: {
-          isEnabled: true
+            isEnabled: true
         }
     },
     runtimeConfig: {

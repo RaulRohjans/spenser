@@ -9,7 +9,7 @@
          * Label of the input
          */
         label?: string
-        
+
         /**
          * If the checkbox is required
          */
@@ -37,7 +37,8 @@
     const labelClasses = computed(() => {
         const classes: string[] = ['ms-2', 'text-sm', 'font-medium']
 
-        if(props.disabled) classes.push(...['text-gray-400', 'dark:text-gray-500'])
+        if (props.disabled)
+            classes.push(...['text-gray-400', 'dark:text-gray-500'])
         else classes.push(...['text-gray-900', 'dark:text-gray-300'])
 
         return classes
@@ -46,19 +47,16 @@
 
 <template>
     <div class="flex items-center h-5">
-        <input 
+        <input
             :id="props.id"
-            type="checkbox" 
+            type="checkbox"
             v-model="model"
-            class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800" 
+            class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800"
             :required="props.required"
             :disabled="props.disabled" />
     </div>
 
-    <label 
-        v-if="props.label"
-        :for="props.id" 
-        :class="labelClasses">
+    <label v-if="props.label" :for="props.id" :class="labelClasses">
         {{ props.label }}
     </label>
 </template>

@@ -1,29 +1,28 @@
 {
-  "name": "spenser",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "prettier": "prettier .",
-    "prettier:fix": "prettier . --write"
-  },
-  "dependencies": {
-    "bcrypt": "^5.1.1",
-    "flowbite": "^2.3.0",
-    "jsonwebtoken": "^9.0.2",
-    "nuxt": "^3.11.2",
-    "vue": "^3.4.21",
-    "vue-router": "^4.3.0"
-  },
-  "devDependencies": {
-    "@nuxtjs/tailwindcss": "^6.11.4",
-    "@sidebase/nuxt-auth": "^0.7.1",
-    "@types/bcrypt": "^5.0.2",
-    "@types/jsonwebtoken": "^9.0.6",
-    "prettier": "3.2.5"
-  }
+    "name": "spenser",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "nuxt build",
+        "dev": "nuxt dev",
+        "generate": "nuxt generate",
+        "preview": "nuxt preview",
+        "postinstall": "nuxt prepare",
+        "prettier": "prettier . --write"
+    },
+    "dependencies": {
+        "bcrypt": "^5.1.1",
+        "flowbite": "^2.3.0",
+        "jsonwebtoken": "^9.0.2",
+        "nuxt": "^3.11.2",
+        "vue": "^3.4.21",
+        "vue-router": "^4.3.0"
+    },
+    "devDependencies": {
+        "@nuxtjs/tailwindcss": "^6.11.4",
+        "@sidebase/nuxt-auth": "^0.7.1",
+        "@types/bcrypt": "^5.0.2",
+        "@types/jsonwebtoken": "^9.0.6",
+        "prettier": "3.2.5"
+    }
 }

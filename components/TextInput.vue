@@ -19,7 +19,7 @@
          * Placeholder of the input
          */
         placeholder?: string
-        
+
         /**
          * If the input is required
          */
@@ -47,44 +47,60 @@
     const model = defineModel({ type: String })
 
     const getInputType = computed(() => {
-        if(props.password) return 'password'
+        if (props.password) return 'password'
         else return 'text'
     })
 
     const getPlaceholder = computed(() => {
-        if(props.password) return '•••••••••'
+        if (props.password) return '•••••••••'
         else return props.placeholder
     })
 
     const inputClasses = computed(() => {
-        const classes: string[] = ['border', 'border-gray-300', 'text-gray-900', 'text-sm', 'rounded-lg', 'focus:ring-blue-500', 
-            'focus:border-blue-500', 'block w-full', 'p-2.5', 'dark:bg-gray-700', 'dark:border-gray-600', 'dark:placeholder-gray-400',
-            'dark:focus:ring-blue-500', 'dark:focus:border-blue-500']
-    
-        if(props.disabled) classes.push(...['bg-gray-100', 'cursor-not-allowed', 'dark:text-gray-400'])
+        const classes: string[] = [
+            'border',
+            'border-gray-300',
+            'text-gray-900',
+            'text-sm',
+            'rounded-lg',
+            'focus:ring-blue-500',
+            'focus:border-blue-500',
+            'block w-full',
+            'p-2.5',
+            'dark:bg-gray-700',
+            'dark:border-gray-600',
+            'dark:placeholder-gray-400',
+            'dark:focus:ring-blue-500',
+            'dark:focus:border-blue-500'
+        ]
+
+        if (props.disabled)
+            classes.push(
+                ...['bg-gray-100', 'cursor-not-allowed', 'dark:text-gray-400']
+            )
         else classes.push(...['bg-gray-50', 'dark:text-white'])
 
         return classes
     })
 
-    const onTextChange = function(event: Event) {
+    const onTextChange = function (event: Event) {
         emit('text-change', (event.target as HTMLInputElement).value)
     }
 </script>
 
 <template>
-    <label 
+    <label
         v-if="props.label"
         :for="props.id"
         class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
         {{ props.label }}
     </label>
 
-    <input 
+    <input
         :type="getInputType"
         :id="id"
         v-model="model"
-        :class="inputClasses" 
+        :class="inputClasses"
         :placeholder="getPlaceholder"
         :required="props.required"
         :disabled="props.disabled"
