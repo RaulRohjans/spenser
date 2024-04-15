@@ -1,2 +1,2 @@
-# expense-tracker
+# Spenser
 My personal expense tracker
