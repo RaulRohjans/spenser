@@ -8,13 +8,16 @@
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
-        "prettier": "prettier . --write"
+        "prettier": "prettier . --write",
+        "db:generate": "kysely-codegen"
     },
     "dependencies": {
         "bcrypt": "^5.1.1",
         "flowbite": "^2.3.0",
         "jsonwebtoken": "^9.0.2",
+        "kysely": "^0.27.3",
         "nuxt": "^3.11.2",
+        "pg": "^8.11.5",
         "vue": "^3.4.21",
         "vue-router": "^4.3.0"
     },
@@ -23,6 +26,8 @@
         "@sidebase/nuxt-auth": "^0.7.1",
         "@types/bcrypt": "^5.0.2",
         "@types/jsonwebtoken": "^9.0.6",
+        "@types/pg": "^8.11.5",
+        "kysely-codegen": "^0.14.2",
         "prettier": "3.2.5"
     }
 }

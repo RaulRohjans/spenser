@@ -1,8 +1,8 @@
 import bcrypt from 'bcrypt'
-import { User } from '@/types/User'
 import { generateToken } from '@/utils/authFunctions'
-
-const users: User[] = []
+import { db } from '@/utils/dbEngine'
+import type { Selectable } from 'kysely'
+import type { User } from 'kysely-codegen'
 
 export default defineEventHandler(async (event) => {
     // Read body params
@@ -13,15 +13,12 @@ export default defineEventHandler(async (event) => {
             statusCode: 403,
             statusMessage: 'Empty login fields'
         })
-    console.log(users)
-    // Validate credentials
-    const user: User = validateLoginCredentials(username, password)
 
-    //Remove sensitive data from the user
-    const jwtUser = {
-        username: user.username,
-        email: user.email
-    }
+    // Validate credentials
+    const user: Selectable<User> = await validateLoginCredentials(username, password)
+
+    //Remove password from the JWT object
+    const jwtUser: Omit<Selectable<User>, 'password'> = user
 
     // Generate tokens
     const accessToken = generateToken(jwtUser)
@@ -35,32 +32,45 @@ export default defineEventHandler(async (event) => {
     }
 })
 
-const validateLoginCredentials = function (username: string, password: string) {
-    // Check if first login
-    if (users.length == 0) {
+const getUserCount = async function() {
+    // Get amount of users in the platform
+    const res = await db.selectFrom('user')
+        .select(({ fn }) => [
+            fn.count<number>('user.id').as('user_count')        
+        ])
+        .executeTakeFirst()
+
+    return res?.user_count || 0
+}
+
+const fetchUser = async function(username: string) {
+    const res = await db.selectFrom('user')
+        .selectAll()
+        .where('user.username', '=', username)
+        .executeTakeFirst()
+
+    return res
+}
+
+const validateLoginCredentials = async function (username: string, password: string) {
+    if (await getUserCount() == 0) { // Check if first login
         if (username != 'admin' || password != 'admin')
             throw createError({
                 statusCode: 403,
                 statusMessage: 'Invalid login credentials'
             })
 
-        return firstLogin()
+        return await firstLogin()
     }
 
-    const user = users.find((u) => u.username == username)
+    const user = await fetchUser(username)
 
-    if (!user)
+    if (!user || !bcrypt.compareSync(password, user.password))
         throw createError({
             statusCode: 403,
             statusMessage: 'Invalid login credentials'
         })
-
-    if (!bcrypt.compareSync(password, user.password || ''))
-        throw createError({
-            statusCode: 403,
-            statusMessage: 'Invalid login credentials'
-        })
-
+        
     return user
 }
 
@@ -70,19 +80,36 @@ const validateLoginCredentials = function (username: string, password: string) {
  *
  * We also create a user record with these credentials and store it
  */
-const firstLogin = function () {
+const firstLogin = async function () {
     // Fetch authentication secret from env
     const { PASSWORD_SALT_ROUNDS } = useRuntimeConfig()
 
-    const user: User = {
-        // Create User model
+    let user: Omit<User, 'id'> = {
+        first_name: 'Admin',
+        last_name: 'Admin',
         username: 'admin',
-        password: bcrypt.hashSync('admin', Number(PASSWORD_SALT_ROUNDS)),
-        email: 'admin@example.com'
+        email: 'admin@example.com',
+        password: bcrypt.hashSync('admin', Number(PASSWORD_SALT_ROUNDS))
     }
 
     // Add user to persistent storage
-    users.push(user)
+    const res = await db.insertInto('user')
+        .values(user)
+        
+        //This is important since Postgresql doesnt support returningId in InsertResult
+        .returning('id')
+        .executeTakeFirst()
 
-    return user
+    console.log(res)
+
+    if(!res)
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Could not create default user "admin" in the database, an insertion error occurred'
+        })
+        
+    return {
+        ...user,
+        id: Number(res.id)
+    }
 }
