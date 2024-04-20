@@ -100,8 +100,6 @@ const firstLogin = async function () {
         .returning('id')
         .executeTakeFirst()
 
-    console.log(res)
-
     if(!res)
         throw createError({
             statusCode: 500,

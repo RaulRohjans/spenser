@@ -10,10 +10,10 @@ export default defineEventHandler(async (event) => {
             statusCode: 403,
             statusMessage: 'No refreshToken provided in the payload'
         })
-
+        
     // Decode the refresh token
-    const decoded = validateJWT(refreshToken)
-
+    const decoded = validateJWT(refreshToken, true)
+    
     if (!decoded)
         throw createError({
             statusCode: 403,
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
         username: decoded.username
     }
     /* --------------------------------------------------- */
-
+    
     const accessToken = generateToken(jwtUser)
     const newRefreshToken = generateToken(jwtUser, 60 * 60 * 24)
     

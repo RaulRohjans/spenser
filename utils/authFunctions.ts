@@ -8,14 +8,14 @@ export const generateToken = function (
     expiration?: number | undefined
 ) {
     const { JWT_SECRET, JWT_EXPIRATION } = useRuntimeConfig()
-    console.log(JWT_SECRET)
+    
     return jwt.sign({ ...user, scope: ['user'] }, JWT_SECRET as string, {
         expiresIn: expiration || Number(JWT_EXPIRATION)
     })
 }
 
-export const validateJWT = function (token: string) {
+export const validateJWT = function (token: string, ignoreExpired: boolean = false) {
     const { JWT_SECRET } = useRuntimeConfig()
     
-    return jwt.verify(token, JWT_SECRET as string) as JwtPayload | undefined
+    return jwt.verify(token, JWT_SECRET as string, { ignoreExpiration: ignoreExpired}) as JwtPayload | undefined
 }
