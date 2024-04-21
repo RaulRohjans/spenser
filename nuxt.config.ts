@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth', '@nuxt/ui'],
+    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth', '@nuxt/ui', '@nuxtjs/color-mode', 'nuxt-icon'],
     auth: {
         provider: {
             type: 'refresh',
