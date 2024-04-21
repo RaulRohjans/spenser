@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth'],
+    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth', '@nuxt/ui'],
     auth: {
         provider: {
             type: 'refresh',

@@ -1,11 +1,23 @@
 <script setup lang="ts">
-    const { signIn } = useAuth()
-    const username: Ref<string> = ref('')
-    const password: Ref<string> = ref('')
+    import { z } from 'zod'
+    import type { FormSubmitEvent } from '#ui/types'
 
-    const onLogin = function () {
+    const { signIn } = useAuth()
+    const validationSchema = z.object({
+        username: z.string()('Invalid username'),
+        password: z.string().min(8, 'Must be at least 8 characters')
+    })
+    type ValidationSchema = z.output<typeof validationSchema>
+    const state = reactive({
+        username: undefined,
+        password: undefined
+    })
+
+
+    const onSubmit = function (event: FormSubmitEvent<ValidationSchema>) {
+        console.log(event.data)
         signIn(
-            { username: username.value, password: password.value },
+            { username: state.username, password: state.password },
             { callbackUrl: '/' }
         )
     }
@@ -20,17 +32,17 @@
 </script>
 
 <template>
-    <form>
-        <div class="mb-6">
-            <TextInput
-                label="Username"
-                placeholder="AmazingUser24"
-                v-model="username"
-                required />
-        </div>
-        <div class="mb-6">
-            <TextInput label="Password" v-model="password" password required />
-        </div>
-        <Button text="Submit" @click="onLogin" />
-    </form>
+    <UForm :schema="validationSchema" :state="state" class="space-y-4" @submit="onSubmit">
+      <UFormGroup label="Username" name="username">
+        <UInput v-model="state.username" />
+      </UFormGroup>
+  
+      <UFormGroup label="Password" name="password">
+        <UInput v-model="state.password" type="password" />
+      </UFormGroup>
+  
+      <UButton type="submit">
+        Submit
+      </UButton>
+    </UForm>
 </template>
