@@ -38,5 +38,25 @@ export default defineNuxtConfig({
         DB_USER: process.env.DB_USER,
         DB_PASSWORD: process.env.DB_PASSWORD,
         DB_PORT: process.env.DB_PORT || '5432'
+    },
+    tailwindcss: {
+        config: {
+            theme: {
+                extend: {
+                    backgroundImage: () => ({
+                        'logo':
+                            "url('/icons/logo.svg')",
+                        'logo-dark':
+                            "url('/icons/logo-light.svg')",
+                    }),
+                },
+            },
+            variants: {
+                extend: {
+                    backgroundImage: ['dark'],
+                },
+            },
+            plugins: [],
+        }
     }
 })
