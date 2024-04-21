@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
 
     /*
     * This piece of code is not the ideal solution.
-    * We want a User object without the JwtToken object extras
+    * We want a User object without the JwtToken object properties
     * and there is no good way of doing this, the simplest solution of casting the
     * object to User will NOT remove the properties we don't want
     * 
