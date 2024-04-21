@@ -5,7 +5,7 @@
     const { signIn } = useAuth()
     const validationSchema = z.object({
         username: z.string().trim().min(1, "Invalid username"),
-        password: z.string().trim().min(8, 'Must be at least 8 characters')
+        password: z.string().trim().min(1, 'Must be at least 8 characters')
     })
     type ValidationSchema = z.output<typeof validationSchema>
     const state = reactive({
