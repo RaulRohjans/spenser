@@ -1,6 +1,8 @@
+// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    modules: ['@nuxtjs/tailwindcss', '@sidebase/nuxt-auth'],
-    auth: {
+  devtools: { enabled: true },
+  modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode', 'nuxt-icon', '@sidebase/nuxt-auth'],
+  auth: {
         provider: {
             type: 'refresh',
             endpoints: {
