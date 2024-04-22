@@ -5,8 +5,8 @@
     })
 
     const toggleDarkMode = function() {
-        if(isDark.value) colorMode.value = 'light'
-        else colorMode.value = 'dark'
+        if(isDark.value) colorMode.preference = colorMode.value = 'light'
+        else colorMode.preference = colorMode.value = 'dark'
     }
 </script>
 
