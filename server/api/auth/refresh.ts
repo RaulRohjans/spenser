@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
         })
         
     // Decode the refresh token
-    const decoded = validateJWT(refreshToken, true)
+    const decoded = validateJWT(refreshToken)
     
     if (!decoded)
         throw createError({

@@ -10,7 +10,7 @@ export const generateToken = function (
     const { JWT_SECRET, JWT_EXPIRATION } = useRuntimeConfig()
     
     return jwt.sign({ ...user, scope: ['user'] }, JWT_SECRET as string, {
-        expiresIn: expiration || Number(JWT_EXPIRATION)
+        expiresIn: expiration == undefined ? Number(JWT_EXPIRATION) : expiration
     })
 }
 
