@@ -1,15 +1,8 @@
 <template>
-    <footer class="bg-white rounded-lg shadow dark:bg-gray-900 m-4">
-        <div class="w-full max-w-screen-xl mx-auto p-4 md:py-8">
-            <div class="sm:flex sm:items-center sm:justify-between">
-                <ULink
-                    href="/"
-                    class="mb-4 sm:mb-0 rtl:space-x-reverse">
-                    <Logo width="100%" height="50px" />
-                </ULink>
-            </div>
+    <footer class="bg-white shadow-lg dark:bg-gray-800">
+        <div class="w-full md:py-6">
             <hr
-                class="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
+                class="my-6 border-gray-200 dark:border-gray-700 lg:my-8 mx-4" />
             <span
                 class="block text-sm text-gray-500 sm:text-center dark:text-gray-400"
                 >© 2024
