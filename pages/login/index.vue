@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import { z } from 'zod'
+    import type { FormSubmitEvent } from '#ui/types'
 
     const { signIn } = useAuth()
     const validationSchema = z.object({
@@ -10,12 +11,14 @@
         username: undefined,
         password: undefined
     })
+    type ValidationSchema = z.output<typeof validationSchema>
 
-    const onSubmit = function () {
+    const onSubmit = function (event: FormSubmitEvent<ValidationSchema>) {
         signIn(
             { username: state.username, password: state.password },
             { callbackUrl: '/' }
         )
+        event.preventDefault()
     }
 
     definePageMeta({
