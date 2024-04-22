@@ -1,21 +1,17 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
 
     const { signIn } = useAuth()
     const validationSchema = z.object({
         username: z.string().trim().min(1, "Invalid username"),
         password: z.string().trim().min(1, 'Must be at least 8 characters')
     })
-    type ValidationSchema = z.output<typeof validationSchema>
     const state = reactive({
         username: undefined,
         password: undefined
     })
 
-
-    const onSubmit = function (event: FormSubmitEvent<ValidationSchema>) {
-        console.log(event.data)
+    const onSubmit = function () {
         signIn(
             { username: state.username, password: state.password },
             { callbackUrl: '/' }

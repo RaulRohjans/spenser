@@ -15,8 +15,6 @@
         if(colorMode.value == 'dark') return 'logo-light'
         else return 'logo'
     })
-
-
 </script>
 
 <template>
