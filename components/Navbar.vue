@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import type { NavigationItem } from '@/types/Navigation'
     
-    const { data } = useAuth()
+    const { data, signOut } = useAuth()
     const isMobileMenuShown = ref(false)
     
     const userDropdownItems = computed(() => {
@@ -16,22 +16,24 @@
                 icon: 'i-heroicons-cog-8-tooth',
                 to: '/account'
 
+            },
+            {
+                label: 'Global Settings',
+                icon: 'i-heroicons-cog-8-tooth',
+                to: '/settings'
+
             }], 
             [{
                 label: 'Data Importer',
-                icon: 'i-heroicons-book-open'
-            }, 
-            {
-                label: 'Changelog',
-                icon: 'i-heroicons-megaphone'
-            }, 
-            {
-                label: 'Status',
-                icon: 'i-heroicons-signal'
+                icon: 'i-heroicons-book-open',
+                to: '/import'
             }], 
             [{
                 label: 'Sign out',
-                icon: 'i-heroicons-arrow-left-on-rectangle'
+                icon: 'i-heroicons-arrow-left-on-rectangle',
+                click: () => {
+                    signOut({ callbackUrl: '/login' })
+                }
             }]
         ]
     })
@@ -62,10 +64,10 @@
     })
 
     const getNaviationItemClass = function(item: NavigationItem) {
-        const classes = ['rounded-md', 'px-3', 'py-2', 'text-sm', 'font-medium']
+        const classes = ['rounded-md', 'px-3', 'py-2', 'text-sm', 'font-medium', 'text-gray-900']
 
-        if(item.selected) classes.push(...['bg-gray-900', 'text-white'])
-        else classes.push('text-gray-300', 'hover:bg-gray-700', 'hover:text-white')
+        if(item.selected) classes.push(...['dark:bg-gray-900', 'bg-gray-100', 'dark:text-white', ])
+        else classes.push('dark:text-gray-300', 'dark:hover:bg-gray-700', 'dark:hover:text-white', 'hover:bg-gray-50')
 
         return classes
     }
@@ -76,7 +78,7 @@
 </script>
 
 <template>
-    <nav class="bg-gray-800">
+    <nav class="bg-white drop-shadow-md dark:bg-gray-800">
         <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div class="relative flex h-16 items-center justify-between">
                 <!-- Mobile Nav Header -->
@@ -100,7 +102,7 @@
                     </div>
 
                     <!-- Desktop Navigation Items -->
-                    <div class="hidden sm:ml-6 sm:block">
+                    <div class="hidden sm:ml-6 sm:flex sm:flex-col sm:justify-center sm:items-center">
                         <div class="flex space-x-4">
                             <template v-for="page in navigationPages">
                                 <a :href="page.href" :class="getNaviationItemClass(page)">{{ page.name }}</a>
@@ -113,15 +115,6 @@
                 <div class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 space-x-3 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                     <!-- Theme Switcher -->
                     <ThemeSwitcher />
-                    
-                    <!-- Settings button -->
-                    <UButton
-                        icon="i-heroicons-cog-8-tooth"
-                        size="md"
-                        color="primary"
-                        square
-                        variant="ghost"
-                    />
 
                     <!-- Profile section -->
                     <UDropdown :items="userDropdownItems" :ui="{ item: { disabled: 'cursor-text select-text' } }" :popper="{ placement: 'bottom-start' }">
