@@ -34,7 +34,9 @@ export default defineEventHandler(async (event) => {
         first_name: decoded.first_name,
         last_name: decoded.last_name,
         email: decoded.email,
-        username: decoded.username
+        username: decoded.username,
+        avatar: decoded.avatar,
+        is_admin: decoded.is_admin
     }
     /* --------------------------------------------------- */
     

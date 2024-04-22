@@ -84,11 +84,13 @@ const firstLogin = async function () {
     // Fetch authentication secret from env
     const { PASSWORD_SALT_ROUNDS } = useRuntimeConfig()
 
-    let user: Omit<User, 'id'> = {
+    let user: Omit<Selectable<User>, 'id'> = {
         first_name: 'Admin',
         last_name: 'Admin',
         username: 'admin',
         email: 'admin@example.com',
+        avatar: null,
+        is_admin: true,
         password: bcrypt.hashSync('admin', Number(PASSWORD_SALT_ROUNDS))
     }
 
