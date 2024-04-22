@@ -1,0 +1,15 @@
+/*
+ * This is a funy one.
+ *
+ * The UI package used, NuxtUI has position relative on ALL
+ * inputs and input groups, they hammered that on all the containers
+ * and elements they could.
+ *
+ * This causes the fields to display over the user dropdown menu, so we
+ * use this to hammer it back to static
+ *
+ * Im starting to regret using this library...
+*/
+.makeit-static * {
+    position: static !important;
+}

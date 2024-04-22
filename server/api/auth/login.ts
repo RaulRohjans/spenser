@@ -1,5 +1,4 @@
-import bcrypt from 'bcrypt'
-import { generateToken } from '@/utils/authFunctions'
+import { generateToken, fetchUserByUsername, hashPassword, comparePasswords } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 import type { Selectable } from 'kysely'
 import type { User } from 'kysely-codegen'
@@ -43,15 +42,6 @@ const getUserCount = async function() {
     return res?.user_count || 0
 }
 
-const fetchUser = async function(username: string) {
-    const res = await db.selectFrom('user')
-        .selectAll()
-        .where('user.username', '=', username)
-        .executeTakeFirst()
-
-    return res
-}
-
 const validateLoginCredentials = async function (username: string, password: string) {
     if (await getUserCount() == 0) { // Check if first login
         if (username != 'admin' || password != 'admin')
@@ -63,9 +53,9 @@ const validateLoginCredentials = async function (username: string, password: str
         return await firstLogin()
     }
 
-    const user = await fetchUser(username)
+    const user = await fetchUserByUsername(username)
 
-    if (!user || !bcrypt.compareSync(password, user.password))
+    if (!user || !comparePasswords(user.password, password))
         throw createError({
             statusCode: 403,
             statusMessage: 'Invalid login credentials'
@@ -81,9 +71,6 @@ const validateLoginCredentials = async function (username: string, password: str
  * We also create a user record with these credentials and store it
  */
 const firstLogin = async function () {
-    // Fetch authentication secret from env
-    const { PASSWORD_SALT_ROUNDS } = useRuntimeConfig()
-
     let user: Omit<Selectable<User>, 'id'> = {
         first_name: 'Admin',
         last_name: 'Admin',
@@ -91,7 +78,7 @@ const firstLogin = async function () {
         email: 'admin@example.com',
         avatar: null,
         is_admin: true,
-        password: bcrypt.hashSync('admin', Number(PASSWORD_SALT_ROUNDS))
+        password: hashPassword('admin')
     }
 
     // Add user to persistent storage

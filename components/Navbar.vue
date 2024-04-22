@@ -105,7 +105,7 @@
                     <div class="hidden sm:ml-6 sm:flex sm:flex-col sm:justify-center sm:items-center">
                         <div class="flex space-x-4">
                             <template v-for="page in navigationPages">
-                                <a :href="page.href" :class="getNaviationItemClass(page)">{{ page.name }}</a>
+                                <ULink :to="page.href" :class="getNaviationItemClass(page)">{{ page.name }}</ULink>
                             </template>
                         </div>
                     </div>
@@ -146,7 +146,7 @@
             <div class="sm:hidden" v-show="isMobileMenuShown">
                 <div class="flex flex-col space-y-1 px-2 pb-3 pt-2">
                     <template v-for="page in navigationPages">
-                        <a :href="page.href" :class="getNaviationItemClass(page)">{{ page.name }}</a>
+                        <ULink :to="page.href" :class="getNaviationItemClass(page)">{{ page.name }}</ULink>
                     </template>
                 </div>
             </div>

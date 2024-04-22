@@ -15,10 +15,9 @@
 
     const onSubmit = function (event: FormSubmitEvent<ValidationSchema>) {
         signIn(
-            { username: state.username, password: state.password },
+            { username: event.data.username, password: event.data.password },
             { callbackUrl: '/' }
         )
-        event.preventDefault()
     }
 
     definePageMeta({

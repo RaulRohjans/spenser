@@ -2,6 +2,7 @@
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode', 'nuxt-icon', '@sidebase/nuxt-auth'],
+  css: ['~/assets/css/main.scss'],
   auth: {
         provider: {
             type: 'refresh',
