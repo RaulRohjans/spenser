@@ -3,6 +3,7 @@
     import type { FormSubmitEvent } from '#ui/types'
 
     const { signIn } = useAuth()
+    const error = useError()
     const validationSchema = z.object({
         username: z.string().trim().min(1, "Invalid username"),
         password: z.string().trim().min(1, 'Must be at least 8 characters')
@@ -13,11 +14,14 @@
     })
     type ValidationSchema = z.output<typeof validationSchema>
 
-    const onSubmit = function (event: FormSubmitEvent<ValidationSchema>) {
-        signIn(
-            { username: event.data.username, password: event.data.password },
-            { callbackUrl: '/' }
-        )
+    const onSubmit = async function (event: FormSubmitEvent<ValidationSchema>) {
+      signIn(
+          { username: event.data.username, password: event.data.password },
+          { callbackUrl: '/' },
+      ).catch((e) => {
+        //error.value = String(e)
+        console.log(e)
+      })
     }
 
     definePageMeta({
@@ -31,11 +35,11 @@
 
 <template>
     <UForm :schema="validationSchema" :state="state" class="space-y-4" @submit="onSubmit">
-      <UFormGroup label="Username" name="username">
+      <UFormGroup label="Username" name="username" :error="error != null">
         <UInput v-model="state.username" />
       </UFormGroup>
   
-      <UFormGroup label="Password" name="password">
+      <UFormGroup label="Password" name="password" :error="error">
         <UInput v-model="state.password" type="password" />
       </UFormGroup>
   

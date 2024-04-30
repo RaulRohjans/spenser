@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import { db } from '@/utils/dbEngine'
 import type { JwtPayload } from '@/types/Jwt'
 import type { Selectable } from 'kysely'
 import type { User } from 'kysely-codegen'
@@ -50,7 +51,7 @@ export const ensureAuth = (event: H3Event) => {
     }
 }
 
-const extractToken = (authHeaderValue: string) => {
+export const extractToken = (authHeaderValue: string) => {
     const TOKEN_TYPE = 'Bearer'
 
     const [, token] = authHeaderValue.split(`${TOKEN_TYPE} `)

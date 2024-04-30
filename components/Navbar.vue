@@ -7,7 +7,7 @@
     const userDropdownItems = computed(() => {
         return [
             [{
-                label: data.value.email,
+                label: data.value?.email || '',
                 slot: 'account',
                 disabled: true
             }], 

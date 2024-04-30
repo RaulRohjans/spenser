@@ -1,11 +1,18 @@
 <script setup lang="ts">
     import { z } from 'zod'
+    import { displayMessage, buildRequestHeaders } from '@/utils/helpers'
     import type { FormSubmitEvent } from '#ui/types'
 
-    const { data, signOut } = useAuth()
+    // Modals
+    import ChangePasswordModal from './-changePasswordModal.vue'
+
+    const { data, signOut, token } = useAuth()
     const schema = z.object({
+        first_name: z.string(),
+        last_name: z.string(),
+        username: z.string().min(4, 'Must be at least 4 characters'),
         email: z.string().email('Invalid email'),
-        username: z.string().min(4, 'Must be at least 4 characters')
+        is_admin: z.boolean()
     })
     type Schema = z.output<typeof schema>
     const state = reactive({
@@ -17,38 +24,27 @@
     })
 
     const isModalOpen = ref(false)
-    const pwSchema = z.object({
-        new_password: z.string().min(4, 'Must be at least 4 characters'),
-        repeat_new_password: z.string().min(4, 'Must be at least 4 characters')
-    }).superRefine(({ new_password, repeat_new_password }, ctx) => {
-        if (new_password !== repeat_new_password)
-            ctx.addIssue({
-                code: "custom",
-                message: "The passwords don't match",
-                path: ['repeat_new_password']
+    const onSubmit = async function(event: FormSubmitEvent<Schema>) {
+        try {            
+            const data = await $fetch('/api/account/update', {
+                method: 'POST',
+                headers: buildRequestHeaders(token.value),
+                body: event.data
             })
-    })
 
-    type PwSchema = z.output<typeof pwSchema>
-    const pwState = reactive({
-        new_password: undefined,
-        repeat_new_password: undefined
-    })
+            if(!data.success) {
+                displayMessage('Error Saving Data', 'An error ocurred when updating your account profile.', 'error')
+                return
+            }
 
-    const onSubmit = function(event: FormSubmitEvent<Schema>) {
-        // TODO: Execute fetch command and code backend
-
-        // Force signout to refresh token
-        signOut({ callbackUrl: '/login' })
+            // Force signout to refresh token
+            signOut({ callbackUrl: '/login' })
+        }
+        catch(e) {
+            console.log(e)
+            displayMessage('Error Saving Data', String(e), 'error')
+        }
     }
-
-    const onChangePasswordSubmit = function(event: FormSubmitEvent<PwSchema>) {
-        // TODO: Execute fetch command
-
-        // Force signout to refresh token
-        signOut({ callbackUrl: '/login' })
-    }
-
     const openChangePwModal = function() {
         isModalOpen.value = !isModalOpen.value
     }
@@ -91,19 +87,5 @@
         </UCard>
     </div>
 
-    <UModal v-model="isModalOpen">
-        <UForm :schema="pwSchema" :state="pwState" class="space-y-4 p-6" @submit="onChangePasswordSubmit">            
-            <UFormGroup label="New Password" name="new_password">
-                <UInput v-model="pwState.new_password" type="password" />
-            </UFormGroup>
-            
-            <UFormGroup label="Repeat New Password" name="repeat_new_password">
-                <UInput v-model="pwState.repeat_new_password" type="password" />
-            </UFormGroup>
-    
-            <UButton type="submit">
-                Submit
-            </UButton>
-        </UForm>
-    </UModal>
+    <ChangePasswordModal v-model="isModalOpen" />
 </template>

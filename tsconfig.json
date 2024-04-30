@@ -4,5 +4,9 @@
 
     "compilerOptions": {
         "strict": true
-    }
+    },
+
+    "types": [
+        "nuxt-sweetalert2"
+    ]
 }
