@@ -16,7 +16,8 @@
                 key: 'actions',
                 sortable: false
         }],
-        actions: ['edit', 'duplicate', 'delete']
+        actions: ['edit', 'duplicate', 'delete'],
+        label: 'Transactions'
     }
 </script>
 

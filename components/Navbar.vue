@@ -48,9 +48,9 @@
                 selected: isRouteActive('/', true),
             },
             {
-                name: 'Expenses',
-                href: '/expenses/all',
-                selected: isRouteActive('/expenses'),
+                name: 'Transactions',
+                href: '/transactions/all',
+                selected: isRouteActive('/transactions'),
             },
             {
                 name: 'Budgets',
