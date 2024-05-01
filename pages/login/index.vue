@@ -1,9 +1,10 @@
 <script setup lang="ts">
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
+    import type { NuxtError } from '#app';
 
     const { signIn } = useAuth()
-    const error = useError()
+    const error: Ref<null | string> = ref(null)
     const validationSchema = z.object({
         username: z.string().trim().min(1, "Invalid username"),
         password: z.string().trim().min(1, 'Must be at least 8 characters')
@@ -18,9 +19,8 @@
       signIn(
           { username: event.data.username, password: event.data.password },
           { callbackUrl: '/' },
-      ).catch((e) => {
-        //error.value = String(e)
-        console.log(e)
+      ).catch((e: NuxtError) => {
+        error.value = e.statusMessage || null
       })
     }
 

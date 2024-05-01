@@ -1,4 +1,4 @@
-export const displayMessage = function(title: string, message: string, type: 'info' | 'warning' | 'error') {
+export const displayMessage = function(title: string, message: string | undefined | null, type: 'info' | 'warning' | 'error') {
   // TODO: Implement a better user feedback system, sweetalert is trash
   alert(`${title}\n${message}`)
 }

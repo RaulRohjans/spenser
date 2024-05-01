@@ -2,14 +2,15 @@
     import { z } from 'zod'
     import { displayMessage, buildRequestHeaders } from '@/utils/helpers'
     import type { FormSubmitEvent } from '#ui/types'
+    import type { NuxtError } from '#app'
 
     // Modals
     import ChangePasswordModal from './-changePasswordModal.vue'
 
     const { data, signOut, token } = useAuth()
     const schema = z.object({
-        first_name: z.string(),
-        last_name: z.string(),
+        first_name: z.string().min(1, 'Mandatory Field'),
+        last_name: z.string().min(1, 'Mandatory Field'),
         username: z.string().min(4, 'Must be at least 4 characters'),
         email: z.string().email('Invalid email'),
         is_admin: z.boolean()
@@ -24,14 +25,12 @@
     })
 
     const isModalOpen = ref(false)
-    const onSubmit = async function(event: FormSubmitEvent<Schema>) {
-        try {            
-            const data = await $fetch('/api/account/update', {
-                method: 'POST',
-                headers: buildRequestHeaders(token.value),
-                body: event.data
-            })
-
+    const onSubmit = function(event: FormSubmitEvent<Schema>) {                   
+        $fetch('/api/account/update', {
+            method: 'POST',
+            headers: buildRequestHeaders(token.value),
+            body: event.data
+        }).then((data) => {
             if(!data.success) {
                 displayMessage('Error Saving Data', 'An error ocurred when updating your account profile.', 'error')
                 return
@@ -39,11 +38,9 @@
 
             // Force signout to refresh token
             signOut({ callbackUrl: '/login' })
-        }
-        catch(e) {
-            console.log(e)
-            displayMessage('Error Saving Data', String(e), 'error')
-        }
+        }).catch((e: NuxtError) => {
+            displayMessage('Error Saving Data', e.statusMessage, 'error')
+        })
     }
     const openChangePwModal = function() {
         isModalOpen.value = !isModalOpen.value
