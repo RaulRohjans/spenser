@@ -32,14 +32,16 @@
             body: event.data
         }).then((data) => {
             if(!data.success) {
-                displayMessage('Error Saving Data', 'An error ocurred when updating your account profile.', 'error')
+                displayMessage('An error ocurred when updating your account profile.', 'error')
                 return
             }
+
+            displayMessage('Account Settings Updated Successfully!', 'success')
 
             // Force signout to refresh token
             signOut({ callbackUrl: '/login' })
         }).catch((e: NuxtError) => {
-            displayMessage('Error Saving Data', e.statusMessage, 'error')
+            displayMessage(e.statusMessage, 'error')
         })
     }
     const openChangePwModal = function() {

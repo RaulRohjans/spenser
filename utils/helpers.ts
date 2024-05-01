@@ -1,6 +1,25 @@
-export const displayMessage = function(title: string, message: string | undefined | null, type: 'info' | 'warning' | 'error') {
+import { useToast } from 'vue-toastification'
+
+export const displayMessage = function(message: string | undefined | null, type: 'info' | 'warning' | 'error' | 'success' = 'info') {
   // TODO: Implement a better user feedback system, sweetalert is trash
-  alert(`${title}\n${message}`)
+  //alert(`${title}\n${message}`)
+
+  const toast = useToast()
+
+  switch(type) {
+    case 'error':
+      toast.error(message)
+      break
+    case 'warning':
+      toast.warning(message)
+      break
+    case 'info':
+      toast.info(message)
+      break
+    case 'success': 
+      toast.success(message)
+      break
+  }
 }
 
 

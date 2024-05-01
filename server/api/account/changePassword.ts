@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
 
     if (!password)
         throw createError({
-            statusCode: 403,
+            statusCode: 400,
             statusMessage: 'Invalid password.'
         })
 
@@ -20,14 +20,14 @@ export default defineEventHandler(async (event) => {
 
     if(!res)
         throw createError({
-            statusCode: 403,
+            statusCode: 500,
             statusMessage: 'The corresponding user could not be found in the database.'
         })
 
     //Throw error if they are the same
     if(comparePasswords(res.password, password))
         throw createError({
-            statusCode: 403,
+            statusCode: 400,
             statusMessage: 'The new password cannot be the same as the old one.'
         })
 
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
 
     if(updateRes.numUpdatedRows < 1)
         throw createError({
-            statusCode: 403,
+            statusCode: 500,
             statusMessage: 'Could not update the password on the database.'
         })
 

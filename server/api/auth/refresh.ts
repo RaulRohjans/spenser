@@ -7,8 +7,8 @@ export default defineEventHandler(async (event) => {
 
     if (!refreshToken)
         throw createError({
-            statusCode: 403,
-            statusMessage: 'No refreshToken provided in the payload'
+            statusCode: 400,
+            statusMessage: 'No refreshToken provided in the payload.'
         })
         
     // Decode the refresh token
@@ -16,8 +16,8 @@ export default defineEventHandler(async (event) => {
     
     if (!decoded)
         throw createError({
-            statusCode: 403,
-            statusMessage: 'Invalid token provided'
+            statusCode: 400,
+            statusMessage: 'Invalid token provided.'
         })
 
 

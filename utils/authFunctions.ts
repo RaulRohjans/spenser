@@ -29,7 +29,7 @@ export const ensureAuth = (event: H3Event) => {
     if (typeof authHeaderValue === 'undefined')
         throw createError({
             statusCode: 403,
-            statusMessage: 'Invalid Bearer-authorization header'
+            statusMessage: 'Invalid Bearer-authorization header.'
         })
 
     try {
@@ -38,7 +38,7 @@ export const ensureAuth = (event: H3Event) => {
         if(!user)
             throw createError({
                 statusCode: 403,
-                statusMessage: 'Could not fetch user from the JWT token'
+                statusMessage: 'Could not fetch user from the JWT token.'
             })
 
         return user
@@ -46,7 +46,7 @@ export const ensureAuth = (event: H3Event) => {
         console.log('Error fetching user record\n', error)
         throw createError({
             statusCode: 403,
-            statusMessage: 'Invalid token, user must be logged in'
+            statusMessage: 'Invalid token, user must be logged in.'
         })
     }
 }

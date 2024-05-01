@@ -12,8 +12,8 @@ export default defineEventHandler(async (event) => {
 
     if (!first_name || !last_name || !username || !email || !is_admin)
         throw createError({
-            statusCode: 403,
-            statusMessage: 'Missing user data.'
+            statusCode: 400,
+            statusMessage: 'One or more mandatory fields are empty.'
         })
     
     // Check if username is duplucated
@@ -27,14 +27,14 @@ export default defineEventHandler(async (event) => {
 
     if(!res) 
         throw createError({
-            statusCode: 403,
+            statusCode: 500,
             statusMessage: 'Could not validate new data.'
         })
 
     if(res.user_count > 0)
         throw createError({
-            statusCode: 403,
-            statusMessage: 'The new username is duplicated'
+            statusCode: 400,
+            statusMessage: 'The new username is duplicated.'
         })
 
     // Update user record
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
 
     if(updateRes.numUpdatedRows < 1)
         throw createError({
-            statusCode: 403,
+            statusCode: 500,
             statusMessage: 'Could not update the user record on the database.'
         })
 

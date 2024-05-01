@@ -9,8 +9,8 @@ export default defineEventHandler(async (event) => {
 
     if (!username || !password)
         throw createError({
-            statusCode: 403,
-            statusMessage: 'Empty login fields'
+            statusCode: 400,
+            statusMessage: 'Empty login fields.'
         })
 
     // Validate credentials
@@ -46,8 +46,8 @@ const validateLoginCredentials = async function (username: string, password: str
     if (await getUserCount() == 0) { // Check if first login
         if (username != 'admin' || password != 'admin')
             throw createError({
-                statusCode: 403,
-                statusMessage: 'Invalid login credentials'
+                statusCode: 400,
+                statusMessage: 'Invalid login credentials.'
             })
 
         return await firstLogin()
@@ -57,8 +57,8 @@ const validateLoginCredentials = async function (username: string, password: str
 
     if (!user || !comparePasswords(user.password, password))
         throw createError({
-            statusCode: 403,
-            statusMessage: 'Invalid login credentials'
+            statusCode: 400,
+            statusMessage: 'Invalid login credentials.'
         })
         
     return user
@@ -92,7 +92,7 @@ const firstLogin = async function () {
     if(!res)
         throw createError({
             statusCode: 500,
-            statusMessage: 'Could not create default user "admin" in the database, an insertion error occurred'
+            statusMessage: 'Could not create default user "admin" in the database, an insertion error occurred.'
         })
         
     return {

@@ -1,10 +1,12 @@
 <script setup lang="ts">
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
+    import type { NuxtError } from '#app';
     
-    const { token } = useAuth()
+    const { signOut, token } = useAuth()
     const model = defineModel<boolean>()
-    const { signOut } = useAuth()
+    const error: Ref<null | string> = ref(null)
+
     const schema = z.object({
         new_password: z.string().min(4, 'Must be at least 4 characters'),
         repeat_new_password: z.string().min(4, 'Must be at least 4 characters')
@@ -22,37 +24,35 @@
         repeat_new_password: undefined
     })
 
-    const onChangePasswordSubmit = async function(event: FormSubmitEvent<Schema>) {        
-        try {
-            const data = await $fetch('/api/account/changePassword', {
-                method: 'POST',
-                headers: buildRequestHeaders(token.value),
-                body: { password: event.data.new_password }
-            })
-
+    const onChangePasswordSubmit = function(event: FormSubmitEvent<Schema>) {
+        $fetch('/api/account/changePassword', {
+            method: 'POST',
+            headers: buildRequestHeaders(token.value),
+            body: { password: event.data.new_password }
+        }).then((data) => {
             if(!data.success) {
-                displayMessage('Error Changing Password', 'An error ocurred when updating your password.', 'error')
+                displayMessage('An error ocurred when updating your password.', 'error')
                 return
             }
 
-            // Force signout to refresh token
+            displayMessage('Password Updated Successfully!', 'success')
+
+            // Force signout to refresh  token
             signOut({ callbackUrl: '/login' })
-        }
-        catch(e) {
-            console.log(e)
-            displayMessage('Error Saving Data', String(e), 'error')
-        }
+        }).catch((e: NuxtError) => {
+            error.value = e.statusMessage || null
+        })
     }
 </script>
 
 <template>
     <UModal v-model="model">
         <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onChangePasswordSubmit">            
-            <UFormGroup label="New Password" name="new_password">
+            <UFormGroup label="New Password" name="new_password" :error="error != null">
                 <UInput v-model="state.new_password" type="password" />
             </UFormGroup>
             
-            <UFormGroup label="Repeat New Password" name="repeat_new_password">
+            <UFormGroup label="Repeat New Password" name="repeat_new_password" :error="error">
                 <UInput v-model="state.repeat_new_password" type="password" />
             </UFormGroup>
     
