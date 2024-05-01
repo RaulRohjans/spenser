@@ -2,6 +2,8 @@
     import type { NavigationItem } from '@/types/Navigation'
     
     const { data, signOut } = useAuth()
+    const route = useRoute()
+
     const isMobileMenuShown = ref(false)
     
     const userDropdownItems = computed(() => {
@@ -43,25 +45,35 @@
             {
                 name: 'Home',
                 href: '/',
-                selected: true,
+                selected: isRouteActive('/', true),
             },
             {
                 name: 'Expenses',
-                href: '/expenses',
-                selected: false,
+                href: '/expenses/all',
+                selected: isRouteActive('/expenses'),
             },
             {
                 name: 'Budgets',
                 href: '/budgets',
-                selected: false,
+                selected: isRouteActive('/budgets'),
             },
             {
                 name: 'Categories',
                 href: '/categories',
-                selected: false,
+                selected: isRouteActive('/categories'),
             }
         ]
     })
+
+    const isRouteActive = function(path: string, exactPath: boolean = false) {
+        if(exactPath) {
+            if(path == route.path) return true
+            else return false
+        }
+        
+        if(route.path.substring(0, path.length) == path) return true
+        else return false
+    }
 
     const getNaviationItemClass = function(item: NavigationItem) {
         const classes = ['rounded-md', 'px-3', 'py-2', 'text-sm', 'font-medium', 'text-gray-900']
