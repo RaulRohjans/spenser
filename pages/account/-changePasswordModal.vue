@@ -46,7 +46,7 @@
 </script>
 
 <template>
-    <UModal v-model="model">
+    <UModal v-model="model" :ui="{ 'container': 'items-center' }">
         <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onChangePasswordSubmit">            
             <UFormGroup label="New Password" name="new_password" :error="error != null">
                 <UInput v-model="state.new_password" type="password" />
