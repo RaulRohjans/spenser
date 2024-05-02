@@ -66,6 +66,10 @@
         selectedFilters.value = []
     }
 
+    const createTransaction = function() {
+        alert('you suck')
+    }
+
     // Use this to enable reset filter button when a filter is selected
     watch(selectedFilters, (newVal) => {
         if(newVal && newVal.length > 0) resetFilterState.value = true
@@ -85,6 +89,19 @@
             v-model:sort="sort"
             v-model:resetFilterState="resetFilterState"
             @reset-filters="resetFilters">
+
+            <template #extra-section>
+                <div class="flex flex-row items-end justify-end w-full">
+                    <UButton 
+                        icon="i-heroicons-plus"
+                        color="primary"
+                        size="xs"
+                        @click="createTransaction">
+                        Create Transaction
+                    </UButton>
+                </div>
+            </template>
+
             <template #filters>
                 <USelectMenu v-model="selectedFilters" :options="filters" multiple placeholder="Status" class="w-40" />
             </template>

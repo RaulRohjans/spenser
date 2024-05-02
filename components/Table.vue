@@ -210,6 +210,10 @@
             </div>
         </div>
 
+        <div class="flex items-center justify-between gap-3 px-4 py-3">
+            <slot name="extra-section"></slot>
+        </div>
+
         <!-- Table -->
         <UTable
             v-model:sort="sort"

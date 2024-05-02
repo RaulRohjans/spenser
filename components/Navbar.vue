@@ -59,7 +59,7 @@
             },
             {
                 name: 'Categories',
-                href: '/categories',
+                href: '/categories/all',
                 selected: isRouteActive('/categories'),
             }
         ]
