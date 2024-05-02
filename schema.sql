@@ -24,9 +24,13 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 CREATE TABLE IF NOT EXISTS category (
     id INT GENERATED ALWAYS AS IDENTITY,
+    user INT,
     name varchar(50),
     icon varchar(50),
-    PRIMARY KEY(id)
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user
+        FOREIGN KEY("user")
+            REFERENCES "user"(id),
 );
 
 CREATE TABLE IF NOT EXISTS transaction (
