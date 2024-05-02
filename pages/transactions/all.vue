@@ -18,6 +18,7 @@
                 sortable: true
             }, {
                 key: 'actions',
+                label: 'Actions',
                 sortable: false
         }],
         actions: ['edit', 'duplicate', 'delete'],
