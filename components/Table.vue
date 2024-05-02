@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { TableColumn, TableRow, TableAction } from '@/types/Table'
+    import type { TableColumn, TableRow, TableAction, TableSort } from '@/types/Table'
 
     export interface TableProps {
         /*
@@ -26,19 +26,69 @@
          * Actions of each table row
          */
         actions?: string[] | null
+
+        /*
+         * If the table data is loading
+         */
+        loading?: boolean
+
+        /*
+         * If the table has a column search box
+         */
+        enableSearch?: boolean
+
+        /*
+         * Toggle table column sorting
+         */
+        sorting?: boolean
+
+        /*
+         * Toggle table filtering
+         */
+        filtering?: boolean
+        
+        /*
+         * Toggle the filter reset mechanism and let the dev handle the behavior
+         */
+        manualFilterReset?: boolean
+
+        /*
+         * Toggle showing rows per page dropdown
+         */
+        rowsPerPage?: boolean
     }
 
     const props = withDefaults(defineProps<TableProps>(), {
         columns: null,
         rows: null,
         rowCount: 0,
-        actions: null
+        actions: null,
+        enableSearch: true,
+        sorting: true,
+        filtering: true,
+        manualFilterReset: false,
+        rowsPerPage: true
     })
 
+    const emit = defineEmits<{
+        (event: 'reset-filters'): void
+    }>()
+
     const selectedColumns = ref(props.columns)
+    const page = defineModel<number>(
+        "page", { default: 1 }
+    )
+    const pageCount = defineModel<number>(
+        "pageCount", { default: 10 }
+    )
+    const search = defineModel<string>(
+        "search", { default: '' }
+    )
+    const sort = defineModel<TableSort>("sort", { default: {} })
+    const resetFilterState = defineModel<boolean>("resetFilterState", { default: false })
+
     const columnsTable = computed(() => props.columns?.filter((column) => selectedColumns.value?.includes(column)))
 
-    // Actions
     const actionItems = computed(() => {
         if(!props.actions || props.actions.length == 0) return null
 
@@ -72,49 +122,31 @@
         }
     })
 
-    // Filters
-    const todoStatus = [{
-            key: 'uncompleted',
-            label: 'In Progress',
-            value: false
-        }, {
-            key: 'completed',
-            label: 'Completed',
-            value: true
-    }]
+    const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
 
-    const search = ref('')
-    const selectedStatus = ref([])
+    const pageTo = computed(() => Math.min(page.value * pageCount.value, props.rowCount))
 
-    const resetFilters = () => {
-        search.value = ''
-        selectedStatus.value = []
+    const filtersNeedReset = computed(() => {
+        if(resetFilterState.value) return true
+
+        if(search.value != '' || selectedColumns.value?.length != props.columns?.length) return true
+
+        return false
+    })
+    
+    const resetFilters = function() {
+        if(!props.manualFilterReset) {
+            search.value = ''
+            selectedColumns.value = props.columns
+
+            // Disable reset filter button
+            resetFilterState.value = false
+        }
+        emit('reset-filters')
     }
 
-    // Pagination
-    const sort = ref({ column: 'id', direction: 'asc' as const })
-    const page = ref(1)
-    const pageCount = ref(10)
-    const pageTotal = ref(200) // This value should be dynamic coming from the API
-    const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
-    const pageTo = computed(() => Math.min(page.value * pageCount.value, pageTotal.value))
-
-    // Data
-    const { data: todos, pending } = await useLazyAsyncData<{
-        id: number
-        title: string
-        completed: string
-    }[]>('todos', () => ($fetch)(`https://jsonplaceholder.typicode.com/todos`, {
-            query: {
-                q: search.value,
-                '_page': page.value,
-                '_limit': pageCount.value,
-                '_sort': sort.value.column,
-                '_order': sort.value.direction
-            }
-    }), {
-        default: () => [],
-        watch: [page, search, pageCount, sort]
+    onMounted(() => {
+        console.log('ok', resetFilterState.value)
     })
 </script>
 
@@ -137,18 +169,19 @@
         </template>
 
         <!-- Filters -->
-        <div class="flex items-center justify-between gap-3 px-4 py-3">
-            <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." />
+        <div v-if="props.filtering" class="flex items-center justify-between gap-3 px-4 py-3">
+            <UInput v-if="props.enableSearch" v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." />
 
-            <USelectMenu v-model="selectedStatus" :options="todoStatus" multiple placeholder="Status" class="w-40" />
+            <slot name="filters"></slot>
         </div>
 
         <!-- Header and Action buttons -->
-        <div class="flex justify-between items-center w-full px-4 py-3">
+        <div v-if="props.filtering || props.rowsPerPage" class="flex justify-between items-center w-full px-4 py-3">
             <div class="flex items-center gap-1.5">
-                <span class="text-sm leading-5">Rows per page:</span>
+                <span v-if="props.rowsPerPage" class="text-sm leading-5">Rows per page:</span>
 
                 <USelect
+                    v-if="props.rowsPerPage"
                     v-model="pageCount"
                     :options="[5, 10, 20, 30, 40, 50]"
                     class="me-2 w-20"
@@ -156,7 +189,7 @@
                 />
             </div>
 
-            <div class="flex gap-1.5 items-center">
+            <div v-if="props.filtering" class="flex gap-1.5 items-center">
                 <USelectMenu v-model="selectedColumns" :options="columns" multiple>
                     <UButton
                         icon="i-heroicons-view-columns"
@@ -170,7 +203,7 @@
                     icon="i-heroicons-funnel"
                     color="gray"
                     size="xs"
-                    :disabled="search === '' && selectedStatus.length === 0"
+                    :disabled="!filtersNeedReset"
                     @click="resetFilters">
                     Reset
                 </UButton>
@@ -180,9 +213,9 @@
         <!-- Table -->
         <UTable
             v-model:sort="sort"
-            :rows="todos"
+            :rows="props.rows"
             :columns="columnsTable"
-            :loading="pending"
+            :loading="props.loading"
             :loading-state="{ icon: 'i-heroicons-arrow-path-20-solid', label: 'Loading...' }"
             :progress="{ color: 'primary', animation: 'carousel' }"
             sort-asc-icon="i-heroicons-arrow-up"
@@ -212,12 +245,12 @@
                         to
                         <span class="font-medium">{{ pageTo }}</span>
                         of
-                        <span class="font-medium">{{ pageTotal }}</span>
+                        <span class="font-medium">{{ props.rowCount }}</span>
                         results
                     </span>
                 </div>
 
-                <UPagination v-model="page" :page-count="pageCount" :total="pageTotal" />
+                <UPagination v-model="page" :page-count="pageCount" :total="props.rowCount" />
             </div>
         </template>
     </UCard>

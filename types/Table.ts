@@ -15,3 +15,9 @@ export interface TableAction {
     icon: string
     click?: Function
 }
+
+export interface TableSort { 
+    column: string, 
+    direction: string
+}
+
