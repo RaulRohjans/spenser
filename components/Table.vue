@@ -210,7 +210,7 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-between gap-3 px-4 py-3">
+        <div v-if="$slots['extra-section']" class="flex items-center justify-between gap-3 px-4 py-3">
             <slot name="extra-section"></slot>
         </div>
 
