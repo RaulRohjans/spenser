@@ -5,7 +5,7 @@
     import type { NuxtError } from '#app'
 
     // Modals
-    import ChangePasswordModal from './-changePasswordModal.vue'
+    import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue'
 
     const { data, signOut, token } = useAuth()
     const schema = z.object({
