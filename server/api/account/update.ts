@@ -16,13 +16,13 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'One or more mandatory fields are empty.'
         })
     
-    // Check if username is duplucated
+    // Check if username is duplicated
     const res = await db.selectFrom('user')
         .select(({ fn }) => [
             fn.count<number>('user.id').as('user_count')
         ])
         .where('id', '!=', user.id)
-        .where('username', '=', username)
+        .where(({ eb }) => eb(eb.fn('upper', ['username']), '=', String(username).toUpperCase())) //Case insensitive comparision
         .executeTakeFirst()
 
     if(!res) 
