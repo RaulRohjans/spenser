@@ -36,7 +36,7 @@
                 return
             }
 
-            displayMessage('Account Settings Updated Successfully!', 'success')
+            displayMessage('Account settings updated successfully!', 'success')
 
             // Force signout to refresh token
             signOut({ callbackUrl: '/login' })

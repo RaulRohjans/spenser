@@ -35,7 +35,7 @@
                 return
             }
 
-            displayMessage('Password Updated Successfully!', 'success')
+            displayMessage('Password updated successfully!', 'success')
 
             // Force signout to refresh  token
             signOut({ callbackUrl: '/login' })
