@@ -144,10 +144,6 @@
         }
         emit('reset-filters')
     }
-
-    onMounted(() => {
-        console.log('ok', resetFilterState.value)
-    })
 </script>
 
 <template>    
