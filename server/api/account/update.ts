@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     if(res.user_count > 0)
         throw createError({
             statusCode: 400,
-            statusMessage: 'The new username is duplicated.'
+            statusMessage: 'An account with that username already exists.'
         })
 
     // Update user record
