@@ -22,6 +22,13 @@ export const displayMessage = function(message: string | undefined | null, type:
   }
 }
 
+export const capitalFirstWordLetters = function(message: string) {
+  const words = message.split(" ");
+
+  return words.map((word) => {
+      return word[0].toUpperCase() + word.substring(1)
+    }).join(" ")
+}
 
 /*
  * This funcion is needed since sidebase does not add the 

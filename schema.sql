@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 CREATE TABLE IF NOT EXISTS category (
     id INT GENERATED ALWAYS AS IDENTITY,
-    "user" INT,
-    name varchar(50),
+    "user" INT NOT NULL,
+    name varchar(50) NOT NULL,
     icon varchar(50),
     PRIMARY KEY(id),
     CONSTRAINT fk_user

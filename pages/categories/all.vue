@@ -1,29 +1,13 @@
 <script setup lang="ts">    
     import type { TableSort } from '@/types/Table'
+    import type { TableColumn, TableRow } from '@/types/Table'
 
     // Modals
     import CreateCategoryModal from '@/components/modals/CreateCategoryModal.vue'
 
+    const { token } = useAuth()
     const tableObj = {
         label: 'Categories',
-        rowCount: 200,
-        columns: [{
-                key: 'id',
-                label: '#',
-                sortable: true
-            }, {
-                key: 'title',
-                label: 'Title',
-                sortable: true
-            }, {
-                key: 'completed',
-                label: 'Status',
-                sortable: true
-            }, {
-                key: 'actions',
-                label: 'Actions',
-                sortable: false
-        }],
         actions: ['edit', 'duplicate', 'delete'],
     }
 
@@ -49,20 +33,34 @@
     ]
 
     // Fetch Data
-    const { data: tableRows, pending: loading } = await useLazyAsyncData<{
-        id: number
-        title: string
-        completed: string
-    }[]>('todos', () => ($fetch)(`https://jsonplaceholder.typicode.com/todos`, {
+    const { data: fetchData, pending: loading } = await useLazyAsyncData<{
+        success: boolean,
+        data: {
+            totalRecordCount: number,
+            rows: TableRow[],
+            columns: TableColumn[]
+        }
+    }>('todos', () => ($fetch)(`/api/categories`, {  
+            method: 'GET',
+            headers: buildRequestHeaders(token.value), 
             query: {
                 q: searchQuery.value,
-                '_page': page.value,
-                '_limit': pageCount.value,
-                '_sort': sort.value.column,
-                '_order': sort.value.direction
+                page: page.value,
+                limit: pageCount.value,
+                sort: sort.value.column,
+                order: sort.value.direction
             }
     }), {
-        default: () => [],
+        default: () => {
+            return {
+                success: false,
+                data: {
+                    totalRecordCount: 0,
+                    rows: [],
+                    columns: []
+                }
+            }
+        },
         watch: [page, searchQuery, pageCount, sort]
     })
 
@@ -85,7 +83,9 @@
     <div class="flex flex-row items-center justify-center">
         <Table 
             v-bind="tableObj"
-            :rows="tableRows"
+            :rows="fetchData?.data.rows"
+            :columns="fetchData?.data.columns"
+            :row-count="fetchData?.data.totalRecordCount"
             :loading="loading"
             v-model:page="page" 
             v-model:pageCount="pageCount" 

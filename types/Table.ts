@@ -5,9 +5,7 @@ export interface TableColumn {
 }
 
 export interface TableRow {
-    id: number
-    title: string
-    completed: string
+    [key: string]: string | number | undefined | null | Date
 }
 
 export interface TableAction {
@@ -21,3 +19,7 @@ export interface TableSort {
     direction: string
 }
 
+export interface TableSearch {
+    column?: string
+    query: string
+}
