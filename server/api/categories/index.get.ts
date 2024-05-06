@@ -18,15 +18,18 @@ export default defineEventHandler(async (event) => {
     const query = db.selectFrom('category')
         .selectAll()
         .where('category.user', '=', user.id)
+        .$if(!!search, (qb) => {
+            const parsedSearch = parseSeachQuery(search?.toString() || '')
+
+            if(parsedSearch.column)
+                return qb.where(db.dynamic.ref<string>(`category.${parsedSearch.column.toLowerCase()}`), '=', parsedSearch.query)
+            else
+                return qb.where('category.name', '=', parsedSearch.query)
+        })
 
     // Search Filter
     if(search) {
-        const parsedSearch = parseSeachQuery(search.toString())
-
-        if(parsedSearch.column)
-            query.where(db.dynamic.ref<string>(`category.${parsedSearch.column.toLowerCase()}`), '=', parsedSearch.query)
-        else
-            query.where('category.name', '=', parsedSearch.query)
+        
     }
 
     // Pager
@@ -44,7 +47,7 @@ export default defineEventHandler(async (event) => {
     
     // Sort
     if(sort) query.orderBy(db.dynamic.ref<string>(`${sort} ${order || ''}`))
-    
+    console.log(query.compile())
     // Get total record count
     const totalRecordsRes = await db.selectFrom('category')
         .select(({ fn }) => [
