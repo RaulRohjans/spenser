@@ -5,8 +5,7 @@ import { TableRow } from "~/types/Table"
 
 export default defineEventHandler(async (event) => {
     // Read body params
-    const routeParams = getRouterParams(event)
-    console.log(routeParams, event)
+    const routeParams = getQuery(event)
     const {
         q: search,
         page,
@@ -23,7 +22,7 @@ export default defineEventHandler(async (event) => {
 
     // Search Filter
     if(search) {
-        const parsedSearch = parseSeachQuery(search)
+        const parsedSearch = parseSeachQuery(search.toString())
 
         if(parsedSearch.column)
             query.where(db.dynamic.ref<string>(`category.${parsedSearch.column.toLowerCase()}`), '=', parsedSearch.query)
@@ -32,10 +31,9 @@ export default defineEventHandler(async (event) => {
     }
 
     // Pager
-    const parsedLimit: number = parseInt(limit) || 100
-    console.log(parsedLimit, limit, page, routeParams)
+    const parsedLimit: number = parseInt(limit?.toString() || '') || 100
     if(page) {
-        const parsedPage: number = parseInt(page) || 1
+        const parsedPage: number = parseInt(page.toString()) || 1
 
         const offset = (parsedPage - 1) * parsedLimit
         query.offset(offset)
