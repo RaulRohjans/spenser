@@ -5,14 +5,13 @@ import { TableRow } from "~/types/Table"
 
 export default defineEventHandler(async (event) => {
     // Read body params
-    const routeParams = getQuery(event)
     const {
         q: search,
         page,
         limit,
         sort,
         order
-    } = routeParams
+    } = getQuery(event)
     const user = ensureAuth(event)
     
     // Check if the category is duplicated
