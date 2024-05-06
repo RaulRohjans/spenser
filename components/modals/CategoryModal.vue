@@ -3,6 +3,33 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app';
     
+    export type CategoryModalProps = {
+        /**
+         * Id of the category
+         */
+        id?: number | null
+
+        /**
+         * Name of the category
+         */
+        name?: string | null
+
+        /**
+         * Icon of the category
+         */
+        icon?: string | null
+    }
+
+    const props = withDefaults(defineProps<CategoryModalProps>(), {
+        name: '',
+        icon: ''
+    })
+
+    const emit = defineEmits<{
+        (event: 'submit'): void
+        (event: 'successful-submit'): void
+    }>()
+
     const { token } = useAuth()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
@@ -19,15 +46,19 @@
         if (!name || name.length === 0)
             error.value = 'Category name is required'
     })
+    /* ------------------------------------------------ */
 
     type Schema = z.output<typeof schema>
     const state = reactive({
-        name: undefined,
-        icon: undefined
-    })  
+        id: props.id,
+        name: props.name,
+        icon: props.icon
+    })
 
     const onCreateCategory = function(event: FormSubmitEvent<Schema>) {
-        $fetch('/api/categories/create', {
+        emit('submit')
+        
+        $fetch(`/api/categories/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
@@ -37,12 +68,18 @@
                 return
             }
 
-            displayMessage('Category created successfully!', 'success')
+            emit('successful-submit')
+            displayMessage(`Category ${operation.value} successfully!`, 'success')
             model.value = false
         }).catch((e: NuxtError) => {
             error.value = e.statusMessage || null
         })
     }
+
+    const operation = computed(() => {
+        if(!props.id) return 'create'
+        return 'edit'
+    })
 
     const displayIcon = computed(() => {
         if(!state.icon) return ''

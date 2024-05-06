@@ -72,6 +72,9 @@
 
     const emit = defineEmits<{
         (event: 'reset-filters'): void
+        (event: 'edit-action', row: TableRow): void
+        (event: 'duplicate-action', row: TableRow): void
+        (event: 'delete-action', row: TableRow): void
     }>()
 
     const selectedColumns = ref(props.columns)
@@ -100,7 +103,7 @@
                 actions.push([{
                     label: 'Edit',
                     icon: 'i-heroicons-pencil-square-20-solid',
-                    click: () => console.log('Edit', row.id)
+                    click: () => emit('edit-action', row)
                 }])
     
             if(props.actions?.includes('duplicate')) {
@@ -108,14 +111,16 @@
     
                 actions[0].push({
                     label: 'Duplicate',
-                    icon: 'i-heroicons-document-duplicate-20-solid'
+                    icon: 'i-heroicons-document-duplicate-20-solid',
+                    click: () => emit('duplicate-action', row)
                 })
             }
 
             if(props.actions?.includes('delete'))
                 actions.push([{
                     label: 'Delete',
-                    icon: 'i-heroicons-trash-20-solid'
+                    icon: 'i-heroicons-trash-20-solid',
+                    click: () => emit('delete-action', row)
                 }])
 
             return actions
@@ -223,10 +228,6 @@
             sort-mode="manual"
             class="w-full"
             :ui="{ td: { base: 'max-w-[0] truncate' }, default: { checkbox: { color: 'gray' } } }">
-
-            <template #completed-data="{ row }">
-                <UBadge size="xs" :label="row.completed ? 'Completed' : 'In Progress'" :color="row.completed ? 'emerald' : 'orange'" variant="subtle" />
-            </template>
 
             <template #actions-data="{ row }" v-if="actionItems">
                 <UDropdown :items="actionItems(row)">

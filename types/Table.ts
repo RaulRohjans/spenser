@@ -5,7 +5,7 @@ export interface TableColumn {
 }
 
 export interface TableRow {
-    [key: string]: string | number | undefined | null | Date
+    [key: string]: any
 }
 
 export interface TableAction {

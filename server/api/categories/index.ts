@@ -1,19 +1,19 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
 import { parseSeachQuery } from '@/utils/parsers'
-import { capitalFirstWordLetters } from '@/utils/helpers'
-import { TableColumn, TableRow } from "~/types/Table"
-import { number } from "zod"
+import { TableRow } from "~/types/Table"
 
 export default defineEventHandler(async (event) => {
     // Read body params
+    const routeParams = getRouterParams(event)
+    console.log(routeParams, event)
     const {
         q: search,
         page,
         limit,
         sort,
         order
-    } = getRouterParams(event)
+    } = routeParams
     const user = ensureAuth(event)
     
     // Check if the category is duplicated
@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
 
     // Pager
     const parsedLimit: number = parseInt(limit) || 100
+    console.log(parsedLimit, limit, page, routeParams)
     if(page) {
         const parsedPage: number = parseInt(page) || 1
 
@@ -47,7 +48,6 @@ export default defineEventHandler(async (event) => {
     // Sort
     if(sort) query.orderBy(db.dynamic.ref<string>(`${sort} ${order || ''}`))
     
-
     // Get total record count
     const totalRecordsRes = await db.selectFrom('category')
         .select(({ fn }) => [
@@ -57,16 +57,6 @@ export default defineEventHandler(async (event) => {
 
     // Get rows
     const rowRes = await query.execute()
-    
-    // Get loaded columns
-    const columns: TableColumn[] = []
-    Object.keys(rowRes).forEach(key => {
-        columns.push({
-            key,
-            label: capitalFirstWordLetters(key),
-            sortable: true
-        })
-    })
 
     if(!totalRecordsRes || !rowRes)
         throw createError({
@@ -74,14 +64,11 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'Could not load any categories.'
         })
 
-    console.log(totalRecordsRes)
-
     return {
         success: true,
         data: {
-            totalRecordCount: totalRecordsRes.total,
-            rows: rowRes as TableRow[],
-            columns
+            totalRecordCount: Number(totalRecordsRes.total),
+            rows: rowRes as TableRow[]
         }
     }
 })
