@@ -84,6 +84,7 @@
     const pageCount = defineModel<number>(
         "pageCount", { default: 10 }
     )
+    const pageCountKey: Ref<number> = ref(0)
     const search = defineModel<string>(
         "search", { default: '' }
     )
@@ -149,6 +150,23 @@
         }
         emit('reset-filters')
     }
+
+    onMounted(() => {
+        /* Nuxt UI doesnt fail to surprise me by how weird it wants to be...
+         * When the USelect loads on a page refresh, it selectes the last value that was selected
+         * event when a diffent value is passed in the modalValue!
+         * 
+         * But whats worse than this is that when it decides to load the last selected option
+         * instead of what I want, it doesn't update the modal value :(
+         * 
+         * (example)
+         * I end up with model value 10, which is the default, and 5 selected in the USelect 
+         * because it was the last thing that was selected
+         * 
+         * This key increment fixes the issue
+         */
+        pageCountKey.value++
+    })
 </script>
 
 <template>    
@@ -183,6 +201,7 @@
 
                 <USelect
                     v-if="props.rowsPerPage"
+                    :key="pageCountKey"
                     v-model="pageCount"
                     :options="[5, 10, 20, 30, 40, 50]"
                     class="me-2 w-20"
