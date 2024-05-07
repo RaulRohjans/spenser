@@ -135,7 +135,6 @@
             v-model:search="searchQuery" 
             v-model:sort="sort"
             v-model:resetFilterState="resetFilterState"
-            @reset-filters="resetFilters"
             @edit-action="editCategory"
             @duplicate-action="dupCategory"
             @delete-action="delCategory">
