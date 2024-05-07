@@ -2,6 +2,7 @@ export interface TableColumn {
     key: string
     label?: string
     sortable: boolean
+    searchable?: boolean
 }
 
 export interface TableRow {
@@ -22,6 +23,12 @@ export interface TableSort {
 export interface TableSearch {
     column?: string
     query: string
+}
+
+export interface TableSearchColumn {
+    name: string
+    value: string
+    disabled?: boolean
 }
 
 export interface FetchTableDataResult {

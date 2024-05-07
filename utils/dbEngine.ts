@@ -1,5 +1,6 @@
 import pg from 'pg'
-import { Kysely, PostgresDialect } from 'kysely'
+import { Kysely, PostgresDialect, sql } from 'kysely'
+import type { SelectQueryBuilder } from 'kysely'
 import type { DB } from 'kysely-codegen'
 
 const {
@@ -28,3 +29,22 @@ const dialect = new PostgresDialect({
 export const db = new Kysely<DB>({
   dialect,
 })
+
+export const applySearchFilter = function(qb: SelectQueryBuilder<any, any, any>, search: string | undefined, searchColumn: string): SelectQueryBuilder<any, any, any> {
+    // If no search term is provided, return the unmodified query builder    
+    if (!search) return qb
+
+    // Case insensitive string compare
+    return qb.where(({ eb }) => eb(
+        eb.fn('upper', [
+            // Cast to text first so integers can be compared
+            //sql<string>`CAST(${searchColumn.toLowerCase()} AS TEXT)`
+            //eb.fn('cast', [db.dynamic.ref<string>(searchColumn.toLowerCase()), 'as TEXT'])
+            db.dynamic.ref<string>(searchColumn.toLowerCase())
+        ]), 
+        
+        'like', 
+        
+        `%${search.toUpperCase()}%`
+    ))
+}

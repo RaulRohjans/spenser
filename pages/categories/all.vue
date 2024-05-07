@@ -25,7 +25,8 @@
             }, {
                 key: 'actions',
                 label: 'Actions',
-                sortable: false
+                sortable: false,
+                searchable: false
             }
         ],
     }
@@ -38,18 +39,20 @@
     const page: Ref<number> = ref(1)
     const pageCount: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
+    const searchColumn: Ref<string> = ref('name')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
     const resetFilterState: Ref<boolean> = ref(false)
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
 
     // Fetch Data
-    const { data: fetchData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
-    ('todos', () => ($fetch)('/api/categories', {  
+    const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
+    ('tableData', () => ($fetch)('/api/categories', {  
             method: 'GET',
             headers: buildRequestHeaders(token.value), 
             query: {
                 q: searchQuery.value,
+                qColumn: searchColumn.value,
                 page: page.value,
                 limit: pageCount.value,
                 sort: sort.value.column,
@@ -127,12 +130,13 @@
     <div class="flex flex-row items-center justify-center">
         <Table 
             v-bind="tableObj"
-            :rows="fetchData?.data.rows"
-            :row-count="fetchData?.data.totalRecordCount"
+            :rows="tableData?.data.rows"
+            :row-count="tableData?.data.totalRecordCount"
             :loading="loading"
             v-model:page="page" 
             v-model:pageCount="pageCount" 
-            v-model:search="searchQuery" 
+            v-model:search="searchQuery"
+            v-model:searchColumn="searchColumn"
             v-model:sort="sort"
             v-model:resetFilterState="resetFilterState"
             @edit-action="editCategory"

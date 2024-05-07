@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { TableColumn, TableRow, TableAction, TableSort } from '@/types/Table'
+    import type { TableColumn, TableRow, TableAction, TableSort, TableSearchColumn } from '@/types/Table'
 
     export interface TableProps {
         /*
@@ -33,9 +33,14 @@
         loading?: boolean
 
         /*
-         * If the table has a column search box
+         * If the table has a search box
          */
         enableSearch?: boolean
+
+        /*
+         * If the search box includes a column filter
+         */
+        hasSeachColumn?: boolean
 
         /*
          * Toggle table column sorting
@@ -64,6 +69,7 @@
         rowCount: 0,
         actions: null,
         enableSearch: true,
+        hasSeachColumn: true,
         sorting: true,
         filtering: true,
         manualFilterReset: false,
@@ -78,20 +84,27 @@
     }>()
 
     const selectedColumns = ref(props.columns)
+    const selectLoadKey: Ref<number> = ref(0)
     const page = defineModel<number>(
         "page", { default: 1 }
     )
     const pageCount = defineModel<number>(
         "pageCount", { default: 10 }
     )
-    const pageCountKey: Ref<number> = ref(0)
     const search = defineModel<string>(
         "search", { default: '' }
+    )
+    const searchColumn = defineModel<string>(
+        "searchColumn", { default: '' }
     )
     const sort = defineModel<TableSort>("sort", { default: {} })
     const resetFilterState = defineModel<boolean>("resetFilterState", { default: false })
 
-    const columnsTable = computed(() => props.columns?.filter((column) => selectedColumns.value?.includes(column)))
+    const columnsTable = computed(() => props.columns?.filter((column) => selectedColumns.value?.includes(column)).map((col) => {
+        delete col.searchable
+
+        return col
+    }))
 
     const actionItems = computed(() => {
         if(!props.actions || props.actions.length == 0) return null
@@ -139,6 +152,21 @@
 
         return false
     })
+
+    const getSearchColumns = computed(() => {
+        const options: TableSearchColumn[] = []
+
+        props.columns?.forEach((col) => {
+            if(col.searchable === false) return
+
+            options.push({
+                name: col.label || '',
+                value: col.key
+            })
+        })
+
+        return options
+    })
     
     const resetFilters = function() {
         if(!props.manualFilterReset) {
@@ -165,7 +193,7 @@
          * 
          * This key increment fixes the issue
          */
-        pageCountKey.value++
+        selectLoadKey.value++
     })
 </script>
 
@@ -189,7 +217,10 @@
 
         <!-- Filters -->
         <div v-if="props.filtering" class="flex items-center justify-between gap-3 px-4 py-3">
-            <UInput v-if="props.enableSearch" v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." />
+            <div class="flex flex-row gap-1" v-if="props.enableSearch">
+                <USelect v-if="hasSeachColumn" v-model="searchColumn" :options="getSearchColumns" option-attribute="name" :key="selectLoadKey" />
+                <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." :trailing="hasSeachColumn"/>
+            </div>
 
             <slot name="filters"></slot>
         </div>
@@ -201,7 +232,7 @@
 
                 <USelect
                     v-if="props.rowsPerPage"
-                    :key="pageCountKey"
+                    :key="selectLoadKey"
                     v-model="pageCount"
                     :options="[5, 10, 20, 30, 40, 50]"
                     class="me-2 w-20"
