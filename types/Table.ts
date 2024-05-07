@@ -23,3 +23,11 @@ export interface TableSearch {
     column?: string
     query: string
 }
+
+export interface FetchTableDataResult {
+    success: boolean
+    data: {
+        totalRecordCount: number
+        rows: TableRow[]
+    }
+}

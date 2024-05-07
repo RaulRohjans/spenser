@@ -1,8 +1,7 @@
 <script setup lang="ts">
     import type { CategoryModalProps } from '@/components/modals/CategoryModal.vue'
-    import type { TableSort } from '@/types/Table'
-    import type { TableRow } from '@/types/Table'
-    import type { NuxtError } from '#app';
+    import type { TableSort, FetchTableDataResult, TableRow } from '@/types/Table'
+    import type { NuxtError } from '#app'
 
     // Modals
     import CategoryModal from '@/components/modals/CategoryModal.vue'
@@ -44,28 +43,9 @@
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
 
-    // Table Filters
-    const selectedFilters = ref([])
-    const filters = [{
-            key: 'uncompleted',
-            label: 'In Progress',
-            value: false
-        }, 
-        {
-            key: 'completed',
-            label: 'Completed',
-            value: true
-        }
-    ]
-
     // Fetch Data
-    const { data: fetchData, pending: loading } = await useLazyAsyncData<{
-        success: boolean,
-        data: {
-            totalRecordCount: number,
-            rows: TableRow[]
-        }
-    }>('todos', () => ($fetch)('/api/categories', {  
+    const { data: fetchData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
+    ('todos', () => ($fetch)('/api/categories', {  
             method: 'GET',
             headers: buildRequestHeaders(token.value), 
             query: {
@@ -87,10 +67,6 @@
         },
         watch: [page, searchQuery, pageCount, sort, tableDataKey]
     })
-
-    const resetFilters = function () {
-        selectedFilters.value = []
-    }
 
     const editCategory = function(row: TableRow) {
         categoryLoaderObj.value = {
@@ -137,12 +113,6 @@
         tableDataKey.value++
     }
 
-    // Use this to enable reset filter button when a filter is selected
-    watch(selectedFilters, (newVal) => {
-        if(newVal && newVal.length > 0) resetFilterState.value = true
-        else resetFilterState.value = false
-    })
-
     // Reset vbind model when modal is closed
     watch(isModalOpen, (newVal) => {        
         if(!newVal) categoryLoaderObj.value = null
@@ -180,10 +150,6 @@
                         Create Category
                     </UButton>
                 </div>
-            </template>
-
-            <template #filters>
-                <USelectMenu v-model="selectedFilters" :options="filters" multiple placeholder="Status" class="w-40" />
             </template>
         </Table>
     </div>
