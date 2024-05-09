@@ -35,12 +35,9 @@ export const applySearchFilter = function(qb: SelectQueryBuilder<any, any, any>,
     if (!search) return qb
 
     // Case insensitive string compare
-    return qb.where(({ eb }) => eb(
-        eb.fn('upper', [
-            // Cast to text first so integers can be compared
-            //sql<string>`CAST(${searchColumn.toLowerCase()} AS TEXT)`
-            //eb.fn('cast', [db.dynamic.ref<string>(searchColumn.toLowerCase()), 'as TEXT'])
-            db.dynamic.ref<string>(searchColumn.toLowerCase())
+    return qb.where(({ eb, fn, cast }) => eb(
+        fn('upper', [
+            cast(db.dynamic.ref(searchColumn.toLowerCase()), 'text')
         ]), 
         
         'like', 
