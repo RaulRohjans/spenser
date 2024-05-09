@@ -36,7 +36,6 @@ export default defineEventHandler(async (event) => {
         // Sort
         .$if(!!sort, (qb) => qb.orderBy(db.dynamic.ref<string>(`${sort}`), (order || 'asc') as OrderByDirectionExpression))
 
-            console.log(query.compile())
     // Get total record count
     const totalRecordsRes = await db.selectFrom('category')
         .select(({ fn }) => [
