@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import type { TransactionModalProps } from '@/components/modals/TransactionModal.vue'
     import type { TableSort } from '@/types/Table'
 
     const tableObj = {
@@ -24,11 +25,12 @@
         actions: ['edit', 'duplicate', 'delete'],
     }
 
+    const transactionLoaderObj: Ref<TransactionModalProps | null> = ref(null)
+    const isModalOpen: Ref<boolean> = ref(false)
     const page: Ref<number> = ref(1)
     const pageCount: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
-    const resetFilterState: Ref<boolean> = ref(false)
 
     // Table Filters
     const selectedFilters = ref([])
@@ -62,19 +64,9 @@
         watch: [page, searchQuery, pageCount, sort]
     })
 
-    const resetFilters = function () {
-        selectedFilters.value = []
-    }
-
     const createTransaction = function() {
-        alert('you suck')
+        isModalOpen.value = !isModalOpen.value
     }
-
-    // Use this to enable reset filter button when a filter is selected
-    watch(selectedFilters, (newVal) => {
-        if(newVal && newVal.length > 0) resetFilterState.value = true
-        else resetFilterState.value = false
-    })
 </script>
 
 <template>
@@ -86,9 +78,7 @@
             v-model:page="page" 
             v-model:pageCount="pageCount" 
             v-model:search="searchQuery" 
-            v-model:sort="sort"
-            v-model:resetFilterState="resetFilterState"
-            @reset-filters="resetFilters">
+            v-model:sort="sort">
 
             <template #extra-section>
                 <div class="flex flex-row items-end justify-end w-full">
@@ -107,4 +97,6 @@
             </template>
         </Table>
     </div>
+
+    <TransactionModal v-model="isModalOpen" v-bind="transactionLoaderObj" />
 </template>
