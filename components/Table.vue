@@ -98,7 +98,6 @@
         "searchColumn", { default: '' }
     )
     const sort = defineModel<TableSort>("sort", { default: {} })
-    const resetFilterState = defineModel<boolean>("resetFilterState", { default: false })
 
     const columnsTable = computed(() => props.columns?.filter((column) => selectedColumns.value?.includes(column)).map((col) => {
         delete col.searchable
@@ -145,14 +144,6 @@
 
     const pageTo = computed(() => Math.min(page.value * pageCount.value, props.rowCount))
 
-    const filtersNeedReset = computed(() => {
-        if(resetFilterState.value) return true
-
-        if(search.value != '' || selectedColumns.value?.length != props.columns?.length) return true
-
-        return false
-    })
-
     const getSearchColumns = computed(() => {
         const options: TableSearchColumn[] = []
 
@@ -172,9 +163,6 @@
         if(!props.manualFilterReset) {
             search.value = ''
             selectedColumns.value = props.columns
-
-            // Disable reset filter button
-            resetFilterState.value = false
         }
         emit('reset-filters')
     }
@@ -254,7 +242,6 @@
                     icon="i-heroicons-funnel"
                     color="gray"
                     size="xs"
-                    :disabled="!filtersNeedReset"
                     @click="resetFilters">
                     Reset
                 </UButton>

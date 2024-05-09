@@ -68,7 +68,7 @@
                 }
             }
         },
-        watch: [page, searchQuery, pageCount, sort, tableDataKey]
+        watch: [page, searchQuery, searchColumn, pageCount, sort, tableDataKey]
     })
 
     const editCategory = function(row: TableRow) {
