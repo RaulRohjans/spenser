@@ -84,25 +84,23 @@
 
 <template>
     <UModal v-model="model" :ui="{ 'container': 'items-center' }">
-        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateCategory">
-            <UFormGroup :error="error">
-                <div class="flex flex-row">
-                    <UFormGroup label="Transaction Name" name="name">
-                        <UInput v-model="state.name" />
-                    </UFormGroup>
-    
-                    <UFormGroup label="Category" name="category">
-                        <UInput v-model="state.categoryId" />
-                    </UFormGroup>
-                </div>
-
-                <UFormGroup label="Value" name="value">
-                    <UInput v-model="state.value" type="number" />
+        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateCategory">            
+            <div class="flex flex-row justify-between items-center space-y-0">
+                <UFormGroup label="Transaction Name" name="name" :error="!!error">
+                    <UInput v-model="state.name" />
                 </UFormGroup>
 
-                <UFormGroup label="Date" name="date">
-                    <UInput v-model="state.value" type="number" />
-                </UFormGroup>                    
+                <UFormGroup label="Category" name="category" :error="!!error">
+                    <UInput v-model="state.categoryId" />
+                </UFormGroup>
+            </div>
+
+            <UFormGroup label="Value" name="value" :error="!!error">
+                <UInput v-model="state.value" type="number" />
+            </UFormGroup>
+
+            <UFormGroup label="Date" name="date" :error="error">
+                <UInput v-model="state.date" type="number" />
             </UFormGroup>
     
             <UButton type="submit">
