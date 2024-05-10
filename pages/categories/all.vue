@@ -1,10 +1,7 @@
 <script setup lang="ts">
-    import type { CategoryModalProps } from '@/components/modals/CategoryModal.vue'
+    import type { ModalCategoryProps } from '@/components/Modal/Category.vue'
     import type { TableSort, FetchTableDataResult, TableRow } from '@/types/Table'
     import type { NuxtError } from '#app'
-
-    // Modals
-    import CategoryModal from '@/components/modals/CategoryModal.vue'
 
     const { token } = useAuth()
     const tableObj = {
@@ -30,7 +27,7 @@
             }
         ],
     }
-    const categoryLoaderObj: Ref<CategoryModalProps | null> = ref(null)
+    const categoryLoaderObj: Ref<ModalCategoryProps | null> = ref(null)
     
     // booleans shouldn't be used as keys according to the linter
     // so we are forced to use this to reload the modal
@@ -157,7 +154,7 @@
         </Table>
     </div>
 
-    <CategoryModal 
+    <ModalCategory 
         v-model="isModalOpen" 
         v-bind="categoryLoaderObj" 
         :key="reloadModal"

@@ -3,7 +3,7 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app';
     
-    export type CategoryModalProps = {
+    export type ModalCategoryProps = {
         /**
          * Id of the category
          */
@@ -20,7 +20,7 @@
         icon?: string | null
     }
 
-    const props = withDefaults(defineProps<CategoryModalProps>(), {
+    const props = withDefaults(defineProps<ModalCategoryProps>(), {
         name: '',
         icon: ''
     })

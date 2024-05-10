@@ -98,5 +98,5 @@
         </Table>
     </div>
 
-    <TransactionModal v-model="isModalOpen" v-bind="transactionLoaderObj" />
+    <ModalTransaction v-model="isModalOpen" v-bind="transactionLoaderObj" />
 </template>

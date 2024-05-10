@@ -4,9 +4,6 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
 
-    // Modals
-    import ChangePasswordModal from '@/components/modals/ChangePasswordModal.vue'
-
     const { data, signOut, token } = useAuth()
     const schema = z.object({
         first_name: z.string().min(1, 'Mandatory Field'),
@@ -86,5 +83,5 @@
         </UCard>
     </div>
 
-    <ChangePasswordModal v-model="isModalOpen" />
+    <ModalChangePassword v-model="isModalOpen" />
 </template>
