@@ -5,6 +5,7 @@
     const route = useRoute()
 
     const isMobileMenuShown = ref(false)
+    const navbarRef: Ref<HTMLElement | null> = ref(null)
     
     const userDropdownItems = computed(() => {
         return [
@@ -65,6 +66,12 @@
         ]
     })
 
+    const getLogoHeight = computed(() => {
+        if(!navbarRef.value) return '6vh'
+
+        return `${navbarRef.value.clientHeight}px`
+    })
+
     const isRouteActive = function(path: string, exactPath: boolean = false) {
         if(exactPath) {
             if(path == route.path) return true
@@ -90,7 +97,7 @@
 </script>
 
 <template>
-    <nav class="bg-white drop-shadow-md dark:bg-gray-800">
+    <nav ref="navbarRef" class="bg-white drop-shadow-md dark:bg-gray-800">
         <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
             <div class="relative flex h-16 items-center justify-between">
                 <!-- Mobile Nav Header -->
@@ -110,7 +117,7 @@
                 
                 <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex flex-shrink-0 items-center">
-                        <Logo width="100%" height="6vh" />
+                        <Logo width="100%" :height="getLogoHeight" class="max-w-[85%]" />
                     </div>
 
                     <!-- Desktop Navigation Items -->
