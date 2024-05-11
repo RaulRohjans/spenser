@@ -1,5 +1,7 @@
 <script setup lang="ts">
     import { z } from 'zod'
+    import type { SelectOption } from '@/types/Options'
+    import type { FetchTableDataResult } from '@/types/Table'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app';
     
@@ -12,7 +14,7 @@
         /**
          * Id of the category
          */
-        categoryId?: string | null
+        category?: number | null
 
         /**
          * Name of the transaction
@@ -43,19 +45,60 @@
 
     const schema = z.object({
         name: z.string().optional(),
-        value: z.number()
+        value: z.number(),
+        category: z.number(),
+        date: z.date()
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
-        categoryId: props.categoryId,
+        category: props.category,
         name: props.name,
         value: props.value,
-        date: props.date || Date.now()
+        date: props.date || new Date(Date.now())
     })
 
-    const onCreateCategory = function(event: FormSubmitEvent<Schema>) {
+    // Fetch Data
+    const { data: categoryData, pending: categoryLoading } = await useLazyAsyncData<FetchTableDataResult>
+    ('categoryData', () => ($fetch)('/api/categories', {  
+            method: 'GET',
+            headers: buildRequestHeaders(token.value)
+    }), {
+        default: () => {
+            return {
+                success: false,
+                data: {
+                    totalRecordCount: 0,
+                    rows: []
+                }
+            }
+        }
+    })
+
+    // Load first category when creating a new record
+    if(!state.category && categoryData.value.data.rows.length > 0) 
+        state.category = categoryData.value.data.rows[0].id
+    
+    const getCategoryOptions = computed(() => {
+        const options: SelectOption[] = []
+
+        categoryData.value.data.rows.forEach((category) => {
+            options.push({
+                label: category.name,
+                value: category.id
+            })
+        })
+
+        return options
+    })
+
+    const operation = computed(() => {
+        if(!props.id) return 'insert'
+        return 'edit'
+    })
+
+    const onCreateTransaction = function(event: FormSubmitEvent<Schema>) {
         emit('submit')
         
         $fetch(`/api/transactions/${operation.value}`, {
@@ -76,31 +119,41 @@
         })
     }
 
-    const operation = computed(() => {
-        if(!props.id) return 'create'
-        return 'edit'
+    const categoryDisplayIcon = computed(() => {
+        if(!state.category) return ''
+
+        // Find the icon corresponding to the selected category
+        const icon = categoryData.value.data.rows.find(c => c.id == state.category)?.icon || ''
+
+        return `i-heroicons-${icon}`
     })
+
+    watch(() => state.category, () => console.log(state.category))
 </script>
 
 <template>
     <UModal v-model="model" :ui="{ 'container': 'items-center' }">
-        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateCategory">            
-            <div class="flex flex-row justify-between items-center space-y-0">
-                <UFormGroup label="Transaction Name" name="name" :error="!!error">
-                    <UInput v-model="state.name" />
-                </UFormGroup>
-
-                <UFormGroup label="Category" name="category" :error="!!error">
-                    <UInput v-model="state.categoryId" />
-                </UFormGroup>
-            </div>
-
-            <UFormGroup label="Value" name="value" :error="!!error">
-                <UInput v-model="state.value" type="number" />
+        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateTransaction">
+            <UFormGroup label="Transaction Name" name="name" :error="!!error">
+                <UInput v-model="state.name" />
             </UFormGroup>
 
+            <div class="flex flex-row justify-between items-center space-y-0 gap-8">
+                <UFormGroup label="Value" name="value" class="w-full" :error="!!error">
+                    <UInput v-model="state.value" type="number" />
+                </UFormGroup>
+
+                <UFormGroup label="Category" name="category" class="w-full" :error="!!error">
+                    <USelect v-model="state.category" :options="getCategoryOptions" :loading="categoryLoading" class="hide-span" >
+                        <template #leading>
+                            <UIcon :name="categoryDisplayIcon" class="h-full" dynamic />
+                        </template>
+                    </USelect>
+                </UFormGroup>
+            </div>
+            
             <UFormGroup label="Date" name="date" :error="error">
-                <UInput v-model="state.date" type="number" />
+                <DateTimePicker v-model="state.date" type="datetime" />
             </UFormGroup>
     
             <UButton type="submit">
@@ -109,3 +162,10 @@
         </UForm>
     </UModal>
 </template>
+
+<style lang="scss" scoped>
+/* When no matching icon is found, UIcon displays the text. This is to hide it */
+.hide-span span {
+    visibility: hidden;
+}
+</style>

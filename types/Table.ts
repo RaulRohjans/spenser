@@ -25,12 +25,6 @@ export interface TableSearch {
     query: string
 }
 
-export interface TableSearchColumn {
-    name: string
-    value: string
-    disabled?: boolean
-}
-
 export interface FetchTableDataResult {
     success: boolean
     data: {

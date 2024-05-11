@@ -1,7 +1,8 @@
 <script setup lang="ts">
-    import type { TransactionModalProps } from '@/components/modals/TransactionModal.vue'
-    import type { TableSort } from '@/types/Table'
+    import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
+    import type { FetchTableDataResult, TableSort } from '@/types/Table'
 
+    const { token } = useAuth()
     const tableObj = {
         label: 'Transactions',
         rowCount: 200,
@@ -10,18 +11,29 @@
                 label: '#',
                 sortable: true
             }, {
-                key: 'title',
-                label: 'Title',
+                key: 'name',
+                label: 'Name',
                 sortable: true
             }, {
-                key: 'completed',
-                label: 'Status',
+                key: 'value',
+                label: 'Value',
                 sortable: true
-            }, {
+            },
+            {
+                key: 'category',
+                label: 'Category',
+                sortable: true
+            }, 
+            {
+                key: 'date',
+                label: 'Date',
+                sortable: true
+            }, 
+            {
                 key: 'actions',
                 label: 'Actions',
                 sortable: false
-        }],
+            }],
         actions: ['edit', 'duplicate', 'delete'],
     }
 
@@ -30,6 +42,7 @@
     const page: Ref<number> = ref(1)
     const pageCount: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
+    const searchColumn: Ref<string> = ref('name')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
 
     // Table Filters
@@ -47,21 +60,29 @@
     ]
 
     // Fetch Data
-    const { data: tableRows, pending: loading } = await useLazyAsyncData<{
-        id: number
-        title: string
-        completed: string
-    }[]>('todos', () => ($fetch)(`https://jsonplaceholder.typicode.com/todos`, {
+    const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
+    ('tableData', () => ($fetch)(`/api/transactions`, {
+            method: 'GET',
+            headers: buildRequestHeaders(token.value), 
             query: {
                 q: searchQuery.value,
-                '_page': page.value,
-                '_limit': pageCount.value,
-                '_sort': sort.value.column,
-                '_order': sort.value.direction
+                qColumn: searchColumn.value,
+                page: page.value,
+                limit: pageCount.value,
+                sort: sort.value.column,
+                order: sort.value.direction
             }
     }), {
-        default: () => [],
-        watch: [page, searchQuery, pageCount, sort]
+        default: () => {
+            return {
+                success: false,
+                data: {
+                    totalRecordCount: 0,
+                    rows: []
+                }
+            }
+        },
+        watch: [page, searchQuery, searchColumn, pageCount, sort]
     })
 
     const createTransaction = function() {
@@ -73,11 +94,13 @@
     <div class="flex flex-row items-center justify-center">
         <Table 
             v-bind="tableObj"
-            :rows="tableRows"
+            :rows="tableData?.data.rows"
+            :row-count="tableData?.data.totalRecordCount"
             :loading="loading"
             v-model:page="page" 
             v-model:pageCount="pageCount" 
-            v-model:search="searchQuery" 
+            v-model:search="searchQuery"
+            v-model:searchColumn="searchColumn"
             v-model:sort="sort">
 
             <template #extra-section>

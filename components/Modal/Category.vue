@@ -77,7 +77,7 @@
     }
 
     const operation = computed(() => {
-        if(!props.id) return 'create'
+        if(!props.id) return 'insert'
         return 'edit'
     })
 
@@ -92,12 +92,12 @@
     <UModal v-model="model" :ui="{ 'container': 'items-center' }">
         <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateCategory">
             <UFormGroup :error="error">
-                <div class="flex flex-row justify-center items-center space-x-4 space-y-0">
-                    <UFormGroup label="Name" name="name">
+                <div class="flex flex-row justify-between items-center space-y-0 gap-8">
+                    <UFormGroup label="Name" name="name" class="w-full">
                         <UInput v-model="state.name" />
                     </UFormGroup>
                     
-                    <UFormGroup label="Icon" name="icon">
+                    <UFormGroup label="Icon" name="icon" class="w-full">
                         <div class="flex flex-row gap-1">
                             <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
                             <UInput v-model="state.icon" class="hide-span">

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-    import type { TableColumn, TableRow, TableAction, TableSort, TableSearchColumn } from '@/types/Table'
+    import type { TableColumn, TableRow, TableAction, TableSort } from '@/types/Table'
+    import type { SelectOption } from '@/types/Options'
 
     export interface TableProps {
         /*
@@ -145,7 +146,7 @@
     const pageTo = computed(() => Math.min(page.value * pageCount.value, props.rowCount))
 
     const getSearchColumns = computed(() => {
-        const options: TableSearchColumn[] = []
+        const options: SelectOption[] = []
 
         props.columns?.forEach((col) => {
             if(col.searchable === false) return

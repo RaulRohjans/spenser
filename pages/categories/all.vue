@@ -38,7 +38,6 @@
     const searchQuery: Ref<string> = ref('')
     const searchColumn: Ref<string> = ref('name')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
-    const resetFilterState: Ref<boolean> = ref(false)
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
 
@@ -135,7 +134,6 @@
             v-model:search="searchQuery"
             v-model:searchColumn="searchColumn"
             v-model:sort="sort"
-            v-model:resetFilterState="resetFilterState"
             @edit-action="editCategory"
             @duplicate-action="dupCategory"
             @delete-action="delCategory">

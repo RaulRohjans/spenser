@@ -15,15 +15,15 @@ export default defineEventHandler(async (event) => {
     } = getQuery(event)
     const user = ensureAuth(event)
     
-    // Build query to fetch categories
+    // Build query to fetch transactions
     const parsedLimit: number = parseInt(limit?.toString() || '') || 100
     const parsedPage: number = parseInt(page?.toString() || '') || 1
-    const query = db.selectFrom('category')
+    const query = db.selectFrom('transaction')
         .selectAll()
-        .where('category.user', '=', user.id)
+        .where('transaction.user', '=', user.id)
 
         // Search Filter
-        .$if(true, qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'category.name'))
+        .$if(true, qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
 
         // Pager
         .$if(!!page, (qb) => qb.offset((parsedPage - 1) * parsedLimit))
@@ -35,11 +35,11 @@ export default defineEventHandler(async (event) => {
         .$if(!!sort, (qb) => qb.orderBy(db.dynamic.ref<string>(`${sort}`), (order || 'asc') as OrderByDirectionExpression))
 
     // Get total record count
-    const totalRecordsRes = await db.selectFrom('category')
+    const totalRecordsRes = await db.selectFrom('transaction')
         .select(({ fn }) => [
             fn.countAll<number>().as('total')
         ])
-        .$if(true, qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'category.name'))
+        .$if(true, qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
         .executeTakeFirst()
 
     // Get rows
@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
     if(!totalRecordsRes)
         throw createError({
             statusCode: 500,
-            statusMessage: 'Could not load total category count.'
+            statusMessage: 'Could not load total transaction count.'
         })
         
     return {

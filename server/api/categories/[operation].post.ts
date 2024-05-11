@@ -9,16 +9,9 @@ export default defineEventHandler(async (event) => {
     const operation = event.context.params?.operation || null
     const user = ensureAuth(event)
 
-    if (!operation)
-        throw createError({
-            statusCode: 400,
-            statusMessage: 'A valid operation must be provided.'
-        })
-
-
     // No need to do rest of the logic
     if(operation === 'delete') {
-        // Update category in the database
+        // Remove category in the database
         await db.deleteFrom('category')
             .where('id' , '=', id)
             .execute()
@@ -55,7 +48,7 @@ export default defineEventHandler(async (event) => {
     let opRes
     switch(operation) {
         case 'duplicate':
-        case 'create': 
+        case 'insert': 
             // Create category record
             let category: Omit<Selectable<Category>, 'id'> = {
                 name: name,
@@ -75,6 +68,7 @@ export default defineEventHandler(async (event) => {
                 .set('name', name)
                 .set('icon', icon)
                 .where('id' , '=', id)
+                .where('user', '=', user.id)
                 .execute()
             break
         default:
