@@ -18,12 +18,17 @@ export default defineEventHandler(async (event) => {
     // Build query to fetch transactions
     const parsedLimit: number = parseInt(limit?.toString() || '') || 100
     const parsedPage: number = parseInt(page?.toString() || '') || 1
-    const query = db.selectFrom('transaction')
-        .selectAll()
-        .where('transaction.user', '=', user.id)
 
-        // Search Filter
-        .$if(true, qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
+    /*
+     * In order to use select column alias in the where clause, we need
+     * to use a subquery to fetch the data and set the where with the
+     * alias in the main select
+    */
+    const subQuery = db.selectFrom('transaction')
+        .selectAll('transaction')
+        .innerJoin('category', 'category.id', 'transaction.category')
+        .select(['category.icon as category_icon', 'category.name as category_name'])
+        .where('transaction.user', '=', user.id)
 
         // Pager
         .$if(!!page, (qb) => qb.offset((parsedPage - 1) * parsedLimit))
@@ -34,14 +39,22 @@ export default defineEventHandler(async (event) => {
         // Sort
         .$if(!!sort, (qb) => qb.orderBy(db.dynamic.ref<string>(`${sort}`), (order || 'asc') as OrderByDirectionExpression))
 
+    const query = db
+        .selectFrom(subQuery.as('main'))
+        .selectAll()
+        // Search Filter
+        .$call(qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
+    /* ----------------------------------------------------------------- */
+
+
     // Get total record count
     const totalRecordsRes = await db.selectFrom('transaction')
         .select(({ fn }) => [
             fn.countAll<number>().as('total')
         ])
-        .$if(true, qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
+        .$call(qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
         .executeTakeFirst()
-
+    console.log(query.compile())
     // Get rows
     let rowRes
     try { rowRes = await query.execute() }
@@ -52,7 +65,7 @@ export default defineEventHandler(async (event) => {
             statusCode: 500,
             statusMessage: 'Could not load total transaction count.'
         })
-        
+        console.log(rowRes)
     return {
         success: true,
         data: {

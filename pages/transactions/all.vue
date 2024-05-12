@@ -21,7 +21,7 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
                 sortable: true
             },
             {
-                key: 'category',
+                key: 'category_name',
                 label: 'Category',
                 sortable: true
             }, 
@@ -142,6 +142,12 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
         tableDataKey.value++
     }
 
+    const getValueColColor = function(value: number){
+        if(value > 0) return 'color: rgb(51, 153, 102)';
+        else if(value < 0) return 'color: rgb(227, 0, 0)'
+        else return ''
+    }
+
     // Reset vbind model when modal is closed
     watch(isModalOpen, (newVal) => {        
         if(!newVal) transactionLoaderObj.value = null
@@ -168,12 +174,23 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
             @duplicate-action="dupTransaction"
             @delete-action="delTransaction">
 
-            <template #date-data="{ row }">
-                {{ `${new Date(row.date).toLocaleDateString()} ${new Date(row.date).toLocaleTimeString()}` }}
+            <template #date-data="{ row }" >
+                <template v-for="date in [new Date(row.date)]">
+                    {{ `${date.toLocaleDateString()} ${date.toLocaleTimeString()}` }}
+                </template>
             </template>
 
             <template #value-data="{ row }">
-                {{ `${Number(row.value).toFixed(2)} €` }}
+                <span :style="getValueColColor(row.value)">{{ `${Number(row.value).toFixed(2)} €` }}</span>
+            </template>
+
+            <template #category_name-data="{ row }">
+                <div class="flex flex-row justify-start items-center gap-3">
+                    <div class="hide-span">
+                        <UIcon class="h-5 w-5" :name="`i-heroicons-${row.category_icon}`" dynamic/>
+                    </div>
+                    <span>{{ row.category_name }}</span>
+                </div>
             </template>
 
             <template #extra-section>
