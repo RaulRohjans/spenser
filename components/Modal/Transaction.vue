@@ -45,7 +45,8 @@
 
     const schema = z.object({
         name: z.string().optional(),
-        value: z.number(),
+        value: z.number()
+            .refine(x => x * 100 - Math.trunc(x * 100)< Number.EPSILON),
         category: z.number(),
         date: z.date()
     })
@@ -111,8 +112,13 @@
                 return
             }
 
+            // Emit success
             emit('successful-submit')
+
+            // Disaply success message
             displayMessage(`Transaction ${operation.value} successfully!`, 'success')
+
+            // Close modal
             model.value = false
         }).catch((e: NuxtError) => {
             error.value = e.statusMessage || null
@@ -133,14 +139,14 @@
 
 <template>
     <UModal v-model="model" :ui="{ 'container': 'items-center' }">
-        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateTransaction">
+        <UForm  :state="state" class="space-y-4 p-6" @submit="onCreateTransaction">
             <UFormGroup label="Transaction Name" name="name" :error="!!error">
                 <UInput v-model="state.name" />
             </UFormGroup>
 
             <div class="flex flex-row justify-between items-center space-y-0 gap-8">
                 <UFormGroup label="Value" name="value" class="w-full" :error="!!error">
-                    <UInput v-model="state.value" type="number" />
+                    <UInput v-model="state.value" type="number" step="any" />
                 </UFormGroup>
 
                 <UFormGroup label="Category" name="category" class="w-full" :error="!!error">

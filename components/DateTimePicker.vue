@@ -99,7 +99,8 @@
         --dp-secondary-color: #a9a9a9;
         --dp-border-color: rgb(var(--color-gray-700));
         --dp-menu-border-color: rgb(var(--color-gray-700));
-        --dp-border-color-hover: rgb(var(--color-primary-500));
+        --dp-border-color-hover: rgb(var(--color-gray-700));
+        --dp-border-color-focus: rgb(var(--color-primary-500));
         --dp-disabled-color: #737373;
         --dp-disabled-color-text: #d0d0d0;
         --dp-scroll-bar-background: #212121;
@@ -128,7 +129,8 @@
         --dp-secondary-color: #c0c4cc;
         --dp-border-color: rgb(var(--color-gray-300));
         --dp-menu-border-color: rgb(var(--color-gray-300));
-        --dp-border-color-hover: rgb(var(--color-primary-500));
+        --dp-border-color-hover: rgb(var(--color-gray-300));
+        --dp-border-color-focus: rgb(var(--color-primary-500));
         --dp-disabled-color: #f6f6f6;
         --dp-scroll-bar-background: #f3f3f3;
         --dp-scroll-bar-color: #959595;

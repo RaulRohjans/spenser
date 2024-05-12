@@ -68,8 +68,13 @@
                 return
             }
 
+            // Emit success
             emit('successful-submit')
+
+            // Disaply success message
             displayMessage(`Category ${operation.value} successfully!`, 'success')
+
+            // Close modal
             model.value = false
         }).catch((e: NuxtError) => {
             error.value = e.statusMessage || null

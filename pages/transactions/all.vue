@@ -1,6 +1,7 @@
 <script setup lang="ts">
-    import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
-    import type { FetchTableDataResult, TableSort } from '@/types/Table'
+    import type { NuxtError } from '#app';
+import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
+    import type { FetchTableDataResult, TableRow, TableSort } from '@/types/Table'
 
     const { token } = useAuth()
     const tableObj = {
@@ -32,7 +33,8 @@
             {
                 key: 'actions',
                 label: 'Actions',
-                sortable: false
+                sortable: false,
+                searchable: false
             }],
         actions: ['edit', 'duplicate', 'delete'],
     }
@@ -44,6 +46,8 @@
     const searchQuery: Ref<string> = ref('')
     const searchColumn: Ref<string> = ref('name')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
+    const tableDataKey: Ref<number> = ref(0)
+    const reloadModal: Ref<number> = ref(0)
 
     // Table Filters
     const selectedFilters = ref([])
@@ -82,12 +86,70 @@
                 }
             }
         },
-        watch: [page, searchQuery, searchColumn, pageCount, sort]
+        watch: [page, searchQuery, searchColumn, pageCount, sort, tableDataKey]
     })
 
     const createTransaction = function() {
         isModalOpen.value = !isModalOpen.value
     }
+
+    const editTransaction = function(row: TableRow) {
+        transactionLoaderObj.value = {
+            id: row.id,
+            name: row.name,
+            value: row.value,
+            category: row.category,
+            date: row.date
+        }
+
+        toggleModal()
+    }
+
+    const dupTransaction = function(row: TableRow) {
+        transactionLoaderObj.value = {
+            name: row.name,
+            value: row.value,
+            category: row.category,
+            date: row.date
+        }
+
+        toggleModal()
+    }
+
+    const delTransaction = function(row: TableRow) {
+        $fetch(`/api/transactions/delete`, {
+            method: 'POST',
+            headers: buildRequestHeaders(token.value),
+            body: { id: row.id }
+        }).then((data) => {
+            if(!data.success) {
+                displayMessage('An error ocurred when creating your transaction.', 'error')
+                return
+            }
+
+            displayMessage('Transaction deleted successfully!', 'success')
+            reloadTableData()
+        }).catch((e: NuxtError) => {
+            displayMessage(e.statusMessage, 'error')
+        })
+    }
+
+    const toggleModal = function() {
+        isModalOpen.value = !isModalOpen.value
+    }
+
+    const reloadTableData = function() {
+        tableDataKey.value++
+    }
+
+    // Reset vbind model when modal is closed
+    watch(isModalOpen, (newVal) => {        
+        if(!newVal) transactionLoaderObj.value = null
+
+        // Reset modal and reload
+        // This will make sure new props are loaded correctly
+        reloadModal.value++ 
+    })
 </script>
 
 <template>
@@ -101,7 +163,10 @@
             v-model:pageCount="pageCount" 
             v-model:search="searchQuery"
             v-model:searchColumn="searchColumn"
-            v-model:sort="sort">
+            v-model:sort="sort"
+            @edit-action="editTransaction"
+            @duplicate-action="dupTransaction"
+            @delete-action="delTransaction">
 
             <template #extra-section>
                 <div class="flex flex-row items-end justify-end w-full">
@@ -121,5 +186,9 @@
         </Table>
     </div>
 
-    <ModalTransaction v-model="isModalOpen" v-bind="transactionLoaderObj" />
+    <ModalTransaction 
+        :key="reloadModal"
+        v-model="isModalOpen" 
+        v-bind="transactionLoaderObj" 
+        @successful-submit="reloadTableData"/>
 </template>
