@@ -138,6 +138,12 @@
             @duplicate-action="dupCategory"
             @delete-action="delCategory">
 
+            <template #icon-data="{ row }">
+                <div class="hide-span">
+                    <UIcon class="h-5 w-5" :name="`i-heroicons-${row.icon}`" dynamic/>
+                </div>
+            </template>
+
             <template #extra-section>
                 <div class="flex flex-row items-end justify-end w-full">
                     <UButton 

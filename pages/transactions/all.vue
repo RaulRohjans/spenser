@@ -168,6 +168,14 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
             @duplicate-action="dupTransaction"
             @delete-action="delTransaction">
 
+            <template #date-data="{ row }">
+                {{ `${new Date(row.date).toLocaleDateString()} ${new Date(row.date).toLocaleTimeString()}` }}
+            </template>
+
+            <template #value-data="{ row }">
+                {{ `${Number(row.value).toFixed(2)} €` }}
+            </template>
+
             <template #extra-section>
                 <div class="flex flex-row items-end justify-end w-full">
                     <UButton 

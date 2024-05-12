@@ -267,6 +267,12 @@
             class="w-full"
             :ui="{ td: { base: 'max-w-[0] truncate' }, default: { checkbox: { color: 'gray' } } }">
 
+            <!-- 
+                Pass all other slots directly to the UTable component
+                This allows manipulating row data and row header
+            -->
+            <template v-for="(_, name) in $slots" v-slot:[name]="slotData"><slot :name="name" v-bind="slotData" /></template>
+
             <template #actions-data="{ row }" v-if="actionItems">
                 <UDropdown :items="actionItems(row)">
                     <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />

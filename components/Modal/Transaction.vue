@@ -150,7 +150,7 @@
                 </UFormGroup>
 
                 <UFormGroup label="Category" name="category" class="w-full" :error="!!error">
-                    <USelect v-model="state.category" :options="getCategoryOptions" :loading="categoryLoading" class="hide-span" >
+                    <USelect v-model="state.category" :options="getCategoryOptions" :loading="categoryLoading" class="hide-select-span" >
                         <template #leading>
                             <UIcon :name="categoryDisplayIcon" class="h-full" dynamic />
                         </template>
@@ -168,10 +168,3 @@
         </UForm>
     </UModal>
 </template>
-
-<style lang="scss" scoped>
-/* When no matching icon is found, UIcon displays the text. This is to hide it */
-.hide-span span {
-    visibility: hidden;
-}
-</style>

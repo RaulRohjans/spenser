@@ -128,10 +128,3 @@
         </UForm>
     </UModal>
 </template>
-
-<style lang="scss" scoped>
-/* When no matching icon is found, UIcon displays the text. This is to hide it */
-.hide-span span {
-    visibility: hidden;
-}
-</style>
