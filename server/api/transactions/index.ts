@@ -42,7 +42,8 @@ export default defineEventHandler(async (event) => {
     const query = db
         .selectFrom(subQuery.as('main'))
         .selectAll()
-        // Search Filter
+
+        // Apply search filter
         .$call(qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
     /* ----------------------------------------------------------------- */
 
