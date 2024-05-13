@@ -1,7 +1,30 @@
 <script setup lang="ts">
-    const { signOut } = useAuth()
+
 </script>
 
 <template>
-    <p>This is the main index page and its protected!</p>
+    <div class="flex flex-col items-center gap-4">
+        <UCard
+            class="w-full shadow-xl"
+            :ui="{
+                body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+            }">
+    
+            <div class="flex flex-row justify-start items-center py-2 px-4">
+                <UButton > Test </UButton>
+            </div>
+        </UCard>
+    
+        <UCard
+            class="w-full shadow-xl"
+            :ui="{
+                body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+            }">
+    
+            <div class="flex flex-row justify-start items-center py-2 px-4">
+                
+            </div>
+        </UCard>
+
+    </div>
 </template>
