@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode', 'nuxt-icon', '@sidebase/nuxt-auth'],
   css: ['~/assets/css/main.scss'],
   build: {
-    transpile: ['@vuepic/vue-datepicker']
+    transpile: ['@vuepic/vue-datepicker', /echarts/]
   },
   auth: {
         provider: {

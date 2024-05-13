@@ -30,9 +30,11 @@
   "dependencies": {
     "@vuepic/vue-datepicker": "^8.6.0",
     "bcrypt": "^5.1.1",
+    "echarts": "^5.5.0",
     "jsonwebtoken": "^9.0.2",
     "kysely": "^0.27.3",
     "pg": "^8.11.5",
+    "vue-echarts": "^6.7.2",
     "vue-toastification": "^2.0.0-rc.5",
     "zod": "^3.22.5"
   }
