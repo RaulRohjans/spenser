@@ -10,6 +10,11 @@
         type?: 'date' | 'datetime' | 'time'
 
         /*
+         * CSS Classes to use on the component
+         */
+        class?: string
+
+        /*
          * If the input is disabled
          */
         disabled?: boolean
@@ -18,16 +23,22 @@
          * If the input doesn't allow editing the value
          */
         readonly?: boolean
+
+        /*
+         * When true, the user can choose a range of dates or times
+         */
+        range?: boolean
     }   
     
     const props = withDefaults(defineProps<DateTimePickerProps>(), {
         type: 'date',
         disabled: false,
-        readonly: false
+        readonly: false,
+        range: false
     })
     
     const emit = defineEmits<{
-        (event: 'reset-filters'): void
+        (event: 'clear'): void
     }>()
     
     const colorMode = useColorMode()
@@ -74,6 +85,7 @@
 
 <template>
     <VueDatePicker
+        :class="props.class"
         :disabled="props.disabled"
         :readonly="props.readonly"
         :text-input="textInputOptions"
@@ -81,9 +93,11 @@
         :format="dateTimeFormat"
         :enable-time-picker="hasTimePicker"
         :dark="isDark"
+        :range="props.range"
         v-model="model"
         clearable
-        auto-apply />
+        auto-apply
+        @cleared="() => emit('clear')" />
 </template>
 
 <style scoped lang="scss">

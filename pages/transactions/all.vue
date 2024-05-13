@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import type { NuxtError } from '#app';
-import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
-    import type { FetchTableDataResult, TableRow, TableSort } from '@/types/Table'
+    import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
+    import type { FetchTableDataResult, TableColumn, TableRow, TableSort } from '@/types/Table'
 
     const { token } = useAuth()
     const tableObj = {
@@ -47,23 +47,14 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
     const searchColumn: Ref<string> = ref('name')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
     const tableDataKey: Ref<number> = ref(0)
+    const reloadTableKey: Ref<number> = ref(0)
     const reloadModal: Ref<number> = ref(0)
+    const dateRange: Ref<Date[]> = ref([])
+    const groupByCategory: Ref<boolean> = ref(false)
+    const tableColumns: Ref<TableColumn[]> = ref(tableObj.columns)
 
-    // Table Filters
-    const selectedFilters = ref([])
-    const filters = [{
-            key: 'uncompleted',
-            label: 'In Progress',
-            value: false
-        }, 
-        {
-            key: 'completed',
-            label: 'Completed',
-            value: true
-        }
-    ]
-
-    // Fetch Data
+    /* ----------- Fetch Data ----------- */
+    // Transactions
     const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
     ('tableData', () => ($fetch)(`/api/transactions`, {
             method: 'GET',
@@ -74,7 +65,10 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
                 page: page.value,
                 limit: pageCount.value,
                 sort: sort.value.column,
-                order: sort.value.direction
+                order: sort.value.direction,
+                startDate: dateRange.value.length > 0 ? dateRange.value[0].getTime() : '',
+                endDate: dateRange.value.length > 0 ? dateRange.value[1].getTime() : '',
+                groupCategory: groupByCategory.value
             }
     }), {
         default: () => {
@@ -86,9 +80,10 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
                 }
             }
         },
-        watch: [page, searchQuery, searchColumn, pageCount, sort, tableDataKey]
+        watch: [page, searchQuery, searchColumn, pageCount, sort, tableDataKey, dateRange, groupByCategory]
     })
-
+    /* ---------------------------------------- */
+    
     const createTransaction = function() {
         isModalOpen.value = !isModalOpen.value
     }
@@ -148,6 +143,11 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
         else return ''
     }
 
+    const resetTableFilters = function() {
+        dateRange.value = []
+        groupByCategory.value = false
+    }
+
     // Reset vbind model when modal is closed
     watch(isModalOpen, (newVal) => {        
         if(!newVal) transactionLoaderObj.value = null
@@ -156,13 +156,38 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
         // This will make sure new props are loaded correctly
         reloadModal.value++ 
     })
+
+    // Hide columns when data is grouped and disable column view button
+    watch(groupByCategory, (newVal) => {
+        if(newVal) {
+            // Keep only essential columns
+            tableColumns.value = tableColumns.value?.filter(col => col.key == 'id' || col.key == 'value' || col.key == 'category_name')
+
+            // Set category as the default search column
+            searchColumn.value = 'category_name'
+            return
+        }
+
+        // Reset table view to Default
+        tableColumns.value = tableObj.columns
+
+        // Reset default search column back to name
+        searchColumn.value = 'name'
+
+        // This is needed here due to the reset filters button not applying the
+        // new columns at first try, you have to double press the button twice to
+        // make it work
+        reloadTableKey.value++
+    })
 </script>
 
 <template>
     <div class="flex flex-row items-center justify-center">
         <Table 
+            :key="reloadTableKey"
             v-bind="tableObj"
             :rows="tableData?.data.rows"
+            :columns="tableColumns"
             :row-count="tableData?.data.totalRecordCount"
             :loading="loading"
             v-model:page="page" 
@@ -170,6 +195,7 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
             v-model:search="searchQuery"
             v-model:searchColumn="searchColumn"
             v-model:sort="sort"
+            @reset-filters="resetTableFilters"
             @edit-action="editTransaction"
             @duplicate-action="dupTransaction"
             @delete-action="delTransaction">
@@ -206,7 +232,16 @@ import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
             </template>
 
             <template #filters>
-                <USelectMenu v-model="selectedFilters" :options="filters" multiple placeholder="Status" class="w-40" />
+                <div class="flex flex-row justify-start items-center gap-4">
+                    <UCheckbox v-model="groupByCategory" label="Group by category" />
+    
+                    <DateTimePicker 
+                        v-model="dateRange" 
+                        class="!w-56" 
+                        type="date" 
+                        range
+                        @clear="() => dateRange = []" />
+                </div>
             </template>
         </Table>
     </div>

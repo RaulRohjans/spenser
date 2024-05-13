@@ -1,6 +1,6 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db, applySearchFilter } from '@/utils/dbEngine'
-import { OrderByDirectionExpression } from "kysely"
+import { OrderByDirectionExpression, SelectQueryBuilder, sql } from "kysely"
 import { TableRow } from "~/types/Table"
 
 export default defineEventHandler(async (event) => {
@@ -11,51 +11,87 @@ export default defineEventHandler(async (event) => {
         page,
         limit,
         sort,
-        order
+        order,
+        startDate,
+        endDate,
+        groupCategory
     } = getQuery(event)
     const user = ensureAuth(event)
     
     // Build query to fetch transactions
     const parsedLimit: number = parseInt(limit?.toString() || '') || 100
     const parsedPage: number = parseInt(page?.toString() || '') || 1
+    const parsedStartDate: Date = new Date(Number(startDate))
+    const parsedEndDate: Date = new Date(Number(endDate))
+
+    const addLimits = (qb: SelectQueryBuilder<any, any, any>): SelectQueryBuilder<any, any, any> => {
+        return qb
+            // Pager
+            .$if(!!page, (qb) => qb.offset((parsedPage - 1) * parsedLimit))
+
+            // Limit
+            .$if(!!limit, (qb) => qb.limit(parsedLimit))
+
+            // Sort
+            .$if(!!sort, (qb) => qb.orderBy(db.dynamic.ref<string>(`${sort}`), (order || 'asc') as OrderByDirectionExpression))
+    }
+
+    const addGlobalFilters = (qb: SelectQueryBuilder<any, any, any>): SelectQueryBuilder<any, any, any> => {
+        return qb
+            // Apply search filter
+            .$call(qb => applySearchFilter(qb, search?.toString(), searchColumn ? `main.${searchColumn}` : 'transaction.name'))
+    }
+
+    /*
+    * This function is needed to deal with the group by category filter
+    */
+    const addSelectFields = (qb: SelectQueryBuilder<any, any, any>): SelectQueryBuilder<any, any, any> => {
+        if(groupCategory?.toString() === 'true') {
+            return qb.select(({ eb, fn }) => [
+                fn.max('transaction.id').as('id'),
+                fn.sum('transaction.value').as('value'),
+            ])
+            .$call(qb => qb.groupBy(['category.id', 'category.name', 'category.icon']))
+        }
+
+        return qb.selectAll('transaction')
+    }
 
     /*
      * In order to use select column alias in the where clause, we need
      * to use a subquery to fetch the data and set the where with the
      * alias in the main select
     */
-    const subQuery = db.selectFrom('transaction')
-        .selectAll('transaction')
+    const subQuery = db.selectFrom('transaction')        
         .innerJoin('category', 'category.id', 'transaction.category')
         .select(['category.icon as category_icon', 'category.name as category_name'])
+        .$call(qb => addSelectFields(qb))
         .where('transaction.user', '=', user.id)
 
-        // Pager
-        .$if(!!page, (qb) => qb.offset((parsedPage - 1) * parsedLimit))
+        // Start date filter
+        .$if((!!startDate && !!parsedStartDate), (qb) => qb.where('transaction.date', '>=', parsedStartDate))
 
-        // Limit
-        .$if(!!limit, (qb) => qb.limit(parsedLimit))
-
-        // Sort
-        .$if(!!sort, (qb) => qb.orderBy(db.dynamic.ref<string>(`${sort}`), (order || 'asc') as OrderByDirectionExpression))
+        // End date filter
+        .$if((!!endDate && !!parsedEndDate), (qb) => qb.where('transaction.date', '<=', parsedEndDate))
 
     const query = db
-        .selectFrom(subQuery.as('main'))
+        .selectFrom(subQuery.$call(eb => addLimits(eb)).as('main'))
         .selectAll()
 
-        // Apply search filter
-        .$call(qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
+        // Apply filters
+        .$call(qb => addGlobalFilters(qb))
     /* ----------------------------------------------------------------- */
-
-
+    
     // Get total record count
-    const totalRecordsRes = await db.selectFrom('transaction')
+    const totalRecordsRes = await db.selectFrom(subQuery.as('main'))
         .select(({ fn }) => [
             fn.countAll<number>().as('total')
         ])
-        .$call(qb => applySearchFilter(qb, search?.toString(), searchColumn?.toString() || 'transaction.name'))
+
+        // Apply filters
+        .$call(qb => addGlobalFilters(qb))
         .executeTakeFirst()
-    console.log(query.compile())
+    
     // Get rows
     let rowRes
     try { rowRes = await query.execute() }
@@ -66,7 +102,7 @@ export default defineEventHandler(async (event) => {
             statusCode: 500,
             statusMessage: 'Could not load total transaction count.'
         })
-        console.log(rowRes)
+        
     return {
         success: true,
         data: {
