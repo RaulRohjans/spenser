@@ -133,8 +133,6 @@
 
         return `i-heroicons-${icon}`
     })
-
-    watch(() => state.category, () => console.log(state.category))
 </script>
 
 <template>

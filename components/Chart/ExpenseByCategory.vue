@@ -89,8 +89,6 @@
             })
         })
 
-        console.log(fetchData)
-
         return {
             tooltip: {
                 trigger: 'item'
