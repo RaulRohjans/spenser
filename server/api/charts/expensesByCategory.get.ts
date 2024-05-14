@@ -16,16 +16,20 @@ export default defineEventHandler(async (event) => {
         .select(({ fn, eb }) => [
             sql<number>`sum(case when "transaction"."value" < 0 then "transaction"."value" * -1 when "transaction"."value" >= 0 then 0 end)`.as('value')
         ])
-        .innerJoin('category', 'category.id', 'transaction.id')
-        .select('category.name as category_name')
-        .where('transaction.value', '<=', '0') // Only fetch negative values (expenses)
-        .where('category.user', '=', user.id) // Validate category user
-        .where('transaction.user', '=', user.id) // Validate transaction user
+        .innerJoin('category', 'category.id', 'transaction.category')
         .groupBy(['category.id', 'category.name'])
-        .execute()
-        
-        //console.log(res.compile())
-        
+        .select('category.name as category_name')
+
+        // Only fetch negative values (expenses)
+        .where('transaction.value', '<=', '0')
+
+        // Validate category user
+        .where('category.user', '=', user.id)
+
+        // Validate transaction user
+        .where('transaction.user', '=', user.id)
+        .execute()        
+
     return {
         success: true,
         data: res as ExpensesByCategoryData[]
