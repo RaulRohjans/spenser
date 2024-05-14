@@ -24,6 +24,11 @@
          * Filter end date
          */
         endDate?: Date | null
+
+        /**
+         * CSS classes to be passed to the component
+         */
+        class?: string
     }
 
     const props = withDefaults(defineProps<ChartExpenseByCategory>(), {
@@ -128,5 +133,5 @@
 </script>
 
 <template>
-    <v-chart class="h-[60vh]" :option="getGraphOptions" :loading="loading" autoresize />
+    <v-chart :class="class" :option="getGraphOptions" :loading="loading" autoresize />
 </template>

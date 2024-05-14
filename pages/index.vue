@@ -34,15 +34,10 @@
             }">
     
             <div class="flex flex-row justify-start items-center py-2 px-4">
-                <ChartExpenseByCategory />
+                <ChartExpenseByCategory class="h-[40vh] w-[40vh]" />
             </div>
         </UCard>
 
     </div>
 </template>
 
-<style scoped>
-.chart {
-  height: 100vh;
-}
-</style>
