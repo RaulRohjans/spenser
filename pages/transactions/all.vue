@@ -54,7 +54,6 @@
     const tableColumns: Ref<TableColumn[]> = ref(tableObj.columns)
 
     /* ----------- Fetch Data ----------- */
-    // Transactions
     const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
     ('tableData', () => ($fetch)(`/api/transactions`, {
             method: 'GET',
