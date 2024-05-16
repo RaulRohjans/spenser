@@ -231,7 +231,7 @@
             </template>
 
             <template #filters>
-                <div class="flex flex-row justify-start items-center gap-4">
+                <div class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
                     <UCheckbox v-model="groupByCategory" label="Group by category" />
     
                     <DateTimePicker 

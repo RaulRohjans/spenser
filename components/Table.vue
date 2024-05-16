@@ -205,7 +205,7 @@
         </template>
 
         <!-- Filters -->
-        <div v-if="props.filtering" class="flex items-center justify-between gap-3 px-4 py-3">
+        <div v-if="props.filtering" class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 px-4 py-3">
             <div class="flex flex-row gap-1" v-if="props.enableSearch">
                 <USelect v-if="hasSeachColumn" v-model="searchColumn" :options="getSearchColumns" option-attribute="name" :key="selectLoadKey" />
                 <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." :trailing="hasSeachColumn"/>
