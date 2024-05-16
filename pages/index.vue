@@ -35,6 +35,8 @@
     
             <div class="flex flex-row justify-start items-center py-2 px-4">
                 <ChartExpenseByCategory class="h-[40vh] w-[40vh]" />
+
+                <ChartTopSpendingCategories class="h-[40vh]" />
             </div>
         </UCard>
 
