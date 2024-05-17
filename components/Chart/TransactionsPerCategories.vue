@@ -15,6 +15,8 @@
     
     import { BarChart, type BarSeriesOption } from 'echarts/charts'
     import { SVGRenderer } from 'echarts/renderers'
+    
+    import type { TransactionsPerCategoryData } from '~/types/Chart';
 
     use([
         ToolboxComponent,
@@ -65,27 +67,55 @@
 
     provide(THEME_KEY, getTheme) // Set chart theme
 
-    const labelConfig: BarLabelOption = {
-        rotate: 90,
-        align: 'left',
-        verticalAlign: 'middle',
-        position: 'insideBottom',
-        distance: 15
-    }
+    // Fetch data
+    const { data: fetchData, pending: loading } = await useLazyAsyncData<{
+        success: boolean,
+        data: TransactionsPerCategoryData[]
+    }>
+    ('data', () => ($fetch)('/api/charts/transactionsPerCategory', {  
+            method: 'GET',
+            headers: buildRequestHeaders(token.value),
+            query: {
+                startDate: props.startDate?.getTime() || '',
+                endDate: props.endDate?.getTime() || ''
+            }
+    }), {
+        default: () => {
+            return {
+                success: false,
+                data: []
+            }
+        },
+        watch: [() => props.startDate, () => props.endDate]
+    })
 
-    const labelOption: BarLabelOption = {
-        show: true,
-        position: labelConfig.position,
-        distance: labelConfig.distance,
-        align: labelConfig.align,
-        verticalAlign: labelConfig.verticalAlign,
-        rotate: labelConfig.rotate,
-        formatter: '{c}  {name|{a}}',
-        fontSize: 16,
-        rich: {
-            name: {}
+    const labelOption = computed((): BarLabelOption => {
+        return {
+            show: true,
+            position: 'insideBottom',
+            distance: 15,
+            align: 'left',
+            verticalAlign: 'middle',
+            rotate: 90,
+            formatter: '{c}  {name|{a}}',
+            fontSize: 16,
+            rich: {
+                name: {}
+            }
         }
-    }
+    })
+
+    const graphCategories = computed(() => {
+        return fetchData.value.data.map(e => e.category_name || '')
+    })
+
+    const expenseData = computed(() => {
+        return fetchData.value.data.map(e => e.expense_value)
+    })
+
+    const earningData = computed(() => {
+        return fetchData.value.data.map(e => e.earning_value)
+    })
 
     let option: EChartsOption = {
         tooltip: {
@@ -95,7 +125,7 @@
             }
         },
         legend: {
-            data: ['Forest', 'Steppe', 'Desert', 'Wetland']
+            data: ['Earnings', 'Expenses']
         },
         toolbox: {
             show: true,
@@ -113,7 +143,7 @@
             {
                 type: 'category',
                 axisTick: { show: false },
-                data: ['2012', '2013', '2014', '2015', '2016']
+                data: graphCategories.value
             }
         ],
         yAxis: [
@@ -123,46 +153,30 @@
         ],
         series: [
             {
-                name: 'Forest',
+                name: 'Earnings',
                 type: 'bar',
                 barGap: 0,
-                label: labelOption,
+                label: labelOption.value,
                 emphasis: {
                     focus: 'series'
                 },
-                data: [320, 332, 301, 334, 390]
+                data: earningData.value,
+                itemStyle: { color: 'rgb(51, 153, 102)' }
             },
             {
-                name: 'Steppe',
+                name: 'Expenses',
                 type: 'bar',
-                label: labelOption,
+                label: labelOption.value,
                 emphasis: {
                     focus: 'series'
                 },
-                data: [220, 182, 191, 234, 290]
-            },
-            {
-                name: 'Desert',
-                type: 'bar',
-                label: labelOption,
-                emphasis: {
-                    focus: 'series'
-                },
-                data: [150, 232, 201, 154, 190]
-            },
-            {
-                name: 'Wetland',
-                type: 'bar',
-                label: labelOption,
-                emphasis: {
-                    focus: 'series'
-                },
-                data: [98, 77, 101, 99, 40]
+                data: expenseData.value,
+                itemStyle: { color: 'rgb(227, 0, 0)' }
             }
         ]
     }
 </script>
 
 <template>
-    <v-chart :class="class" :option="option" autoresize />
+    <VChart :class="class" :option="option" :loading="loading" autoresize />
 </template>

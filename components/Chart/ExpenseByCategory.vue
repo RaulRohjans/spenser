@@ -131,5 +131,5 @@
 </script>
 
 <template>
-    <v-chart :class="class" :option="getGraphOptions" :loading="loading" autoresize />
+    <VChart :class="class" :option="getGraphOptions" :loading="loading" autoresize />
 </template>
