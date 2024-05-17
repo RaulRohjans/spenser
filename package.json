@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "prettier": "prettier . --write",
-    "db:generate": "kysely-codegen"
+    "db:gen": "kysely-codegen"
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",

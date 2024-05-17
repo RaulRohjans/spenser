@@ -34,7 +34,7 @@
     >
     type BarLabelOption = NonNullable<echarts.BarSeriesOption['label']>;
 
-    export type TopSpendingCategoriesProps = {
+    export type TransactionsPerCategoriesProps = {
         /**
          * Filter start date
          */
@@ -51,7 +51,7 @@
         class?: string
     }
 
-    const props = withDefaults(defineProps<TopSpendingCategoriesProps>(), {
+    const props = withDefaults(defineProps<TransactionsPerCategoriesProps>(), {
         startDate: null,
         endDate: null
     })
