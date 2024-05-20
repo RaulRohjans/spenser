@@ -3,43 +3,13 @@
 </script>
 
 <template>
-    <div class="flex flex-col items-center gap-4">
-        <UCard
-            class="w-full shadow-xl"
-            :ui="{
-                body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
-            }">
-    
-            <div class="flex flex-row justify-start items-center py-2 px-4">
-                <UButton > Test </UButton>
-            </div>
-        </UCard>
-    
-        <!-- Total Budget and spending -->
-        <UCard
-            class="w-full shadow-xl"
-            :ui="{
-                body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
-            }">
-    
-            <div class="flex flex-row justify-start items-center py-2 px-4">
-                
-            </div>
-        </UCard>
+    <div class="flex flex-col items-center gap-4">    
+        <div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-0 sm:justify-between items-center w-full">
+            <ChartSpendingOverTime height="50vh" class="w-full sm:w-[65%]"/>
+            <ChartExpenseByCategory height="50vh" class="w-full sm:w-[32%]"/>
+        </div>
 
-        <UCard
-            class="w-full shadow-xl"
-            :ui="{
-                body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
-            }">
-    
-            <div class="flex flex-row justify-start items-center py-2 px-4">
-                <ChartExpenseByCategory class="h-[40vh] w-[40vh]" />
-
-                <ChartTransactionsPerCategories class="h-[40vh]" />
-            </div>
-        </UCard>
-
+        <ChartTransactionsPerCategories height="50vh" width="100%" />
     </div>
 </template>
 

@@ -11,12 +11,12 @@
         type GridComponentOption,
         LegendComponent,
         type LegendComponentOption
-    } from 'echarts/components';
+    } from 'echarts/components'
     
     import { BarChart, type BarSeriesOption } from 'echarts/charts'
     import { SVGRenderer } from 'echarts/renderers'
     
-    import type { TransactionsPerCategoryData } from '~/types/Chart';
+    import type { TransactionsPerCategoryData } from '~/types/Chart'
 
     use([
         ToolboxComponent,
@@ -38,14 +38,14 @@
 
     export type TransactionsPerCategoriesProps = {
         /**
-         * Filter start date
+         * Width of the graph
          */
-        startDate?: Date | null
+         width?: string
 
         /**
-         * Filter end date
+         * Height of the graph
          */
-        endDate?: Date | null
+        height?: string
 
         /**
          * CSS classes to be passed to the component
@@ -54,12 +54,12 @@
     }
 
     const props = withDefaults(defineProps<TransactionsPerCategoriesProps>(), {
-        startDate: null,
-        endDate: null
+        height: '40vh'
     })
     
     const colorMode = useColorMode()
     const { token } = useAuth()
+    const dateRange: Ref<Date[]> = ref([])
 
     const getTheme = computed(() => {
         return colorMode.value
@@ -72,12 +72,12 @@
         success: boolean,
         data: TransactionsPerCategoryData[]
     }>
-    ('data', () => ($fetch)('/api/charts/transactionsPerCategory', {  
+    ('transactionsPerCategory', () => ($fetch)('/api/charts/transactionsPerCategory', {  
             method: 'GET',
             headers: buildRequestHeaders(token.value),
             query: {
-                startDate: props.startDate?.getTime() || '',
-                endDate: props.endDate?.getTime() || ''
+                startDate: dateRange.value.length > 0 ? dateRange.value[0].getTime() : '',
+                endDate: dateRange.value.length > 0 ? dateRange.value[1].getTime() : '',
             }
     }), {
         default: () => {
@@ -86,11 +86,14 @@
                 data: []
             }
         },
-        watch: [() => props.startDate, () => props.endDate]
+        watch: [dateRange]
     })
 
-    const labelOption = computed((): BarLabelOption => {
-        return {
+    const getGraphOptions = computed((): EChartsOption => {
+        const categories = fetchData.value.data.map(e => e.category_name || '')
+        const expenses = fetchData.value.data.map(e => e.expense_value)
+        const earnings = fetchData.value.data.map(e => e.earning_value)
+        const labelOption: BarLabelOption = {            
             show: true,
             position: 'insideBottom',
             distance: 15,
@@ -101,82 +104,92 @@
             fontSize: 16,
             rich: {
                 name: {}
-            }
+            }            
+        }
+        
+        return {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['Earnings', 'Expenses']
+            },
+            toolbox: {
+                show: true,
+                orient: 'vertical',
+                left: 'right',
+                top: 'center',
+                feature: {
+                    mark: { show: true },
+                    dataView: { show: true, readOnly: false },
+                    magicType: { show: true, type: ['stack'] },
+                    saveAsImage: { show: true }
+                }
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    axisTick: { show: false },
+                    data: categories
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: [
+                {
+                    name: 'Earnings',
+                    type: 'bar',
+                    barGap: 0,
+                    label: labelOption,
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: earnings,
+                    itemStyle: { color: 'rgb(51, 153, 102)' }
+                },
+                {
+                    name: 'Expenses',
+                    type: 'bar',
+                    label: labelOption,
+                    emphasis: {
+                        focus: 'series'
+                    },
+                    data: expenses,
+                    itemStyle: { color: 'rgb(227, 0, 0)' }
+                }
+            ]
         }
     })
-
-    const graphCategories = computed(() => {
-        return fetchData.value.data.map(e => e.category_name || '')
-    })
-
-    const expenseData = computed(() => {
-        return fetchData.value.data.map(e => e.expense_value)
-    })
-
-    const earningData = computed(() => {
-        return fetchData.value.data.map(e => e.earning_value)
-    })
-
-    let option: EChartsOption = {
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-                type: 'shadow'
-            }
-        },
-        legend: {
-            data: ['Earnings', 'Expenses']
-        },
-        toolbox: {
-            show: true,
-            orient: 'vertical',
-            left: 'right',
-            top: 'center',
-            feature: {
-                mark: { show: true },
-                dataView: { show: true, readOnly: false },
-                magicType: { show: true, type: ['stack'] },
-                saveAsImage: { show: true }
-            }
-        },
-        xAxis: [
-            {
-                type: 'category',
-                axisTick: { show: false },
-                data: graphCategories.value
-            }
-        ],
-        yAxis: [
-            {
-                type: 'value'
-            }
-        ],
-        series: [
-            {
-                name: 'Earnings',
-                type: 'bar',
-                barGap: 0,
-                label: labelOption.value,
-                emphasis: {
-                    focus: 'series'
-                },
-                data: earningData.value,
-                itemStyle: { color: 'rgb(51, 153, 102)' }
-            },
-            {
-                name: 'Expenses',
-                type: 'bar',
-                label: labelOption.value,
-                emphasis: {
-                    focus: 'series'
-                },
-                data: expenseData.value,
-                itemStyle: { color: 'rgb(227, 0, 0)' }
-            }
-        ]
-    }
 </script>
 
 <template>
-    <VChart :class="class" :option="option" :loading="loading" autoresize />
+    <UCard
+        :class="`shadow-xl p-4 ${props.class}`"
+        :style="`width: ${props.width}`"
+        :ui="{
+            body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+        }">
+
+        <div class="flex flex-col justify-center items-center gap-4">
+            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                Transactions Per Category
+            </h2>
+
+            <VChart class="w-full" :style="`height: ${props.height}`" :option="getGraphOptions" :loading="loading" autoresize />
+
+            <DateTimePicker 
+                v-model="dateRange" 
+                class="sm:!w-[20%]" 
+                type="date" 
+                range
+                @clear="() => dateRange = []" />
+        </div>        
+    </UCard>
+        
 </template>

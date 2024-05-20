@@ -16,14 +16,14 @@
 
     export type ChartExpenseByCategory = {
         /**
-         * Filter start date
+         * Width of the graph
          */
-        startDate?: Date | null
+        width?: string
 
         /**
-         * Filter end date
+         * Height of the graph
          */
-        endDate?: Date | null
+        height?: string
 
         /**
          * CSS classes to be passed to the component
@@ -32,8 +32,7 @@
     }
 
     const props = withDefaults(defineProps<ChartExpenseByCategory>(), {
-        startDate: null,
-        endDate: null
+        height: '40vh'
     })
 
     use([
@@ -46,6 +45,7 @@
     
     const colorMode = useColorMode()
     const { token } = useAuth()
+    const dateRange: Ref<Date[]> = ref([])
 
     const getTheme = computed(() => {
         return colorMode.value
@@ -62,12 +62,12 @@
         success: boolean,
         data: ExpensesByCategoryData[]
     }>
-    ('data', () => ($fetch)('/api/charts/expensesByCategory', {  
+    ('expensesByCategory', () => ($fetch)('/api/charts/expensesByCategory', {  
             method: 'GET',
             headers: buildRequestHeaders(token.value),
             query: {
-                startDate: props.startDate?.getTime() || '',
-                endDate: props.endDate?.getTime() || ''
+                startDate: dateRange.value.length > 0 ? dateRange.value[0].getTime() : '',
+                endDate: dateRange.value.length > 0 ? dateRange.value[1].getTime() : '',
             }
     }), {
         default: () => {
@@ -76,7 +76,7 @@
                 data: []
             }
         },
-        watch: [() => props.startDate, () => props.endDate]
+        watch: [dateRange]
     })
 
     const getGraphOptions = computed<EChartsOption>(() => {
@@ -131,5 +131,26 @@
 </script>
 
 <template>
-    <VChart :class="class" :option="getGraphOptions" :loading="loading" autoresize />
+    <UCard
+        :class="`shadow-xl p-4 ${props.class}`"
+        :style="`width: ${props.width}`"
+        :ui="{
+            body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+        }">
+        
+        <div class="flex flex-col justify-center items-center gap-4">
+            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                Spending (%) per Category
+            </h2>
+
+            <VChart class="w-full" :style="`height: ${props.height}`" :option="getGraphOptions" :loading="loading" autoresize />
+
+            <DateTimePicker 
+                v-model="dateRange" 
+                class="sm:!w-[60%]" 
+                type="date" 
+                range
+                @clear="() => dateRange = []" />
+        </div>
+    </UCard>
 </template>

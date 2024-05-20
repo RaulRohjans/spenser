@@ -201,7 +201,9 @@
 
             <template #date-data="{ row }" >
                 <template v-for="date in [new Date(row.date)]">
-                    {{ `${date.toLocaleDateString()} ${date.toLocaleTimeString()}` }}
+                    <ClientOnly>
+                        {{ `${date.toLocaleDateString()} ${date.toLocaleTimeString()}` }}
+                    </ClientOnly>
                 </template>
             </template>
 
