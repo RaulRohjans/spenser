@@ -117,7 +117,7 @@
             body: { id: row.id }
         }).then((data) => {
             if(!data.success) {
-                displayMessage('An error ocurred when creating your transaction.', 'error')
+                displayMessage('An error ocurred when removing your transaction.', 'error')
                 return
             }
 

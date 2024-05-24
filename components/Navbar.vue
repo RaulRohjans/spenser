@@ -6,62 +6,33 @@
 
     const isMobileMenuShown = ref(false)
     const navbarRef: Ref<HTMLElement | null> = ref(null)
-    
-    const userDropdownItems = computed(() => {
-        return [
-            [{
-                label: data.value?.email || '',
-                slot: 'account',
-                disabled: true
-            }], 
-            [{
-                label: 'Account Settings',
-                icon: 'i-heroicons-cog-8-tooth',
-                to: '/account'
-
-            },
-            {
-                label: 'Global Settings',
-                icon: 'i-heroicons-cog-8-tooth',
-                to: '/settings'
-
-            }], 
-            [{
-                label: 'Data Importer',
-                icon: 'i-heroicons-book-open',
-                to: '/import'
-            }], 
-            [{
-                label: 'Sign out',
-                icon: 'i-heroicons-arrow-left-on-rectangle',
-                click: () => {
-                    signOut({ callbackUrl: '/login' })
-                }
-            }]
-        ]
-    })
 
     const navigationPages = computed((): NavigationItem[] => {
         return [
             {
                 name: 'Home',
                 href: '/',
-                selected: isRouteActive('/', true),
+                selected: isRouteActive(route, '/', true),
             },
             {
                 name: 'Transactions',
                 href: '/transactions/all',
-                selected: isRouteActive('/transactions'),
+                selected: isRouteActive(route, '/transactions'),
             },
             {
                 name: 'Budgets',
                 href: '/budgets',
-                selected: isRouteActive('/budgets'),
+                selected: isRouteActive(route, '/budgets'),
             },
             {
                 name: 'Categories',
                 href: '/categories/all',
-                selected: isRouteActive('/categories'),
+                selected: isRouteActive(route, '/categories'),
+            },
+            {
+                name: 'Settings',
+                href: '/settings',
+                selected: isRouteActive(route, '/settings'),
             }
         ]
     })
@@ -71,16 +42,6 @@
 
         return `${navbarRef.value.clientHeight}px`
     })
-
-    const isRouteActive = function(path: string, exactPath: boolean = false) {
-        if(exactPath) {
-            if(path == route.path) return true
-            else return false
-        }
-        
-        if(route.path.substring(0, path.length) == path) return true
-        else return false
-    }
 
     const getNaviationItemClass = function(item: NavigationItem) {
         const classes = ['rounded-md', 'px-3', 'py-2', 'text-sm', 'font-medium', 'text-gray-900']
@@ -131,31 +92,18 @@
                 </div>
 
                 <!-- Right nav side -->                
-                <div class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 space-x-3 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                <div class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-8 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                     <!-- Theme Switcher -->
                     <ThemeSwitcher />
 
                     <!-- Profile section -->
-                    <UDropdown :items="userDropdownItems" :ui="{ item: { disabled: 'cursor-text select-text' } }" :popper="{ placement: 'bottom-start' }">
-                        <UAvatar src="https://avatars.githubusercontent.com/u/739984?v=4" />
-
-                        <template #account="{ item }">
-                            <div class="text-left">
-                                <p>
-                                Signed in as
-                                </p>
-                                <p class="truncate font-medium text-gray-900 dark:text-white">
-                                {{ item.label }}
-                                </p>
-                            </div>
-                        </template>
-
-                        <template #item="{ item }">
-                            <span class="truncate">{{ item.label }}</span>
-
-                            <UIcon :name="item.icon" class="flex-shrink-0 h-4 w-4 text-gray-400 dark:text-gray-500 ms-auto" />
-                        </template>
-                    </UDropdown>
+                    <UButton 
+                        icon="i-heroicons-arrow-right-start-on-rectangle"
+                        size="sm"
+                        color="red"
+                        square
+                        variant="link"
+                        @click="signOut({ callbackUrl: '/login' })"/>
                 </div>
             </div>
         </div>

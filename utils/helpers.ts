@@ -1,3 +1,4 @@
+import type { RouteLocationNormalizedLoaded } from '#vue-router'
 import { useToast } from 'vue-toastification'
 
 export const displayMessage = function(message: string | undefined | null, type: 'info' | 'warning' | 'error' | 'success' = 'info') {
@@ -28,6 +29,16 @@ export const capitalFirstWordLetters = function(message: string) {
   return words.map((word) => {
       return word[0].toUpperCase() + word.substring(1)
     }).join(" ")
+}
+
+export const isRouteActive = function(route: RouteLocationNormalizedLoaded, path: string, exactPath: boolean = false) {
+  if(exactPath) {
+      if(path == route.path) return true
+      else return false
+  }
+  
+  if(route.path.substring(0, path.length) == path) return true
+  else return false
 }
 
 /*

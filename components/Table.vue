@@ -62,6 +62,11 @@
          * Toggle showing rows per page dropdown
          */
         rowsPerPage?: boolean
+
+        /*
+         * Component CSS classes
+         */
+        class?: string
     }
 
     const props = withDefaults(defineProps<TableProps>(), {
@@ -159,6 +164,11 @@
 
         return options
     })
+
+    const getClasses = computed(() => {
+        if(props.class) return props.class
+        else return 'w-full shadow-xl'
+    })
     
     const resetFilters = function() {
         if(!props.manualFilterReset) {
@@ -188,7 +198,7 @@
 
 <template>    
     <UCard
-        class="w-full shadow-xl"
+        :class="getClasses"
         :ui="{
             base: '',
             ring: '',

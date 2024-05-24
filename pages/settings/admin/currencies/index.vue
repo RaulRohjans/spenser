@@ -1,23 +1,22 @@
 <script setup lang="ts">
-    import type { ModalCategoryProps } from '@/components/Modal/Category.vue'
     import type { TableSort, FetchTableDataResult, TableRow } from '@/types/Table'
     import type { NuxtError } from '#app'
 
     const { token } = useAuth()
     const tableObj = {
-        label: 'Categories',
-        actions: ['edit', 'duplicate', 'delete'],
+        label: 'Currencies',
+        actions: ['delete'],
         columns: [{
                 key: 'id',
                 label: '#',
                 sortable: true
             }, {
-                key: 'name',
-                label: 'Name',
+                key: 'symbol',
+                label: 'Symbol',
                 sortable: true
             }, {
-                key: 'icon',
-                label: 'Icon',
+                key: 'placement',
+                label: 'Placement',
                 sortable: true
             }, {
                 key: 'actions',
@@ -27,23 +26,18 @@
             }
         ],
     }
-    const categoryLoaderObj: Ref<ModalCategoryProps | null> = ref(null)
     
-    // booleans shouldn't be used as keys according to the linter
-    // so we are forced to use this to reload the modal
-    const reloadModal: Ref<number> = ref(0)
-
     const page: Ref<number> = ref(1)
     const pageCount: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
-    const searchColumn: Ref<string> = ref('name')
+    const searchColumn: Ref<string> = ref('symbol')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
 
     // Fetch Data
     const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
-    ('tableData', () => ($fetch)('/api/categories', {  
+    ('currencies', () => ($fetch)('/api/currencies', {  
             method: 'GET',
             headers: buildRequestHeaders(token.value), 
             query: {
@@ -67,37 +61,18 @@
         watch: [page, searchQuery, searchColumn, pageCount, sort, tableDataKey]
     })
 
-    const editCategory = function(row: TableRow) {
-        categoryLoaderObj.value = {
-            id: row.id,
-            name: row.name,
-            icon: row.icon
-        }
-
-        toggleModal()
-    }
-
-    const dupCategory = function(row: TableRow) {
-        categoryLoaderObj.value = {
-            name: row.name,
-            icon: row.icon
-        }
-
-        toggleModal()
-    }
-
-    const delCategory = function(row: TableRow) {
-        $fetch(`/api/categories/delete`, {
+    const delCurrency = function(row: TableRow) {
+        $fetch(`/api/currencies/delete`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: { id: row.id }
         }).then((data) => {
             if(!data.success) {
-                displayMessage('An error ocurred when removing your category.', 'error')
+                displayMessage('An error ocurred when removing your currency.', 'error')
                 return
             }
 
-            displayMessage('Category deleted successfully!', 'success')
+            displayMessage('Currency deleted successfully!', 'success')
             reloadTableData()
         }).catch((e: NuxtError) => {
             displayMessage(e.statusMessage, 'error')
@@ -111,38 +86,22 @@
     const reloadTableData = function() {
         tableDataKey.value++
     }
-
-    // Reset vbind model when modal is closed
-    watch(isModalOpen, (newVal) => {        
-        if(!newVal) categoryLoaderObj.value = null
-
-        // Reset modal and reload
-        // This will make sure new props are loaded correctly
-        reloadModal.value++ 
-    })
 </script>
 
 <template>
-    <div class="flex flex-row items-center justify-center">
+    <div class="flex flex-row h-full">
         <Table 
             v-bind="tableObj"
             :rows="tableData?.data.rows"
             :row-count="tableData?.data.totalRecordCount"
             :loading="loading"
+            class="bg-none shadow-none w-full"
             v-model:page="page" 
             v-model:pageCount="pageCount" 
             v-model:search="searchQuery"
             v-model:searchColumn="searchColumn"
             v-model:sort="sort"
-            @edit-action="editCategory"
-            @duplicate-action="dupCategory"
-            @delete-action="delCategory">
-
-            <template #icon-data="{ row }">
-                <div class="hide-span">
-                    <UIcon class="h-5 w-5" :name="`i-heroicons-${row.icon}`" dynamic/>
-                </div>
-            </template>
+            @delete-action="delCurrency">
 
             <template #extra-section>
                 <div class="flex flex-row items-end justify-end w-full">
@@ -151,16 +110,12 @@
                         color="primary"
                         size="xs"
                         @click="toggleModal">
-                        Create Category
+                        Create Currency
                     </UButton>
                 </div>
             </template>
         </Table>
     </div>
 
-    <ModalCategory 
-        v-model="isModalOpen" 
-        v-bind="categoryLoaderObj" 
-        :key="reloadModal"
-        @successful-submit="reloadTableData" />
+    <ModalCurrency v-model="isModalOpen" @successful-submit="reloadTableData" />
 </template>

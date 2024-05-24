@@ -48,39 +48,37 @@
 
 <template>
     <div class="flex flex-row items-center justify-center">
-        <UCard class="w-full shadow-xl sm:max-w-[75%]">
-            <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-                <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
-                    <UFormGroup label="First Name" name="first_name" class="w-full">
-                        <UInput v-model="state.first_name" />
-                    </UFormGroup>
-            
-                    <UFormGroup label="Last Name" name="last_name" class="w-full">
-                        <UInput v-model="state.last_name" />
-                    </UFormGroup>
-                </div>
-    
-                <UFormGroup label="Username" name="username" class="makeit-static">
-                    <UInput v-model="state.username" />
+        <UForm :schema="schema" :state="state" class="space-y-4 w-full" @submit="onSubmit">
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
+                <UFormGroup label="First Name" name="first_name" class="w-full">
+                    <UInput v-model="state.first_name" />
                 </UFormGroup>
         
-                <UFormGroup label="Email" name="email" class="">
-                    <UInput v-model="state.email" />
-                </UFormGroup>    
-                
-                <UCheckbox v-model="state.is_admin" name="is_admin" label="Is Administrator" class="makeit-static" />
-        
-                <div class="flex flex-col-reverse sm:flex-row items-center justify-center sm:items-start sm:justify-start sm:space-x-4">
-                    <UButton type="submit" class="mt-2 sm:mt-0">
-                        Submit
-                    </UButton>
+                <UFormGroup label="Last Name" name="last_name" class="w-full">
+                    <UInput v-model="state.last_name" />
+                </UFormGroup>
+            </div>
+
+            <UFormGroup label="Username" name="username" class="makeit-static">
+                <UInput v-model="state.username" />
+            </UFormGroup>
     
-                    <UButton @click="openChangePwModal">
-                        Change Password
-                    </UButton>
-                </div>
-            </UForm>
-        </UCard>
+            <UFormGroup label="Email" name="email" class="">
+                <UInput v-model="state.email" />
+            </UFormGroup>    
+            
+            <UCheckbox v-model="state.is_admin" name="is_admin" label="Is Administrator" class="makeit-static" />
+    
+            <div class="flex flex-col-reverse sm:flex-row items-center justify-center sm:items-start sm:justify-start sm:space-x-4">
+                <UButton type="submit" class="mt-2 sm:mt-0">
+                    Submit
+                </UButton>
+
+                <UButton @click="openChangePwModal">
+                    Change Password
+                </UButton>
+            </div>
+        </UForm>
     </div>
 
     <ModalChangePassword v-model="isModalOpen" />

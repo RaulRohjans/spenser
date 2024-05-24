@@ -1,12 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode', 'nuxt-icon', '@sidebase/nuxt-auth'],
-  css: ['~/assets/css/main.scss'],
-  build: {
+    devtools: { enabled: true },
+    modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxtjs/color-mode', 'nuxt-icon', '@sidebase/nuxt-auth'],
+    css: ['~/assets/css/main.scss'],
+    build: {
     transpile: ['@vuepic/vue-datepicker', /echarts/]
-  },
-  auth: {
+    },
+    routeRules: {
+        '/settings': { redirect: '/settings/global' },
+        '/settings/admin': { redirect: '/settings/global' },
+    },
+    auth: {
         provider: {
             type: 'refresh',
             endpoints: {

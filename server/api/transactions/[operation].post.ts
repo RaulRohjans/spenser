@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
         // Remove the transaction in the database
         await db.deleteFrom('transaction')
             .where('id' , '=', id)
+            .where('user', '=', user.id)
             .execute()
         return { success: true }
     }
