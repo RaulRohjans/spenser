@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { NuxtError } from '#app';
+    import type { NuxtError } from '#app'
     import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
     import type { FetchTableDataResult, TableColumn, TableRow, TableSort } from '@/types/Table'
 
@@ -137,7 +137,7 @@
     }
 
     const getValueColColor = function(value: number){
-        if(value > 0) return 'color: rgb(51, 153, 102)';
+        if(value > 0) return 'color: rgb(51, 153, 102)'
         else if(value < 0) return 'color: rgb(227, 0, 0)'
         else return ''
     }
@@ -208,7 +208,7 @@
             </template>
 
             <template #value-data="{ row }">
-                <span :style="getValueColColor(row.value)">{{ `${Number(row.value).toFixed(2)} €` }}</span>
+                <span :style="getValueColColor(row.value)">{{ formatCurrencyValue(Number(row.value)) }}</span>
             </template>
 
             <template #category_name-data="{ row }">

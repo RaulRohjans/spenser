@@ -32,7 +32,7 @@
             <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                 Average Expense Value
             </h2>
-            <span class="p-8 text-lg"> {{ Number(fetchData.data.value).toFixed(2) }}€ </span>
+            <span class="p-8 text-lg"> {{ formatCurrencyValue(Number(fetchData.data.value)) }} </span>
         </div>
     </UCard>    
 </template>

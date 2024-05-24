@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app';
+    import type { NuxtError } from '#app'
     
     const emit = defineEmits<{
         (event: 'submit'): void

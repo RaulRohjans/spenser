@@ -24,7 +24,7 @@ export const displayMessage = function(message: string | undefined | null, type:
 }
 
 export const capitalFirstWordLetters = function(message: string) {
-  const words = message.split(" ");
+  const words = message.split(" ")
 
   return words.map((word) => {
       return word[0].toUpperCase() + word.substring(1)
@@ -51,4 +51,11 @@ export const buildRequestHeaders = function(token: string | null) {
   return {
     authorization: token
   } as HeadersInit
+}
+
+export const formatCurrencyValue = function(value: number) {
+  const settingsStore = useSettingsStore()
+  
+  if(settingsStore.currency.placement == 'after') return `${value.toFixed(2)}${settingsStore.currency.symbol}`
+  else return `${settingsStore.currency.symbol}${value.toFixed(2)}`
 }

@@ -34,7 +34,7 @@
         | LegendComponentOption
         | BarSeriesOption
     >
-    type BarLabelOption = NonNullable<echarts.BarSeriesOption['label']>;
+    type BarLabelOption = NonNullable<echarts.BarSeriesOption['label']>
 
     export type TransactionsPerCategoriesProps = {
         /**

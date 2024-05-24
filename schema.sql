@@ -39,28 +39,15 @@ CREATE TABLE IF NOT EXISTS transaction (
 
 CREATE TABLE IF NOT EXISTS currency (
     id INT GENERATED ALWAYS AS IDENTITY,
-    symbol varchar(5),
+    symbol varchar(5) NOT NULL,
     placement varchar(6) NOT NULL,
     PRIMARY KEY(id)
 );
 
 CREATE TABLE IF NOT EXISTS user_settings (
     id INT GENERATED ALWAYS AS IDENTITY,
-    "user" INT,
-    currency INT,
-    PRIMARY KEY(id),
-    CONSTRAINT fk_user
-        FOREIGN KEY("user")
-            REFERENCES "user"(id),
-    CONSTRAINT fk_currency
-        FOREIGN KEY("currency")
-            REFERENCES currency(id)
-);
-
-CREATE TABLE IF NOT EXISTS global_settings (
-    id INT GENERATED ALWAYS AS IDENTITY,
-    "user" INT,
-    currency INT,
+    "user" INT NOT NULL,
+    currency INT NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_user
         FOREIGN KEY("user")

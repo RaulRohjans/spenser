@@ -3,7 +3,7 @@
     import type { SelectOption } from '@/types/Options'
     import type { FetchTableDataResult } from '@/types/Table'
     import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app';
+    import type { NuxtError } from '#app'
     
     export type TransactionModalProps = {
         /**
