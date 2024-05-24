@@ -51,7 +51,7 @@
     }
 
     // Fetch user settings
-    const { data: userSettings } = await useLazyAsyncData<{
+    const { data: userSettings, pending: loading } = await useLazyAsyncData<{
         success: boolean,
         data: UserSettingsObject
     }>
@@ -76,7 +76,7 @@
             }
 
             // Update store with new settings
-            updateStore(event.data.currency)
+            updateStore(Number(event.data.currency))
 
             // Disaply success message
             displayMessage(`Settings saved successfully!`, 'success')
@@ -88,7 +88,7 @@
 
 <template>
     <UForm :state="state" class="space-y-4 p-6" @submit="onSave">
-        <UFormGroup label="Currency" name="currency" class="w-full" :error="!!error">
+        <UFormGroup label="Currency" name="currency" class="w-full" :error="error">
             <USelect v-model="state.currency" :options="getCurrencyOptions" />
         </UFormGroup>
             
