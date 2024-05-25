@@ -8,5 +8,6 @@ export const useSettingsStore = defineStore('settingsStore', {
             symbol: '€',
             placement: 'after'
         } as Selectable<Currency>
-    })
+    }),
+    persist: true
 })

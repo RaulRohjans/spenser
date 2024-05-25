@@ -7,7 +7,8 @@ export default defineNuxtConfig({
         '@nuxtjs/color-mode',
         'nuxt-icon',
         '@sidebase/nuxt-auth',
-        "@pinia/nuxt"
+        '@pinia/nuxt',
+        '@pinia-plugin-persistedstate/nuxt'
     ],
     css: ['~/assets/css/main.scss'],
     build: {
