@@ -108,7 +108,7 @@
             body: event.data
         }).then((data) => {
             if(!data.success) {
-                displayMessage('An error ocurred when creating your category.', 'error')
+                displayMessage('An error ocurred when performing the action.', 'error')
                 return
             }
 

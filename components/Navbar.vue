@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import type { NavigationItem } from '@/types/Navigation'
     
-    const { data, signOut } = useAuth()
+    const { signOut } = useAuth()
     const route = useRoute()
 
     const isMobileMenuShown = ref(false)

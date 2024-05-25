@@ -1,10 +1,9 @@
 <script setup lang="ts">
     import type { TableSort, FetchTableDataResult, TableRow } from '@/types/Table'
+    import type { UserModalProps } from '@/components/Modal/User.vue'
     import type { NuxtError } from '#app'
-    import type { Selectable } from 'kysely'
-    import type { User } from 'kysely-codegen'
 
-    const { token } = useAuth()
+    const { token, data: authData, signOut } = useAuth()
     const tableObj = {
         label: 'Users',
         actions: ['edit', 'delete'],
@@ -46,9 +45,10 @@
     const searchQuery: Ref<string> = ref('')
     const searchColumn: Ref<string> = ref('username')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
-    const userLoaderObj: Ref<Omit<Selectable<User>, 'password'> | null> = ref(null)
+    const userLoaderObj: Ref<UserModalProps | null> = ref(null)
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
+    const reloadModal: Ref<number> = ref(0)
 
     // Fetch Data
     const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
@@ -91,7 +91,7 @@
     }
 
     const delUser = function(row: TableRow) {
-        $fetch(`/api/currencies/delete`, {
+        $fetch(`/api/users/delete`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: { id: row.id }
@@ -101,8 +101,11 @@
                 return
             }
 
+            // If the deleted user is the current one, logout
+            if(row.id == authData.value.id) signOut({ callbackUrl: '/login' })
+            else reloadTableData()
+
             displayMessage('User deleted successfully!', 'success')
-            reloadTableData()
         }).catch((e: NuxtError) => {
             displayMessage(e.statusMessage, 'error')
         })
@@ -115,6 +118,15 @@
     const reloadTableData = function() {
         tableDataKey.value++
     }
+
+    // Reset vbind model when modal is closed
+    watch(isModalOpen, (newVal) => {        
+        if(!newVal) userLoaderObj.value = null
+
+        // Reset modal and reload
+        // This will make sure new props are loaded correctly
+        reloadModal.value++ 
+    })
 </script>
 
 <template>
@@ -151,4 +163,9 @@
         </Table>
     </div>
 
+    <ModalUser 
+        :key="reloadModal" 
+        v-model="isModalOpen" 
+        v-bind="userLoaderObj" 
+        @successful-submit="reloadTableData" />
 </template>

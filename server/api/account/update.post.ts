@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
         .set('last_name', last_name)
         .set('username', username)
         .set('email', email)
-        .set('is_admin', is_admin)
+        .set('is_admin', is_admin == 'true' ? true : false)
         .where('user.id', '=', user.id)
         .executeTakeFirst()
 
