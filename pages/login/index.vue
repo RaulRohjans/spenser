@@ -3,7 +3,7 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
 
-    const { signIn } = useAuth()
+    const { signIn, token } = useAuth()
     const error: Ref<null | string> = ref(null)
     const validationSchema = z.object({
         username: z.string().trim().min(1, "Invalid username"),
@@ -16,12 +16,26 @@
     type ValidationSchema = z.output<typeof validationSchema>
 
     const onSubmit = async function (event: FormSubmitEvent<ValidationSchema>) {
-      signIn(
-          { username: event.data.username, password: event.data.password },
-          { callbackUrl: '/' },
-      ).catch((e: NuxtError) => {
-        error.value = e.statusMessage || null
-      })
+        signIn(
+            { username: event.data.username, password: event.data.password },
+            { callbackUrl: '/' },
+        ).then(async () => {
+            // Load data to the store
+            const settingsStore = useSettingsStore()
+
+            // Fetch data
+            const userSettings = await $fetch('/api/settings', {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value)
+            })
+
+            settingsStore.currency.id = userSettings.data.currency
+            settingsStore.currency.placement = userSettings.data.placement
+            settingsStore.currency.symbol = userSettings.data.symbol
+
+        }).catch((e: NuxtError) => {
+            error.value = e.statusMessage || null
+        })
     }
 
     definePageMeta({

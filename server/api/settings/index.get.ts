@@ -7,7 +7,9 @@ export default defineEventHandler(async (event) => {
     
     // Build query to fetch user settings
     const query = await db.selectFrom('user_settings')
-        .selectAll()
+        .innerJoin('currency', 'currency.id', 'user_settings.currency')
+        .selectAll('user_settings')
+        .select(['currency.placement', 'currency.symbol'])
         .where('user', '=', user.id)
         .executeTakeFirst()
 

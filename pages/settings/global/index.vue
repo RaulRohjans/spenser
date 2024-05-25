@@ -89,7 +89,7 @@
 <template>
     <UForm :state="state" class="space-y-4 p-6" @submit="onSave">
         <UFormGroup label="Currency" name="currency" class="w-full" :error="error">
-            <USelect v-model="state.currency" :options="getCurrencyOptions" />
+            <USelect v-model="state.currency" :options="getCurrencyOptions" :key="state.currency"/>
         </UFormGroup>
             
         <UButton type="submit">
