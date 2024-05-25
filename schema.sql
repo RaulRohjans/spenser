@@ -56,3 +56,19 @@ CREATE TABLE IF NOT EXISTS user_settings (
         FOREIGN KEY("currency")
             REFERENCES currency(id)
 );
+
+CREATE TABLE IF NOT EXISTS budget (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    "user" INT NOT NULL,
+    category INT,
+    name varchar(150),
+    value decimal NOT NULL,
+    period varchar(100) NOT NULL,
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user
+        FOREIGN KEY("user")
+            REFERENCES "user"(id)
+    CONSTRAINT fk_category
+        FOREIGN KEY(category)
+            REFERENCES category(id)
+);
