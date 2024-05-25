@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import type { NuxtError } from '#app'
-    import type { TransactionModalProps } from '@/components/Modal/Transaction.vue'
+    import type { ModalTransactionProps } from '@/components/Modal/Transaction.vue'
     import type { FetchTableDataResult, TableColumn, TableRow, TableSort } from '@/types/Table'
 
     const { token } = useAuth()
@@ -39,7 +39,7 @@
         actions: ['edit', 'duplicate', 'delete'],
     }
 
-    const transactionLoaderObj: Ref<TransactionModalProps | null> = ref(null)
+    const transactionLoaderObj: Ref<ModalTransactionProps | null> = ref(null)
     const isModalOpen: Ref<boolean> = ref(false)
     const page: Ref<number> = ref(1)
     const pageCount: Ref<number> = ref(10)

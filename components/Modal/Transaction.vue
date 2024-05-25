@@ -5,7 +5,7 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
     
-    export type TransactionModalProps = {
+    export type ModalTransactionProps = {
         /**
          * Id of the transaction
          */
@@ -32,7 +32,7 @@
         date?: Date | null
     }
 
-    const props = defineProps<TransactionModalProps>()
+    const props = defineProps<ModalTransactionProps>()
 
     const emit = defineEmits<{
         (event: 'submit'): void

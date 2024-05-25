@@ -3,7 +3,7 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
     
-    export type UserModalProps = {
+    export type ModalUserProps = {
         /**
          * Id of the user
          */
@@ -40,7 +40,7 @@
         is_admin?: boolean
     }
 
-    const props = defineProps<UserModalProps>()
+    const props = defineProps<ModalUserProps>()
 
     const emit = defineEmits<{
         (event: 'submit'): void

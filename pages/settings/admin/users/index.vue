@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import type { TableSort, FetchTableDataResult, TableRow } from '@/types/Table'
-    import type { UserModalProps } from '@/components/Modal/User.vue'
+    import type { ModalUserProps } from '@/components/Modal/User.vue'
     import type { NuxtError } from '#app'
 
     const { token, data: authData, signOut } = useAuth()
@@ -45,7 +45,7 @@
     const searchQuery: Ref<string> = ref('')
     const searchColumn: Ref<string> = ref('username')
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
-    const userLoaderObj: Ref<UserModalProps | null> = ref(null)
+    const userLoaderObj: Ref<ModalUserProps | null> = ref(null)
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
     const reloadModal: Ref<number> = ref(0)
