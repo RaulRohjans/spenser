@@ -1,15 +1,15 @@
 <script setup lang="ts">
-    import type { ModalBudgetProps } from '~/components/Modal/Budget.vue'
+    import type { NuxtError } from '#app';
+import type { ModalBudgetProps } from '~/components/Modal/Budget.vue'
     import type { BudgetDataObject } from '~/types/Data'
 
     const { token } = useAuth()
     const isModalOpen: Ref<boolean> = ref(false)
+    const isChooserOpen: Ref<boolean> = ref(false)
+    const selectedBudgetId: Ref<number | null> = ref(null)
     const reloadModal: Ref<number> = ref(0)
     const budgetLoaderObj: Ref<ModalBudgetProps | null> = ref(null)
-
-    const toggleModal = function() {
-        isModalOpen.value = !isModalOpen.value
-    }
+    const reloadBudgetRef: Ref<number> = ref(0)
 
     // Fetch categories
     const { data: budgetData } = await useLazyAsyncData<{
@@ -25,8 +25,54 @@
                 success: false,
                 data: []
             }
-        }
+        },
+        watch: [reloadBudgetRef]
     })
+
+    const toggleChooser = function(state: boolean) {
+        isChooserOpen.value = state
+    }
+
+    const toggleModal = function() {
+        isModalOpen.value = !isModalOpen.value
+    }
+
+    const reloadBudgetData = function() {
+        reloadBudgetRef.value++
+    }
+
+    const removeItemCardAction = function(budget: BudgetDataObject) {
+        selectedBudgetId.value = budget.id
+        toggleChooser(true)
+    }
+
+    const editItemCardAction = function(budget: BudgetDataObject) {
+        budgetLoaderObj.value = budget
+        toggleModal()
+    }
+
+    const removeItem = function(state: boolean) {
+        if(state) { //User accepted
+            $fetch(`/api/budgets/delete`, {
+                method: 'POST',
+                headers: buildRequestHeaders(token.value),
+                body: { id: selectedBudgetId.value }
+            }).then((data) => {
+                if(!data.success) {
+                    displayMessage('An error ocurred when removing your budget.', 'error')
+                    return
+                }
+
+                reloadBudgetData()
+                displayMessage('Budget deleted successfully!', 'success')
+            }).catch((e: NuxtError) => {
+                displayMessage(e.statusMessage, 'error')
+            })
+        }
+
+        selectedBudgetId.value = null
+        toggleChooser(false)      
+    }
 
     // Reset vbind model when modal is closed
     watch(isModalOpen, (newVal) => {        
@@ -81,14 +127,16 @@
                                 size="xs"
                                 color="primary"
                                 square
-                                variant="ghost" />
+                                variant="ghost" 
+                                @click="editItemCardAction(budget)"/>
 
                             <UButton
                                 icon="i-heroicons-trash"
                                 size="xs"
                                 color="primary"
                                 square
-                                variant="ghost" />
+                                variant="ghost"
+                                @click="removeItemCardAction(budget)"/>
                         </div>
                     </div>
                 </template>
@@ -108,8 +156,15 @@
         </a>
     </div>
 
+    <ModalChooser 
+        v-model="isChooserOpen" 
+        title="Delete Budget" 
+        message="Are you sure you want to delete this budget?"
+        @click="removeItem" />
+
     <ModalBudget 
         :key="reloadModal"
         v-model="isModalOpen" 
-        v-bind="budgetLoaderObj"/>
+        v-bind="budgetLoaderObj"
+        @successful-submit="reloadBudgetData"/>
 </template>

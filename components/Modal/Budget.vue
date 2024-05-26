@@ -14,17 +14,19 @@
         /**
          * Id of the category
          */
-        category?: number
+        category?: number | null
 
         /**
          * Name of the budget
          */
-        name?: string
+        name?: string | null
 
         /**
          * Value of the budget
+         * 
+         * This needs to be string here because Kysely is stupid and converts postgresql decimal to string
          */
-        value?: number
+        value?: number | string
 
         /**
          * Period ('daily', 'monthly', 'quarterly', 'semi-annual', 'yearly')
@@ -73,9 +75,7 @@
     const schema = z.object({
         id: z.number().optional(),
         name: z.string().optional(),
-        category: z.string().optional(),
-        value: z.number().min(0.01, 'The value has to be bigger than 0.'),
-        period: z.string()
+        value: z.number().min(0.01, 'The value has to be bigger than 0.')
     })
     /* ------------------------------------------------ */
 
@@ -84,7 +84,7 @@
         id: props.id,
         name: props.name,
         category: props.category,
-        value: props.value,
+        value: Number(props.value),
         period: props.period || periodOptions.value[0].value
     })
 
@@ -180,7 +180,7 @@
                     :options="periodOptions" class="hide-select-span" />
             </UFormGroup>
                 
-            <UFormGroup label="Value" name="value" class="w-full" :error="!!error">
+            <UFormGroup label="Value" name="value" class="w-full" :error="error">
                 <UInput v-model="state.value" type="number" step="any" />
             </UFormGroup>                   
     
