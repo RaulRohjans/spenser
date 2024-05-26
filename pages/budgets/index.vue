@@ -85,7 +85,7 @@ import type { ModalBudgetProps } from '~/components/Modal/Budget.vue'
 </script>
 
 <template>
-    <div class="flex flex-row justify-start items-center flex-wrap sm:mx-[20%] gap-4">
+    <div class="flex flex-col sm:flex-row justify-center sm:justify-start items-center sm:mx-[20%] gap-4">
         <template v-for="budget in budgetData.data">
             <UCard class="shadow-xl cursor-grab transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
             :ui="{

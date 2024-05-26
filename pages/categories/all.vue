@@ -32,7 +32,7 @@
     // booleans shouldn't be used as keys according to the linter
     // so we are forced to use this to reload the modal
     const reloadModal: Ref<number> = ref(0)
-
+    const isChooserOpen: Ref<boolean> = ref(false)
     const page: Ref<number> = ref(1)
     const pageCount: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
@@ -40,6 +40,7 @@
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
+    const selectedCategoryId: Ref<number | null> = ref(null)
 
     // Fetch Data
     const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
@@ -86,26 +87,40 @@
         toggleModal()
     }
 
-    const delCategory = function(row: TableRow) {
-        $fetch(`/api/categories/delete`, {
-            method: 'POST',
-            headers: buildRequestHeaders(token.value),
-            body: { id: row.id }
-        }).then((data) => {
-            if(!data.success) {
-                displayMessage('An error ocurred when removing your category.', 'error')
-                return
-            }
+    const delCategoryAction = function(row: TableRow) {
+        selectedCategoryId.value = row.id
+        toggleChooser(true)
+    }
 
-            displayMessage('Category deleted successfully!', 'success')
-            reloadTableData()
-        }).catch((e: NuxtError) => {
-            displayMessage(e.statusMessage, 'error')
-        })
+    const delCategory = function(state: boolean) {
+        if(state) { //User accepted
+            $fetch(`/api/categories/delete`, {
+                method: 'POST',
+                headers: buildRequestHeaders(token.value),
+                body: { id: selectedCategoryId.value }
+            }).then((data) => {
+                if(!data.success) {
+                    displayMessage('An error ocurred when removing your category.', 'error')
+                    return
+                }
+
+                displayMessage('Category deleted successfully!', 'success')
+                reloadTableData()
+            }).catch((e: NuxtError) => {
+                displayMessage(e.statusMessage, 'error')
+            })
+        }
+
+        selectedCategoryId.value = null
+        toggleChooser(false)
     }
 
     const toggleModal = function() {
         isModalOpen.value = !isModalOpen.value
+    }
+
+    const toggleChooser = function(state: boolean) {
+        isChooserOpen.value = state
     }
 
     const reloadTableData = function() {
@@ -136,7 +151,7 @@
             v-model:sort="sort"
             @edit-action="editCategory"
             @duplicate-action="dupCategory"
-            @delete-action="delCategory">
+            @delete-action="delCategoryAction">
 
             <template #icon-data="{ row }">
                 <div class="hide-span">
@@ -163,4 +178,10 @@
         v-bind="categoryLoaderObj" 
         :key="reloadModal"
         @successful-submit="reloadTableData" />
+
+    <ModalChooser 
+        v-model="isChooserOpen" 
+        title="Delete Category" 
+        message="Are you sure you want to delete this category?"
+        @click="delCategory" />
 </template>
