@@ -10,6 +10,7 @@
     const { token } = useAuth()
     const error: Ref<null | string> = ref(null)
     const settingsStore = useSettingsStore()
+    const currencySelectKey: Ref<number> = ref(0)
 
     // Fetch currencies
     const { data: currencies } = await useLazyAsyncData<FetchTableDataResult>
@@ -58,10 +59,10 @@
     ('settings', () => ($fetch)('/api/settings', {  
             method: 'GET',
             headers: buildRequestHeaders(token.value)
-    }))    
-
+    }))
+    
     const state = reactive({
-        currency: userSettings.value?.data.currency
+        currency: userSettings.value?.data.currency || getCurrencyOptions.value[0].value
     })
 
     const onSave = function(event: FormSubmitEvent<typeof state>) {
@@ -84,12 +85,16 @@
             error.value = e.statusMessage || null
         })
     }
+
+    watch(() => state.currency, () => {
+        currencySelectKey.value++
+    })
 </script>
 
 <template>
     <UForm :state="state" class="space-y-4 p-6" @submit="onSave">
         <UFormGroup label="Currency" name="currency" class="w-full" :error="error">
-            <USelect v-model="state.currency" :options="getCurrencyOptions" :key="state.currency"/>
+            <USelect v-model="state.currency" :options="getCurrencyOptions" :key="currencySelectKey"/>
         </UFormGroup>
             
         <UButton type="submit">
