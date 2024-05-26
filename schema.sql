@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS budget (
     name varchar(150),
     value decimal NOT NULL,
     period varchar(100) NOT NULL,
+    "order" INT GENERATED ALWAYS AS IDENTITY UNIQUE NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_user
         FOREIGN KEY("user")

@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
         case 'duplicate':
         case 'insert': 
             // Create category record
-            let budget: Omit<Selectable<Budget>, 'id'> = {
+            let budget: Omit<Omit<Selectable<Budget>, 'id'>, 'order'> = {
                 name,
                 category,
                 value,

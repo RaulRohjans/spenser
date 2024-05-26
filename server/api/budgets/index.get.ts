@@ -58,6 +58,7 @@ export default defineEventHandler(async (event) => {
         ]))
 
         .groupBy(['budget.id', 'category.id'])
+        .orderBy('budget.order asc')
         .execute()
         
     return {
