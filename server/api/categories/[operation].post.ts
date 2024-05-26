@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
 
     // No need to do rest of the logic
-    if(operation === 'delete') {
+    if(operation === 'delete' && id) {
         // Remove category in the database
         await db.deleteFrom('category')
             .where('id' , '=', id)

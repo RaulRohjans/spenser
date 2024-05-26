@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
         })
 
     // No need to do rest of the logic
-    if(operation === 'delete') {
+    if(operation === 'delete' && id) {
         // Remove category in the database
         await db.deleteFrom('user')
             .where('id' , '=', id)

@@ -2,28 +2,37 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
+    import type { FetchTableDataResult } from '~/types/Table'
+    import type { SelectOption } from '~/types/Options'
     
-    export type ModalCategoryProps = {
+    export type ModalBudgetProps = {
+        /**
+         * Id of the budget
+         */
+        id?: number
+
         /**
          * Id of the category
          */
-        id?: number | null
+        category?: number
 
         /**
-         * Name of the category
+         * Name of the budget
          */
-        name?: string | null
+        name?: string
 
         /**
-         * Icon of the category
+         * Value of the budget
          */
-        icon?: string | null
+        value?: number
+
+        /**
+         * Period ('daily', 'monthly', 'quarterly', 'semi-annual', 'yearly')
+         */
+        period?: 'daily' | 'monthly' | 'quarterly' | 'semi-annual' | 'yearly'
     }
 
-    const props = withDefaults(defineProps<ModalCategoryProps>(), {
-        name: '',
-        icon: ''
-    })
+    const props = defineProps<ModalBudgetProps>()
 
     const emit = defineEmits<{
         (event: 'submit'): void
@@ -33,6 +42,28 @@
     const { token } = useAuth()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
+    const periodOptions: Ref<SelectOption[]> = ref([
+        {
+            label: 'Daily',
+            value: 'daily'
+        },
+        {
+            label: 'Monthly',
+            value: 'monthly'
+        },
+        {
+            label: 'Quarterly',
+            value: 'quarterly'
+        },
+        {
+            label: 'Semi-Annual',
+            value: 'semi-annual'
+        },
+        {
+            label: 'Yearly',
+            value: 'yearly'
+        }
+    ])
 
     /*
     * The reason we need this abomination is to display a general
@@ -40,11 +71,11 @@
     * field specific stuff would deformat everything...
     */
     const schema = z.object({
+        id: z.number().optional(),
         name: z.string().optional(),
-        icon: z.string().optional()
-    }).superRefine(({ name }) => {
-        if (!name || name.length === 0)
-            error.value = 'Category name is required'
+        category: z.string().optional(),
+        value: z.number().min(0.01, 'The value has to be bigger than 0.'),
+        period: z.string()
     })
     /* ------------------------------------------------ */
 
@@ -52,13 +83,59 @@
     const state = reactive({
         id: props.id,
         name: props.name,
-        icon: props.icon
+        category: props.category,
+        value: props.value,
+        period: props.period || periodOptions.value[0].value
+    })
+
+    // Fetch categories
+    const { data: categoryData, pending: categoryLoading } = await useLazyAsyncData<FetchTableDataResult>
+    ('categoryData', () => ($fetch)('/api/categories', {  
+            method: 'GET',
+            headers: buildRequestHeaders(token.value)
+    }), {
+        default: () => {
+            return {
+                success: false,
+                data: {
+                    totalRecordCount: 0,
+                    rows: []
+                }
+            }
+        }
+    })
+    
+    const operation = computed(() => {
+        if(!props.id) return 'insert'
+        return 'edit'
+    })
+
+    const categoryDisplayIcon = computed(() => {
+        if(!state.category) return ''
+
+        // Find the icon corresponding to the selected category
+        const icon = categoryData.value.data.rows.find(c => c.id == state.category)?.icon || ''
+
+        return `i-heroicons-${icon}`
+    })
+
+    const getCategoryOptions = computed(() => {
+        const options: SelectOption[] = [{label: '-', value: ''}]
+
+        categoryData.value.data.rows.forEach((category) => {
+            options.push({
+                label: category.name,
+                value: category.id
+            })
+        })
+
+        return options
     })
 
     const onCreateCategory = function(event: FormSubmitEvent<Schema>) {
         emit('submit')
         
-        $fetch(`/api/categories/${operation.value}`, {
+        $fetch(`/api/budgets/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
@@ -80,47 +157,32 @@
             error.value = e.statusMessage || null
         })
     }
-
-    const operation = computed(() => {
-        if(!props.id) return 'insert'
-        return 'edit'
-    })
-
-    const displayIcon = computed(() => {
-        if(!state.icon) return ''
-
-        return `i-heroicons-${state.icon}`
-    })
 </script>
 
 <template>
     <UModal v-model="model" :ui="{ 'container': 'items-center' }">
-        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateCategory">
-            <UFormGroup :error="error">
-                <div class="flex flex-row justify-between items-center space-y-0 gap-8">
-                    <UFormGroup label="Name" name="name" class="w-full">
-                        <UInput v-model="state.name" />
-                    </UFormGroup>
-                    
-                    <UFormGroup label="Icon" name="icon" class="w-full">
-                        <div class="flex flex-row gap-1">
-                            <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
-                            <UInput v-model="state.icon" class="hide-span">
-                                <template #trailing>
-                                    <UIcon class="h-full" :name="displayIcon" dynamic/>
-                                </template>
-                            </UInput>
-                            <ULink to="https://heroicons.com/" target="_blank">
-                                <UButton 
-                                    icon="i-heroicons-arrow-top-right-on-square" 
-                                    color="primary"
-                                    square
-                                    variant="ghost" />
-                            </ULink>
-                        </div>
-                    </UFormGroup>
-                </div>
+        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateCategory">            
+            <UFormGroup label="Name" name="name" class="w-full" :error="!!error">
+                <UInput v-model="state.name" />
             </UFormGroup>
+
+            <UFormGroup label="Category" name="category" class="w-full" :error="!!error">
+                <USelect v-model="state.category" :options="getCategoryOptions" :loading="categoryLoading" class="hide-select-span" >
+                    <template #leading>
+                        <UIcon :name="categoryDisplayIcon" class="h-full" dynamic />
+                    </template>
+                </USelect>
+            </UFormGroup>
+
+            <UFormGroup label="Period" name="period" class="w-full" :error="!!error">
+                <USelect 
+                    v-model="state.period" 
+                    :options="periodOptions" class="hide-select-span" />
+            </UFormGroup>
+                
+            <UFormGroup label="Value" name="value" class="w-full" :error="!!error">
+                <UInput v-model="state.value" type="number" step="any" />
+            </UFormGroup>                   
     
             <UButton type="submit">
                 Submit

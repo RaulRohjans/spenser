@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS budget (
     PRIMARY KEY(id),
     CONSTRAINT fk_user
         FOREIGN KEY("user")
-            REFERENCES "user"(id)
+            REFERENCES "user"(id),
     CONSTRAINT fk_category
         FOREIGN KEY(category)
             REFERENCES category(id)
