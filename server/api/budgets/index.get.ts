@@ -1,6 +1,7 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
 import { sql } from "kysely"
+import { BudgetDataObject } from "~/types/Data"
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
@@ -14,7 +15,7 @@ export default defineEventHandler(async (event) => {
         .select(['category.name as category_name', 'category.icon as category_icon'])
         .select(({fn}) => [
             fn.sum(sql<number>`"transaction"."value" * -1`).as('expenses'),
-            sql`"budget"."value" - sum("transaction"."value" * -1)`.as('budget_left')
+            sql<number>`"budget"."value" - sum("transaction"."value" * -1)`.as('budget_left')
         ])
 
         .where(({ eb, or, and }) => and([
@@ -63,6 +64,6 @@ export default defineEventHandler(async (event) => {
         
     return {
         success: true,
-        data: query
+        data: query as BudgetDataObject[]
     }
 })

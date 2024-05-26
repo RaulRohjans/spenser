@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import type { ModalBudgetProps } from '~/components/Modal/Budget.vue'
+    import type { BudgetDataObject } from '~/types/Data'
 
     const { token } = useAuth()
     const isModalOpen: Ref<boolean> = ref(false)
@@ -13,7 +14,7 @@
     // Fetch categories
     const { data: budgetData } = await useLazyAsyncData<{
         success: boolean,
-        data: {}
+        data: BudgetDataObject[]
     }>
     ('budgets', () => ($fetch)('/api/budgets', {  
             method: 'GET',
@@ -22,8 +23,7 @@
         default: () => {
             return {
                 success: false,
-                data: {
-                }
+                data: []
             }
         }
     })
@@ -39,7 +39,14 @@
 </script>
 
 <template>
-    <div class="flex flex-row justify-start items-center flex-wrap sm:mx-[20%]">
+    <div class="flex flex-row justify-start items-center flex-wrap sm:mx-[20%] gap-4">
+        <template v-for="budget in budgetData.data">
+            <UCard
+                class="shadow-xl p-12">            
+                <h2 class="text-xl mb-4">{{ budget.name }}</h2>
+                <span>Budget left: {{ Number(budget.budget_left).toFixed(2) }}</span>
+            </UCard>
+        </template>
         <a class="cursor-pointer" @click="toggleModal">
             <UCard
                 class="shadow-xl p-12">            

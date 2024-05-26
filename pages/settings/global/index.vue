@@ -3,7 +3,7 @@
     import type { NuxtError } from '#app'
     import type { FetchTableDataResult } from '~/types/Table'
     import type { SelectOption } from '~/types/Options'
-    import type { UserSettingsObject } from '~/types/Settings'
+    import type { UserSettingsObject } from '~/types/Data'
     import type { Currency } from 'kysely-codegen'
     import type { Selectable } from 'kysely'
 
