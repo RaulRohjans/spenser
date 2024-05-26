@@ -34,6 +34,8 @@
     const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
+    const isChooserOpen: Ref<boolean> = ref(false)
+    const selectedCurrencyId: Ref<number | null> = ref(null)
 
     // Fetch Data
     const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
@@ -61,26 +63,40 @@
         watch: [page, searchQuery, searchColumn, pageCount, sort, tableDataKey]
     })
 
-    const delCurrency = function(row: TableRow) {
-        $fetch(`/api/currencies/delete`, {
-            method: 'POST',
-            headers: buildRequestHeaders(token.value),
-            body: { id: row.id }
-        }).then((data) => {
-            if(!data.success) {
-                displayMessage('An error ocurred when removing your currency.', 'error')
-                return
-            }
+    const delCurrencyAction = function(row: TableRow) {
+        selectedCurrencyId.value = row.id
+        toggleChooser(true)
+    }
 
-            displayMessage('Currency deleted successfully!', 'success')
-            reloadTableData()
-        }).catch((e: NuxtError) => {
-            displayMessage(e.statusMessage, 'error')
-        })
+    const delCurrency = function(state: boolean) {
+        if(state) { //User accepted
+            $fetch(`/api/currencies/delete`, {
+                method: 'POST',
+                headers: buildRequestHeaders(token.value),
+                body: { id: selectedCurrencyId.value }
+            }).then((data) => {
+                if(!data.success) {
+                    displayMessage('An error ocurred when removing your currency.', 'error')
+                    return
+                }
+
+                displayMessage('Currency deleted successfully!', 'success')
+                reloadTableData()
+            }).catch((e: NuxtError) => {
+                displayMessage(e.statusMessage, 'error')
+            })
+        }
+
+        selectedCurrencyId.value = null
+        toggleChooser(false)
     }
 
     const toggleModal = function() {
         isModalOpen.value = !isModalOpen.value
+    }
+
+    const toggleChooser = function(state: boolean) {
+        isChooserOpen.value = state
     }
 
     const reloadTableData = function() {
@@ -101,7 +117,7 @@
             v-model:search="searchQuery"
             v-model:searchColumn="searchColumn"
             v-model:sort="sort"
-            @delete-action="delCurrency">
+            @delete-action="delCurrencyAction">
 
             <template #extra-section>
                 <div class="flex flex-row items-end justify-end w-full">
@@ -118,4 +134,10 @@
     </div>
 
     <ModalCurrency v-model="isModalOpen" @successful-submit="reloadTableData" />
+
+    <ModalChooser 
+        v-model="isChooserOpen" 
+        title="Delete Currency" 
+        message="Are you sure you want to delete this currency?"
+        @click="delCurrency" />
 </template>

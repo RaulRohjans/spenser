@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import type { NuxtError } from '#app';
-import type { ModalBudgetProps } from '~/components/Modal/Budget.vue'
+    import type { ModalBudgetProps } from '~/components/Modal/Budget.vue'
     import type { BudgetDataObject } from '~/types/Data'
 
     const { token } = useAuth()

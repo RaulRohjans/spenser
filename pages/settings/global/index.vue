@@ -52,7 +52,7 @@
     }
 
     // Fetch user settings
-    const { data: userSettings, pending: loading } = await useLazyAsyncData<{
+    const { data: userSettings } = await useLazyAsyncData<{
         success: boolean,
         data: UserSettingsObject
     }>
@@ -62,7 +62,7 @@
     }))
     
     const state = reactive({
-        currency: userSettings.value?.data.currency || getCurrencyOptions.value[0].value
+        currency: userSettings.value?.data.currency
     })
 
     const onSave = function(event: FormSubmitEvent<typeof state>) {
@@ -86,7 +86,8 @@
         })
     }
 
-    watch(() => state.currency, () => {
+    watch(userSettings, () => {
+        state.currency = userSettings.value?.data.currency
         currencySelectKey.value++
     })
 </script>
@@ -94,7 +95,7 @@
 <template>
     <UForm :state="state" class="space-y-4 p-6" @submit="onSave">
         <UFormGroup label="Currency" name="currency" class="w-full" :error="error">
-            <USelect v-model="state.currency" :options="getCurrencyOptions" :key="currencySelectKey"/>
+            <USelect v-model="state.currency" :options="getCurrencyOptions" :key="currencySelectKey" />
         </UFormGroup>
             
         <UButton type="submit">
