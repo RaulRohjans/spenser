@@ -93,7 +93,7 @@
 </script>
 
 <template>
-    <UForm :state="state" class="space-y-4 p-6" @submit="onSave">
+    <UForm :state="state" class="space-y-4" @submit="onSave">
         <UFormGroup label="Currency" name="currency" class="w-full" :error="error">
             <USelect v-model="state.currency" :options="getCurrencyOptions" :key="currencySelectKey" />
         </UFormGroup>

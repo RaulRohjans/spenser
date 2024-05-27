@@ -52,8 +52,8 @@
 </script>
 
 <template>
-    <div class="flex border border-gray-200 dark:border-gray-700 relative rounded-t-md p-4 border-b-0 not-prose bg-white dark:bg-gray-900 min-h-screen">
-        <aside class="hidden overflow-y-auto lg:block lg:max-h-[calc(100vh-var(--header-height))] lg:sticky lg:top-[--header-height] lg:px-4 lg:-mx-4 w-60 py-0">
+    <div class="flex flex-col sm:flex-row justify-start sm:justify-center items-center sm:items-start border border-gray-200 dark:border-gray-700 relative rounded-t-md p-4 border-b-0 not-prose bg-white dark:bg-gray-900 min-h-screen">
+        <aside class="block max-h-[calc(100vh-var(--header-height))] sticky top-[--header-height] px-4 -mx-4 w-60 py-0">
             <div class="flex flex-col gap-4">
                 <div class="sticky">
                     <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
@@ -114,7 +114,7 @@
 
         <!------------------------------>
         
-        <div class="w-full px-10 py-4">           
+        <div class="w-full sm:p-4">           
             <NuxtPage />
         </div>
     </div>
