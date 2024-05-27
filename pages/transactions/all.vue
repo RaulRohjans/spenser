@@ -238,13 +238,14 @@
 
             <template #extra-section>
                 <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2">
-                    <UButton 
-                        icon="i-heroicons-arrow-down-on-square-stack"
-                        color="primary"
-                        size="xs"
-                        @click="createTransaction">
-                        LLM Data Import
-                    </UButton>
+                    <a href="/transactions/llm-data-importer">
+                        <UButton 
+                            icon="i-heroicons-arrow-down-on-square-stack"
+                            color="primary"
+                            size="xs">
+                            LLM Data Import
+                        </UButton>
+                    </a>
 
                     <UButton 
                         icon="i-heroicons-plus"

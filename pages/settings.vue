@@ -31,9 +31,9 @@
             selected: isRouteActive(route, '/settings/admin/currencies'),
         },
         {
-            name: 'Data Importer',
+            name: 'LLM Data Importer',
             icon: 'i-heroicons-circle-stack',
-            href: '/settings/admin/data-importer',
+            href: '/settings/admin/llm-data-importer',
             selected: isRouteActive(route, '/settings/admin/data-importer'),
         }
     ])
