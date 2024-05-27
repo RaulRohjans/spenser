@@ -25,24 +25,44 @@ export default defineEventHandler(async (event) => {
             //Sum transaction value per category if it exists
             or([
                 and([
-                  sql<boolean>`"budget"."category" is not null`,
-                  eb('budget.category', '=', eb.ref('transaction.category'))
+                    eb("budget.category", "is not", null),
+                    eb('budget.category', '=', eb.ref('transaction.category'))
                 ]),
-                sql<boolean>`"budget"."category" is null`
-            ])
-        ]))
+                eb("budget.category", "is", null),
+            ]),
 
-        /* TODO: Replace this with the proper syntax after discord thread is closed with answer */
-        // Apply time period to the expenses
-        .where(sql`case 
-            when budget.period = 'daily' then (extract(day from "transaction"."date") = extract(day from CURRENT_DATE))
-            when budget.period = 'monthly' then (extract(month from "transaction"."date") = extract(month from CURRENT_DATE))
-            when budget.period = 'quarterly' then ("transaction"."date" <= CURRENT_DATE and
-                "transaction"."date" >= (current_date - INTERVAL '3 months'))
-            when budget.period = 'semi-annual' then ("transaction"."date" <= CURRENT_DATE and
-                "transaction"."date" >= (current_date - INTERVAL '6 months'))
-            when budget.period = 'yearly' then (extract(year from "transaction"."date") = extract(year from CURRENT_DATE)) end`,
-        sql``, sql``)
+            // Apply time period to the expenses
+            eb.case()
+                .when("budget.period", "=", "daily")
+                .then(
+                    sql<boolean>`extract(day from transaction.date) = extract(day from current_date)`,
+                )
+
+                .when("budget.period", "=", "monthly")
+                .then(
+                    sql<boolean>`extract(month from transaction.date) = extract(month from current_date)`,
+                )
+
+                .when("budget.period", "=", "quarterly")
+                .then(
+                    sql<boolean>`transaction.date <= current_date and
+                        transaction.date >= (current_date - INTERVAL '3 months')`,
+                )
+
+                .when("budget.period", "=", "quarterly")
+                .then(
+                    sql<boolean>`transaction.date <= current_date and
+                        transaction.date >= (current_date - INTERVAL '6 months')`,
+                )
+
+                .when("budget.period", "=", "quarterly")
+                .then(
+                    sql<boolean>`extract(year from transaction.date) = extract(year from current_date)`,
+                )
+
+                .else(false)
+                .end(),
+        ]))
 
         // Validade user        
         .where(({eb, and, or}) => and([
