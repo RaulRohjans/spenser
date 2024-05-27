@@ -36,12 +36,13 @@ export default defineEventHandler(async (event) => {
         case 'duplicate':
         case 'insert': 
             // Create category record
-            let budget: Omit<Omit<Selectable<Budget>, 'id'>, 'order'> = {
+            let budget: Omit<Selectable<Budget>, 'id'> = {
                 name,
                 category,
                 value,
                 period,
-                user: user.id
+                user: user.id,
+                order: 0
             }
 
             // Add category to persistent storage

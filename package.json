@@ -38,6 +38,7 @@
     "pg": "^8.11.5",
     "vue-echarts": "^6.7.2",
     "vue-toastification": "^2.0.0-rc.5",
+    "vuedraggable": "^4.1.0",
     "zod": "^3.22.5"
   }
 }
