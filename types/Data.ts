@@ -20,5 +20,4 @@ export interface BudgetDataObject {
     category_name: string | null
     category_icon: string | null
     expenses: number
-    budget_left: number
 }
