@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
     // Read params
     const { 
         provider,
+        gptModel,
         gptToken,
         ollamaModel,
         ollamaUrl
@@ -40,6 +41,7 @@ export default defineEventHandler(async (event) => {
         let settings: Omit<Selectable<GlobalSettings>, 'id'> = {
             user: user.id,
             importer_provider: provider,
+            gpt_model: gptModel,
             gpt_token: gptToken,
             ollama_model: ollamaModel,
             ollama_url: ollamaUrl

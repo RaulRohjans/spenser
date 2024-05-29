@@ -2,9 +2,7 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
     import type { SelectOption } from '~/types/Options'
-    import { type GlobalSettings } from "kysely-codegen"
-    import type { Selectable } from 'kysely'
-    import type { StoreGlobalSettings } from '@/stores/settings'
+    import type { GlobalSettingsObject } from '~/types/Data'
 
     const { token } = useAuth()
     const error: Ref<null | string> = ref(null)
@@ -24,25 +22,21 @@
         ]
     })
 
-    const updateStore = function(settings: StoreGlobalSettings) {
-        settingsStore.globalSettings = settings 
-    }
-
     // Fetch global settings
-    const { data: globalSettings } = await useLazyAsyncData<{
+    const globalSettings = await $fetch<{
         success: boolean,
-        data: Selectable<GlobalSettings>
-    }>
-    ('global-settings', () => ($fetch)('/api/global-settings', {  
-            method: 'GET',
-            headers: buildRequestHeaders(token.value)
-    }))
+        data: GlobalSettingsObject
+    }>('/api/global-settings', {
+        method: 'GET',
+        headers: buildRequestHeaders(token.value)
+    })
     
     const state = reactive({
-        provider: globalSettings.value?.data.importer_provider || '',
-        gptToken: globalSettings.value?.data.gpt_token || '',
-        ollamaModel: globalSettings.value?.data.ollama_model || '',
-        ollamaUrl: globalSettings.value?.data.ollama_url || ''
+        provider: globalSettings.data.importer_provider || getProviderOptions.value[0].value,
+        gptModel: globalSettings.data.gpt_model || 'gpt-4',
+        gptToken: globalSettings.data.gpt_token || '',
+        ollamaModel: globalSettings.data.ollama_model || '',
+        ollamaUrl: globalSettings.data.ollama_url || ''
     })
 
     const onSave = function(event: FormSubmitEvent<typeof state>) {
@@ -56,24 +50,12 @@
                 return
             }
 
-            // Update store with new settings
-            updateStore({
-                gpt_token: event.data.gptToken,
-                importer_provider: event.data.provider,
-                ollama_model: event.data.ollamaModel,
-                ollama_url: event.data.ollamaUrl
-            })
-
             // Disaply success message
             displayMessage(`Settings saved successfully!`, 'success')
         }).catch((e: NuxtError) => {
             error.value = e.statusMessage || null
         })
     }
-
-    watch(globalSettings, () => {
-        providerSelectKey.value++
-    })
 </script>
 
 <template>
@@ -83,6 +65,10 @@
         </UFormGroup>
 
         <template v-if="state.provider === 'gpt'">
+            <UFormGroup label="GPT Model" name="gptModel" class="w-full" :error="!!error">
+                <UInput v-model="state.gptModel" />
+            </UFormGroup>
+
             <UFormGroup label="GPT Token" name="gptToken" class="makeit-static" :error="!!error">
                 <UInput v-model="state.gptToken" />
             </UFormGroup>

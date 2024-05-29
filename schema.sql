@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS global_settings (
     id INT GENERATED ALWAYS AS IDENTITY,
     "user" INT NOT NULL,
     importer_provider VARCHAR(50) NOT NULL,
+    gpt_model VARCHAR(100),
     gpt_token VARCHAR(150),
     ollama_model VARCHAR(100),
     ollama_url varchar(150),
