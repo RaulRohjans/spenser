@@ -57,6 +57,19 @@ CREATE TABLE IF NOT EXISTS user_settings (
             REFERENCES currency(id)
 );
 
+CREATE TABLE IF NOT EXISTS global_settings (
+    id INT GENERATED ALWAYS AS IDENTITY,
+    "user" INT NOT NULL,
+    importer_provider VARCHAR(50) NOT NULL,
+    gpt_token VARCHAR(150),
+    ollama_model VARCHAR(100),
+    ollama_url varchar(150),
+    PRIMARY KEY(id),
+    CONSTRAINT fk_user
+        FOREIGN KEY("user")
+            REFERENCES "user"(id)
+);
+
 CREATE TABLE IF NOT EXISTS budget (
     id INT GENERATED ALWAYS AS IDENTITY,
     "user" INT NOT NULL,

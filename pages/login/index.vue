@@ -2,6 +2,8 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
+import type { Selectable } from 'kysely';
+import type { GlobalSettings } from 'kysely-codegen';
 
     const { signIn, token } = useAuth()
     const error: Ref<null | string> = ref(null)
@@ -23,7 +25,7 @@
             // Load data to the store
             const settingsStore = useSettingsStore()
 
-            // Fetch data
+            // Fetch user settings data
             const userSettings = await $fetch('/api/settings', {
                 method: 'GET',
                 headers: buildRequestHeaders(token.value)
@@ -32,6 +34,16 @@
             settingsStore.currency.id = userSettings.data.currency
             settingsStore.currency.placement = userSettings.data.placement
             settingsStore.currency.symbol = userSettings.data.symbol
+            //-------------------------
+
+            // Fetch global settings data
+            const globalSettings = await $fetch<Selectable<GlobalSettings>>('/api/global-settings', {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value)
+            })
+
+            settingsStore.globalSettings = globalSettings
+            //----------------------------
 
         }).catch((e: NuxtError) => {
             error.value = e.statusMessage || null

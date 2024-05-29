@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
     const settingsCount = await db
         .selectFrom('user_settings')
         .select('user_settings.id')
+        .where('user', '=', user.id)
         .executeTakeFirst()
 
     let opRes
