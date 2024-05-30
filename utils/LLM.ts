@@ -26,9 +26,9 @@ export class LLM {
         return ollamaLlm
     }
 
-    async sendQuery(llm: BaseLLM) {
+    async sendLlmQuery(llm: BaseLLM, text: string) {
         const res = await llm.invoke(
-            "What would be a good company name a company that makes colorful socks?"
+            text
         )
 
         return res
