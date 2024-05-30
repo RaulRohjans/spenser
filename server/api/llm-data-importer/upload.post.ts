@@ -1,6 +1,7 @@
 import { readFiles } from "h3-formidable"
 import path from "path"
 import fs from "fs"
+import { NuxtError } from "nuxt/app"
 
 export default defineEventHandler(async (event) => {
     //const bodyParams = await readBody(event)
@@ -31,15 +32,16 @@ export default defineEventHandler(async (event) => {
             })
 
         const filepath = value[0].filepath
-        fs.readFile(filepath, 'utf8', function(err, data) {
-            if (err) 
-                throw createError({
-                    statusMessage: err.message,
-                    statusCode: 400,
-                })
-    
-            console.log(data)
-        })
+        let data
+        try { data = fs.readFileSync(filepath, 'utf8') }
+        catch(err) {
+            throw createError({
+                statusMessage: (err as NuxtError).message,
+                statusCode: 400,
+            })
+        }
+
+        console.log(data)
         /*
         if (!mimetype.startsWith("image"))
             throw createError({
