@@ -53,6 +53,8 @@ export default defineNuxtConfig({
         DB_HOST: process.env.DB_HOST,
         DB_USER: process.env.DB_USER,
         DB_PASSWORD: process.env.DB_PASSWORD,
-        DB_PORT: process.env.DB_PORT || '5432'
+        DB_PORT: process.env.DB_PORT || '5432',
+
+        MAX_TRANSACTION_FILE_SIZE: Number(process.env.MAX_TRANSACTION_FILE_SIZE || (1024*1024*10))  //10 MB
     }
 })

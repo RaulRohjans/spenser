@@ -67,17 +67,11 @@
         }
     ])
 
-    /*
-    * The reason we need this abomination is to display a general
-    * form error, since the fields are in the same row, showing
-    * field specific stuff would deformat everything...
-    */
     const schema = z.object({
         id: z.number().optional(),
         name: z.string().optional(),
         value: z.number().min(0.01, 'The value has to be bigger than 0.')
     })
-    /* ------------------------------------------------ */
 
     type Schema = z.output<typeof schema>
     const state = reactive({
