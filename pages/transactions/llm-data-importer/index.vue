@@ -18,35 +18,44 @@
 
     const onImportData = function(event: FormSubmitEvent<Schema>) {
         let formData: FormData | { transactionText: string }
+        let url = '/api/llm-data-importer/'
 
         if(filesRef.value && filesRef.value.files && filesRef.value.files.length > 0) {
             formData = new FormData()
 
             // Add uploaded files
             Array.from(filesRef.value?.files || []).map((file, index) => (formData as FormData).append(index.toString(), file))
+            
+            /**
+             * The reason we have a separate endpoint to handle file and text
+             * based queries is due to issues with readFiles method from h3-formidable
+             */
+            url += 'upload'
         }
         else if(event.data.transactionText) {
             // Add transaction text if it exists
             formData = { transactionText: event.data.transactionText }
+
+            url += 'query'
         }
         else {
             displayMessage('Please provide data to import, either by upload or text!', 'error')
             return
         }
 
-        $fetch(`/api/llm-data-importer/upload`, {
+        $fetch(url, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: formData
         }).then((data) => {
-            if(!data.success) {
+            const parsedData = data as { success: boolean }
+            if(!parsedData.success) {
                 displayMessage('An error ocurred when uploading transaction data.', 'error')
                 return
             }
 
             // Disaply success message
             displayMessage(`OK`, 'success')
-
         }).catch((e: NuxtError) => {
             displayMessage(e.statusMessage, 'error')
         })
