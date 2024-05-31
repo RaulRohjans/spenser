@@ -28,7 +28,7 @@ export class LLM {
         const openAiLlm = new OpenAI({
             model: model,
             temperature: 0.9,
-            apiKey: apiKey,
+            openAIApiKey: apiKey,
         })
 
         return openAiLlm
@@ -49,12 +49,12 @@ export class LLM {
                 "system",
                 `You are a tool whose main purpose is to parse transactions in multiple formats into an array of JSON objects, where each object is a transaction and needs to follow the following type definition:
 
-                {
+                {{
                     category: number,
                     name: string,
                     value: number,
                     date: Date
-                }
+                }}
 
                 - Name is the name/description of the transaction;
                 - value is the total value of the transaction;

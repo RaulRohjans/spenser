@@ -15,27 +15,18 @@
     const drag: Ref<boolean> = ref(false)
 
     // Fetch categories
-    const { data: budgetData } = await useLazyAsyncData<{
+    const budgetData = await $fetch<{
         success: boolean,
         data: BudgetDataObject[]
-    }>
-    ('budgets', () => ($fetch)('/api/budgets', {  
-            method: 'GET',
-            headers: buildRequestHeaders(token.value)
-    }), {
-        default: () => {
-            return {
-                success: false,
-                data: []
-            }
-        },
-        watch: [reloadBudgetRef]
+    }>('/api/budgets', {
+        method: 'GET',
+        headers: buildRequestHeaders(token.value)
     })
 
     // This is a small hack to have an add item at the end
     // draggable could have a slot for this, but it doesn't and I see
     // no other way of adding it without breaking css
-    const budgetDraggableList: Ref<BudgetDataObject[]> = ref([...budgetData.value.data, {
+    const budgetDraggableList: Ref<BudgetDataObject[]> = ref([...budgetData.data, {
         id: -1,
         user: 0,
         category: null,

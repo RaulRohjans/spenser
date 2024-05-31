@@ -67,6 +67,11 @@
          * Component CSS classes
          */
         class?: string
+
+        /*
+         * Disable table footer
+         */
+        disableFooter?: boolean
     }
 
     const props = withDefaults(defineProps<TableProps>(), {
@@ -79,7 +84,8 @@
         sorting: true,
         filtering: true,
         manualFilterReset: false,
-        rowsPerPage: true
+        rowsPerPage: true,
+        disableFooter: false
     })
 
     const emit = defineEmits<{
@@ -291,7 +297,7 @@
         </UTable>
 
         <!-- Number of rows & Pagination -->
-        <template #footer>
+        <template #footer v-if="!disableFooter">
             <div class="flex flex-wrap justify-between items-center">
                 <div>
                     <span class="text-sm leading-5">

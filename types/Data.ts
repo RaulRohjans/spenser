@@ -28,3 +28,10 @@ export interface BudgetDataObject {
     category_icon: string | null
     expenses: number
 }
+
+export interface LlmTransactionObject  {
+    category: number
+    name: string
+    value: number
+    date: string //This value is meant to later be parsed into a Date format
+}

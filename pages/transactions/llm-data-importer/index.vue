@@ -2,9 +2,12 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
+    import type { LlmTransactionObject } from '~/types/Data'
 
     const { token } = useAuth()
     const filesRef: Ref<HTMLInputElement | null> = ref(null)
+    const modalTransactions: Ref<LlmTransactionObject[] | null> = ref(null)
+    const modalState: Ref<boolean> = ref(false)
     const schema = z.object({
         file: z.string().optional(),
         transactionText: z.string().optional()
@@ -15,6 +18,20 @@
         file: undefined,
         transactionText: undefined
     })
+
+    const toggleModal = function(state: boolean) {
+        modalState.value = state
+    }
+
+    const toggleLoading = function(state: boolean) {
+
+    }
+
+    const clearInputFields = function() {
+        // Clear input fields
+        filesRef.value = null
+        state.transactionText = undefined
+    }
 
     const onImportData = function(event: FormSubmitEvent<Schema>) {
         let formData: FormData | { transactionText: string }
@@ -43,24 +60,36 @@
             return
         }
 
+        //Show loading
+        toggleLoading(true)
+
         $fetch(url, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: formData
         }).then((data) => {
-            const parsedData = data as { success: boolean }
+            const parsedData = data as { success: boolean, transactions: LlmTransactionObject[] }
+
+            // Stop loading
+            toggleLoading(false)
+
             if(!parsedData.success) {
                 displayMessage('An error ocurred when uploading transaction data.', 'error')
                 return
             }
 
-            // Disaply success message
-            displayMessage(`OK`, 'success')
+            // Load transactions into modal
+            modalTransactions.value = parsedData.transactions
 
-            // Clear input fields
-            state.file = undefined
-            state.transactionText = undefined
+            // Show edit transaction modal
+            toggleModal(true)
+
+            clearInputFields()
         }).catch((e: NuxtError) => {
+            // Stop loading
+            toggleLoading(false)
+
+            // Display error message
             displayMessage(e.statusMessage, 'error')
         })
     }
@@ -110,4 +139,11 @@
 
         </div>
     </UCard>
+
+    <ModalEditTransactions
+        v-if="modalTransactions"
+        v-model="modalState"
+        class="h-full overflow-y-auto px-4 pt-4 pb-12"
+        :transactions="modalTransactions"
+        @successful-submit="() => modalTransactions = null" />
 </template>

@@ -23,17 +23,17 @@ export default defineEventHandler(async (event) => {
     // Check if it's the first time saving global settings
     const globalSettingsCount = await db
         .selectFrom('global_settings')
-        .select('global_settings.id')
+        .select('id')
         .executeTakeFirst()
 
     let opRes
     // A record exists in the db, lets edit it
     if(globalSettingsCount) {
         opRes = await db.updateTable('global_settings')
-            .set('global_settings.importer_provider', provider)
-            .set('global_settings.gpt_token', gptToken)
-            .set('global_settings.ollama_model', ollamaModel)
-            .set('global_settings.ollama_url', ollamaUrl)
+            .set('importer_provider', provider)
+            .set('gpt_token', gptToken)
+            .set('ollama_model', ollamaModel)
+            .set('ollama_url', ollamaUrl)
             .where('id' , '=', globalSettingsCount.id)
             .execute()
     }
