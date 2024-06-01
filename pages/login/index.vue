@@ -35,16 +35,6 @@ import type { GlobalSettings } from 'kysely-codegen';
             settingsStore.currency.placement = userSettings.data.placement
             settingsStore.currency.symbol = userSettings.data.symbol
             //-------------------------
-
-            // Fetch global settings data
-            const globalSettings = await $fetch<Selectable<GlobalSettings>>('/api/global-settings', {
-                method: 'GET',
-                headers: buildRequestHeaders(token.value)
-            })
-
-            settingsStore.globalSettings = globalSettings
-            //----------------------------
-
         }).catch((e: NuxtError) => {
             error.value = e.statusMessage || null
         })
@@ -56,6 +46,10 @@ import type { GlobalSettings } from 'kysely-codegen';
             unauthenticatedOnly: true,
             navigateAuthenticatedTo: '/'
         }
+    })
+
+    useHead({
+        title: 'Spenser | Login'
     })
 </script>
 

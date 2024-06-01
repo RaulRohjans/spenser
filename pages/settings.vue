@@ -49,6 +49,10 @@
 
         return classes
     }
+
+    useHead({
+        title: 'Spenser | Settings'
+    })
 </script>
 
 <template>

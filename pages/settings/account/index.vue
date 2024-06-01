@@ -41,6 +41,10 @@
     const openChangePwModal = function() {
         isModalOpen.value = !isModalOpen.value
     }
+
+    useHead({
+        title: 'Spenser | Account Settings'
+    })
 </script>
 
 <template>

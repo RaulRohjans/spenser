@@ -189,6 +189,11 @@
         // make it work
         reloadTableKey.value++
     })
+
+    useHead({
+        title: 'Spenser | Transactions'
+    })
+
 </script>
 
 <template>

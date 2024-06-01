@@ -4,6 +4,10 @@
     const getUsername = computed(() => {
         return authData.value ? authData.value.username : ''
     })
+
+    useHead({
+        title: 'Spenser | Home'
+    })
 </script>
 
 <template>

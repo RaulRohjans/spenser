@@ -92,6 +92,10 @@
         state.currency = userSettings.value?.data.currency
         currencySelectKey.value++
     })
+
+    useHead({
+        title: 'Spenser | Global Settings'
+    })
 </script>
 
 <template>

@@ -97,6 +97,10 @@
     const reloadTableData = function() {
         tableDataKey.value++
     }
+
+    useHead({
+        title: 'Spenser | Currency Settings'
+    })
 </script>
 
 <template>

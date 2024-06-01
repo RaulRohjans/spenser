@@ -130,6 +130,10 @@
         // This will make sure new props are loaded correctly
         reloadModal.value++ 
     })
+
+    useHead({
+        title: 'Spenser | Categories'
+    })
 </script>
 
 <template>

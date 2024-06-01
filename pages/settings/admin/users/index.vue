@@ -138,6 +138,10 @@
         // This will make sure new props are loaded correctly
         reloadModal.value++ 
     })
+
+    useHead({
+        title: 'Spenser | Users Management'
+    })
 </script>
 
 <template>

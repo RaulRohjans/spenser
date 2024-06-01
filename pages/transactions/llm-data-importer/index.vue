@@ -88,6 +88,10 @@
             displayMessage(e.statusMessage, 'error')
         })
     }
+
+    useHead({
+        title: 'Spenser | LLM Data Importer'
+    })
 </script>
 
 <template>

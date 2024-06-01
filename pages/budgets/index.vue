@@ -115,6 +115,10 @@
         // This will make sure new props are loaded correctly
         reloadModal.value++ 
     })
+
+    useHead({
+        title: 'Spenser | Budgets'
+    })
 </script>
 
 <template>

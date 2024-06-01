@@ -68,6 +68,10 @@
             state.gptToken = ''
         }
     })
+
+    useHead({
+        title: 'Spenser | LLM Settings'
+    })
 </script>
 
 <template>
