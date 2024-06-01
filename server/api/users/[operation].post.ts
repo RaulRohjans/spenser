@@ -1,7 +1,7 @@
 import { ensureAuth, hashPassword } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import { Selectable } from "kysely"
-import { User } from "kysely-codegen"
+import type { Selectable } from "kysely"
+import type { User } from "kysely-codegen"
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
                 })
 
             // Create user record
-            let user: Omit<Selectable<User>, 'id'> = {
+            const user: Omit<Selectable<User>, 'id'> = {
                 first_name: first_name,
                 last_name: last_name,
                 username: username,

@@ -2,7 +2,7 @@ import fs from "fs"
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
 import { readFiles } from "h3-formidable"
-import { NuxtError } from "nuxt/app"
+import type { NuxtError } from "nuxt/app"
 import { LLM } from "~/utils/LLM"
 
 export default defineEventHandler(async (event) => {

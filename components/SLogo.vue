@@ -35,7 +35,7 @@
         were to hardcode a value it would work both with the width and heigh props, or talwind's w-[] and h-[]
     -->
     <div :class="props.class">
-        <img src="/icons/logo-colored.svg" alt="Spenser Logo" class="block dark:hidden" :style="`width: ${props.width}; height: ${props.height}`"/>
-        <img src="/icons/logo-colored-light.svg" alt="Spenser Logo" class="hidden dark:block" :style="`width: ${props.width}; height: ${props.height}`" />
+        <img src="/icons/logo-colored.svg" alt="Spenser Logo" class="block dark:hidden" :style="`width: ${props.width}; height: ${props.height}`">
+        <img src="/icons/logo-colored-light.svg" alt="Spenser Logo" class="hidden dark:block" :style="`width: ${props.width}; height: ${props.height}`" >
     </div>
 </template>

@@ -140,14 +140,14 @@
     <div class="flex flex-row items-center justify-center">
         <STable 
             v-bind="tableObj"
+            v-model:page="page"
+            v-model:pageCount="pageCount"
+            v-model:search="searchQuery"
+            v-model:searchColumn="searchColumn" 
+            v-model:sort="sort" 
             :rows="tableData?.data.rows"
             :row-count="tableData?.data.totalRecordCount"
             :loading="loading"
-            v-model:page="page" 
-            v-model:pageCount="pageCount" 
-            v-model:search="searchQuery"
-            v-model:searchColumn="searchColumn"
-            v-model:sort="sort"
             @edit-action="editCategory"
             @duplicate-action="dupCategory"
             @delete-action="delCategoryAction">
@@ -173,9 +173,9 @@
     </div>
 
     <ModalCategory 
-        v-model="isModalOpen" 
         v-bind="categoryLoaderObj" 
-        :key="reloadModal"
+        :key="reloadModal" 
+        v-model="isModalOpen"
         @successful-submit="reloadTableData" />
 
     <ModalChooser 

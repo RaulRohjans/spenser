@@ -1,7 +1,7 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import { Selectable } from "kysely"
-import { Transaction } from "kysely-codegen"
+import type { Selectable } from "kysely"
+import type { Transaction } from "kysely-codegen"
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
             await validateCategory()
 
             // Create transation record
-            let transactionRecord: Omit<Selectable<Transaction>, 'id'> = {
+            const transactionRecord: Omit<Selectable<Transaction>, 'id'> = {
                 user: user.id,
                 category,
                 name,

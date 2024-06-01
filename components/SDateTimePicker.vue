@@ -85,6 +85,7 @@
 
 <template>
     <VueDatePicker
+        v-model="model"
         :class="props.class"
         :disabled="props.disabled"
         :readonly="props.readonly"
@@ -94,7 +95,6 @@
         :enable-time-picker="hasTimePicker"
         :dark="isDark"
         :range="props.range"
-        v-model="model"
         clearable
         auto-apply
         @cleared="() => emit('clear')" />

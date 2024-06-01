@@ -214,7 +214,7 @@
             footer: { padding: 'p-4' }
         }">
         
-        <template #header v-if="label">
+        <template v-if="label" #header>
             <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                 {{  label }}
             </h2>
@@ -222,12 +222,12 @@
 
         <!-- Filters -->
         <div v-if="props.filtering" class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 px-4 py-3">
-            <div class="flex flex-row gap-1" v-if="props.enableSearch">
-                <USelect v-if="hasSeachColumn" v-model="searchColumn" :options="getSearchColumns" option-attribute="name" :key="selectLoadKey" />
+            <div v-if="props.enableSearch" class="flex flex-row gap-1">
+                <USelect v-if="hasSeachColumn" :key="selectLoadKey" v-model="searchColumn" :options="getSearchColumns" option-attribute="name" />
                 <UInput v-model="search" icon="i-heroicons-magnifying-glass-20-solid" placeholder="Search..." :trailing="hasSeachColumn"/>
             </div>
 
-            <slot name="filters"></slot>
+            <slot name="filters"/>
         </div>
 
         <!-- Header and Action buttons -->
@@ -266,7 +266,7 @@
         </div>
 
         <div v-if="$slots['extra-section']" class="flex items-center justify-between gap-3 px-4 py-3">
-            <slot name="extra-section"></slot>
+            <slot name="extra-section"/>
         </div>
 
         <!-- Table -->
@@ -287,9 +287,9 @@
                 Pass all other slots directly to the UTable component
                 This allows manipulating row data and row header
             -->
-            <template v-for="(_, name) in $slots" v-slot:[name]="slotData"><slot :name="name" v-bind="slotData" /></template>
+            <template v-for="(_, name) in $slots" #[name]="slotData"><slot :name="name" v-bind="slotData" /></template>
 
-            <template #actions-data="{ row }" v-if="actionItems">
+            <template v-if="actionItems" #actions-data="{ row }">
                 <UDropdown :items="actionItems(row)">
                     <UButton color="gray" variant="ghost" icon="i-heroicons-ellipsis-horizontal-20-solid" />
                 </UDropdown>
@@ -297,7 +297,7 @@
         </UTable>
 
         <!-- Number of rows & Pagination -->
-        <template #footer v-if="!disableFooter">
+        <template v-if="!disableFooter" #footer>
             <div class="flex flex-wrap justify-between items-center">
                 <div>
                     <span class="text-sm leading-5">

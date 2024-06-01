@@ -1,7 +1,7 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import { Selectable } from "kysely"
-import { UserSettings } from "kysely-codegen"
+import type { Selectable } from "kysely"
+import type { UserSettings } from "kysely-codegen"
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -31,7 +31,7 @@ export default defineEventHandler(async (event) => {
             .execute()
     }
     else {
-        let settings: Omit<Selectable<UserSettings>, 'id'> = {
+        const settings: Omit<Selectable<UserSettings>, 'id'> = {
             user: user.id,
             currency
         }

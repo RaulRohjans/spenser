@@ -77,7 +77,7 @@
 <template>
     <UForm :state="state" class="space-y-4" @submit="onSave">
         <UFormGroup label="LLM Provider" name="provider" class="w-full" :error="error">
-            <USelect v-model="state.provider" :options="getProviderOptions" :key="providerSelectKey" />
+            <USelect :key="providerSelectKey" v-model="state.provider" :options="getProviderOptions" />
         </UFormGroup>
 
         <template v-if="state.provider === 'gpt'">

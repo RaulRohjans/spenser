@@ -1,8 +1,8 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import { Selectable } from "kysely"
-import { Transaction } from "kysely-codegen"
-import { LlmTransactionObject } from "~/types/Data"
+import type { Selectable } from "kysely"
+import type { Transaction } from "kysely-codegen"
+import type { LlmTransactionObject } from "~/types/Data"
 
 export default defineEventHandler(async (event) => {
     // Read params

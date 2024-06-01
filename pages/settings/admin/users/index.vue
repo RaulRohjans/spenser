@@ -148,15 +148,15 @@
     <div class="flex flex-row h-full">
         <STable 
             v-bind="tableObj"
-            :rows="tableData?.data.rows"
+            v-model:page="page"
+            v-model:pageCount="pageCount"
+            v-model:search="searchQuery"
+            v-model:searchColumn="searchColumn"
+            v-model:sort="sort" 
+            :rows="tableData?.data.rows" 
             :row-count="tableData?.data.totalRecordCount"
             :loading="loading"
             class="bg-none shadow-none w-full"
-            v-model:page="page" 
-            v-model:pageCount="pageCount" 
-            v-model:search="searchQuery"
-            v-model:searchColumn="searchColumn"
-            v-model:sort="sort"
             @edit-action="editUser"
             @delete-action="delUserAction">
 

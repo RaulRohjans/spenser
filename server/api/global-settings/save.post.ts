@@ -1,7 +1,8 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import { Selectable } from "kysely"
-import { GlobalSettings, UserSettings } from "kysely-codegen"
+import type { Selectable } from "kysely"
+import type { GlobalSettings} from "kysely-codegen";
+import { UserSettings } from "kysely-codegen"
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -38,7 +39,7 @@ export default defineEventHandler(async (event) => {
             .execute()
     }
     else {
-        let settings: Omit<Selectable<GlobalSettings>, 'id'> = {
+        const settings: Omit<Selectable<GlobalSettings>, 'id'> = {
             user: user.id,
             importer_provider: provider,
             gpt_model: gptModel,

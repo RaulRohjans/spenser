@@ -32,11 +32,11 @@
                 <span class="w-full">{{ props.message }}</span>
 
                 <div class="flex flex-row justify-end items-center gap-2 w-full">
-                    <UButton @click="emit('click', false)" class="px-4">
+                    <UButton class="px-4" @click="emit('click', false)">
                         No
                     </UButton> 
 
-                    <UButton @click="emit('click', true)" class="px-4">
+                    <UButton class="px-4" @click="emit('click', true)">
                         Yes
                     </UButton> 
                 </div>

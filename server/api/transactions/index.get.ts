@@ -1,7 +1,8 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db, applySearchFilter } from '@/utils/dbEngine'
-import { OrderByDirectionExpression, SelectQueryBuilder, sql } from "kysely"
-import { TableRow } from "~/types/Table"
+import type { OrderByDirectionExpression, SelectQueryBuilder} from "kysely";
+import { sql } from "kysely"
+import type { TableRow } from "~/types/Table"
 
 export default defineEventHandler(async (event) => {
     // Read body params

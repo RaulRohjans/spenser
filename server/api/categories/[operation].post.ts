@@ -1,7 +1,7 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import { Selectable } from "kysely"
-import { Category } from "kysely-codegen"
+import type { Selectable } from "kysely"
+import type { Category } from "kysely-codegen"
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
         case 'duplicate':
         case 'insert': 
             // Create category record
-            let category: Omit<Selectable<Category>, 'id'> = {
+            const category: Omit<Selectable<Category>, 'id'> = {
                 name: name,
                 icon: icon || null,
                 user: user.id

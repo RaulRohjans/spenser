@@ -11,7 +11,7 @@
     "lint": "bun lint:eslint && bun lint:prettier",
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier . --check",
-    "lintfix": "eslint . --fix && prettier --write --list-different .",
+    "lint:fix": "eslint . --fix && prettier --write --list-different .",
     "db:gen": "kysely-codegen"
   },
   "devDependencies": {

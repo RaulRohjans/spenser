@@ -71,7 +71,7 @@ const validateLoginCredentials = async function (username: string, password: str
  * We also create a user record with these credentials and store it
  */
 const firstLogin = async function () {
-    let user: Omit<Selectable<User>, 'id'> = {
+    const user: Omit<Selectable<User>, 'id'> = {
         first_name: 'Admin',
         last_name: 'Admin',
         username: 'admin',

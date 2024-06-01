@@ -110,7 +110,7 @@
 
         <!-- Mobile menu, show/hide based on menu state. -->
         <Transition name="slide-fade">
-            <div class="sm:hidden" v-show="isMobileMenuShown">
+            <div v-show="isMobileMenuShown" class="sm:hidden">
                 <div class="flex flex-col space-y-1 px-2 pb-3 pt-2">
                     <template v-for="page in navigationPages">
                         <ULink :to="page.href" :class="getNaviationItemClass(page)">{{ page.name }}</ULink>

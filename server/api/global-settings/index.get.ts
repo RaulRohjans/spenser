@@ -1,7 +1,7 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import { Selectable } from "kysely"
-import { GlobalSettings } from "kysely-codegen"
+import type { Selectable } from "kysely"
+import type { GlobalSettings } from "kysely-codegen"
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
