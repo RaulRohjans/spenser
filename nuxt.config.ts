@@ -8,7 +8,8 @@ export default defineNuxtConfig({
         'nuxt-icon',
         '@sidebase/nuxt-auth',
         '@pinia/nuxt',
-        '@pinia-plugin-persistedstate/nuxt'
+        '@pinia-plugin-persistedstate/nuxt',
+        '@nuxt/eslint'
     ],
     css: ['~/assets/css/main.scss'],
     build: {
