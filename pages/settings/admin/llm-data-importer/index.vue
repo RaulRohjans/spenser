@@ -39,6 +39,8 @@
         ollamaUrl: globalSettings.data.ollama_url || ''
     })
 
+    
+
     const onSave = function(event: FormSubmitEvent<typeof state>) {
         $fetch(`/api/global-settings/save`, {
             method: 'POST',
@@ -51,6 +53,21 @@
             displayMessage(`Settings saved successfully!`, 'success')
         }).catch((e: NuxtError) => error.value = e.statusMessage || null)
     }
+
+    // Clear fields on provider change
+    watch(() => state.provider, (newVal) => {
+        if(newVal === 'gpt') {
+            state.ollamaModel = ''
+            state.ollamaUrl = ''
+
+            // Apply default
+            state.gptModel = 'gpt-4'
+        }
+        else if(newVal === 'ollama') {
+            state.gptModel = ''
+            state.gptToken = ''
+        }
+    })
 </script>
 
 <template>
