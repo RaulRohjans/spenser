@@ -8,7 +8,7 @@
     import type { Selectable } from 'kysely'
 
     const { token } = useAuth()
-    const { t: $t } = useI18n()
+    const { t: $t, locale } = useI18n()
     const error: Ref<null | string> = ref(null)
     const settingsStore = useSettingsStore()
     const currencySelectKey: Ref<number> = ref(0)
@@ -19,6 +19,7 @@
         () =>
             $fetch('/api/currencies', {
                 method: 'GET',
+                query: { locale },
                 headers: buildRequestHeaders(token.value)
             }),
         {
@@ -67,6 +68,7 @@
     }>('settings', () =>
         $fetch('/api/settings', {
             method: 'GET',
+            query: { locale },
             headers: buildRequestHeaders(token.value)
         })
     )
@@ -78,6 +80,7 @@
     const onSave = function (event: FormSubmitEvent<typeof state>) {
         $fetch(`/api/settings/save`, {
             method: 'POST',
+            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: event.data
         })

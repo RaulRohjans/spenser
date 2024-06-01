@@ -7,7 +7,7 @@
     import type { NuxtError } from '#app'
 
     const { token } = useAuth()
-    const { t: $t } = useI18n()
+    const { t: $t, locale } = useI18n()
     const tableObj = {
         label: $t('Currencies'),
         actions: ['delete'],
@@ -58,6 +58,7 @@
                     method: 'GET',
                     headers: buildRequestHeaders(token.value),
                     query: {
+                        locale,
                         q: searchQuery.value,
                         qColumn: searchColumn.value,
                         page: page.value,
@@ -97,6 +98,7 @@
             //User accepted
             $fetch(`/api/currencies/delete`, {
                 method: 'POST',
+                query: { locale },
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedCurrencyId.value }
             })

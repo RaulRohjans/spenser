@@ -59,6 +59,7 @@
 
     const colorMode = useColorMode()
     const { token } = useAuth()
+    const { locale } = useI18n()
     const dateRange: Ref<Date[]> = ref([])
 
     const getTheme = computed(() => {
@@ -78,6 +79,7 @@
                 method: 'GET',
                 headers: buildRequestHeaders(token.value),
                 query: {
+                    locale,
                     startDate:
                         dateRange.value.length > 0
                             ? dateRange.value[0].getTime()

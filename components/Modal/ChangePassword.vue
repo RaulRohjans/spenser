@@ -4,6 +4,7 @@
     import type { NuxtError } from '#app'
 
     const { signOut, token } = useAuth()
+    const { locale } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
 
@@ -31,6 +32,7 @@
     const onChangePasswordSubmit = function (event: FormSubmitEvent<Schema>) {
         $fetch('/api/account/changePassword', {
             method: 'POST',
+            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: { password: event.data.new_password }
         })

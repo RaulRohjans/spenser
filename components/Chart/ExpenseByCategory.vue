@@ -38,6 +38,7 @@
     use([TooltipComponent, LegendComponent, PieChart, SVGRenderer, LabelLayout])
 
     const colorMode = useColorMode()
+    const { locale } = useI18n()
     const { token } = useAuth()
     const dateRange: Ref<Date[]> = ref([])
 
@@ -62,6 +63,7 @@
                 method: 'GET',
                 headers: buildRequestHeaders(token.value),
                 query: {
+                    locale,
                     startDate:
                         dateRange.value.length > 0
                             ? dateRange.value[0].getTime()

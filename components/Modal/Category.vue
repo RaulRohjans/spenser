@@ -32,6 +32,7 @@
     }>()
 
     const { token } = useAuth()
+    const { locale } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
 
@@ -63,6 +64,7 @@
 
         $fetch(`/api/categories/${operation.value}`, {
             method: 'POST',
+            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: event.data
         })

@@ -61,6 +61,8 @@
         date: props.date || new Date(Date.now())
     })
 
+    const { locale } = useI18n()
+
     // Fetch Data
     const { data: categoryData, pending: categoryLoading } =
         await useLazyAsyncData<FetchTableDataResult>(
@@ -68,6 +70,7 @@
             () =>
                 $fetch('/api/categories', {
                     method: 'GET',
+                    query: { locale },
                     headers: buildRequestHeaders(token.value)
                 }),
             {
@@ -110,6 +113,7 @@
 
         $fetch(`/api/transactions/${operation.value}`, {
             method: 'POST',
+            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: event.data
         })

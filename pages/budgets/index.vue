@@ -6,7 +6,7 @@
     import type { DragableChangeEvent } from '~/types/Draggable'
 
     const { token } = useAuth()
-    const { t: $t } = useI18n()
+    const { t: $t, locale } = useI18n()
     const isModalOpen: Ref<boolean> = ref(false)
     const isChooserOpen: Ref<boolean> = ref(false)
     const selectedBudgetId: Ref<number | null> = ref(null)
@@ -20,6 +20,7 @@
             data: BudgetDataObject[]
         }>('/api/budgets', {
             method: 'GET',
+            query: { locale },
             headers: buildRequestHeaders(token.value)
         })
 
@@ -76,6 +77,7 @@
             //User accepted
             $fetch(`/api/budgets/delete`, {
                 method: 'POST',
+                query: { locale },
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedBudgetId.value }
             })
@@ -118,6 +120,7 @@
 
         $fetch(`/api/budgets/order`, {
             method: 'POST',
+            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: { positions: budgetPos }
         })
