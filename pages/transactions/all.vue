@@ -8,6 +8,7 @@
         TableSort
     } from '@/types/Table'
 
+    const localePath = useLocalePath()
     const { token } = useAuth()
     const tableObj = {
         label: 'Transactions',
@@ -293,7 +294,7 @@
             <template #extra-section>
                 <div
                     class="flex flex-row items-end justify-center sm:justify-end w-full gap-2">
-                    <ULink to="/transactions/llm-data-importer">
+                    <ULink :to="localePath('/transactions/llm-data-importer')">
                         <UButton
                             icon="i-heroicons-arrow-down-on-square-stack"
                             color="primary"

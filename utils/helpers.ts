@@ -38,12 +38,23 @@ export const isRouteActive = function (
     path: string,
     exactPath: boolean = false
 ) {
+    const localePath = useLocalePath()
+
+    /*
+    * localePath only works when the path passed by parameter is an actual path
+    * in the application.
+    * Since this method allows to search for partial url paths, that will cause problems,
+    * to get around this, we can always get the locale path for '/', which will return only
+    * the locale part (ex: '/pt') and add the rest of the path.
+    */
+    const pathWithLocale = `${localePath('/')}${path !== '/' ? path : ''}`
+
     if (exactPath) {
-        if (path == route.path) return true
+        if (pathWithLocale === route.path) return true
         else return false
     }
 
-    if (route.path.substring(0, path.length) == path) return true
+    if (route.path.substring(0, pathWithLocale.length) === pathWithLocale) return true
     else return false
 }
 

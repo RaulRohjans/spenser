@@ -1,11 +1,15 @@
 <script setup lang="ts">
     import type { NavigationItem } from '@/types/Navigation'
+import type { SelectOption } from '~/types/Options';
 
+    const localePath = useLocalePath()
+    const { locale, setLocale } = useI18n()
     const { signOut } = useAuth()
     const route = useRoute()
 
     const isMobileMenuShown = ref(false)
     const navbarRef: Ref<HTMLElement | null> = ref(null)
+    const selectedLocale: Ref<string> = ref(locale.value)
 
     const navigationPages = computed((): NavigationItem[] => {
         return [
@@ -31,7 +35,7 @@
             },
             {
                 name: 'Settings',
-                href: '/settings',
+                href: '/settings/global',
                 selected: isRouteActive(route, '/settings')
             }
         ]
@@ -41,6 +45,19 @@
         if (!navbarRef.value) return '6vh'
 
         return `${navbarRef.value.clientHeight}px`
+    })
+
+    const getLocales = computed((): SelectOption[] => {
+        return [
+            {
+                label: 'en',
+                value: 'en'
+            }, 
+            {
+                label: 'pt',
+                value: 'pt'
+            }
+        ]
     })
 
     const getNaviationItemClass = function (item: NavigationItem) {
@@ -71,6 +88,8 @@
     const toggleMobileMenu = function () {
         isMobileMenuShown.value = !isMobileMenuShown.value
     }
+
+    watch(selectedLocale, (newVal) => setLocale(newVal))
 </script>
 
 <template>
@@ -112,7 +131,7 @@
                                 v-for="page in navigationPages"
                                 :key="page.href">
                                 <ULink
-                                    :to="page.href"
+                                    :to="localePath(page.href)"
                                     :class="getNaviationItemClass(page)"
                                     >{{ page.name }}</ULink
                                 >
@@ -124,8 +143,17 @@
                 <!-- Right nav side -->
                 <div
                     class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-8 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    <!-- Theme Switcher -->
-                    <SThemeSwitcher />
+                    <div class="flex flex-row justify-start items-center gap-2">
+                        <!-- Theme Switcher -->
+                        <SThemeSwitcher />
+
+                        <USelect v-model="selectedLocale" :options="getLocales" >
+                            <template #leading>
+                                <UIcon name="i-heroicons-flag" class="w-4 h-4" dynamic/>
+                            </template>
+                        </USelect>
+                    </div>
+
 
                     <!-- Profile section -->
                     <UButton
@@ -145,7 +173,7 @@
                 <div class="flex flex-col space-y-1 px-2 pb-3 pt-2">
                     <template v-for="page in navigationPages" :key="page.href">
                         <ULink
-                            :to="page.href"
+                            :to="localePath(page.href)"
                             :class="getNaviationItemClass(page)"
                             >{{ page.name }}</ULink
                         >

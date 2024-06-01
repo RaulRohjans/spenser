@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    const localePath = useLocalePath()
     const { data: authData } = useAuth()
     const route = useRoute()
 
@@ -74,7 +75,7 @@
                         :key="`${option.name}${option.href}`">
                         <ULink
                             class="flex flex-row justify-start items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                            :to="option.href">
+                            :to="localePath(option.href)">
                             <UButton
                                 :icon="option.icon"
                                 :color="option.selected ? 'primary' : 'gray'"
@@ -108,7 +109,7 @@
                             :key="`${option.name}${option.href}`">
                             <ULink
                                 class="flex flex-row justify-start items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                                :to="option.href">
+                                :to="localePath(option.href)">
                                 <UButton
                                     :icon="option.icon"
                                     :color="

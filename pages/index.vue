@@ -1,12 +1,13 @@
 <script setup lang="ts">
     const { data: authData } = useAuth()
+    const { locale, setLocale, t: $t } = useI18n()
 
     const getUsername = computed(() => {
         return authData.value ? authData.value.username : ''
     })
-
+    
     useHead({
-        title: 'Spenser | Home'
+        title: `Spenser | ${$t('Home')}`
     })
 </script>
 
