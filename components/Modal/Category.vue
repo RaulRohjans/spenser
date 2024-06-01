@@ -63,11 +63,8 @@
             headers: buildRequestHeaders(token.value),
             body: event.data
         }).then((data) => {
-            if(!data.success) {
-                displayMessage('An error ocurred when creating your category.', 'error')
-                return
-            }
-
+            if(!data.success) return displayMessage('An error ocurred when creating your category.', 'error')
+            
             // Emit success
             emit('successful-submit')
 
@@ -76,9 +73,7 @@
 
             // Close modal
             model.value = false
-        }).catch((e: NuxtError) => {
-            error.value = e.statusMessage || null
-        })
+        }).catch((e: NuxtError) => error.value = e.statusMessage || null)
     }
 
     const operation = computed(() => {

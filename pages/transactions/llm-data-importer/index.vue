@@ -8,6 +8,7 @@
     const filesRef: Ref<HTMLInputElement | null> = ref(null)
     const modalTransactions: Ref<LlmTransactionObject[] | null> = ref(null)
     const modalState: Ref<boolean> = ref(false)
+    const isLoading: Ref<boolean> = ref(false)
     const schema = z.object({
         file: z.string().optional(),
         transactionText: z.string().optional()
@@ -24,7 +25,7 @@
     }
 
     const toggleLoading = function(state: boolean) {
-
+        isLoading.value = state
     }
 
     const clearInputFields = function() {
@@ -55,10 +56,7 @@
 
             url += 'query'
         }
-        else {
-            displayMessage('Please provide data to import, either by upload or text!', 'error')
-            return
-        }
+        else return displayMessage('Please provide data to import, either by upload or text!', 'error')
 
         //Show loading
         toggleLoading(true)
@@ -73,10 +71,7 @@
             // Stop loading
             toggleLoading(false)
 
-            if(!parsedData.success) {
-                displayMessage('An error ocurred when uploading transaction data.', 'error')
-                return
-            }
+            if(!parsedData.success) return displayMessage('An error ocurred when uploading transaction data.', 'error')
 
             // Load transactions into modal
             modalTransactions.value = parsedData.transactions
@@ -140,10 +135,12 @@
         </div>
     </UCard>
 
-    <ModalEditTransactions
+    <ModalImportTransactions
         v-if="modalTransactions"
         v-model="modalState"
         class="h-full overflow-y-auto px-4 pt-4 pb-12"
         :transactions="modalTransactions"
         @successful-submit="() => modalTransactions = null" />
+
+    <SLoader v-model="isLoading" />
 </template>

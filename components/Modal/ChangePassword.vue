@@ -30,10 +30,7 @@
             headers: buildRequestHeaders(token.value),
             body: { password: event.data.new_password }
         }).then((data) => {
-            if(!data.success) {
-                displayMessage('An error ocurred when updating your password.', 'error')
-                return
-            }
+            if(!data.success) return displayMessage('An error ocurred when updating your password.', 'error')
 
             displayMessage('Password updated successfully!', 'success')
 

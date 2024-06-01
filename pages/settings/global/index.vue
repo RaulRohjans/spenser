@@ -85,9 +85,7 @@
 
             // Disaply success message
             displayMessage(`Settings saved successfully!`, 'success')
-        }).catch((e: NuxtError) => {
-            error.value = e.statusMessage || null
-        })
+        }).catch((e: NuxtError) => error.value = e.statusMessage || null)
     }
 
     watch(userSettings, () => {

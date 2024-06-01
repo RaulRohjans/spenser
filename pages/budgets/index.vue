@@ -68,16 +68,11 @@
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedBudgetId.value }
             }).then((data) => {
-                if(!data.success) {
-                    displayMessage('An error ocurred when removing your budget.', 'error')
-                    return
-                }
+                if(!data.success) return displayMessage('An error ocurred when removing your budget.', 'error')
 
                 reloadBudgetData()
                 displayMessage('Budget deleted successfully!', 'success')
-            }).catch((e: NuxtError) => {
-                displayMessage(e.statusMessage, 'error')
-            })
+            }).catch((e: NuxtError) => displayMessage(e.statusMessage, 'error'))
         }
 
         selectedBudgetId.value = null

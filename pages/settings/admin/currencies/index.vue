@@ -75,16 +75,11 @@
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedCurrencyId.value }
             }).then((data) => {
-                if(!data.success) {
-                    displayMessage('An error ocurred when removing your currency.', 'error')
-                    return
-                }
+                if(!data.success) return displayMessage('An error ocurred when removing your currency.', 'error')
 
                 displayMessage('Currency deleted successfully!', 'success')
                 reloadTableData()
-            }).catch((e: NuxtError) => {
-                displayMessage(e.statusMessage, 'error')
-            })
+            }).catch((e: NuxtError) => displayMessage(e.statusMessage, 'error'))
         }
 
         selectedCurrencyId.value = null

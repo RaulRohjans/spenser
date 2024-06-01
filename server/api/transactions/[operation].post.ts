@@ -50,7 +50,7 @@ export default defineEventHandler(async (event) => {
         if(res.count === 0)
             throw createError({
                 statusCode: 400,
-                statusMessage: 'A category with that name already exists.'
+                statusMessage: 'No category exists with the corresponding id.'
             })
     }
 
@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
             await validateCategory()
 
             // Create transation record
-            let categoryRecord: Omit<Selectable<Transaction>, 'id'> = {
+            let transactionRecord: Omit<Selectable<Transaction>, 'id'> = {
                 user: user.id,
                 category,
                 name,
@@ -71,7 +71,7 @@ export default defineEventHandler(async (event) => {
 
             // Add transaction to persistent storage
             opRes = await db.insertInto('transaction')
-                .values(categoryRecord)
+                .values(transactionRecord)
                 .returning('id')
                 .executeTakeFirst()
             break

@@ -45,16 +45,11 @@
             headers: buildRequestHeaders(token.value),
             body: event.data
         }).then((data) => {
-            if(!data.success) {
-                displayMessage('An error ocurred when saving your settings.', 'error')
-                return
-            }
+            if(!data.success) return displayMessage('An error ocurred when saving your settings.', 'error')
 
             // Disaply success message
             displayMessage(`Settings saved successfully!`, 'success')
-        }).catch((e: NuxtError) => {
-            error.value = e.statusMessage || null
-        })
+        }).catch((e: NuxtError) => error.value = e.statusMessage || null)
     }
 </script>
 
