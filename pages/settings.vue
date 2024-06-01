@@ -2,16 +2,17 @@
     const localePath = useLocalePath()
     const { data: authData } = useAuth()
     const route = useRoute()
+    const { t: $t } = useI18n()
 
     const settingsOptions = computed(() => [
         {
-            name: 'Global',
+            name: $t('Global'),
             icon: 'i-heroicons-wrench',
             href: '/settings/global',
             selected: isRouteActive(route, '/settings/global')
         },
         {
-            name: 'Account',
+            name: $t('Account'),
             icon: 'i-heroicons-user-circle',
             href: '/settings/account',
             selected: isRouteActive(route, '/settings/account')
@@ -20,19 +21,19 @@
 
     const adminOptions = computed(() => [
         {
-            name: 'Users',
+            name: $t('Users'),
             href: '/settings/admin/users',
             icon: 'i-heroicons-users',
             selected: isRouteActive(route, '/settings/admin/users')
         },
         {
-            name: 'Currencies',
+            name: $t('Currencies'),
             href: '/settings/admin/currencies',
             icon: 'i-heroicons-banknotes',
             selected: isRouteActive(route, '/settings/admin/currencies')
         },
         {
-            name: 'LLM Data Importer',
+            name: $t('LLM Data Importer'),
             icon: 'i-heroicons-circle-stack',
             href: '/settings/admin/llm-data-importer',
             selected: isRouteActive(route, '/settings/admin/llm-data-importer')
@@ -52,7 +53,7 @@
     }
 
     useHead({
-        title: 'Spenser | Settings'
+        title: `Spenser | ${$t('Settings')}`
     })
 </script>
 
@@ -65,7 +66,7 @@
                 <div class="sticky">
                     <h2
                         class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        Settings
+                        {{ $t('Settings') }}
                     </h2>
                 </div>
 
@@ -99,7 +100,7 @@
                     <div class="sticky">
                         <h2
                             class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                            Admin
+                            {{ $t('Admin') }}
                         </h2>
                     </div>
 

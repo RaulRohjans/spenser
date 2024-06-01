@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import type { NavigationItem } from '@/types/Navigation'
-import type { SelectOption } from '~/types/Options';
+    import type { SelectOption } from '~/types/Options'
 
     const localePath = useLocalePath()
     const { locale, setLocale } = useI18n()

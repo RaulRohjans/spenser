@@ -8,8 +8,9 @@
     import type { NuxtError } from '#app'
 
     const { token, data: authData, signOut } = useAuth()
+    const { t: $t } = useI18n()
     const tableObj = {
-        label: 'Users',
+        label: $t('Users'),
         actions: ['edit', 'delete'],
         columns: [
             {
@@ -19,32 +20,32 @@
             },
             {
                 key: 'username',
-                label: 'Username',
+                label: $t('Username'),
                 sortable: true
             },
             {
                 key: 'first_name',
-                label: 'First Name',
+                label: $t('First Name'),
                 sortable: true
             },
             {
                 key: 'last_name',
-                label: 'Last Name',
+                label: $t('Last Name'),
                 sortable: true
             },
             {
                 key: 'email',
-                label: 'Email',
+                label: $t('Email'),
                 sortable: true
             },
             {
                 key: 'is_admin',
-                label: 'Administrator',
+                label: $t('Administrator'),
                 sortable: true
             },
             {
                 key: 'actions',
-                label: 'Actions',
+                label: $t('Actions'),
                 sortable: false,
                 searchable: false
             }
@@ -138,7 +139,7 @@
                 .then((data) => {
                     if (!data.success)
                         return displayMessage(
-                            'An error ocurred when removing the user.',
+                            $t('An error ocurred while removing the user.'),
                             'error'
                         )
 
@@ -147,7 +148,7 @@
                         signOut({ callbackUrl: '/login' })
                     else reloadTableData()
 
-                    displayMessage('User deleted successfully!', 'success')
+                    displayMessage($t('User deleted successfully!'), 'success')
                 })
                 .catch((e: NuxtError) =>
                     displayMessage(e.statusMessage, 'error')
@@ -176,7 +177,7 @@
     })
 
     useHead({
-        title: 'Spenser | Users Management'
+        title: `Spenser | ${$t('Users Management')}`
     })
 </script>
 
@@ -206,7 +207,7 @@
                         color="primary"
                         size="xs"
                         @click="toggleModal">
-                        Create User
+                        {{ $t('Create User') }}
                     </UButton>
                 </div>
             </template>
@@ -221,7 +222,7 @@
 
     <ModalChooser
         v-model="isChooserOpen"
-        title="Delete User"
-        message="Are you sure you want to delete this user?"
+        :title="$t('Delete User')"
+        :message="$t('Are you sure you want to delete this user?')"
         @click="delUser" />
 </template>

@@ -8,6 +8,7 @@
     import type { Selectable } from 'kysely'
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const error: Ref<null | string> = ref(null)
     const settingsStore = useSettingsStore()
     const currencySelectKey: Ref<number> = ref(0)
@@ -83,7 +84,7 @@
             .then((data) => {
                 if (!data.success) {
                     displayMessage(
-                        'An error ocurred when saving your settings.',
+                        $t('An error ocurred while saving your settings.'),
                         'error'
                     )
                     return
@@ -93,7 +94,7 @@
                 updateStore(Number(event.data.currency))
 
                 // Disaply success message
-                displayMessage(`Settings saved successfully!`, 'success')
+                displayMessage($t('Settings saved successfully!'), 'success')
             })
             .catch((e: NuxtError) => (error.value = e.statusMessage || null))
     }
@@ -104,14 +105,14 @@
     })
 
     useHead({
-        title: 'Spenser | Global Settings'
+        title: `Spenser | ${$t('Global Settings')}`
     })
 </script>
 
 <template>
     <UForm :state="state" class="space-y-4" @submit="onSave">
         <UFormGroup
-            label="Currency"
+            :label="$t('Currency')"
             name="currency"
             class="w-full"
             :error="error">
@@ -121,6 +122,6 @@
                 :options="getCurrencyOptions" />
         </UFormGroup>
 
-        <UButton type="submit"> Save </UButton>
+        <UButton type="submit"> {{ $t('Save') }} </UButton>
     </UForm>
 </template>

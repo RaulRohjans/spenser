@@ -5,6 +5,7 @@
     import type { LlmTransactionObject } from '~/types/Data'
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const filesRef: Ref<HTMLInputElement | null> = ref(null)
     const modalTransactions: Ref<LlmTransactionObject[] | null> = ref(null)
     const modalState: Ref<boolean> = ref(false)
@@ -62,7 +63,7 @@
             url += 'query'
         } else
             return displayMessage(
-                'Please provide data to import, either by upload or text!',
+                $t('Please upload a document or provide some text.'),
                 'error'
             )
 
@@ -85,7 +86,7 @@
 
                 if (!parsedData.success)
                     return displayMessage(
-                        'An error ocurred when uploading transaction data.',
+                        $t('An error ocurred when uploading transaction data.'),
                         'error'
                     )
 
@@ -107,7 +108,7 @@
     }
 
     useHead({
-        title: 'Spenser | LLM Data Importer'
+        title: `Spenser | ${$t('LLM Data Importer')}`
     })
 </script>
 
@@ -116,13 +117,12 @@
         <div class="flex flex-col justify-center items-center w-full gap-4">
             <h2
                 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                LLM Transaction Importer
+                {{ $t('LLM Transaction Importer') }}                
             </h2>
 
-            <span class="mb-4"
-                >Upload a file or write manually the transaction data you would
-                like to feed the AI with.</span
-            >
+            <span class="mb-4">
+                {{ $t('Upload a file or write the transaction data you would like to feed the AI with.') }}                
+            </span>
 
             <UForm
                 :state="state"
@@ -152,14 +152,14 @@
                             class="w-full"
                             :rows="8"
                             variant="outline"
-                            placeholder="Transactions to import..."
+                            :placeholder="$t('Transactions to import...')"
                             autoresize />
                     </UFormGroup>
 
                     <div
                         class="flex flex-row justify-start w-full items-center">
                         <UButton color="primary" type="submit" size="xs">
-                            Import Data
+                            {{ $t('Import Data') }}                            
                         </UButton>
                     </div>
                 </div>
