@@ -193,7 +193,6 @@
     useHead({
         title: 'Spenser | Transactions'
     })
-
 </script>
 
 <template>
@@ -238,14 +237,14 @@
 
             <template #extra-section>
                 <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2">
-                    <a href="/transactions/llm-data-importer">
+                    <ULink to="/transactions/llm-data-importer" >
                         <UButton 
                             icon="i-heroicons-arrow-down-on-square-stack"
                             color="primary"
                             size="xs">
                             LLM Data Import
                         </UButton>
-                    </a>
+                    </ULink>
 
                     <UButton 
                         icon="i-heroicons-plus"
