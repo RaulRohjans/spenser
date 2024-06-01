@@ -4,7 +4,7 @@
     import type { NuxtError } from '#app'
     import type { FetchTableDataResult } from '~/types/Table'
     import type { SelectOption } from '~/types/Options'
-    
+
     export type ModalBudgetProps = {
         /**
          * Id of the budget
@@ -23,7 +23,7 @@
 
         /**
          * Value of the budget
-         * 
+         *
          * This needs to be string here because Kysely is stupid and converts postgresql decimal to string
          */
         value?: number | string
@@ -83,38 +83,45 @@
     })
 
     // Fetch categories
-    const { data: categoryData, pending: categoryLoading } = await useLazyAsyncData<FetchTableDataResult>
-    ('categoryData', () => ($fetch)('/api/categories', {  
-            method: 'GET',
-            headers: buildRequestHeaders(token.value)
-    }), {
-        default: () => {
-            return {
-                success: false,
-                data: {
-                    totalRecordCount: 0,
-                    rows: []
+    const { data: categoryData, pending: categoryLoading } =
+        await useLazyAsyncData<FetchTableDataResult>(
+            'categoryData',
+            () =>
+                $fetch('/api/categories', {
+                    method: 'GET',
+                    headers: buildRequestHeaders(token.value)
+                }),
+            {
+                default: () => {
+                    return {
+                        success: false,
+                        data: {
+                            totalRecordCount: 0,
+                            rows: []
+                        }
+                    }
                 }
             }
-        }
-    })
-    
+        )
+
     const operation = computed(() => {
-        if(!props.id) return 'insert'
+        if (!props.id) return 'insert'
         return 'edit'
     })
 
     const categoryDisplayIcon = computed(() => {
-        if(!state.category) return ''
+        if (!state.category) return ''
 
         // Find the icon corresponding to the selected category
-        const icon = categoryData.value.data.rows.find(c => c.id == state.category)?.icon || ''
+        const icon =
+            categoryData.value.data.rows.find((c) => c.id == state.category)
+                ?.icon || ''
 
         return `i-heroicons-${icon}`
     })
 
     const getCategoryOptions = computed(() => {
-        const options: SelectOption[] = [{label: '-', value: ''}]
+        const options: SelectOption[] = [{ label: '-', value: '' }]
 
         categoryData.value.data.rows.forEach((category) => {
             options.push({
@@ -126,56 +133,91 @@
         return options
     })
 
-    const onCreateCategory = function(event: FormSubmitEvent<Schema>) {
+    const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
         emit('submit')
-        
+
         $fetch(`/api/budgets/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
-        }).then((data) => {
-            if(!data.success) return displayMessage('An error ocurred when creating your budget.', 'error')
+        })
+            .then((data) => {
+                if (!data.success)
+                    return displayMessage(
+                        'An error ocurred when creating your budget.',
+                        'error'
+                    )
 
-            // Emit success
-            emit('successful-submit')
+                // Emit success
+                emit('successful-submit')
 
-            // Disaply success message
-            displayMessage(`Budget ${operation.value} successfully!`, 'success')
+                // Disaply success message
+                displayMessage(
+                    `Budget ${operation.value} successfully!`,
+                    'success'
+                )
 
-            // Close modal
-            model.value = false
-        }).catch((e: NuxtError) => error.value = e.statusMessage || null)
+                // Close modal
+                model.value = false
+            })
+            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
     }
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ 'container': 'items-center' }">
-        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateCategory">            
-            <UFormGroup label="Name" name="name" class="w-full" :error="!!error">
+    <UModal v-model="model" :ui="{ container: 'items-center' }">
+        <UForm
+            :schema="schema"
+            :state="state"
+            class="space-y-4 p-6"
+            @submit="onCreateCategory">
+            <UFormGroup
+                label="Name"
+                name="name"
+                class="w-full"
+                :error="!!error">
                 <UInput v-model="state.name" />
             </UFormGroup>
 
-            <UFormGroup label="Category" name="category" class="w-full" :error="!!error">
-                <USelect v-model="state.category" :options="getCategoryOptions" :loading="categoryLoading" class="hide-select-span" >
+            <UFormGroup
+                label="Category"
+                name="category"
+                class="w-full"
+                :error="!!error">
+                <USelect
+                    v-model="state.category"
+                    :options="getCategoryOptions"
+                    :loading="categoryLoading"
+                    class="hide-select-span">
                     <template #leading>
-                        <UIcon :name="categoryDisplayIcon" class="h-full" dynamic />
+                        <UIcon
+                            :name="categoryDisplayIcon"
+                            class="h-full"
+                            dynamic />
                     </template>
                 </USelect>
             </UFormGroup>
 
-            <UFormGroup label="Period" name="period" class="w-full" :error="!!error">
-                <USelect 
-                    v-model="state.period" 
-                    :options="periodOptions" class="hide-select-span" />
+            <UFormGroup
+                label="Period"
+                name="period"
+                class="w-full"
+                :error="!!error">
+                <USelect
+                    v-model="state.period"
+                    :options="periodOptions"
+                    class="hide-select-span" />
             </UFormGroup>
-                
-            <UFormGroup label="Value" name="value" class="w-full" :error="error">
+
+            <UFormGroup
+                label="Value"
+                name="value"
+                class="w-full"
+                :error="error">
                 <UInput v-model="state.value" type="number" step="any" />
-            </UFormGroup>                   
-    
-            <UButton type="submit">
-                Submit
-            </UButton>           
+            </UFormGroup>
+
+            <UButton type="submit"> Submit </UButton>
         </UForm>
     </UModal>
 </template>

@@ -1,4 +1,9 @@
-import { generateToken, fetchUserByUsername, hashPassword, comparePasswords } from '@/utils/authFunctions'
+import {
+    generateToken,
+    fetchUserByUsername,
+    hashPassword,
+    comparePasswords
+} from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 import type { Selectable } from 'kysely'
 import type { User } from 'kysely-codegen'
@@ -14,7 +19,10 @@ export default defineEventHandler(async (event) => {
         })
 
     // Validate credentials
-    const user: Selectable<User> = await validateLoginCredentials(username, password)
+    const user: Selectable<User> = await validateLoginCredentials(
+        username,
+        password
+    )
 
     //Remove password from the JWT object
     const jwtUser: Omit<Selectable<User>, 'password'> = user
@@ -31,19 +39,22 @@ export default defineEventHandler(async (event) => {
     }
 })
 
-const getUserCount = async function() {
+const getUserCount = async function () {
     // Get amount of users in the platform
-    const res = await db.selectFrom('user')
-        .select(({ fn }) => [
-            fn.count<number>('user.id').as('user_count')        
-        ])
+    const res = await db
+        .selectFrom('user')
+        .select(({ fn }) => [fn.count<number>('user.id').as('user_count')])
         .executeTakeFirst()
 
     return res?.user_count || 0
 }
 
-const validateLoginCredentials = async function (username: string, password: string) {
-    if (await getUserCount() == 0) { // Check if first login
+const validateLoginCredentials = async function (
+    username: string,
+    password: string
+) {
+    if ((await getUserCount()) == 0) {
+        // Check if first login
         if (username != 'admin' || password != 'admin')
             throw createError({
                 statusCode: 400,
@@ -60,7 +71,7 @@ const validateLoginCredentials = async function (username: string, password: str
             statusCode: 400,
             statusMessage: 'Invalid login credentials.'
         })
-        
+
     return user
 }
 
@@ -71,7 +82,7 @@ const validateLoginCredentials = async function (username: string, password: str
  * We also create a user record with these credentials and store it
  */
 const firstLogin = async function () {
-    let user: Omit<Selectable<User>, 'id'> = {
+    const user: Omit<Selectable<User>, 'id'> = {
         first_name: 'Admin',
         last_name: 'Admin',
         username: 'admin',
@@ -82,19 +93,21 @@ const firstLogin = async function () {
     }
 
     // Add user to persistent storage
-    const res = await db.insertInto('user')
+    const res = await db
+        .insertInto('user')
         .values(user)
-        
+
         //This is important since Postgresql doesnt support returningId in InsertResult
         .returning('id')
         .executeTakeFirst()
 
-    if(!res)
+    if (!res)
         throw createError({
             statusCode: 500,
-            statusMessage: 'Could not create default user "admin" in the database, an insertion error occurred.'
+            statusMessage:
+                'Could not create default user "admin" in the database, an insertion error occurred.'
         })
-        
+
     return {
         ...user,
         id: Number(res.id)

@@ -22,23 +22,32 @@
     })
 
     const isModalOpen = ref(false)
-    const onSubmit = function(event: FormSubmitEvent<Schema>) {                   
+    const onSubmit = function (event: FormSubmitEvent<Schema>) {
         $fetch('/api/account/update', {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
-        }).then((data) => {
-            if(!data.success) return displayMessage('An error ocurred when updating your account profile.', 'error')
-
-            displayMessage('Account settings updated successfully!', 'success')
-
-            // Force signout to refresh token
-            signOut({ callbackUrl: '/login' })
-        }).catch((e: NuxtError) => {
-            displayMessage(e.statusMessage, 'error')
         })
+            .then((data) => {
+                if (!data.success)
+                    return displayMessage(
+                        'An error ocurred when updating your account profile.',
+                        'error'
+                    )
+
+                displayMessage(
+                    'Account settings updated successfully!',
+                    'success'
+                )
+
+                // Force signout to refresh token
+                signOut({ callbackUrl: '/login' })
+            })
+            .catch((e: NuxtError) => {
+                displayMessage(e.statusMessage, 'error')
+            })
     }
-    const openChangePwModal = function() {
+    const openChangePwModal = function () {
         isModalOpen.value = !isModalOpen.value
     }
 
@@ -49,12 +58,17 @@
 
 <template>
     <div class="flex flex-row items-center justify-center">
-        <UForm :schema="schema" :state="state" class="space-y-4 w-full" @submit="onSubmit">
-            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
+        <UForm
+            :schema="schema"
+            :state="state"
+            class="space-y-4 w-full"
+            @submit="onSubmit">
+            <div
+                class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
                 <UFormGroup label="First Name" name="first_name" class="w-full">
                     <UInput v-model="state.first_name" />
                 </UFormGroup>
-        
+
                 <UFormGroup label="Last Name" name="last_name" class="w-full">
                     <UInput v-model="state.last_name" />
                 </UFormGroup>
@@ -63,21 +77,22 @@
             <UFormGroup label="Username" name="username" class="makeit-static">
                 <UInput v-model="state.username" />
             </UFormGroup>
-    
+
             <UFormGroup label="Email" name="email" class="">
                 <UInput v-model="state.email" />
-            </UFormGroup>    
-            
-            <UCheckbox v-model="state.is_admin" name="is_admin" label="Is Administrator" class="makeit-static" />
-    
-            <div class="flex flex-col-reverse sm:flex-row items-center justify-center sm:items-start sm:justify-start sm:space-x-4">
-                <UButton type="submit" class="mt-2 sm:mt-0">
-                    Submit
-                </UButton>
+            </UFormGroup>
 
-                <UButton @click="openChangePwModal">
-                    Change Password
-                </UButton>
+            <UCheckbox
+                v-model="state.is_admin"
+                name="is_admin"
+                label="Is Administrator"
+                class="makeit-static" />
+
+            <div
+                class="flex flex-col-reverse sm:flex-row items-center justify-center sm:items-start sm:justify-start sm:space-x-4">
+                <UButton type="submit" class="mt-2 sm:mt-0"> Submit </UButton>
+
+                <UButton @click="openChangePwModal"> Change Password </UButton>
             </div>
         </UForm>
     </div>

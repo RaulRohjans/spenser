@@ -1,100 +1,132 @@
 <script setup lang="ts">
-    import type { TableSort, FetchTableDataResult, TableRow } from '@/types/Table'
+    import type {
+        TableSort,
+        FetchTableDataResult,
+        TableRow
+    } from '@/types/Table'
     import type { NuxtError } from '#app'
 
     const { token } = useAuth()
     const tableObj = {
         label: 'Currencies',
         actions: ['delete'],
-        columns: [{
+        columns: [
+            {
                 key: 'id',
                 label: '#',
                 sortable: true
-            }, {
+            },
+            {
                 key: 'symbol',
                 label: 'Symbol',
                 sortable: true
-            }, {
+            },
+            {
                 key: 'placement',
                 label: 'Placement',
                 sortable: true
-            }, {
+            },
+            {
                 key: 'actions',
                 label: 'Actions',
                 sortable: false,
                 searchable: false
             }
-        ],
+        ]
     }
-    
+
     const page: Ref<number> = ref(1)
     const pageCount: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
     const searchColumn: Ref<string> = ref('symbol')
-    const sort: Ref<TableSort> = ref({ column: 'id', direction: 'asc' as const })
+    const sort: Ref<TableSort> = ref({
+        column: 'id',
+        direction: 'asc' as const
+    })
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
     const isChooserOpen: Ref<boolean> = ref(false)
     const selectedCurrencyId: Ref<number | null> = ref(null)
 
     // Fetch Data
-    const { data: tableData, pending: loading } = await useLazyAsyncData<FetchTableDataResult>
-    ('currencies', () => ($fetch)('/api/currencies', {  
-            method: 'GET',
-            headers: buildRequestHeaders(token.value), 
-            query: {
-                q: searchQuery.value,
-                qColumn: searchColumn.value,
-                page: page.value,
-                limit: pageCount.value,
-                sort: sort.value.column,
-                order: sort.value.direction
+    const { data: tableData, pending: loading } =
+        await useLazyAsyncData<FetchTableDataResult>(
+            'currencies',
+            () =>
+                $fetch('/api/currencies', {
+                    method: 'GET',
+                    headers: buildRequestHeaders(token.value),
+                    query: {
+                        q: searchQuery.value,
+                        qColumn: searchColumn.value,
+                        page: page.value,
+                        limit: pageCount.value,
+                        sort: sort.value.column,
+                        order: sort.value.direction
+                    }
+                }),
+            {
+                default: () => {
+                    return {
+                        success: false,
+                        data: {
+                            totalRecordCount: 0,
+                            rows: []
+                        }
+                    }
+                },
+                watch: [
+                    page,
+                    searchQuery,
+                    searchColumn,
+                    pageCount,
+                    sort,
+                    tableDataKey
+                ]
             }
-    }), {
-        default: () => {
-            return {
-                success: false,
-                data: {
-                    totalRecordCount: 0,
-                    rows: []
-                }
-            }
-        },
-        watch: [page, searchQuery, searchColumn, pageCount, sort, tableDataKey]
-    })
+        )
 
-    const delCurrencyAction = function(row: TableRow) {
+    const delCurrencyAction = function (row: TableRow) {
         selectedCurrencyId.value = row.id
         toggleChooser(true)
     }
 
-    const delCurrency = function(state: boolean) {
-        if(state) { //User accepted
+    const delCurrency = function (state: boolean) {
+        if (state) {
+            //User accepted
             $fetch(`/api/currencies/delete`, {
                 method: 'POST',
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedCurrencyId.value }
-            }).then((data) => {
-                if(!data.success) return displayMessage('An error ocurred when removing your currency.', 'error')
+            })
+                .then((data) => {
+                    if (!data.success)
+                        return displayMessage(
+                            'An error ocurred when removing your currency.',
+                            'error'
+                        )
 
-                displayMessage('Currency deleted successfully!', 'success')
-                reloadTableData()
-            }).catch((e: NuxtError) => displayMessage(e.statusMessage, 'error'))
+                    displayMessage('Currency deleted successfully!', 'success')
+                    reloadTableData()
+                })
+                .catch((e: NuxtError) =>
+                    displayMessage(e.statusMessage, 'error')
+                )
         }
 
         selectedCurrencyId.value = null
         toggleChooser(false)
     }
 
-    const toggleModal = function() {
+    const toggleModal = function () {
         isModalOpen.value = !isModalOpen.value
     }
 
-    const toggleChooser = function(state: boolean) {
+    const toggleChooser = function (state: boolean) {
         isChooserOpen.value = state
     }
 
-    const reloadTableData = function() {
+    const reloadTableData = function () {
         tableDataKey.value++
     }
 
@@ -105,22 +137,21 @@
 
 <template>
     <div class="flex flex-row h-full">
-        <STable 
+        <STable
             v-bind="tableObj"
+            v-model:page="page"
+            v-model:pageCount="pageCount"
+            v-model:search="searchQuery"
+            v-model:searchColumn="searchColumn"
+            v-model:sort="sort"
             :rows="tableData?.data.rows"
             :row-count="tableData?.data.totalRecordCount"
             :loading="loading"
             class="bg-none shadow-none w-full"
-            v-model:page="page" 
-            v-model:pageCount="pageCount" 
-            v-model:search="searchQuery"
-            v-model:searchColumn="searchColumn"
-            v-model:sort="sort"
             @delete-action="delCurrencyAction">
-
             <template #extra-section>
                 <div class="flex flex-row items-end justify-end w-full">
-                    <UButton 
+                    <UButton
                         icon="i-heroicons-plus"
                         color="primary"
                         size="xs"
@@ -134,9 +165,9 @@
 
     <ModalCurrency v-model="isModalOpen" @successful-submit="reloadTableData" />
 
-    <ModalChooser 
-        v-model="isChooserOpen" 
-        title="Delete Currency" 
+    <ModalChooser
+        v-model="isChooserOpen"
+        title="Delete Currency"
         message="Are you sure you want to delete this currency?"
         @click="delCurrency" />
 </template>

@@ -1,4 +1,8 @@
-import { comparePasswords, ensureAuth, hashPassword } from "@/utils/authFunctions"
+import {
+    comparePasswords,
+    ensureAuth,
+    hashPassword
+} from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 
 export default defineEventHandler(async (event) => {
@@ -13,30 +17,33 @@ export default defineEventHandler(async (event) => {
         })
 
     // Get user password
-    const res = await db.selectFrom('user')
+    const res = await db
+        .selectFrom('user')
         .select('password')
         .where('id', '=', user.id)
         .executeTakeFirst()
 
-    if(!res)
+    if (!res)
         throw createError({
             statusCode: 500,
-            statusMessage: 'The corresponding user could not be found in the database.'
+            statusMessage:
+                'The corresponding user could not be found in the database.'
         })
 
     //Throw error if they are the same
-    if(comparePasswords(res.password, password))
+    if (comparePasswords(res.password, password))
         throw createError({
             statusCode: 400,
             statusMessage: 'The new password cannot be the same as the old one.'
         })
 
-    const updateRes = await db.updateTable('user')
+    const updateRes = await db
+        .updateTable('user')
         .set('password', hashPassword(password))
         .where('user.id', '=', user.id)
         .executeTakeFirst()
 
-    if(updateRes.numUpdatedRows < 1)
+    if (updateRes.numUpdatedRows < 1)
         throw createError({
             statusCode: 500,
             statusMessage: 'Could not update the password on the database.'

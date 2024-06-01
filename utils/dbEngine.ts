@@ -1,18 +1,14 @@
 import pg from 'pg'
-import { Kysely, PostgresDialect, sql } from 'kysely'
-import type { SelectQueryBuilder } from 'kysely'
+import { Kysely, PostgresDialect } from 'kysely'
 import type { DB } from 'kysely-codegen'
+import type { CustomSQLQueryBuilder } from '~/types/Data'
 
-const {
-    DB_NAME,
-    DB_HOST,
-    DB_USER,
-    DB_PASSWORD,
-    DB_PORT
-} = useRuntimeConfig()
+const { DB_NAME, DB_HOST, DB_USER, DB_PASSWORD, DB_PORT } = useRuntimeConfig()
 
-if(!DB_NAME || !DB_HOST || !DB_USER || !DB_PASSWORD) {
-    console.error('The PostgreSQL database instance configuration is invalid. Please make sure the .env is set correctly.')
+if (!DB_NAME || !DB_HOST || !DB_USER || !DB_PASSWORD) {
+    console.error(
+        'The PostgreSQL database instance configuration is invalid. Please make sure the .env is set correctly.'
+    )
 }
 
 const dialect = new PostgresDialect({
@@ -22,26 +18,32 @@ const dialect = new PostgresDialect({
         user: DB_USER as string,
         password: DB_PASSWORD as string,
         port: Number(DB_PORT),
-        max: 10,
+        max: 10
     })
 })
 
 export const db = new Kysely<DB>({
-  dialect,
+    dialect
 })
 
-export const applySearchFilter = function(qb: SelectQueryBuilder<any, any, any>, search: string | undefined, searchColumn: string): SelectQueryBuilder<any, any, any> {
-    // If no search term is provided, return the unmodified query builder    
+export const applySearchFilter = function (
+    qb: CustomSQLQueryBuilder,
+    search: string | undefined,
+    searchColumn: string
+): CustomSQLQueryBuilder {
+    // If no search term is provided, return the unmodified query builder
     if (!search) return qb
 
     // Case insensitive string compare
-    return qb.where(({ eb, fn, cast }) => eb(
-        fn('upper', [
-            cast(db.dynamic.ref(searchColumn.toLowerCase()), 'text')
-        ]), 
-        
-        'like', 
-        
-        `%${search.toUpperCase()}%`
-    ))
+    return qb.where(({ eb, fn, cast }) =>
+        eb(
+            fn('upper', [
+                cast(db.dynamic.ref(searchColumn.toLowerCase()), 'text')
+            ]),
+
+            'like',
+
+            `%${search.toUpperCase()}%`
+        )
+    )
 }

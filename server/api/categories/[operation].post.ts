@@ -1,7 +1,7 @@
-import { ensureAuth } from "@/utils/authFunctions"
+import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
-import { Selectable } from "kysely"
-import { Category } from "kysely-codegen"
+import type { Selectable } from 'kysely'
+import type { Category } from 'kysely-codegen'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -10,10 +10,11 @@ export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
 
     // No need to do rest of the logic
-    if(operation === 'delete' && id) {
+    if (operation === 'delete' && id) {
         // Remove category in the database
-        await db.deleteFrom('category')
-            .where('id' , '=', id)
+        await db
+            .deleteFrom('category')
+            .where('id', '=', id)
             .where('category.user', '=', user.id)
             .execute()
         return { success: true }
@@ -24,51 +25,59 @@ export default defineEventHandler(async (event) => {
             statusCode: 400,
             statusMessage: 'One or more mandatory fields are empty.'
         })
-    
+
     // Check if the category is duplicated
-    const res = await db.selectFrom('category')
-        .select(({ fn }) => [
-            fn.count<number>('category.id').as('cat_count')
-        ])
+    const res = await db
+        .selectFrom('category')
+        .select(({ fn }) => [fn.count<number>('category.id').as('cat_count')])
         .where('category.user', '=', user.id)
-        .where(({ eb }) => eb(eb.fn('upper', ['category.name']), '=', String(name).toUpperCase())) //Case insensitive comparision
+        .where(({ eb }) =>
+            eb(
+                eb.fn('upper', ['category.name']),
+                '=',
+                String(name).toUpperCase()
+            )
+        ) //Case insensitive comparision
         .executeTakeFirst()
 
-    if(!res) 
+    if (!res)
         throw createError({
             statusCode: 500,
             statusMessage: 'Could not validate new data.'
         })
 
-    if(res.cat_count > 0)
+    if (res.cat_count > 0)
         throw createError({
             statusCode: 400,
             statusMessage: 'A category with that name already exists.'
         })
 
     let opRes
-    switch(operation) {
+    switch (operation) {
         case 'duplicate':
-        case 'insert': 
+        case 'insert': {
             // Create category record
-            let category: Omit<Selectable<Category>, 'id'> = {
+            const category: Omit<Selectable<Category>, 'id'> = {
                 name: name,
                 icon: icon || null,
                 user: user.id
             }
 
             // Add category to persistent storage
-            opRes = await db.insertInto('category')
+            opRes = await db
+                .insertInto('category')
                 .values(category)
                 .returning('id')
                 .executeTakeFirst()
             break
+        }
         case 'edit':
             // Update category in the database
-            opRes = await db.updateTable('category')
+            opRes = await db
+                .updateTable('category')
                 .set('name', name)
                 .set('icon', icon)
-                .where('id' , '=', id)
+                .where('id', '=', id)
                 .where('user', '=', user.id)
                 .execute()
             break
@@ -77,9 +86,9 @@ export default defineEventHandler(async (event) => {
                 statusCode: 500,
                 statusMessage: 'Invalid operation.'
             })
-    }    
+    }
 
-    if(!opRes)
+    if (!opRes)
         throw createError({
             statusCode: 500,
             statusMessage: 'Could not perform the operation, an error occurred.'

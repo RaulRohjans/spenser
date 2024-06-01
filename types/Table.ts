@@ -5,6 +5,7 @@ export interface TableColumn {
     searchable?: boolean
 }
 
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 export interface TableRow {
     [key: string]: any
 }
@@ -12,11 +13,11 @@ export interface TableRow {
 export interface TableAction {
     label: string
     icon: string
-    click?: Function
+    click?: { (): void }
 }
 
-export interface TableSort { 
-    column: string, 
+export interface TableSort {
+    column: string
     direction: string
 }
 
