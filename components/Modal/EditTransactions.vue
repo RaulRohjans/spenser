@@ -105,7 +105,7 @@
 <template>
     <UModal v-model="model" :ui="{ 'container': 'items-center mx-12' }" fullscreen>
         <div :class="props.class">
-            <Table 
+            <STable 
                 v-bind="tableObj"
                 :rows="props.transactions"
                 :row-count="props.transactions.length"
@@ -152,7 +152,7 @@
                         </UButton>
                     </div>
                 </template>
-            </Table>
+            </STable>
         </div>
     </UModal>
 </template>

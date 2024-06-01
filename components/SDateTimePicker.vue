@@ -3,7 +3,7 @@
     import type { ModelValue } from '@vuepic/vue-datepicker'
     import '@vuepic/vue-datepicker/dist/main.css'
 
-    export interface DateTimePickerProps {
+    export interface SDateTimePickerProps {
         /*
          * Type (date, datetime, or time)
          */
@@ -30,7 +30,7 @@
         range?: boolean
     }   
     
-    const props = withDefaults(defineProps<DateTimePickerProps>(), {
+    const props = withDefaults(defineProps<SDateTimePickerProps>(), {
         type: 'date',
         disabled: false,
         readonly: false,

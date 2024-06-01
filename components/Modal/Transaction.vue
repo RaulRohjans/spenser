@@ -157,7 +157,7 @@
             </div>
             
             <UFormGroup label="Date" name="date" :error="error">
-                <DateTimePicker v-model="state.date" type="datetime" />
+                <SDateTimePicker v-model="state.date" type="datetime" />
             </UFormGroup>
     
             <UButton type="submit">

@@ -2,7 +2,7 @@
     import type { TableColumn, TableRow, TableAction, TableSort } from '@/types/Table'
     import type { SelectOption } from '@/types/Options'
 
-    export interface TableProps {
+    export interface STableProps {
         /*
          * Table name/label to be displayed on top
          */
@@ -74,7 +74,7 @@
         disableFooter?: boolean
     }
 
-    const props = withDefaults(defineProps<TableProps>(), {
+    const props = withDefaults(defineProps<STableProps>(), {
         columns: null,
         rows: null,
         rowCount: 0,

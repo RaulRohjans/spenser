@@ -147,7 +147,7 @@
 
 <template>
     <div class="flex flex-row h-full">
-        <Table 
+        <STable 
             v-bind="tableObj"
             :rows="tableData?.data.rows"
             :row-count="tableData?.data.totalRecordCount"
@@ -176,7 +176,7 @@
                     </UButton>
                 </div>
             </template>
-        </Table>
+        </STable>
     </div>
 
     <ModalUser 

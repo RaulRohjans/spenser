@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    export type LogoProps = {
+    export type SLogoProps = {
         /**
          * Custom class to be used on the logo image component
          */
@@ -16,7 +16,7 @@
         height?: string
     }
 
-    const props = withDefaults(defineProps<LogoProps>(), {
+    const props = withDefaults(defineProps<SLogoProps>(), {
         class: '',
         width: '100%',
         height: '100%'

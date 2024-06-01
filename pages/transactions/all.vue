@@ -198,7 +198,7 @@
 
 <template>
     <div class="flex flex-row items-center justify-center">
-        <Table 
+        <STable 
             :key="reloadTableKey"
             v-bind="tableObj"
             :rows="tableData?.data.rows"
@@ -261,7 +261,7 @@
                 <div class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
                     <UCheckbox v-model="groupByCategory" label="Group by category" />
     
-                    <DateTimePicker 
+                    <SDateTimePicker 
                         v-model="dateRange" 
                         class="!w-56" 
                         type="date" 
@@ -269,7 +269,7 @@
                         @clear="() => dateRange = []" />
                 </div>
             </template>
-        </Table>
+        </STable>
     </div>
 
     <ModalTransaction 

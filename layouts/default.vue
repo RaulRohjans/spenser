@@ -1,9 +1,9 @@
 <template>
     <div class="dark:bg-gray-800">
-        <Navbar />
+        <SNavbar />
         <main class="min-h-screen p-4">
             <slot />
         </main>
-        <Footer />
+        <SFooter />
     </div>
 </template>
