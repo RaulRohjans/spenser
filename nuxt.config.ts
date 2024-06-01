@@ -9,7 +9,8 @@ export default defineNuxtConfig({
         '@sidebase/nuxt-auth',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
-        '@nuxt/eslint'
+        '@nuxt/eslint',
+        "@nuxtjs/i18n"
     ],
     css: ['~/assets/css/main.scss'],
     build: {
@@ -59,5 +60,8 @@ export default defineNuxtConfig({
         MAX_TRANSACTION_FILE_SIZE: Number(
             process.env.MAX_TRANSACTION_FILE_SIZE || 1024 * 1024 * 10
         ) //10 MB
+    },
+    i18n: {
+        vueI18n: './locales/i18n.config.ts'
     }
 })
