@@ -1,3 +1,6 @@
+import type { Selectable } from "kysely"
+import type { GlobalSettings } from "kysely-codegen"
+
 export interface UserSettingsObject {
     id: number
     user: number
@@ -5,6 +8,10 @@ export interface UserSettingsObject {
     symbol: string | null
     placement: string
 }
+
+// This has to be created here since Nuxt doesnt support Kysely imports
+// on the client side. It throws a "global is undefined" error.
+export type GlobalSettingsObject = Selectable<GlobalSettings>
 
 export interface BudgetDataObject {
     id: number
@@ -20,4 +27,11 @@ export interface BudgetDataObject {
     category_name: string | null
     category_icon: string | null
     expenses: number
+}
+
+export interface LlmTransactionObject  {
+    category: number
+    name: string
+    value: number
+    date: string //This value is meant to later be parsed into a Date format
 }

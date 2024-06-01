@@ -28,10 +28,7 @@
             headers: buildRequestHeaders(token.value),
             body: event.data
         }).then((data) => {
-            if(!data.success) {
-                displayMessage('An error ocurred when updating your account profile.', 'error')
-                return
-            }
+            if(!data.success) return displayMessage('An error ocurred when updating your account profile.', 'error')
 
             displayMessage('Account settings updated successfully!', 'success')
 

@@ -42,10 +42,14 @@
         return options
     })
 
+    const getCurrency = function(id: number) {
+        return currencies.value.data.rows.find(e => Number(e.id) === id)
+    }
+
     const updateStore = function(currencyId?: number) {
         if(!currencyId) return
 
-        const option = currencies.value.data.rows.find(e => Number(e.id) === currencyId)
+        const option = getCurrency(currencyId)
         if(!option) return
 
         settingsStore.currency = option as Selectable<Currency>
@@ -81,9 +85,7 @@
 
             // Disaply success message
             displayMessage(`Settings saved successfully!`, 'success')
-        }).catch((e: NuxtError) => {
-            error.value = e.statusMessage || null
-        })
+        }).catch((e: NuxtError) => error.value = e.statusMessage || null)
     }
 
     watch(userSettings, () => {

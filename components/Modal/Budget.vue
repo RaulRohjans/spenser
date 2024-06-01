@@ -67,17 +67,11 @@
         }
     ])
 
-    /*
-    * The reason we need this abomination is to display a general
-    * form error, since the fields are in the same row, showing
-    * field specific stuff would deformat everything...
-    */
     const schema = z.object({
         id: z.number().optional(),
         name: z.string().optional(),
         value: z.number().min(0.01, 'The value has to be bigger than 0.')
     })
-    /* ------------------------------------------------ */
 
     type Schema = z.output<typeof schema>
     const state = reactive({
@@ -140,22 +134,17 @@
             headers: buildRequestHeaders(token.value),
             body: event.data
         }).then((data) => {
-            if(!data.success) {
-                displayMessage('An error ocurred when creating your category.', 'error')
-                return
-            }
+            if(!data.success) return displayMessage('An error ocurred when creating your budget.', 'error')
 
             // Emit success
             emit('successful-submit')
 
             // Disaply success message
-            displayMessage(`Category ${operation.value} successfully!`, 'success')
+            displayMessage(`Budget ${operation.value} successfully!`, 'success')
 
             // Close modal
             model.value = false
-        }).catch((e: NuxtError) => {
-            error.value = e.statusMessage || null
-        })
+        }).catch((e: NuxtError) => error.value = e.statusMessage || null)
     }
 </script>
 

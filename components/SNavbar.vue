@@ -78,7 +78,7 @@
                 
                 <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                     <div class="flex flex-shrink-0 items-center">
-                        <Logo width="100%" :height="getLogoHeight" class="max-w-[85%]" />
+                        <SLogo width="100%" :height="getLogoHeight" class="max-w-[85%]" />
                     </div>
 
                     <!-- Desktop Navigation Items -->
@@ -94,7 +94,7 @@
                 <!-- Right nav side -->                
                 <div class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-8 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                     <!-- Theme Switcher -->
-                    <ThemeSwitcher />
+                    <SThemeSwitcher />
 
                     <!-- Profile section -->
                     <UButton 

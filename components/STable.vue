@@ -2,7 +2,7 @@
     import type { TableColumn, TableRow, TableAction, TableSort } from '@/types/Table'
     import type { SelectOption } from '@/types/Options'
 
-    export interface TableProps {
+    export interface STableProps {
         /*
          * Table name/label to be displayed on top
          */
@@ -67,9 +67,14 @@
          * Component CSS classes
          */
         class?: string
+
+        /*
+         * Disable table footer
+         */
+        disableFooter?: boolean
     }
 
-    const props = withDefaults(defineProps<TableProps>(), {
+    const props = withDefaults(defineProps<STableProps>(), {
         columns: null,
         rows: null,
         rowCount: 0,
@@ -79,7 +84,8 @@
         sorting: true,
         filtering: true,
         manualFilterReset: false,
-        rowsPerPage: true
+        rowsPerPage: true,
+        disableFooter: false
     })
 
     const emit = defineEmits<{
@@ -291,7 +297,7 @@
         </UTable>
 
         <!-- Number of rows & Pagination -->
-        <template #footer>
+        <template #footer v-if="!disableFooter">
             <div class="flex flex-wrap justify-between items-center">
                 <div>
                     <span class="text-sm leading-5">

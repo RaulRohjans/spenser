@@ -75,16 +75,11 @@
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedCurrencyId.value }
             }).then((data) => {
-                if(!data.success) {
-                    displayMessage('An error ocurred when removing your currency.', 'error')
-                    return
-                }
+                if(!data.success) return displayMessage('An error ocurred when removing your currency.', 'error')
 
                 displayMessage('Currency deleted successfully!', 'success')
                 reloadTableData()
-            }).catch((e: NuxtError) => {
-                displayMessage(e.statusMessage, 'error')
-            })
+            }).catch((e: NuxtError) => displayMessage(e.statusMessage, 'error'))
         }
 
         selectedCurrencyId.value = null
@@ -106,7 +101,7 @@
 
 <template>
     <div class="flex flex-row h-full">
-        <Table 
+        <STable 
             v-bind="tableObj"
             :rows="tableData?.data.rows"
             :row-count="tableData?.data.totalRecordCount"
@@ -130,7 +125,7 @@
                     </UButton>
                 </div>
             </template>
-        </Table>
+        </STable>
     </div>
 
     <ModalCurrency v-model="isModalOpen" @successful-submit="reloadTableData" />

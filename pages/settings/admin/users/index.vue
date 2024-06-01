@@ -108,19 +108,14 @@
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedUserId.value }
             }).then((data) => {
-                if(!data.success) {
-                    displayMessage('An error ocurred when removing the user.', 'error')
-                    return
-                }
+                if(!data.success) return displayMessage('An error ocurred when removing the user.', 'error')
 
                 // If the deleted user is the current one, logout
                 if(selectedUserId.value == authData.value.id) signOut({ callbackUrl: '/login' })
                 else reloadTableData()
 
                 displayMessage('User deleted successfully!', 'success')
-            }).catch((e: NuxtError) => {
-                displayMessage(e.statusMessage, 'error')
-            })
+            }).catch((e: NuxtError) => displayMessage(e.statusMessage, 'error'))
         }
 
         selectedUserId.value = null
@@ -147,7 +142,7 @@
 
 <template>
     <div class="flex flex-row h-full">
-        <Table 
+        <STable 
             v-bind="tableObj"
             :rows="tableData?.data.rows"
             :row-count="tableData?.data.totalRecordCount"
@@ -176,7 +171,7 @@
                     </UButton>
                 </div>
             </template>
-        </Table>
+        </STable>
     </div>
 
     <ModalUser 

@@ -1,5 +1,5 @@
 import type { Selectable } from "kysely";
-import type { Currency } from "kysely-codegen";
+import type { Currency } from "kysely-codegen"
 
 export const useSettingsStore = defineStore('settingsStore', {
     state: () => ({

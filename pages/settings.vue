@@ -34,7 +34,7 @@
             name: 'LLM Data Importer',
             icon: 'i-heroicons-circle-stack',
             href: '/settings/admin/llm-data-importer',
-            selected: isRouteActive(route, '/settings/admin/data-importer'),
+            selected: isRouteActive(route, '/settings/admin/llm-data-importer'),
         }
     ])
 

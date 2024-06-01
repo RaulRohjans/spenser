@@ -11,42 +11,41 @@
     const selectedBudgetId: Ref<number | null> = ref(null)
     const reloadModal: Ref<number> = ref(0)
     const budgetLoaderObj: Ref<ModalBudgetProps | null> = ref(null)
-    const reloadBudgetRef: Ref<number> = ref(0)
     const drag: Ref<boolean> = ref(false)
 
-    // Fetch categories
-    const { data: budgetData } = await useLazyAsyncData<{
-        success: boolean,
-        data: BudgetDataObject[]
-    }>
-    ('budgets', () => ($fetch)('/api/budgets', {  
+    const loadBudgetData = async function() {
+        const budgetData = await $fetch<{
+            success: boolean,
+            data: BudgetDataObject[]
+        }>('/api/budgets', {
             method: 'GET',
             headers: buildRequestHeaders(token.value)
-    }), {
-        default: () => {
-            return {
-                success: false,
-                data: []
-            }
-        },
-        watch: [reloadBudgetRef]
-    })
+        })
+
+        return budgetData.data
+    }
 
     // This is a small hack to have an add item at the end
     // draggable could have a slot for this, but it doesn't and I see
     // no other way of adding it without breaking css
-    const budgetDraggableList: Ref<BudgetDataObject[]> = ref([...budgetData.value.data, {
-        id: -1,
-        user: 0,
-        category: null,
-        name: null,
-        value: 0,            
-        period: 'daily',
-        order: 0,
-        category_name: null,
-        category_icon: null,
-        expenses: 0
-    }])
+    const loadBudgetDraggableList = async function (): Promise<BudgetDataObject[]> {
+        return [...await loadBudgetData(), {
+            id: -1,
+            user: 0,
+            category: null,
+            name: null,
+            value: 0,            
+            period: 'daily',
+            order: 0,
+            category_name: null,
+            category_icon: null,
+            expenses: 0
+        }]
+    }
+    
+    const budgetDraggableList: Ref<BudgetDataObject[] | null> = ref(null)
+
+    onBeforeMount(async () => await loadData())
 
     const toggleChooser = function(state: boolean) {
         isChooserOpen.value = state
@@ -54,10 +53,6 @@
 
     const toggleModal = function() {
         isModalOpen.value = !isModalOpen.value
-    }
-
-    const reloadBudgetData = function() {
-        reloadBudgetRef.value++
     }
 
     const removeItemCardAction = function(budget: BudgetDataObject) {
@@ -76,24 +71,25 @@
                 method: 'POST',
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedBudgetId.value }
-            }).then((data) => {
-                if(!data.success) {
-                    displayMessage('An error ocurred when removing your budget.', 'error')
-                    return
-                }
+            }).then(async (data) => {
+                if(!data.success) return displayMessage('An error ocurred when removing your budget.', 'error')
 
-                reloadBudgetData()
+                await loadData()
                 displayMessage('Budget deleted successfully!', 'success')
-            }).catch((e: NuxtError) => {
-                displayMessage(e.statusMessage, 'error')
-            })
+            }).catch((e: NuxtError) => displayMessage(e.statusMessage, 'error'))
         }
 
         selectedBudgetId.value = null
         toggleChooser(false)      
     }
 
+    const loadData = async function() {
+        budgetDraggableList.value = await loadBudgetDraggableList()
+    }
+
     const onOrderChange = function(_event: DragableChangeEvent) {
+        if(!budgetDraggableList.value) return 
+
         // Calculate new position order based on the updated list
         const budgetPos: {[key: number]: number} = {}
         for(let i = 0; i < budgetDraggableList.value.length - 1 /* Ignore last value */; i++) {
@@ -124,6 +120,7 @@
 <template>
     <div class="flex flex-col justify-center items-center">
         <Draggable 
+            v-if="budgetDraggableList"
             v-model="budgetDraggableList" 
             class="flex flex-col sm:flex-row justify-center sm:justify-start sm:flex-wrap items-center sm:max-w-[80%] gap-4"
             group="budgets" 
@@ -218,5 +215,5 @@
         :key="reloadModal"
         v-model="isModalOpen" 
         v-bind="budgetLoaderObj"
-        @successful-submit="reloadBudgetData"/>
+        @successful-submit="loadData"/>
 </template>

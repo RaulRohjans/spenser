@@ -183,7 +183,7 @@
 
             <VChart class="w-full" :style="`height: ${props.height}`" :option="getGraphOptions" :loading="loading" autoresize />
 
-            <DateTimePicker 
+            <SDateTimePicker 
                 v-model="dateRange" 
                 class="sm:!w-[20%]" 
                 type="date" 
