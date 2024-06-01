@@ -1,7 +1,7 @@
 import pg from 'pg'
-import { Kysely, PostgresDialect, sql } from 'kysely'
-import type { SelectQueryBuilder } from 'kysely'
+import { Kysely, PostgresDialect } from 'kysely'
 import type { DB } from 'kysely-codegen'
+import type { CustomSQLQueryBuilder } from '~/types/Data'
 
 const {
     DB_NAME,
@@ -30,7 +30,7 @@ export const db = new Kysely<DB>({
   dialect,
 })
 
-export const applySearchFilter = function(qb: SelectQueryBuilder<any, any, any>, search: string | undefined, searchColumn: string): SelectQueryBuilder<any, any, any> {
+export const applySearchFilter = function(qb: CustomSQLQueryBuilder, search: string | undefined, searchColumn: string): CustomSQLQueryBuilder {
     // If no search term is provided, return the unmodified query builder    
     if (!search) return qb
 

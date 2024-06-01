@@ -1,4 +1,4 @@
-import type { Selectable } from "kysely"
+import type { SelectQueryBuilder, Selectable } from "kysely"
 import type { GlobalSettings } from "kysely-codegen"
 
 export interface UserSettingsObject {
@@ -35,3 +35,6 @@ export interface LlmTransactionObject  {
     value: number
     date: string //This value is meant to later be parsed into a Date format
 }
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+export type CustomSQLQueryBuilder = SelectQueryBuilder<any, any, any>

@@ -1,7 +1,7 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db, applySearchFilter } from '@/utils/dbEngine'
-import type { OrderByDirectionExpression, SelectQueryBuilder} from "kysely";
-import { sql } from "kysely"
+import type { OrderByDirectionExpression } from "kysely"
+import type { CustomSQLQueryBuilder } from "~/types/Data"
 import type { TableRow } from "~/types/Table"
 
 export default defineEventHandler(async (event) => {
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
     const parsedStartDate: Date = new Date(Number(startDate))
     const parsedEndDate: Date = new Date(Number(endDate))
 
-    const addLimits = (qb: SelectQueryBuilder<any, any, any>): SelectQueryBuilder<any, any, any> => {
+    const addLimits = (qb: CustomSQLQueryBuilder): CustomSQLQueryBuilder => {
         return qb
             // Pager
             .$if(!!page, (qb) => qb.offset((parsedPage - 1) * parsedLimit))
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
             .$if(!!sort, (qb) => qb.orderBy(db.dynamic.ref<string>(`${sort}`), (order || 'asc') as OrderByDirectionExpression))
     }
 
-    const addGlobalFilters = (qb: SelectQueryBuilder<any, any, any>): SelectQueryBuilder<any, any, any> => {
+    const addGlobalFilters = (qb: CustomSQLQueryBuilder): CustomSQLQueryBuilder => {
         return qb
             // Apply search filter
             .$call(qb => applySearchFilter(qb, search?.toString(), searchColumn ? `main.${searchColumn}` : 'transaction.name'))
@@ -46,9 +46,9 @@ export default defineEventHandler(async (event) => {
     /*
     * This function is needed to deal with the group by category filter
     */
-    const addSelectFields = (qb: SelectQueryBuilder<any, any, any>): SelectQueryBuilder<any, any, any> => {
+    const addSelectFields = (qb: CustomSQLQueryBuilder): CustomSQLQueryBuilder => {
         if(groupCategory?.toString() === 'true') {
-            return qb.select(({ eb, fn }) => [
+            return qb.select(({ fn }) => [
                 fn.max('transaction.id').as('id'),
                 fn.sum('transaction.value').as('value'),
             ])

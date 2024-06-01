@@ -82,11 +82,11 @@
         userLoaderObj.value = {
             id: row.id,
             username: row.username,
-            first_name: row.first_name,
-            last_name: row.last_name,
+            firstName: row.first_name,
+            lastName: row.last_name,
             email: row.email,
             avatar: row.avatar,
-            is_admin: row.is_admin
+            isAdmin: row.is_admin
         }
 
         toggleModal()

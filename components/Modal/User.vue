@@ -17,12 +17,12 @@
         /**
          * First name of the user
          */
-        first_name?: string
+        firstName?: string
 
         /**
          * Last name of the user
          */
-        last_name?: string
+        lastName?: string
 
         /**
          * Email of the user
@@ -37,7 +37,7 @@
         /**
          * Whether the user is administrator or not
          */
-        is_admin?: boolean
+        isAdmin?: boolean
     }
 
     const props = defineProps<ModalUserProps>()

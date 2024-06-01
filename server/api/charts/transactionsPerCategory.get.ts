@@ -1,7 +1,8 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import type { SelectQueryBuilder , sql } from "kysely"
+import { sql } from "kysely"
 import type { TransactionsPerCategoryData } from "~/types/Chart"
+import type { CustomSQLQueryBuilder } from "~/types/Data";
 
 export default defineEventHandler(async (event) => {
     // Read body params
@@ -11,7 +12,7 @@ export default defineEventHandler(async (event) => {
     } = getQuery(event)
     const user = ensureAuth(event)
     
-    const addUserValidations = (qb: SelectQueryBuilder<any, any, any>): SelectQueryBuilder<any, any, any> => {
+    const addUserValidations = (qb: CustomSQLQueryBuilder): CustomSQLQueryBuilder => {
         return qb
             // Validate category user
             .where('category.user', '=', user.id)
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
     const parsedEndDate: Date = new Date(Number(endDate))
     const res = await db
         .selectFrom('transaction')
-        .select(({ fn, eb }) => [
+        .select(({ fn }) => [
             fn.sum(sql<number>`case when "transaction"."value" < 0 then "transaction"."value" * -1 when "transaction"."value" >= 0 then 0 end`).as('expense_value'),
             fn.sum(sql<number>`case when "transaction"."value" <= 0 then 0 when "transaction"."value" > 0 then "transaction"."value" end`).as('earning_value')
         ])

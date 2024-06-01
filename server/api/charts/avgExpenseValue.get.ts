@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     
     const res = await db
         .selectFrom('transaction')
-        .select(({ fn, eb }) => [
+        .select(({ fn }) => [
             fn.avg(sql<number>`"transaction"."value" * -1`).as('value')
         ])
 

@@ -2,8 +2,6 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-import type { Selectable } from 'kysely';
-import type { GlobalSettings } from 'kysely-codegen';
 
     const { signIn, token } = useAuth()
     const error: Ref<null | string> = ref(null)

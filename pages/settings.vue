@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="space-y-3">
-                    <template v-for="option in settingsOptions">
+                    <template v-for="option in settingsOptions" :key="`${option.name}${option.href}`">
                         <ULink
 class="flex flex-row justify-start items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                             :to="option.href">
@@ -95,7 +95,7 @@ class="flex flex-row justify-start items-center gap-2 text-gray-500 dark:text-gr
                     </div>
     
                     <div class="space-y-3 mb-3 lg:mb-6 -mx-1 lg:mx-0">
-                        <template v-for="option in adminOptions">
+                        <template v-for="option in adminOptions" :key="`${option.name}${option.href}`">
                             <ULink
 class="flex flex-row justify-start items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                                 :to="option.href">

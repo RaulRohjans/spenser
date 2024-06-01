@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     let opRes
     switch(operation) {
         case 'duplicate':
-        case 'insert': 
+        case 'insert': {
             // Create category record
             const budget: Omit<Selectable<Budget>, 'id'> = {
                 name,
@@ -51,6 +51,7 @@ export default defineEventHandler(async (event) => {
                 .returning('id')
                 .executeTakeFirst()
             break
+        }
         case 'edit':
             // Update category in the database
             opRes = await db.updateTable('budget')

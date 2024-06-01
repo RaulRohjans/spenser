@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
     const parsedEndDate: Date = new Date(Number(endDate))
     const res = await db
         .selectFrom('transaction')
-        .select(({ fn, eb }) => [
+        .select(({ fn }) => [
             fn.sum(sql<number>`case when "transaction"."value" < 0 then "transaction"."value" * -1 when "transaction"."value" >= 0 then 0 end`).as('value')
         ])
         .innerJoin('category', 'category.id', 'transaction.category')

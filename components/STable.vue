@@ -85,7 +85,9 @@
         filtering: true,
         manualFilterReset: false,
         rowsPerPage: true,
-        disableFooter: false
+        disableFooter: false,
+        class: '',
+        label: ''
     })
 
     const emit = defineEmits<{

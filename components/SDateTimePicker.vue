@@ -34,7 +34,8 @@
         type: 'date',
         disabled: false,
         readonly: false,
-        range: false
+        range: false,
+        class: ''
     })
     
     const emit = defineEmits<{

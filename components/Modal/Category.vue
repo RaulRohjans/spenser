@@ -21,6 +21,7 @@
     }
 
     const props = withDefaults(defineProps<ModalCategoryProps>(), {
+        id: null,
         name: '',
         icon: ''
     })

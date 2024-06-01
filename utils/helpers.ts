@@ -1,5 +1,4 @@
 import type { RouteLocationNormalizedLoaded } from '#vue-router'
-import type { JwtPayload } from 'jsonwebtoken'
 import { useToast } from 'vue-toastification'
 
 export const displayMessage = function(message: string | undefined | null, type: 'info' | 'warning' | 'error' | 'success' = 'info') {

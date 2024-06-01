@@ -1,6 +1,6 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
-import { SelectQueryBuilder , sql } from "kysely"
+import { sql } from "kysely"
 import type { SpendingOverTimeData } from "@/types/Chart"
 
 export default defineEventHandler(async (event) => {
@@ -11,10 +11,10 @@ export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
     
     switch(timeframe) {
-        case 'month':
+        case 'month': {
             const monthRes = await db
                 .selectFrom('transaction')
-                .select(({ fn, eb }) => [
+                .select(() => [
                     sql<Date>`DATE("transaction"."date")`.as('expense_date'),
                     sql<number>`SUM("transaction"."value" * -1)`.as('expense_value')
                 ])
@@ -29,11 +29,12 @@ export default defineEventHandler(async (event) => {
                 success: true,
                 data: monthRes as SpendingOverTimeData[]
             }
+        }
         case 'alltime':
-        case 'year':
+        case 'year': {
             const res = await db
                 .selectFrom('transaction')
-                .select(({ fn, eb }) => [
+                .select(({ fn }) => [
                     sql<string>`TO_CHAR("transaction"."date", 'YYYY-MM')`.as('month'),
                     fn.sum(sql<number>`"transaction"."value" * -1`).as('expense_value')
                 ])
@@ -48,6 +49,7 @@ export default defineEventHandler(async (event) => {
                 success: true,
                 data: res as SpendingOverTimeData[]
             }
+        }
         default:
             throw createError({
                 statusCode: 400,

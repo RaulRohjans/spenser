@@ -1,8 +1,7 @@
 import { ensureAuth } from "@/utils/authFunctions"
 import { db } from '@/utils/dbEngine'
 import type { Selectable } from "kysely"
-import type { Currency } from "kysely-codegen";
-import { Category } from "kysely-codegen"
+import type { Currency } from "kysely-codegen"
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -35,7 +34,7 @@ export default defineEventHandler(async (event) => {
     let opRes
     switch(operation) {
         case 'duplicate':
-        case 'insert': 
+        case 'insert': {
             // Create category record
             const currency: Omit<Selectable<Currency>, 'id'> = {
                 placement,
@@ -48,6 +47,7 @@ export default defineEventHandler(async (event) => {
                 .returning('id')
                 .executeTakeFirst()
             break
+        }
         case 'edit':
             // Update category in the database
             opRes = await db.updateTable('currency')

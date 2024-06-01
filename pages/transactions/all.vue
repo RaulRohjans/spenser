@@ -215,7 +215,7 @@
             @delete-action="delTransactionAction">
 
             <template #date-data="{ row }" >
-                <template v-for="date in [new Date(row.date)]">
+                <template v-for="date in [new Date(row.date)]" :key="date">
                     <ClientOnly>
                         {{ `${date.toLocaleDateString()} ${date.toLocaleTimeString()}` }}
                     </ClientOnly>

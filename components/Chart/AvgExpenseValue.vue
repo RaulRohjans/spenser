@@ -4,7 +4,7 @@
     const { token } = useAuth()
 
     // Fetch data
-    const { data: fetchData, pending: loading } = await useLazyAsyncData<{
+    const { data: fetchData } = await useLazyAsyncData<{
         success: boolean,
         data: AvgExpenseValueData
     }>

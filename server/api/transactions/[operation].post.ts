@@ -57,7 +57,7 @@ export default defineEventHandler(async (event) => {
     let opRes
     switch(operation) {
         case 'duplicate':
-        case 'insert':
+        case 'insert': {
             await validateCategory()
 
             // Create transation record
@@ -75,6 +75,7 @@ export default defineEventHandler(async (event) => {
                 .returning('id')
                 .executeTakeFirst()
             break
+        }
         case 'edit':
             await validateCategory()
 

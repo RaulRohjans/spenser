@@ -84,7 +84,7 @@
                     <!-- Desktop Navigation Items -->
                     <div class="hidden sm:ml-6 sm:flex sm:flex-col sm:justify-center sm:items-center">
                         <div class="flex space-x-4">
-                            <template v-for="page in navigationPages">
+                            <template v-for="page in navigationPages" :key="page.href">
                                 <ULink :to="page.href" :class="getNaviationItemClass(page)">{{ page.name }}</ULink>
                             </template>
                         </div>
@@ -112,7 +112,7 @@
         <Transition name="slide-fade">
             <div v-show="isMobileMenuShown" class="sm:hidden">
                 <div class="flex flex-col space-y-1 px-2 pb-3 pt-2">
-                    <template v-for="page in navigationPages">
+                    <template v-for="page in navigationPages" :key="page.href">
                         <ULink :to="page.href" :class="getNaviationItemClass(page)">{{ page.name }}</ULink>
                     </template>
                 </div>

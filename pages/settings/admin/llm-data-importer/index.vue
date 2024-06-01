@@ -6,7 +6,6 @@
 
     const { token } = useAuth()
     const error: Ref<null | string> = ref(null)
-    const settingsStore = useSettingsStore()
     const providerSelectKey: Ref<number> = ref(0)
 
     const getProviderOptions = computed((): SelectOption[] => {

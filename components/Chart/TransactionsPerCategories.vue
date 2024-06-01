@@ -40,7 +40,7 @@
         /**
          * Width of the graph
          */
-         width?: string
+        width?: string
 
         /**
          * Height of the graph
