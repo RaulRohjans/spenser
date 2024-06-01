@@ -54,12 +54,12 @@ export class LLM {
                     category: number,
                     name: string,
                     value: number,
-                    date: Date
+                    date: string
                 }}
 
                 - Name is the name/description of the transaction;
                 - value is the total value of the transaction;
-                - date is the date the transaction was made;
+                - date is the date the transaction was made, this has to be in a date time string with a format. Example: "2019-01-01T00:00:00";
                 - category is the id of the category;
                 `,
             ],
@@ -77,7 +77,7 @@ export class LLM {
                 {transactions}
                 '
 
-                Give me just the json and nothing more!
+                Give me the complete list and just the json and nothing more! Be sure to generate the complete list of transactions into the requested JSON format.
                 `
             ],
         ])
@@ -92,6 +92,7 @@ export class LLM {
         // We have to make sure there is no extra text before or after the json code
         // the LLM provides
         const parsedResponse = result.substring(result.indexOf('['), result.lastIndexOf(']') + 1).trim()
+        console.log(parsedResponse)
         const parsedTransactions: LlmTransactionObject[] = JSON.parse(parsedResponse)
         
         return parsedTransactions
