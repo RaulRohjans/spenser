@@ -30,9 +30,7 @@ export default defineEventHandler(async (event) => {
         .execute()
 
     const llmInstance = new LLM(globalSettings) //Instance LLM
-    const res = await llmInstance.parseTransactions(transactionText, categories)
+    const llmTransactions = await llmInstance.parseTransactions(transactionText, categories)
 
-    console.log(res)
-
-    return { success: true, transactions: JSON.parse(res.trim()) }
+    return { success: true, transactions: llmTransactions }
 })

@@ -2,7 +2,7 @@
     import type { NuxtError } from '#app'
 import type { LlmTransactionObject } from '~/types/Data'
     import type { SelectOption } from '~/types/Options'
-    import type { FetchTableDataResult } from '~/types/Table'
+    import type { FetchTableDataResult, TableRow } from '~/types/Table'
 
     export type ModalBudgetProps = {
         /**
@@ -45,6 +45,12 @@ import type { LlmTransactionObject } from '~/types/Data'
             key: 'date',
             label: 'Date',
             sortable: true
+        },
+        {
+            key: 'actions',
+            label: 'Actions',
+            sortable: false,
+            searchable: false
         }
     ]
     const selectedColumns = ref(tableColumns)
@@ -54,7 +60,7 @@ import type { LlmTransactionObject } from '~/types/Data'
         disableFooter: true,
         filtering: false,
         rowsPerPage: false,
-        actions: [],
+        actions: ['delete'],
     }
         
     // Fetch categories
@@ -124,6 +130,16 @@ import type { LlmTransactionObject } from '~/types/Data'
             model.value = false
         }).catch((e: NuxtError) => displayMessage(e.statusMessage))
     }
+
+    const delTransaction = function(row: TableRow) {
+        const tIdx = vTransactions.value.indexOf(row as LlmTransactionObject)
+
+        if (tIdx > -1) {
+            vTransactions.value.splice(tIdx, 1)
+            displayMessage('Transaction removed successfully', 'success')
+        } 
+        else displayMessage('Could not find transaction record to be removed.', 'error')        
+    }
 </script>
 
 <template>
@@ -134,7 +150,8 @@ import type { LlmTransactionObject } from '~/types/Data'
                 :rows="vTransactions"
                 :row-count="vTransactions.length"
                 :columns="columnsTable"
-                :loading="categoryLoading">
+                :loading="categoryLoading"
+                @delete-action="delTransaction">
 
                 <template #date-data="{ row }" >
                     <template v-for="date in [new Date(row.date)]">

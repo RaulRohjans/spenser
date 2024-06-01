@@ -43,8 +43,6 @@ export default defineEventHandler(async (event) => {
         .where('category.user', '=', user.id)
         .execute()
 
-    const llmInstance = new LLM(globalSettings) //Instance LLM
-
     // Get first file value
     const value = Object.values(files)[0]
     
@@ -72,7 +70,8 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const res = await llmInstance.parseTransactions(data, categories)    
+    const llmInstance = new LLM(globalSettings) //Instance LLM
+    const llmTransactions = await llmInstance.parseTransactions(data, categories)    
 
-    return { success: true, transactions: JSON.parse(res.trim()) }    
+    return { success: true, transactions: llmTransactions }    
 })

@@ -4,6 +4,7 @@ import { ChatPromptTemplate } from "@langchain/core/prompts"
 import type { Selectable } from "kysely"
 import type { Category, GlobalSettings } from "kysely-codegen"
 import type { BaseLLM } from "@langchain/core/language_models/llms"
+import type { LlmTransactionObject } from "~/types/Data"
 
 export class LLM {
     llm: BaseLLM
@@ -75,6 +76,8 @@ export class LLM {
                 '
                 {transactions}
                 '
+
+                Give me just the json and nothing more!
                 `
             ],
         ])
@@ -85,6 +88,12 @@ export class LLM {
             transactions: transactions,
         })
 
-        return result
+        // Parse the result to JSON
+        // We have to make sure there is no extra text before or after the json code
+        // the LLM provides
+        const parsedResponse = result.substring(result.indexOf('['), result.lastIndexOf(']') + 1).trim()
+        const parsedTransactions: LlmTransactionObject[] = JSON.parse(parsedResponse)
+        
+        return parsedTransactions
     }
 }
