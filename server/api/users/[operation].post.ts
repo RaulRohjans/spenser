@@ -1,7 +1,7 @@
-import { ensureAuth, hashPassword } from "@/utils/authFunctions"
+import { ensureAuth, hashPassword } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
-import type { Selectable } from "kysely"
-import type { User } from "kysely-codegen"
+import type { Selectable } from 'kysely'
+import type { User } from 'kysely-codegen'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -19,18 +19,17 @@ export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
 
     // Check if user is admin
-    if(!user.is_admin)
+    if (!user.is_admin)
         throw createError({
             statusCode: 401,
-            statusMessage: 'The given user does not have acces to this resource.'
+            statusMessage:
+                'The given user does not have acces to this resource.'
         })
 
     // No need to do rest of the logic
-    if(operation === 'delete' && id) {
+    if (operation === 'delete' && id) {
         // Remove category in the database
-        await db.deleteFrom('user')
-            .where('id' , '=', id)
-            .execute()
+        await db.deleteFrom('user').where('id', '=', id).execute()
         return { success: true }
     }
 
@@ -41,10 +40,10 @@ export default defineEventHandler(async (event) => {
         })
 
     let opRes
-    switch(operation) {
+    switch (operation) {
         case 'duplicate':
         case 'insert': {
-            if(!password)
+            if (!password)
                 throw createError({
                     statusCode: 400,
                     statusMessage: 'Password is invalid'
@@ -60,9 +59,10 @@ export default defineEventHandler(async (event) => {
                 is_admin: is_admin == 'true' ? true : false,
                 password: hashPassword(password)
             }
-        
+
             // Add category to persistent storage
-            opRes = await db.insertInto('user')
+            opRes = await db
+                .insertInto('user')
                 .values(user)
                 .returning('id')
                 .executeTakeFirst()
@@ -70,15 +70,18 @@ export default defineEventHandler(async (event) => {
         }
         case 'edit':
             // Update category in the database
-            opRes = await db.updateTable('user')
+            opRes = await db
+                .updateTable('user')
                 .set('first_name', first_name)
                 .set('last_name', last_name)
                 .set('username', username)
                 .set('email', email)
                 .set('avatar', avatar)
                 .set('is_admin', is_admin == 'true' ? true : false)
-                .$if(!!password, eb => eb.set('password', hashPassword(password)))
-                .where('id' , '=', id)
+                .$if(!!password, (eb) =>
+                    eb.set('password', hashPassword(password))
+                )
+                .where('id', '=', id)
                 .execute()
             break
         default:
@@ -86,9 +89,9 @@ export default defineEventHandler(async (event) => {
                 statusCode: 500,
                 statusMessage: 'Invalid operation.'
             })
-    }    
+    }
 
-    if(!opRes)
+    if (!opRes)
         throw createError({
             statusCode: 500,
             statusMessage: 'Could not perform the operation, an error occurred.'

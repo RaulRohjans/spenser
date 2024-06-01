@@ -12,10 +12,10 @@
         LegendComponent,
         type LegendComponentOption
     } from 'echarts/components'
-    
+
     import { BarChart, type BarSeriesOption } from 'echarts/charts'
     import { SVGRenderer } from 'echarts/renderers'
-    
+
     import type { TransactionsPerCategoryData } from '~/types/Chart'
 
     use([
@@ -56,7 +56,7 @@
     const props = withDefaults(defineProps<TransactionsPerCategoriesProps>(), {
         height: '40vh'
     })
-    
+
     const colorMode = useColorMode()
     const { token } = useAuth()
     const dateRange: Ref<Date[]> = ref([])
@@ -69,31 +69,43 @@
 
     // Fetch data
     const { data: fetchData, pending: loading } = await useLazyAsyncData<{
-        success: boolean,
+        success: boolean
         data: TransactionsPerCategoryData[]
-    }>
-    ('transactionsPerCategory', () => ($fetch)('/api/charts/transactionsPerCategory', {  
-            method: 'GET',
-            headers: buildRequestHeaders(token.value),
-            query: {
-                startDate: dateRange.value.length > 0 ? dateRange.value[0].getTime() : '',
-                endDate: dateRange.value.length > 0 ? dateRange.value[1].getTime() : '',
-            }
-    }), {
-        default: () => {
-            return {
-                success: false,
-                data: []
-            }
-        },
-        watch: [dateRange]
-    })
+    }>(
+        'transactionsPerCategory',
+        () =>
+            $fetch('/api/charts/transactionsPerCategory', {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value),
+                query: {
+                    startDate:
+                        dateRange.value.length > 0
+                            ? dateRange.value[0].getTime()
+                            : '',
+                    endDate:
+                        dateRange.value.length > 0
+                            ? dateRange.value[1].getTime()
+                            : ''
+                }
+            }),
+        {
+            default: () => {
+                return {
+                    success: false,
+                    data: []
+                }
+            },
+            watch: [dateRange]
+        }
+    )
 
     const getGraphOptions = computed((): EChartsOption => {
-        const categories = fetchData.value.data.map(e => e.category_name || '')
-        const expenses = fetchData.value.data.map(e => e.expense_value)
-        const earnings = fetchData.value.data.map(e => e.earning_value)
-        const labelOption: BarLabelOption = {            
+        const categories = fetchData.value.data.map(
+            (e) => e.category_name || ''
+        )
+        const expenses = fetchData.value.data.map((e) => e.expense_value)
+        const earnings = fetchData.value.data.map((e) => e.earning_value)
+        const labelOption: BarLabelOption = {
             show: true,
             position: 'insideBottom',
             distance: 15,
@@ -104,9 +116,9 @@
             fontSize: 16,
             rich: {
                 name: {}
-            }            
+            }
         }
-        
+
         return {
             tooltip: {
                 trigger: 'axis',
@@ -173,23 +185,30 @@
         :class="`shadow-xl p-4 ${props.class}`"
         :style="`width: ${props.width}`"
         :ui="{
-            body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+            body: {
+                padding: '',
+                base: 'divide-y divide-gray-200 dark:divide-gray-700'
+            }
         }">
-
         <div class="flex flex-col justify-center items-center gap-4">
-            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+            <h2
+                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                 Transactions Per Category
             </h2>
 
-            <VChart class="w-full" :style="`height: ${props.height}`" :option="getGraphOptions" :loading="loading" autoresize />
+            <VChart
+                class="w-full"
+                :style="`height: ${props.height}`"
+                :option="getGraphOptions"
+                :loading="loading"
+                autoresize />
 
-            <SDateTimePicker 
-                v-model="dateRange" 
-                class="sm:!w-[20%]" 
-                type="date" 
+            <SDateTimePicker
+                v-model="dateRange"
+                class="sm:!w-[20%]"
+                type="date"
                 range
-                @clear="() => dateRange = []" />
-        </div>        
+                @clear="() => (dateRange = [])" />
+        </div>
     </UCard>
-        
 </template>

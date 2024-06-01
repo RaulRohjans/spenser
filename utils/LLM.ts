@@ -1,21 +1,27 @@
-import { OpenAI } from "@langchain/openai"
-import { Ollama } from "@langchain/community/llms/ollama"
-import { ChatPromptTemplate } from "@langchain/core/prompts"
-import type { Selectable } from "kysely"
-import type { Category, GlobalSettings } from "kysely-codegen"
-import type { BaseLLM } from "@langchain/core/language_models/llms"
-import type { LlmTransactionObject } from "~/types/Data"
+import { OpenAI } from '@langchain/openai'
+import { Ollama } from '@langchain/community/llms/ollama'
+import { ChatPromptTemplate } from '@langchain/core/prompts'
+import type { Selectable } from 'kysely'
+import type { Category, GlobalSettings } from 'kysely-codegen'
+import type { BaseLLM } from '@langchain/core/language_models/llms'
+import type { LlmTransactionObject } from '~/types/Data'
 
 export class LLM {
     llm: BaseLLM
 
     constructor(settings: Selectable<GlobalSettings>) {
-        switch(settings.importer_provider) {
+        switch (settings.importer_provider) {
             case 'ollama':
-                this.llm = this.instanceOllama(settings.ollama_model || '', settings.ollama_url || '')
+                this.llm = this.instanceOllama(
+                    settings.ollama_model || '',
+                    settings.ollama_url || ''
+                )
                 break
             case 'gpt':
-                this.llm = this.instanceOpenAI(settings.gpt_model || '', settings.gpt_token || '')
+                this.llm = this.instanceOpenAI(
+                    settings.gpt_model || '',
+                    settings.gpt_token || ''
+                )
                 break
             default:
                 throw createError({
@@ -29,7 +35,7 @@ export class LLM {
         const openAiLlm = new OpenAI({
             model: model,
             temperature: 0.9,
-            openAIApiKey: apiKey,
+            openAIApiKey: apiKey
         })
 
         return openAiLlm
@@ -38,16 +44,19 @@ export class LLM {
     instanceOllama(model: string, url: string): BaseLLM {
         const ollamaLlm = new Ollama({
             baseUrl: url,
-            model: model,
+            model: model
         })
 
         return ollamaLlm
     }
 
-    async parseTransactions(transactions: string, categories: Selectable<Category>[]) {
+    async parseTransactions(
+        transactions: string,
+        categories: Selectable<Category>[]
+    ) {
         const prompt = ChatPromptTemplate.fromMessages([
             [
-                "system",
+                'system',
                 `You are a tool whose main purpose is to parse transactions in multiple formats into an array of JSON objects, where each object is a transaction and needs to follow the following type definition:
 
                 {{
@@ -61,10 +70,10 @@ export class LLM {
                 - value is the total value of the transaction;
                 - date is the date the transaction was made, this has to be in a date time string with a format. Example: "2019-01-01T00:00:00";
                 - category is the id of the category;
-                `,
+                `
             ],
             [
-                "human", 
+                'human',
                 `You will have to choose the category you think best fits the transaction based on the value and name/description or the transaction, from the following list for each of the transactions:
                 
                 '
@@ -79,22 +88,25 @@ export class LLM {
 
                 Give me the complete list and just the json and nothing more! Be sure to generate the complete list of transactions into the requested JSON format.
                 `
-            ],
+            ]
         ])
 
         const chain = prompt.pipe(this.llm)
         const result = await chain.invoke({
             categories: JSON.stringify(categories),
-            transactions: transactions,
+            transactions: transactions
         })
 
         // Parse the result to JSON
         // We have to make sure there is no extra text before or after the json code
         // the LLM provides
-        const parsedResponse = result.substring(result.indexOf('['), result.lastIndexOf(']') + 1).trim()
+        const parsedResponse = result
+            .substring(result.indexOf('['), result.lastIndexOf(']') + 1)
+            .trim()
         console.log(parsedResponse)
-        const parsedTransactions: LlmTransactionObject[] = JSON.parse(parsedResponse)
-        
+        const parsedTransactions: LlmTransactionObject[] =
+            JSON.parse(parsedResponse)
+
         return parsedTransactions
     }
 }

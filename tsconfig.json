@@ -6,7 +6,5 @@
         "strict": true
     },
 
-    "types": [
-        "nuxt-sweetalert2"
-    ]
+    "types": ["nuxt-sweetalert2"]
 }

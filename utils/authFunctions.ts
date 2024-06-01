@@ -11,16 +11,21 @@ export const generateToken = function (
     expiration?: number | undefined
 ) {
     const { JWT_SECRET, JWT_EXPIRATION } = useRuntimeConfig()
-    
+
     return jwt.sign({ ...user, scope: ['user'] }, JWT_SECRET as string, {
         expiresIn: expiration == undefined ? Number(JWT_EXPIRATION) : expiration
     })
 }
 
-export const validateJWT = function (token: string, ignoreExpired: boolean = false) {
+export const validateJWT = function (
+    token: string,
+    ignoreExpired: boolean = false
+) {
     const { JWT_SECRET } = useRuntimeConfig()
-    
-    return jwt.verify(token, JWT_SECRET as string, { ignoreExpiration: ignoreExpired}) as JwtPayload | undefined
+
+    return jwt.verify(token, JWT_SECRET as string, {
+        ignoreExpiration: ignoreExpired
+    }) as JwtPayload | undefined
 }
 
 export const ensureAuth = (event: H3Event) => {
@@ -35,7 +40,7 @@ export const ensureAuth = (event: H3Event) => {
     try {
         const user = validateJWT(extractToken(authHeaderValue))
 
-        if(!user)
+        if (!user)
             throw createError({
                 statusCode: 403,
                 statusMessage: 'Could not fetch user from the JWT token.'
@@ -58,18 +63,22 @@ export const extractToken = (authHeaderValue: string) => {
     return token
 }
 
-export const hashPassword = function(password: string) {
+export const hashPassword = function (password: string) {
     const { PASSWORD_SALT_ROUNDS } = useRuntimeConfig()
 
     return bcrypt.hashSync(password, Number(PASSWORD_SALT_ROUNDS))
 }
 
-export const comparePasswords = function(hashedPassword: string, passwordToCompare: string) {
+export const comparePasswords = function (
+    hashedPassword: string,
+    passwordToCompare: string
+) {
     return bcrypt.compareSync(passwordToCompare, hashedPassword)
 }
 
-export const fetchUserByUsername = async function(username: string) {
-    const res = await db.selectFrom('user')
+export const fetchUserByUsername = async function (username: string) {
+    const res = await db
+        .selectFrom('user')
         .selectAll()
         .where('user.username', '=', username)
         .executeTakeFirst()
@@ -77,8 +86,9 @@ export const fetchUserByUsername = async function(username: string) {
     return res
 }
 
-export const fetchUserById = async function(id: number) {
-    const res = await db.selectFrom('user')
+export const fetchUserById = async function (id: number) {
+    const res = await db
+        .selectFrom('user')
         .selectAll()
         .where('user.id', '=', id)
         .executeTakeFirst()

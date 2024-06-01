@@ -2,7 +2,7 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    
+
     const emit = defineEmits<{
         (event: 'submit'): void
         (event: 'successful-submit'): void
@@ -26,45 +26,63 @@
         placement: placementOptions.value[0].value
     })
 
-    const onCreateCurrency = function(event: FormSubmitEvent<Schema>) {
+    const onCreateCurrency = function (event: FormSubmitEvent<Schema>) {
         emit('submit')
-        
+
         $fetch(`/api/currencies/insert`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
-        }).then((data) => {
-            if(!data.success) return displayMessage('An error ocurred when creating your currency.', 'error')
+        })
+            .then((data) => {
+                if (!data.success)
+                    return displayMessage(
+                        'An error ocurred when creating your currency.',
+                        'error'
+                    )
 
-            // Emit success
-            emit('successful-submit')
+                // Emit success
+                emit('successful-submit')
 
-            // Disaply success message
-            displayMessage(`Currency created successfully!`, 'success')
+                // Disaply success message
+                displayMessage(`Currency created successfully!`, 'success')
 
-            // Close modal
-            model.value = false
-        }).catch((e: NuxtError) => error.value = e.statusMessage || null)
+                // Close modal
+                model.value = false
+            })
+            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
     }
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ 'container': 'items-center' }">
-        <UForm :schema="schema" :state="state" class="space-y-4 p-6" @submit="onCreateCurrency">
-            <UFormGroup label="Symbol" name="symbol" class="w-full" :error="!!error">
+    <UModal v-model="model" :ui="{ container: 'items-center' }">
+        <UForm
+            :schema="schema"
+            :state="state"
+            class="space-y-4 p-6"
+            @submit="onCreateCurrency">
+            <UFormGroup
+                label="Symbol"
+                name="symbol"
+                class="w-full"
+                :error="!!error">
                 <UInput v-model="state.symbol" />
             </UFormGroup>
-            
-            <UFormGroup label="Placement" name="placement" class="w-full" :error="error">
-                <USelect v-model="state.placement" :options="placementOptions" />
+
+            <UFormGroup
+                label="Placement"
+                name="placement"
+                class="w-full"
+                :error="error">
+                <USelect
+                    v-model="state.placement"
+                    :options="placementOptions" />
                 <template #help>
                     Place the symbol before ($212) or after (310€).
                 </template>
             </UFormGroup>
-    
-            <UButton type="submit">
-                Submit
-            </UButton>           
+
+            <UButton type="submit"> Submit </UButton>
         </UForm>
     </UModal>
 </template>

@@ -3,19 +3,24 @@
     import VChart, { THEME_KEY } from 'vue-echarts'
 
     import {
-        GridComponent, 
+        GridComponent,
         type GridComponentOption,
         TooltipComponent,
         type TooltipComponentOption
     } from 'echarts/components'
-    
+
     import { LineChart, type LineSeriesOption } from 'echarts/charts'
     import { UniversalTransition } from 'echarts/features'
     import { SVGRenderer } from 'echarts/renderers'
     import type { SpendingOverTimeData } from '@/types/Chart'
 
-
-    use([GridComponent, LineChart, SVGRenderer, UniversalTransition, TooltipComponent])
+    use([
+        GridComponent,
+        LineChart,
+        SVGRenderer,
+        UniversalTransition,
+        TooltipComponent
+    ])
 
     type EChartsOption = echarts.ComposeOption<
         GridComponentOption | LineSeriesOption | TooltipComponentOption
@@ -54,32 +59,41 @@
 
     // Fetch data
     const { data: fetchData, pending: loading } = await useLazyAsyncData<{
-        success: boolean,
+        success: boolean
         data: SpendingOverTimeData[]
-    }>
-    ('spendingOverTime', () => ($fetch)('/api/charts/spendingOverTime', {  
-            method: 'GET',
-            headers: buildRequestHeaders(token.value),
-            query: {
-                timeframe: timeframe.value
-            }
-    }), {
-        default: () => {
-            return {
-                success: false,
-                data: []
-            }
-        },
-        watch: [timeframe]
-    })
+    }>(
+        'spendingOverTime',
+        () =>
+            $fetch('/api/charts/spendingOverTime', {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value),
+                query: {
+                    timeframe: timeframe.value
+                }
+            }),
+        {
+            default: () => {
+                return {
+                    success: false,
+                    data: []
+                }
+            },
+            watch: [timeframe]
+        }
+    )
 
     const getChartOptions = computed((): EChartsOption => {
         let categories: string[] = []
 
-        if(timeframe.value == 'month') categories = fetchData.value.data.map(e => e.expense_date ? new Date(e.expense_date).toLocaleDateString() : '')
-        else categories = fetchData.value.data.map(e => e.month || '')
+        if (timeframe.value == 'month')
+            categories = fetchData.value.data.map((e) =>
+                e.expense_date
+                    ? new Date(e.expense_date).toLocaleDateString()
+                    : ''
+            )
+        else categories = fetchData.value.data.map((e) => e.month || '')
 
-        const values = fetchData.value.data.map(e => e.expense_value)
+        const values = fetchData.value.data.map((e) => e.expense_value)
 
         return {
             tooltip: {
@@ -113,7 +127,7 @@
         return timeframe.value === 'alltime' ? 'solid' : 'outline'
     })
 
-    const setTimeframe = function(tf: typeof timeframe.value) {
+    const setTimeframe = function (tf: typeof timeframe.value) {
         timeframe.value = tf
     }
 </script>
@@ -123,30 +137,37 @@
         :class="`shadow-xl p-4 ${props.class}`"
         :style="`width: ${props.width}`"
         :ui="{
-            body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+            body: {
+                padding: '',
+                base: 'divide-y divide-gray-200 dark:divide-gray-700'
+            }
         }">
-
         <div class="flex flex-col justify-center items-center gap-4">
-            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+            <h2
+                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                 Spending Over Time
             </h2>
 
-            <VChart :option="getChartOptions" class="w-full" :style="`height: ${props.height}`" :loading="loading"/>
+            <VChart
+                :option="getChartOptions"
+                class="w-full"
+                :style="`height: ${props.height}`"
+                :loading="loading" />
 
             <div class="flex flex-row justify-center items-center gap-1">
-                <UButton 
+                <UButton
                     :variant="getMonthBtnStatus"
                     @click="setTimeframe('month')">
                     Month
                 </UButton>
 
-                <UButton 
+                <UButton
                     :variant="getYearBtnStatus"
                     @click="setTimeframe('year')">
                     Year
                 </UButton>
 
-                <UButton 
+                <UButton
                     :variant="getAllTimeBtnStatus"
                     @click="setTimeframe('alltime')">
                     All Time

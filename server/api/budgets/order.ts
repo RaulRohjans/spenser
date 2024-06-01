@@ -1,4 +1,4 @@
-import { ensureAuth } from "@/utils/authFunctions"
+import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 
 export default defineEventHandler(async (event) => {
@@ -10,17 +10,17 @@ export default defineEventHandler(async (event) => {
         throw createError({
             statusCode: 400,
             statusMessage: 'No positions to be persisted were found.'
-        })    
-    
+        })
 
     Object.entries(positions).forEach(async ([key, value]) => {
-        const opRes = await db.updateTable('budget')
+        const opRes = await db
+            .updateTable('budget')
             .set('order', Number(value))
-            .where('id' , '=', Number(key))
+            .where('id', '=', Number(key))
             .where('user', '=', user.id)
             .execute()
 
-        if(!opRes)
+        if (!opRes)
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Could not persist order in the database.'

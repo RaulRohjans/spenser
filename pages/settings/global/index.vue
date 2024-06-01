@@ -13,21 +13,25 @@
     const currencySelectKey: Ref<number> = ref(0)
 
     // Fetch currencies
-    const { data: currencies } = await useLazyAsyncData<FetchTableDataResult>
-    ('currencies', () => ($fetch)('/api/currencies', {  
-            method: 'GET',
-            headers: buildRequestHeaders(token.value)
-    }), {
-        default: () => {
-            return {
-                success: false,
-                data: {
-                    totalRecordCount: 0,
-                    rows: []
+    const { data: currencies } = await useLazyAsyncData<FetchTableDataResult>(
+        'currencies',
+        () =>
+            $fetch('/api/currencies', {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value)
+            }),
+        {
+            default: () => {
+                return {
+                    success: false,
+                    data: {
+                        totalRecordCount: 0,
+                        rows: []
+                    }
                 }
             }
         }
-    })
+    )
 
     const getCurrencyOptions = computed(() => {
         const options: SelectOption[] = []
@@ -42,50 +46,56 @@
         return options
     })
 
-    const getCurrency = function(id: number) {
-        return currencies.value.data.rows.find(e => Number(e.id) === id)
+    const getCurrency = function (id: number) {
+        return currencies.value.data.rows.find((e) => Number(e.id) === id)
     }
 
-    const updateStore = function(currencyId?: number) {
-        if(!currencyId) return
+    const updateStore = function (currencyId?: number) {
+        if (!currencyId) return
 
         const option = getCurrency(currencyId)
-        if(!option) return
+        if (!option) return
 
         settingsStore.currency = option as Selectable<Currency>
     }
 
     // Fetch user settings
     const { data: userSettings } = await useLazyAsyncData<{
-        success: boolean,
+        success: boolean
         data: UserSettingsObject
-    }>
-    ('settings', () => ($fetch)('/api/settings', {  
+    }>('settings', () =>
+        $fetch('/api/settings', {
             method: 'GET',
             headers: buildRequestHeaders(token.value)
-    }))
-    
+        })
+    )
+
     const state = reactive({
         currency: userSettings.value?.data.currency
     })
 
-    const onSave = function(event: FormSubmitEvent<typeof state>) {
+    const onSave = function (event: FormSubmitEvent<typeof state>) {
         $fetch(`/api/settings/save`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
-        }).then((data) => {
-            if(!data.success) {
-                displayMessage('An error ocurred when saving your settings.', 'error')
-                return
-            }
+        })
+            .then((data) => {
+                if (!data.success) {
+                    displayMessage(
+                        'An error ocurred when saving your settings.',
+                        'error'
+                    )
+                    return
+                }
 
-            // Update store with new settings
-            updateStore(Number(event.data.currency))
+                // Update store with new settings
+                updateStore(Number(event.data.currency))
 
-            // Disaply success message
-            displayMessage(`Settings saved successfully!`, 'success')
-        }).catch((e: NuxtError) => error.value = e.statusMessage || null)
+                // Disaply success message
+                displayMessage(`Settings saved successfully!`, 'success')
+            })
+            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
     }
 
     watch(userSettings, () => {
@@ -100,12 +110,17 @@
 
 <template>
     <UForm :state="state" class="space-y-4" @submit="onSave">
-        <UFormGroup label="Currency" name="currency" class="w-full" :error="error">
-            <USelect :key="currencySelectKey" v-model="state.currency" :options="getCurrencyOptions" />
+        <UFormGroup
+            label="Currency"
+            name="currency"
+            class="w-full"
+            :error="error">
+            <USelect
+                :key="currencySelectKey"
+                v-model="state.currency"
+                :options="getCurrencyOptions" />
         </UFormGroup>
-            
-        <UButton type="submit">
-            Save
-        </UButton>           
+
+        <UButton type="submit"> Save </UButton>
     </UForm>
 </template>

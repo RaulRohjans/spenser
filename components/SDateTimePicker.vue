@@ -28,8 +28,8 @@
          * When true, the user can choose a range of dates or times
          */
         range?: boolean
-    }   
-    
+    }
+
     const props = withDefaults(defineProps<SDateTimePickerProps>(), {
         type: 'date',
         disabled: false,
@@ -37,11 +37,11 @@
         range: false,
         class: ''
     })
-    
+
     const emit = defineEmits<{
         (event: 'clear'): void
     }>()
-    
+
     const colorMode = useColorMode()
     const model = defineModel<ModelValue>()
 
@@ -51,19 +51,34 @@
 
     const dateTimeFormat = computed(() => {
         switch (props.type) {
-            case 'date': return 'dd/MM/yyyy'
-            case 'datetime': return 'dd/MM/yyyy HH:mm'
-            case 'time': return 'HH:mm'
-            default: return ''
+            case 'date':
+                return 'dd/MM/yyyy'
+            case 'datetime':
+                return 'dd/MM/yyyy HH:mm'
+            case 'time':
+                return 'HH:mm'
+            default:
+                return ''
         }
     })
 
     const textFormat = computed(() => {
         switch (props.type) {
-            case 'date': return ['dd/MM/yyyy', 'dd-MM-yyyy', 'ddMMyyyy']
-            case 'datetime': return ['dd/MM/yyyy HH:mm', 'dd-MM-yyyy HH:mm', 'ddMMyyyy HH:mm', 'dd/MM/yyyy HHmm', 'dd-MM-yyyy HHmm', 'ddMMyyyy HHmm']
-            case 'time': return ['HH:mm', 'HHmm']
-            default: return ''
+            case 'date':
+                return ['dd/MM/yyyy', 'dd-MM-yyyy', 'ddMMyyyy']
+            case 'datetime':
+                return [
+                    'dd/MM/yyyy HH:mm',
+                    'dd-MM-yyyy HH:mm',
+                    'ddMMyyyy HH:mm',
+                    'dd/MM/yyyy HHmm',
+                    'dd-MM-yyyy HHmm',
+                    'ddMMyyyy HHmm'
+                ]
+            case 'time':
+                return ['HH:mm', 'HHmm']
+            default:
+                return ''
         }
     })
 
@@ -77,33 +92,42 @@
         return props.type !== 'date'
     })
 
-    const isTimePicker = computed(() =>  {
+    const isTimePicker = computed(() => {
         return props.type === 'time'
     })
-
-
 </script>
 
 <template>
-    <VueDatePicker
-        v-model="model"
-        :class="props.class"
-        :disabled="props.disabled"
-        :readonly="props.readonly"
-        :text-input="textInputOptions"
-        :time-picker="isTimePicker"
-        :format="dateTimeFormat"
-        :enable-time-picker="hasTimePicker"
-        :dark="isDark"
-        :range="props.range"
-        clearable
-        auto-apply
-        @cleared="() => emit('clear')" />
+    <!--
+        We need this ClientOnly here due to hydration issues
+        with the VueDatePicker dependency.
+        The issues are almost all related to the light and dark theme
+        settings (the component always renders with the light theme on
+        the server)
+    -->
+    <ClientOnly>
+        <VueDatePicker
+            v-model="model"
+            :class="props.class"
+            :disabled="props.disabled"
+            :readonly="props.readonly"
+            :text-input="textInputOptions"
+            :time-picker="isTimePicker"
+            :format="dateTimeFormat"
+            :enable-time-picker="hasTimePicker"
+            :dark="isDark"
+            :range="props.range"
+            clearable
+            auto-apply
+            @cleared="() => emit('clear')" />
+    </ClientOnly>
 </template>
 
 <style scoped lang="scss">
     .dp__theme_dark {
-        --dp-background-color: rgb(var(--color-gray-900) / var(--tw-bg-opacity));
+        --dp-background-color: rgb(
+            var(--color-gray-900) / var(--tw-bg-opacity)
+        );
         --dp-text-color: #fff;
         --dp-hover-color: rgb(var(--color-gray-900) / var(--tw-bg-opacity));
         --dp-hover-text-color: #fff;
@@ -127,7 +151,10 @@
         --dp-marker-color: #e53935;
         --dp-tooltip-color: #3e3e3e;
         --dp-highlight-color: rgb(0 92 178 / 20%);
-        --dp-range-between-dates-background-color: var(--dp-hover-color, #484848);
+        --dp-range-between-dates-background-color: var(
+            --dp-hover-color,
+            #484848
+        );
         --dp-range-between-dates-text-color: var(--dp-hover-text-color, #fff);
         --dp-range-between-border-color: var(--dp-hover-color, #fff);
     }
@@ -157,14 +184,22 @@
         --dp-tooltip-color: #fafafa;
         --dp-disabled-color-text: #8e8e8e;
         --dp-highlight-color: rgb(25 118 210 / 10%);
-        --dp-range-between-dates-background-color: var(--dp-hover-color, #f3f3f3);
-        --dp-range-between-dates-text-color: var(--dp-hover-text-color, #212121);
+        --dp-range-between-dates-background-color: var(
+            --dp-hover-color,
+            #f3f3f3
+        );
+        --dp-range-between-dates-text-color: var(
+            --dp-hover-text-color,
+            #212121
+        );
         --dp-range-between-border-color: var(--dp-hover-color, #f3f3f3);
     }
 
     .dp__main {
         /*General*/
-        --dp-font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        --dp-font-family: ui-sans-serif, system-ui, sans-serif,
+            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+            'Noto Color Emoji';
         --dp-border-radius: 0.375rem; /*Configurable border-radius*/
         --dp-cell-border-radius: 4px; /*Specific border radius for the calendar cell*/
         --dp-common-transition: all 0.1s ease-in; /*Generic transition applied on buttons and calendar cells*/
@@ -181,21 +216,26 @@
         --dp-input-padding: 6px 30px 6px 12px; /*Padding in the input*/
         --dp-menu-min-width: 260px; /*Adjust the min width of the menu*/
         --dp-action-buttons-padding: 2px 5px; /*Adjust padding for the action buttons in action row*/
-        --dp-row-margin:  5px 0; /*Adjust the spacing between rows in the calendar*/
-        --dp-calendar-header-cell-padding:  0.5rem; /*Adjust padding in calendar header cells*/
-        --dp-two-calendars-spacing:  10px; /*Space between multiple calendars*/
-        --dp-overlay-col-padding:  3px; /*Padding in the overlay column*/
-        --dp-time-inc-dec-button-size:  32px; /*Sizing for arrow buttons in the time picker*/
+        --dp-row-margin: 5px 0; /*Adjust the spacing between rows in the calendar*/
+        --dp-calendar-header-cell-padding: 0.5rem; /*Adjust padding in calendar header cells*/
+        --dp-two-calendars-spacing: 10px; /*Space between multiple calendars*/
+        --dp-overlay-col-padding: 3px; /*Padding in the overlay column*/
+        --dp-time-inc-dec-button-size: 32px; /*Sizing for arrow buttons in the time picker*/
         --dp-menu-padding: 6px 8px; /*Menu padding*/
-        
+
         /*Font sizes*/
         --dp-font-size: 0.875rem; /*Default font-size*/
         --dp-preview-font-size: 0.8rem; /*Font size of the date preview in the action row*/
         --dp-time-font-size: 0.875rem; /*Font size in the time picker*/
-        
+
         /*Transitions*/
         --dp-animation-duration: 0.1s; /*Transition duration*/
-        --dp-menu-appear-transition-timing: cubic-bezier(.4, 0, 1, 1); /*Timing on menu appear animation*/
+        --dp-menu-appear-transition-timing: cubic-bezier(
+            0.4,
+            0,
+            1,
+            1
+        ); /*Timing on menu appear animation*/
         --dp-transition-timing: ease-out; /*Timing on slide animations*/
     }
 </style>

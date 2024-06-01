@@ -13,11 +13,11 @@ export default defineNuxtConfig({
     ],
     css: ['~/assets/css/main.scss'],
     build: {
-    transpile: ['@vuepic/vue-datepicker', /echarts/]
+        transpile: ['@vuepic/vue-datepicker', /echarts/]
     },
     routeRules: {
         '/settings': { redirect: '/settings/global' },
-        '/settings/admin': { redirect: '/settings/global' },
+        '/settings/admin': { redirect: '/settings/global' }
     },
     auth: {
         provider: {
@@ -56,6 +56,8 @@ export default defineNuxtConfig({
         DB_PASSWORD: process.env.DB_PASSWORD,
         DB_PORT: process.env.DB_PORT || '5432',
 
-        MAX_TRANSACTION_FILE_SIZE: Number(process.env.MAX_TRANSACTION_FILE_SIZE || (1024*1024*10))  //10 MB
+        MAX_TRANSACTION_FILE_SIZE: Number(
+            process.env.MAX_TRANSACTION_FILE_SIZE || 1024 * 1024 * 10
+        ) //10 MB
     }
 })

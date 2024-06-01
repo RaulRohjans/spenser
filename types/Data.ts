@@ -1,5 +1,5 @@
-import type { SelectQueryBuilder, Selectable } from "kysely"
-import type { GlobalSettings } from "kysely-codegen"
+import type { SelectQueryBuilder, Selectable } from 'kysely'
+import type { GlobalSettings } from 'kysely-codegen'
 
 export interface UserSettingsObject {
     id: number
@@ -20,8 +20,8 @@ export interface BudgetDataObject {
     name: string | null
 
     // This needs to be string here because Kysely is stupid and converts postgresql decimal to string
-    value: number | string 
-    
+    value: number | string
+
     period: 'daily' | 'monthly' | 'quarterly' | 'semi-annual' | 'yearly'
     order: number
     category_name: string | null
@@ -29,7 +29,7 @@ export interface BudgetDataObject {
     expenses: number
 }
 
-export interface LlmTransactionObject  {
+export interface LlmTransactionObject {
     category: number
     name: string
     value: number

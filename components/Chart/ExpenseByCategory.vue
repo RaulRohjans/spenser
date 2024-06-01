@@ -8,7 +8,7 @@
         LegendComponent,
         type LegendComponentOption
     } from 'echarts/components'
-    
+
     import { PieChart, type PieSeriesOption } from 'echarts/charts'
     import { LabelLayout } from 'echarts/features'
     import { SVGRenderer } from 'echarts/renderers'
@@ -35,14 +35,8 @@
         height: '40vh'
     })
 
-    use([
-        TooltipComponent,
-        LegendComponent,
-        PieChart,
-        SVGRenderer,
-        LabelLayout
-    ])
-    
+    use([TooltipComponent, LegendComponent, PieChart, SVGRenderer, LabelLayout])
+
     const colorMode = useColorMode()
     const { token } = useAuth()
     const dateRange: Ref<Date[]> = ref([])
@@ -52,35 +46,45 @@
     })
 
     provide(THEME_KEY, getTheme) // Set chart theme
-    
+
     type EChartsOption = echarts.ComposeOption<
         TooltipComponentOption | LegendComponentOption | PieSeriesOption
     >
 
     // Fetch data
     const { data: fetchData, pending: loading } = await useLazyAsyncData<{
-        success: boolean,
+        success: boolean
         data: ExpensesByCategoryData[]
-    }>
-    ('expensesByCategory', () => ($fetch)('/api/charts/expensesByCategory', {  
-            method: 'GET',
-            headers: buildRequestHeaders(token.value),
-            query: {
-                startDate: dateRange.value.length > 0 ? dateRange.value[0].getTime() : '',
-                endDate: dateRange.value.length > 0 ? dateRange.value[1].getTime() : '',
-            }
-    }), {
-        default: () => {
-            return {
-                success: false,
-                data: []
-            }
-        },
-        watch: [dateRange]
-    })
+    }>(
+        'expensesByCategory',
+        () =>
+            $fetch('/api/charts/expensesByCategory', {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value),
+                query: {
+                    startDate:
+                        dateRange.value.length > 0
+                            ? dateRange.value[0].getTime()
+                            : '',
+                    endDate:
+                        dateRange.value.length > 0
+                            ? dateRange.value[1].getTime()
+                            : ''
+                }
+            }),
+        {
+            default: () => {
+                return {
+                    success: false,
+                    data: []
+                }
+            },
+            watch: [dateRange]
+        }
+    )
 
     const getGraphOptions = computed<EChartsOption>(() => {
-        const chartData: { value: number, name: string }[] = []
+        const chartData: { value: number; name: string }[] = []
 
         fetchData.value?.data.forEach((e) => {
             chartData.push({
@@ -110,7 +114,7 @@
                     },
                     label: {
                         position: 'inside',
-                        formatter: '{d}%',
+                        formatter: '{d}%'
                     },
                     emphasis: {
                         label: {
@@ -127,7 +131,6 @@
             ]
         }
     })
-
 </script>
 
 <template>
@@ -135,22 +138,30 @@
         :class="`shadow-xl p-4 ${props.class}`"
         :style="`width: ${props.width}`"
         :ui="{
-            body: { padding: '', base: 'divide-y divide-gray-200 dark:divide-gray-700' },
+            body: {
+                padding: '',
+                base: 'divide-y divide-gray-200 dark:divide-gray-700'
+            }
         }">
-        
         <div class="flex flex-col justify-center items-center gap-4">
-            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+            <h2
+                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                 Spending (%) per Category
             </h2>
 
-            <VChart class="w-full" :style="`height: ${props.height}`" :option="getGraphOptions" :loading="loading" autoresize />
+            <VChart
+                class="w-full"
+                :style="`height: ${props.height}`"
+                :option="getGraphOptions"
+                :loading="loading"
+                autoresize />
 
-            <SDateTimePicker 
-                v-model="dateRange" 
-                class="sm:!w-[60%]" 
-                type="date" 
+            <SDateTimePicker
+                v-model="dateRange"
+                class="sm:!w-[60%]"
+                type="date"
                 range
-                @clear="() => dateRange = []" />
+                @clear="() => (dateRange = [])" />
         </div>
     </UCard>
 </template>

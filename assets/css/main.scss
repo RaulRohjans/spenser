@@ -19,24 +19,22 @@
 */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 /* Firefox */
-input[type=number] {
-  -moz-appearance: textfield;
-  appearance: textfield;
+input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
-
-
 
 /* 
  * When no matching icon is found, UIcon displays the text. This is to hide it 
  * There are two version due to the different structure Nuxt's components adopt
 */
 .hide-span span {
-  visibility: hidden;
+    visibility: hidden;
 }
 
 .hide-select-span span span {

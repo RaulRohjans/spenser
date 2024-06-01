@@ -1,11 +1,11 @@
-import { ensureAuth } from "@/utils/authFunctions"
+import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
-import { sql } from "kysely"
-import type { AvgExpenseValueData } from "@/types/Chart"
+import { sql } from 'kysely'
+import type { AvgExpenseValueData } from '@/types/Chart'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
-    
+
     const res = await db
         .selectFrom('transaction')
         .select(({ fn }) => [
@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
         // Validate transaction user
         .where('transaction.user', '=', user.id)
-        .executeTakeFirst()        
+        .executeTakeFirst()
 
     return {
         success: true,

@@ -1,25 +1,20 @@
-import { ensureAuth } from "@/utils/authFunctions"
+import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
-import type { Selectable } from "kysely"
-import type { Transaction } from "kysely-codegen"
+import type { Selectable } from 'kysely'
+import type { Transaction } from 'kysely-codegen'
 
 export default defineEventHandler(async (event) => {
     // Read params
-    const {
-        id,
-        category,
-        name,
-        value,
-        date
-    } = await readBody(event)
+    const { id, category, name, value, date } = await readBody(event)
     const operation = event.context.params?.operation || null
     const user = ensureAuth(event)
 
     // No need to do rest of the logic
-    if(operation === 'delete' && id) {
+    if (operation === 'delete' && id) {
         // Remove the transaction in the database
-        await db.deleteFrom('transaction')
-            .where('id' , '=', id)
+        await db
+            .deleteFrom('transaction')
+            .where('id', '=', id)
             .where('user', '=', user.id)
             .execute()
         return { success: true }
@@ -33,21 +28,20 @@ export default defineEventHandler(async (event) => {
 
     // Check if user has access to that category
     const validateCategory = async () => {
-        const res = await db.selectFrom('category')
-            .select(({ fn }) => [
-                fn.count<number>('category.id').as('count')
-            ])
+        const res = await db
+            .selectFrom('category')
+            .select(({ fn }) => [fn.count<number>('category.id').as('count')])
             .where('category.user', '=', user.id)
             .where('category.id', '=', category)
             .executeTakeFirst()
 
-        if(!res) 
+        if (!res)
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Could not validate new data.'
             })
 
-        if(res.count === 0)
+        if (res.count === 0)
             throw createError({
                 statusCode: 400,
                 statusMessage: 'No category exists with the corresponding id.'
@@ -55,7 +49,7 @@ export default defineEventHandler(async (event) => {
     }
 
     let opRes
-    switch(operation) {
+    switch (operation) {
         case 'duplicate':
         case 'insert': {
             await validateCategory()
@@ -70,7 +64,8 @@ export default defineEventHandler(async (event) => {
             }
 
             // Add transaction to persistent storage
-            opRes = await db.insertInto('transaction')
+            opRes = await db
+                .insertInto('transaction')
                 .values(transactionRecord)
                 .returning('id')
                 .executeTakeFirst()
@@ -80,12 +75,13 @@ export default defineEventHandler(async (event) => {
             await validateCategory()
 
             // Update transaction in the database
-            opRes = await db.updateTable('transaction')
+            opRes = await db
+                .updateTable('transaction')
                 .set('category', category)
                 .set('name', name)
                 .set('value', value)
                 .set('date', date)
-                .where('id' , '=', id)
+                .where('id', '=', id)
                 .where('user', '=', user.id)
                 .execute()
             break
@@ -94,9 +90,9 @@ export default defineEventHandler(async (event) => {
                 statusCode: 500,
                 statusMessage: 'Invalid operation.'
             })
-    }    
+    }
 
-    if(!opRes)
+    if (!opRes)
         throw createError({
             statusCode: 500,
             statusMessage: 'Could not perform the operation, an error occurred.'

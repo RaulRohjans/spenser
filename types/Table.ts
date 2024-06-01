@@ -13,11 +13,11 @@ export interface TableRow {
 export interface TableAction {
     label: string
     icon: string
-    click?: { () : void }
+    click?: { (): void }
 }
 
-export interface TableSort { 
-    column: string, 
+export interface TableSort {
+    column: string
     direction: string
 }
 
