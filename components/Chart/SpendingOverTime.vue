@@ -50,7 +50,6 @@
     const timeframe: Ref<'month' | 'year' | 'alltime'> = ref('year')
     const colorMode = useColorMode()
     const { token } = useAuth()
-    const { locale } = useI18n()
 
     const getTheme = computed(() => {
         return colorMode.value
@@ -69,7 +68,6 @@
                 method: 'GET',
                 headers: buildRequestHeaders(token.value),
                 query: {
-                    locale,
                     timeframe: timeframe.value
                 }
             }),

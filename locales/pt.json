@@ -81,7 +81,5 @@
     "Budgets": "Orçamentos",
     "Period": "Período",
     "Delete Budget": "Eliminar Orçamento",
-    "Are you sure you want to delete this budget?": "Tem a certeza que prentede eliminar o orçamento?",
-    "The user does not have permisson to access this resource.": "O utilizador não tem permissão para aceder a este recurso.",
-    "Could not load total user count.": "Não foi possível obter a quantidade de utilizadores."
+    "Are you sure you want to delete this budget?": "Tem a certeza que prentede eliminar o orçamento?"
 }

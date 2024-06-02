@@ -10,7 +10,7 @@
 
     const localePath = useLocalePath()
     const { token } = useAuth()
-    const { t: $t, locale } = useI18n()
+    const { t: $t } = useI18n()
     const tableObj = {
         label: $t('Transactions'),
         rowCount: 200,
@@ -78,7 +78,6 @@
                     method: 'GET',
                     headers: buildRequestHeaders(token.value),
                     query: {
-                        locale,
                         q: searchQuery.value,
                         qColumn: searchColumn.value,
                         page: page.value,
@@ -161,7 +160,6 @@
             //User accepted
             $fetch(`/api/transactions/delete`, {
                 method: 'POST',
-                query: { locale },
                 headers: buildRequestHeaders(token.value),
                 body: { id: selectedTransactionId.value }
             })

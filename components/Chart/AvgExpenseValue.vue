@@ -2,7 +2,6 @@
     import type { AvgExpenseValueData } from '~/types/Chart'
 
     const { token } = useAuth()
-    const { locale } = useI18n()
 
     // Fetch data
     const { data: fetchData } = await useLazyAsyncData<{
@@ -13,7 +12,6 @@
         () =>
             $fetch('/api/charts/avgExpenseValue', {
                 method: 'GET',
-                query: { locale },
                 headers: buildRequestHeaders(token.value)
             }),
         {

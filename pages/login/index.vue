@@ -4,7 +4,7 @@
     import type { NuxtError } from '#app'
 
     const { signIn, token } = useAuth()
-    const { t: $t, locale } = useI18n()
+    const { t: $t } = useI18n()
     const error: Ref<null | string> = ref(null)
     const validationSchema = z.object({
         username: z.string().trim().min(1, $t('Invalid username')),
@@ -28,7 +28,6 @@
                 // Fetch user settings data
                 const userSettings = await $fetch('/api/settings', {
                     method: 'GET',
-                    query: { locale },
                     headers: buildRequestHeaders(token.value)
                 })
 

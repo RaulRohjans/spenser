@@ -24,7 +24,6 @@
 
     const model = defineModel<boolean>()
     const { token } = useAuth()
-    const { locale } = useI18n()
     const vTransactions: Ref<LlmTransactionObject[]> = ref(props.transactions)
     const tableColumns = [
         {
@@ -71,7 +70,6 @@
             () =>
                 $fetch('/api/categories', {
                     method: 'GET',
-                    query: { locale },
                     headers: buildRequestHeaders(token.value)
                 }),
             {
@@ -126,7 +124,6 @@
     const onImportData = function () {
         $fetch(`/api/transactions/import`, {
             method: 'POST',
-            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: { transactions: vTransactions.value }
         })

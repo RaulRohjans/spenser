@@ -5,7 +5,7 @@
     import type { LlmTransactionObject } from '~/types/Data'
 
     const { token } = useAuth()
-    const { t: $t, locale } = useI18n()
+    const { t: $t } = useI18n()
     const filesRef: Ref<HTMLInputElement | null> = ref(null)
     const modalTransactions: Ref<LlmTransactionObject[] | null> = ref(null)
     const modalState: Ref<boolean> = ref(false)
@@ -72,7 +72,6 @@
 
         $fetch(url, {
             method: 'POST',
-            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: formData
         })

@@ -42,7 +42,6 @@
     }>()
 
     const { token } = useAuth()
-    const { locale } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
     const periodOptions: Ref<SelectOption[]> = ref([
@@ -90,7 +89,6 @@
             () =>
                 $fetch('/api/categories', {
                     method: 'GET',
-                    query: { locale },
                     headers: buildRequestHeaders(token.value)
                 }),
             {
@@ -140,7 +138,6 @@
 
         $fetch(`/api/budgets/${operation.value}`, {
             method: 'POST',
-            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: event.data
         })

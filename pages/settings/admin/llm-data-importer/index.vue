@@ -5,7 +5,7 @@
     import type { GlobalSettingsObject } from '~/types/Data'
 
     const { token } = useAuth()
-    const { t: $t, locale } = useI18n()
+    const { t: $t } = useI18n()
     const error: Ref<null | string> = ref(null)
     const providerSelectKey: Ref<number> = ref(0)
 
@@ -28,7 +28,6 @@
         data: GlobalSettingsObject
     }>('/api/global-settings', {
         method: 'GET',
-        query: { locale },
         headers: buildRequestHeaders(token.value)
     })
 
@@ -45,7 +44,6 @@
     const onSave = function (event: FormSubmitEvent<typeof state>) {
         $fetch(`/api/global-settings/save`, {
             method: 'POST',
-            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: event.data
         })

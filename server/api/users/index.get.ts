@@ -1,6 +1,5 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db, applySearchFilter } from '@/utils/dbEngine'
-import { i18n } from '@/locales/i18n.config'
 import type { OrderByDirectionExpression } from 'kysely'
 import type { TableRow } from '~/types/Table'
 
@@ -12,11 +11,9 @@ export default defineEventHandler(async (event) => {
         page,
         limit,
         sort,
-        order,
-        locale
+        order
     } = getQuery(event)
 
-    const parsedLocale = locale?.toString() || 'en'
     const user = ensureAuth(event)
 
     // Check if user is admin
@@ -24,7 +21,7 @@ export default defineEventHandler(async (event) => {
         throw createError({
             statusCode: 401,
             statusMessage:
-                i18n('The user does not have permisson to access this resource.', parsedLocale)
+                'The user does not have permisson to access this resource.'
         })
 
     // Build query to fetch categories
@@ -81,7 +78,7 @@ export default defineEventHandler(async (event) => {
     if (!totalRecordsRes)
         throw createError({
             statusCode: 500,
-            statusMessage: i18n('Could not load total user count.', parsedLocale)
+            statusMessage: 'Could not load total user count.'
         })
 
     return {

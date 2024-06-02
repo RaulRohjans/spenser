@@ -5,7 +5,7 @@
     import type { NuxtError } from '#app'
 
     const { data, signOut, token } = useAuth()
-    const { t: $t, locale } = useI18n()
+    const { t: $t } = useI18n()
     const schema = z.object({
         first_name: z.string().min(1, $t('Mandatory Field')),
         last_name: z.string().min(1, $t('Mandatory Field')),
@@ -26,7 +26,6 @@
     const onSubmit = function (event: FormSubmitEvent<Schema>) {
         $fetch('/api/account/update', {
             method: 'POST',
-            query: { locale },
             headers: buildRequestHeaders(token.value),
             body: event.data
         })
