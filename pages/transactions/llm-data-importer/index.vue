@@ -86,7 +86,7 @@
 
                 if (!parsedData.success)
                     return displayMessage(
-                        $t('An error ocurred when uploading transaction data.'),
+                        $t('An error occurred when uploading transaction data.'),
                         'error'
                     )
 

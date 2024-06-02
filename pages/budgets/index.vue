@@ -82,7 +82,7 @@
                 .then(async (data) => {
                     if (!data.success)
                         return displayMessage(
-                            $t('An error ocurred while removing your budget.'),
+                            $t('An error occurred while removing your budget.'),
                             'error'
                         )
 
@@ -124,7 +124,7 @@
             .then((data) => {
                 if (!data.success)
                     displayMessage(
-                        $t('An error ocurred while saving budget positions.'),
+                        $t('An error occurred while saving budget positions.'),
                         'error'
                     )
             })

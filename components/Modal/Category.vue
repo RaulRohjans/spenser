@@ -70,7 +70,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        $t('An error ocurred when creating your category.'),
+                        $t('An error occurred when creating your category.'),
                         'error'
                     )
 

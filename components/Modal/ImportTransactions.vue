@@ -131,7 +131,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        $t('An error ocurred while importing the transactions.'),
+                        $t('An error occurred while importing the transactions.'),
                         'error'
                     )
 

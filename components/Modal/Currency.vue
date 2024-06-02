@@ -38,7 +38,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        $t('An error ocurred while creating your currency.'),
+                        $t('An error occurred while creating your currency.'),
                         'error'
                     )
 

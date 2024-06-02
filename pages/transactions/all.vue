@@ -166,7 +166,7 @@
                 .then((data) => {
                     if (!data.success)
                         return displayMessage(
-                            $t('An error ocurred while removing your transaction.'),
+                            $t('An error occurred while removing your transaction.'),
                             'error'
                         )
 

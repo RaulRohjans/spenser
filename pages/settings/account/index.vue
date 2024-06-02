@@ -32,7 +32,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        $t('An error ocurred while updating your account profile.'),
+                        $t('An error occurred while updating your account profile.'),
                         'error'
                     )
 

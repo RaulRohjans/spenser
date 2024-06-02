@@ -38,7 +38,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        $t('An error ocurred when updating your password.'),
+                        $t('An error occurred when updating your password.'),
                         'error'
                     )
 

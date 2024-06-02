@@ -139,7 +139,7 @@
                 .then((data) => {
                     if (!data.success)
                         return displayMessage(
-                            $t('An error ocurred while removing the user.'),
+                            $t('An error occurred while removing the user.'),
                             'error'
                         )
 

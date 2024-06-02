@@ -84,7 +84,7 @@
             .then((data) => {
                 if (!data.success) {
                     displayMessage(
-                        $t('An error ocurred while saving your settings.'),
+                        $t('An error occurred while saving your settings.'),
                         'error'
                     )
                     return

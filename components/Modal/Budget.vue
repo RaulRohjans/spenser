@@ -145,7 +145,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        $t('An error ocurred when creating your budget.'),
+                        $t('An error occurred when creating your budget.'),
                         'error'
                     )
 

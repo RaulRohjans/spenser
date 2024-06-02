@@ -110,7 +110,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        $t('An error ocurred when performing the action.'),
+                        $t('An error occurred when performing the action.'),
                         'error'
                     )
 
