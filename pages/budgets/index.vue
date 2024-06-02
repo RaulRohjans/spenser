@@ -6,6 +6,7 @@
     import type { DragableChangeEvent } from '~/types/Draggable'
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const isModalOpen: Ref<boolean> = ref(false)
     const isChooserOpen: Ref<boolean> = ref(false)
     const selectedBudgetId: Ref<number | null> = ref(null)
@@ -81,12 +82,12 @@
                 .then(async (data) => {
                     if (!data.success)
                         return displayMessage(
-                            'An error ocurred when removing your budget.',
+                            $t('An error occurred while removing your budget.'),
                             'error'
                         )
 
                     await loadData()
-                    displayMessage('Budget deleted successfully!', 'success')
+                    displayMessage($t('Budget deleted successfully!'), 'success')
                 })
                 .catch((e: NuxtError) =>
                     displayMessage(e.statusMessage, 'error')
@@ -123,7 +124,7 @@
             .then((data) => {
                 if (!data.success)
                     displayMessage(
-                        'An error ocurred when updating order persistency.',
+                        $t('An error occurred while saving budget positions.'),
                         'error'
                     )
             })
@@ -140,7 +141,7 @@
     })
 
     useHead({
-        title: 'Spenser | Budgets'
+        title: `Spenser | ${$t('Budgets')}`
     })
 </script>
 
@@ -219,9 +220,9 @@
                         <template #footer>
                             <div
                                 class="flex flex-row justify-between items-center w-full gap-8">
-                                <span class="text-xs cursor-auto"
-                                    >Period: {{ element.period }}</span
-                                >
+                                <span class="text-xs cursor-auto">
+                                    {{ `${$t('Period')}: ${$t(element.period)}` }}
+                                </span>
 
                                 <div
                                     class="flex flex-row justify-start items-center">
@@ -268,8 +269,8 @@
 
     <ModalChooser
         v-model="isChooserOpen"
-        title="Delete Budget"
-        message="Are you sure you want to delete this budget?"
+        :title="$t('Delete Budget')"
+        :message="$t('Are you sure you want to delete this budget?')"
         @click="removeItem" />
 
     <ModalBudget

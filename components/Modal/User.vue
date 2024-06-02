@@ -48,16 +48,17 @@
     }>()
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
 
     const schema = z
         .object({
             id: z.number().optional(),
-            first_name: z.string().min(1, 'Mandatory Field'),
-            last_name: z.string().min(1, 'Mandatory Field'),
-            username: z.string().min(4, 'Must be at least 4 characters'),
-            email: z.string().email('Invalid email'),
+            first_name: z.string().min(1, $t('Mandatory Field')),
+            last_name: z.string().min(1, $t('Mandatory Field')),
+            username: z.string().min(4, $t('Must be at least 4 characters')),
+            email: z.string().email($t('Invalid email')),
             password: z.string().optional(),
             is_admin: z.boolean()
         })
@@ -66,7 +67,7 @@
                 if (!password || password.length < 4) {
                     ctx.addIssue({
                         code: 'custom',
-                        message: 'Must be at least 4 characters',
+                        message: $t('Must be at least 4 characters'),
                         path: ['password']
                     })
                 }
@@ -74,7 +75,7 @@
                 if (password.length < 4) {
                     ctx.addIssue({
                         code: 'custom',
-                        message: 'Must be at least 4 characters',
+                        message: $t('Must be at least 4 characters'),
                         path: ['password']
                     })
                 }
@@ -109,7 +110,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when performing the action.',
+                        $t('An error occurred when performing the action.'),
                         'error'
                     )
 
@@ -118,7 +119,7 @@
 
                 // Display success message
                 displayMessage(
-                    `Transaction ${operation.value} successfully!`,
+                    $t('Operation completed successfully!'),
                     'success'
                 )
 
@@ -138,34 +139,34 @@
             @submit="onCreateUser">
             <div
                 class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
-                <UFormGroup label="First Name" name="first_name" class="w-full">
+                <UFormGroup :label="$t('First Name')" name="first_name" class="w-full">
                     <UInput v-model="state.first_name" />
                 </UFormGroup>
 
-                <UFormGroup label="Last Name" name="last_name" class="w-full">
+                <UFormGroup :label="$t('Last Name')" name="last_name" class="w-full">
                     <UInput v-model="state.last_name" />
                 </UFormGroup>
             </div>
 
-            <UFormGroup label="Username" name="username" class="makeit-static">
+            <UFormGroup :label="$t('Username')" name="username" class="makeit-static">
                 <UInput v-model="state.username" />
             </UFormGroup>
 
-            <UFormGroup label="Email" name="email">
+            <UFormGroup :label="$t('Email')" name="email">
                 <UInput v-model="state.email" />
             </UFormGroup>
 
-            <UFormGroup label="Password" name="password">
+            <UFormGroup :label="$t('Password')" name="password">
                 <UInput v-model="state.password" type="password" />
             </UFormGroup>
 
             <UCheckbox
                 v-model="state.is_admin"
                 name="is_admin"
-                label="Is Administrator"
+                :label="$t('Administrator')"
                 class="makeit-static" />
 
-            <UButton type="submit" class="mt-2 sm:mt-0"> Submit </UButton>
+            <UButton type="submit" class="mt-2 sm:mt-0"> {{ $t('Submit') }} </UButton>
         </UForm>
     </UModal>
 </template>

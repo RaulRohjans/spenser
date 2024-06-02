@@ -5,6 +5,7 @@
     import type { GlobalSettingsObject } from '~/types/Data'
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const error: Ref<null | string> = ref(null)
     const providerSelectKey: Ref<number> = ref(0)
 
@@ -49,12 +50,12 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when saving your settings.',
+                        $t('An error occurred while saving your settings.'),
                         'error'
                     )
 
                 // Disaply success message
-                displayMessage(`Settings saved successfully!`, 'success')
+                displayMessage($t('Settings saved successfully!'), 'success')
             })
             .catch((e: NuxtError) => (error.value = e.statusMessage || null))
     }
@@ -77,14 +78,14 @@
     )
 
     useHead({
-        title: 'Spenser | LLM Settings'
+        title: `Spenser | ${$t('LLM Settings')}`
     })
 </script>
 
 <template>
     <UForm :state="state" class="space-y-4" @submit="onSave">
         <UFormGroup
-            label="LLM Provider"
+            :label="$t('LLM Provider')"
             name="provider"
             class="w-full"
             :error="error">
@@ -96,7 +97,7 @@
 
         <template v-if="state.provider === 'gpt'">
             <UFormGroup
-                label="GPT Model"
+                :label="$t('GPT Model')"
                 name="gptModel"
                 class="w-full"
                 :error="!!error">
@@ -104,17 +105,17 @@
             </UFormGroup>
 
             <UFormGroup
-                label="GPT Token"
+                :label="$t('GPT Token')"
                 name="gptToken"
                 class="makeit-static"
                 :error="!!error">
-                <UInput v-model="state.gptToken" />
+                <UInput v-model="state.gptToken" type="password" />
             </UFormGroup>
         </template>
 
         <template v-else-if="state.provider === 'ollama'">
             <UFormGroup
-                label="Ollama Model"
+                :label="$t('Ollama Model')"
                 name="ollamaModel"
                 class="w-full"
                 :error="!!error">
@@ -122,7 +123,7 @@
             </UFormGroup>
 
             <UFormGroup
-                label="Ollama URL"
+                :label="$t('Ollama URL')"
                 name="ollamaUrl"
                 class="w-full"
                 :error="!!error">
@@ -130,6 +131,6 @@
             </UFormGroup>
         </template>
 
-        <UButton type="submit"> Save </UButton>
+        <UButton type="submit"> {{ $t('Save') }} </UButton>
     </UForm>
 </template>

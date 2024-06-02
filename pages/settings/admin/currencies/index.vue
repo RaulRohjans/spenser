@@ -7,8 +7,9 @@
     import type { NuxtError } from '#app'
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const tableObj = {
-        label: 'Currencies',
+        label: $t('Currencies'),
         actions: ['delete'],
         columns: [
             {
@@ -18,17 +19,17 @@
             },
             {
                 key: 'symbol',
-                label: 'Symbol',
+                label: $t('Symbol'),
                 sortable: true
             },
             {
                 key: 'placement',
-                label: 'Placement',
+                label: $t('Placement'),
                 sortable: true
             },
             {
                 key: 'actions',
-                label: 'Actions',
+                label: $t('Actions'),
                 sortable: false,
                 searchable: false
             }
@@ -102,11 +103,11 @@
                 .then((data) => {
                     if (!data.success)
                         return displayMessage(
-                            'An error ocurred when removing your currency.',
+                            $t('An error occurred while removing your currency.'),
                             'error'
                         )
 
-                    displayMessage('Currency deleted successfully!', 'success')
+                    displayMessage($t('Currency deleted successfully!'), 'success')
                     reloadTableData()
                 })
                 .catch((e: NuxtError) =>
@@ -131,7 +132,7 @@
     }
 
     useHead({
-        title: 'Spenser | Currency Settings'
+        title: `Spenser | ${$t('Currency Settings')}`
     })
 </script>
 
@@ -156,7 +157,7 @@
                         color="primary"
                         size="xs"
                         @click="toggleModal">
-                        Create Currency
+                        {{ $t('Create Currency') }}                        
                     </UButton>
                 </div>
             </template>
@@ -167,7 +168,7 @@
 
     <ModalChooser
         v-model="isChooserOpen"
-        title="Delete Currency"
-        message="Are you sure you want to delete this currency?"
+        :title="$t('Delete Currency')"
+        :message="$t('Are you sure you want to delete this currency?')"
         @click="delCurrency" />
 </template>

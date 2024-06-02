@@ -40,6 +40,7 @@
     }>()
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
 
@@ -116,7 +117,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when performing the action.',
+                        $t('An error occurred when performing the action.'),
                         'error'
                     )
 
@@ -125,7 +126,7 @@
 
                 // Disaply success message
                 displayMessage(
-                    `Transaction ${operation.value} successfully!`,
+                    $t('Operation completed successfully!'),
                     'success'
                 )
 
@@ -153,14 +154,14 @@
             :state="state"
             class="space-y-4 p-6"
             @submit="onCreateTransaction">
-            <UFormGroup label="Transaction Name" name="name" :error="!!error">
+            <UFormGroup :label="$t('Transaction Name')" name="name" :error="!!error">
                 <UInput v-model="state.name" />
             </UFormGroup>
 
             <div
                 class="flex flex-row justify-between items-center space-y-0 gap-8">
                 <UFormGroup
-                    label="Value"
+                    :label="$t('Value')"
                     name="value"
                     class="w-full"
                     :error="!!error">
@@ -168,7 +169,7 @@
                 </UFormGroup>
 
                 <UFormGroup
-                    label="Category"
+                    :label="$t('Category')"
                     name="category"
                     class="w-full"
                     :error="!!error">
@@ -187,11 +188,11 @@
                 </UFormGroup>
             </div>
 
-            <UFormGroup label="Date" name="date" :error="error">
+            <UFormGroup :label="$t('Date')" name="date" :error="error">
                 <SDateTimePicker v-model="state.date" type="datetime" />
             </UFormGroup>
 
-            <UButton type="submit"> Submit </UButton>
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>
     </UModal>
 </template>

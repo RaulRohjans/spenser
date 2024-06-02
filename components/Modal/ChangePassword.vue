@@ -4,21 +4,22 @@
     import type { NuxtError } from '#app'
 
     const { signOut, token } = useAuth()
+    const { t: $t } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
 
     const schema = z
         .object({
-            new_password: z.string().min(4, 'Must be at least 4 characters'),
+            new_password: z.string().min(4, $t('Must be at least 4 characters')),
             repeat_new_password: z
                 .string()
-                .min(4, 'Must be at least 4 characters')
+                .min(4, $t('Must be at least 4 characters'))
         })
         .superRefine(({ new_password, repeat_new_password }, ctx) => {
             if (new_password !== repeat_new_password)
                 ctx.addIssue({
                     code: 'custom',
-                    message: "The passwords don't match",
+                    message: $t('The passwords don\'t match'),
                     path: ['repeat_new_password']
                 })
         })
@@ -37,11 +38,11 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when updating your password.',
+                        $t('An error occurred when updating your password.'),
                         'error'
                     )
 
-                displayMessage('Password updated successfully!', 'success')
+                displayMessage($t('Password updated successfully!'), 'success')
 
                 // Force signout to refresh  token
                 signOut({ callbackUrl: '/login' })
@@ -60,20 +61,20 @@
             class="space-y-4 p-6"
             @submit="onChangePasswordSubmit">
             <UFormGroup
-                label="New Password"
+                :label="$t('New Password')"
                 name="new_password"
                 :error="error != null">
                 <UInput v-model="state.new_password" type="password" />
             </UFormGroup>
 
             <UFormGroup
-                label="Repeat New Password"
+                :label="$t('Repeat New Password')"
                 name="repeat_new_password"
                 :error="error">
                 <UInput v-model="state.repeat_new_password" type="password" />
             </UFormGroup>
 
-            <UButton type="submit"> Submit </UButton>
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>
     </UModal>
 </template>

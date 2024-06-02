@@ -18,6 +18,7 @@
     }>()
 
     const model = defineModel<boolean>()
+    const { t: $t } = useI18n()
 </script>
 
 <template>
@@ -36,11 +37,11 @@
                 <div
                     class="flex flex-row justify-end items-center gap-2 w-full">
                     <UButton class="px-4" @click="emit('click', false)">
-                        No
+                        {{ $t('No') }}
                     </UButton>
 
                     <UButton class="px-4" @click="emit('click', true)">
-                        Yes
+                        {{ $t('Yes') }}
                     </UButton>
                 </div>
             </div>

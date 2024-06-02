@@ -2,6 +2,7 @@
     import type { AvgExpenseValueData } from '~/types/Chart'
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
 
     // Fetch data
     const { data: fetchData } = await useLazyAsyncData<{
@@ -37,7 +38,7 @@
         <div class="flex flex-col justify-center items-center">
             <h2
                 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                Average Expense Value
+                {{ $t('Average Expense Value') }}
             </h2>
             <span class="p-8 text-lg">
                 {{ formatCurrencyValue(Number(fetchData.data.value)) }}

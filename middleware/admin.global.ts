@@ -1,12 +1,13 @@
 export default defineNuxtRouteMiddleware((to) => {
     const { data } = useAuth()
+    const localePath = useLocalePath()
 
     if (
-        to.path.startsWith('/settings/admin') &&
+        to.path.startsWith(`${localePath('/')}/settings/admin`) &&
         data &&
         data.value &&
         !data.value.is_admin
     ) {
-        return navigateTo('/settings')
+        return navigateTo(localePath('/settings/global'))
     }
 })

@@ -50,6 +50,7 @@
     const timeframe: Ref<'month' | 'year' | 'alltime'> = ref('year')
     const colorMode = useColorMode()
     const { token } = useAuth()
+    const { t: $t } = useI18n()
 
     const getTheme = computed(() => {
         return colorMode.value
@@ -145,7 +146,7 @@
         <div class="flex flex-col justify-center items-center gap-4">
             <h2
                 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                Spending Over Time
+                {{ $t('Spending Over Time') }}
             </h2>
 
             <VChart
@@ -158,19 +159,19 @@
                 <UButton
                     :variant="getMonthBtnStatus"
                     @click="setTimeframe('month')">
-                    Month
+                    {{ $t('Month') }}
                 </UButton>
 
                 <UButton
                     :variant="getYearBtnStatus"
                     @click="setTimeframe('year')">
-                    Year
+                    {{ $t('Year') }}
                 </UButton>
 
                 <UButton
                     :variant="getAllTimeBtnStatus"
                     @click="setTimeframe('alltime')">
-                    All Time
+                    {{ $t('All Time') }}
                 </UButton>
             </div>
         </div>

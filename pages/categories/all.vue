@@ -8,8 +8,9 @@
     import type { NuxtError } from '#app'
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const tableObj = {
-        label: 'Categories',
+        label: $t('Categories'),
         actions: ['edit', 'duplicate', 'delete'],
         columns: [
             {
@@ -19,17 +20,17 @@
             },
             {
                 key: 'name',
-                label: 'Name',
+                label: $t('Name'),
                 sortable: true
             },
             {
                 key: 'icon',
-                label: 'Icon',
+                label: $t('Icon'),
                 sortable: true
             },
             {
                 key: 'actions',
-                label: 'Actions',
+                label: $t('Actions'),
                 sortable: false,
                 searchable: false
             }
@@ -126,11 +127,11 @@
                 .then((data) => {
                     if (!data.success)
                         return displayMessage(
-                            'An error ocurred when removing your category.',
+                            $t('An error occurred while removing your category.'),
                             'error'
                         )
 
-                    displayMessage('Category deleted successfully!', 'success')
+                    displayMessage($t('Category deleted successfully!'), 'success')
                     reloadTableData()
                 })
                 .catch((e: NuxtError) =>
@@ -164,7 +165,7 @@
     })
 
     useHead({
-        title: 'Spenser | Categories'
+        title: `Spenser | ${$t('Categories')}`
     })
 </script>
 
@@ -199,7 +200,7 @@
                         color="primary"
                         size="xs"
                         @click="toggleModal">
-                        Create Category
+                        {{ $t('Create Category') }}
                     </UButton>
                 </div>
             </template>
@@ -214,7 +215,7 @@
 
     <ModalChooser
         v-model="isChooserOpen"
-        title="Delete Category"
-        message="Are you sure you want to delete this category?"
+        :title="$t('Delete Category')"
+        :message="$t('Are you sure you want to delete this category?')"
         @click="delCategory" />
 </template>

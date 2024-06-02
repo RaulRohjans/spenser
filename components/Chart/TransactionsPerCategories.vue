@@ -59,6 +59,7 @@
 
     const colorMode = useColorMode()
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const dateRange: Ref<Date[]> = ref([])
 
     const getTheme = computed(() => {
@@ -127,7 +128,7 @@
                 }
             },
             legend: {
-                data: ['Earnings', 'Expenses']
+                data: [$t('Earnings'), $t('Expenses')]
             },
             toolbox: {
                 show: true,
@@ -155,7 +156,7 @@
             ],
             series: [
                 {
-                    name: 'Earnings',
+                    name: $t('Earnings'),
                     type: 'bar',
                     barGap: 0,
                     label: labelOption,
@@ -166,7 +167,7 @@
                     itemStyle: { color: 'rgb(51, 153, 102)' }
                 },
                 {
-                    name: 'Expenses',
+                    name: $t('Expenses'),
                     type: 'bar',
                     label: labelOption,
                     emphasis: {
@@ -193,7 +194,7 @@
         <div class="flex flex-col justify-center items-center gap-4">
             <h2
                 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                Transactions Per Category
+                {{ $t('Transactions Per Category') }}
             </h2>
 
             <VChart

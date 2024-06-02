@@ -4,10 +4,11 @@
     import type { NuxtError } from '#app'
 
     const { signIn, token } = useAuth()
+    const { t: $t } = useI18n()
     const error: Ref<null | string> = ref(null)
     const validationSchema = z.object({
-        username: z.string().trim().min(1, 'Invalid username'),
-        password: z.string().trim().min(1, 'Must be at least 8 characters')
+        username: z.string().trim().min(1, $t('Invalid username')),
+        password: z.string().trim().min(1, $t('Must be at least 8 characters'))
     })
     const state = reactive({
         username: undefined,
@@ -49,7 +50,7 @@
     })
 
     useHead({
-        title: 'Spenser | Login'
+        title: `Spenser | ${$t('Login')}`
     })
 </script>
 
@@ -59,14 +60,14 @@
         :state="state"
         class="space-y-4"
         @submit="onSubmit">
-        <UFormGroup label="Username" name="username" :error="error != null">
+        <UFormGroup :label="$t('Username')" name="username" :error="error != null">
             <UInput v-model="state.username" />
         </UFormGroup>
 
-        <UFormGroup label="Password" name="password" :error="error">
+        <UFormGroup :label="$t('Password')" name="password" :error="error">
             <UInput v-model="state.password" type="password" />
         </UFormGroup>
 
-        <UButton type="submit"> Submit </UButton>
+        <UButton type="submit"> {{ $t('Submit') }} </UButton>
     </UForm>
 </template>

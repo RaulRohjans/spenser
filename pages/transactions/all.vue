@@ -8,9 +8,11 @@
         TableSort
     } from '@/types/Table'
 
+    const localePath = useLocalePath()
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const tableObj = {
-        label: 'Transactions',
+        label: $t('Transactions'),
         rowCount: 200,
         columns: [
             {
@@ -20,27 +22,27 @@
             },
             {
                 key: 'name',
-                label: 'Name',
+                label: $t('Name'),
                 sortable: true
             },
             {
                 key: 'value',
-                label: 'Value',
+                label: $t('Value'),
                 sortable: true
             },
             {
                 key: 'category_name',
-                label: 'Category',
+                label: $t('Category'),
                 sortable: true
             },
             {
                 key: 'date',
-                label: 'Date',
+                label: $t('Date'),
                 sortable: true
             },
             {
                 key: 'actions',
-                label: 'Actions',
+                label: $t('Actions'),
                 sortable: false,
                 searchable: false
             }
@@ -164,12 +166,12 @@
                 .then((data) => {
                     if (!data.success)
                         return displayMessage(
-                            'An error ocurred when removing your transaction.',
+                            $t('An error occurred while removing your transaction.'),
                             'error'
                         )
 
                     displayMessage(
-                        'Transaction deleted successfully!',
+                        $t('Transaction deleted successfully!'),
                         'success'
                     )
                     reloadTableData()
@@ -240,7 +242,7 @@
     })
 
     useHead({
-        title: 'Spenser | Transactions'
+        title: `Spenser | ${$t('Transactions')}`
     })
 </script>
 
@@ -264,6 +266,11 @@
             @delete-action="delTransactionAction">
             <template #date-data="{ row }">
                 <template v-for="date in [new Date(row.date)]" :key="date">
+                    <!--
+                        This needs the client only since the version that is rendered on
+                        the server side does not take into account the locale, thus
+                        creating hydration errors
+                    -->
                     <ClientOnly>
                         {{
                             `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
@@ -293,12 +300,12 @@
             <template #extra-section>
                 <div
                     class="flex flex-row items-end justify-center sm:justify-end w-full gap-2">
-                    <ULink to="/transactions/llm-data-importer">
+                    <ULink :to="localePath('/transactions/llm-data-importer')">
                         <UButton
                             icon="i-heroicons-arrow-down-on-square-stack"
                             color="primary"
                             size="xs">
-                            LLM Data Import
+                            {{ $t('LLM Data Import') }}
                         </UButton>
                     </ULink>
 
@@ -307,7 +314,7 @@
                         color="primary"
                         size="xs"
                         @click="createTransaction">
-                        Create Transaction
+                        {{ $t('Create Transaction') }}                        
                     </UButton>
                 </div>
             </template>
@@ -317,7 +324,7 @@
                     class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
                     <UCheckbox
                         v-model="groupByCategory"
-                        label="Group by category" />
+                        :label="$t('Group by category')" />
 
                     <SDateTimePicker
                         v-model="dateRange"
@@ -338,7 +345,7 @@
 
     <ModalChooser
         v-model="isChooserOpen"
-        title="Delete Transaction"
-        message="Are you sure you want to delete this transaction?"
+        :title="$t('Delete Transaction')"
+        :message="$t('Are you sure you want to delete this transaction?')"
         @click="delTransaction" />
 </template>

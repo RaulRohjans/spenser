@@ -5,11 +5,12 @@
     import type { NuxtError } from '#app'
 
     const { data, signOut, token } = useAuth()
+    const { t: $t } = useI18n()
     const schema = z.object({
-        first_name: z.string().min(1, 'Mandatory Field'),
-        last_name: z.string().min(1, 'Mandatory Field'),
-        username: z.string().min(4, 'Must be at least 4 characters'),
-        email: z.string().email('Invalid email'),
+        first_name: z.string().min(1, $t('Mandatory Field')),
+        last_name: z.string().min(1, $t('Mandatory Field')),
+        username: z.string().min(4, $t('Must be at least 4 characters')),
+        email: z.string().email($t('Invalid email')),
         is_admin: z.boolean()
     })
     type Schema = z.output<typeof schema>
@@ -31,12 +32,12 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when updating your account profile.',
+                        $t('An error occurred while updating your account profile.'),
                         'error'
                     )
 
                 displayMessage(
-                    'Account settings updated successfully!',
+                    $t('Account settings updated successfully!'),
                     'success'
                 )
 
@@ -52,7 +53,7 @@
     }
 
     useHead({
-        title: 'Spenser | Account Settings'
+        title: `Spenser | ${$t('Account Settings')}`
     })
 </script>
 
@@ -65,34 +66,34 @@
             @submit="onSubmit">
             <div
                 class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
-                <UFormGroup label="First Name" name="first_name" class="w-full">
+                <UFormGroup :label="$t('First Name')" name="first_name" class="w-full">
                     <UInput v-model="state.first_name" />
                 </UFormGroup>
 
-                <UFormGroup label="Last Name" name="last_name" class="w-full">
+                <UFormGroup :label="$t('Last Name')" name="last_name" class="w-full">
                     <UInput v-model="state.last_name" />
                 </UFormGroup>
             </div>
 
-            <UFormGroup label="Username" name="username" class="makeit-static">
+            <UFormGroup :label="$t('Username')" name="username" class="makeit-static">
                 <UInput v-model="state.username" />
             </UFormGroup>
 
-            <UFormGroup label="Email" name="email" class="">
+            <UFormGroup :label="$t('Email')" name="email" class="">
                 <UInput v-model="state.email" />
             </UFormGroup>
 
             <UCheckbox
                 v-model="state.is_admin"
                 name="is_admin"
-                label="Is Administrator"
+                :label="$t('Administrator')"
                 class="makeit-static" />
 
             <div
                 class="flex flex-col-reverse sm:flex-row items-center justify-center sm:items-start sm:justify-start sm:space-x-4">
-                <UButton type="submit" class="mt-2 sm:mt-0"> Submit </UButton>
+                <UButton type="submit" class="mt-2 sm:mt-0"> {{ $t('Submit') }} </UButton>
 
-                <UButton @click="openChangePwModal"> Change Password </UButton>
+                <UButton @click="openChangePwModal"> {{ $t('Change Password') }} </UButton>
             </div>
         </UForm>
     </div>

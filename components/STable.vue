@@ -102,6 +102,7 @@
         (event: 'delete-action', row: TableRow): void
     }>()
 
+    const { t: $t } = useI18n()
     const selectedColumns = ref(props.columns)
     const selectLoadKey: Ref<number> = ref(0)
     const page = defineModel<number>('page', { default: 1 })
@@ -129,7 +130,7 @@
             if (props.actions?.includes('edit'))
                 actions.push([
                     {
-                        label: 'Edit',
+                        label: $t('Edit'),
                         icon: 'i-heroicons-pencil-square-20-solid',
                         click: () => emit('edit-action', row)
                     }
@@ -139,7 +140,7 @@
                 if (actions.length == 0) actions.push([])
 
                 actions[0].push({
-                    label: 'Duplicate',
+                    label: $t('Duplicate'),
                     icon: 'i-heroicons-document-duplicate-20-solid',
                     click: () => emit('duplicate-action', row)
                 })
@@ -148,7 +149,7 @@
             if (props.actions?.includes('delete'))
                 actions.push([
                     {
-                        label: 'Delete',
+                        label: $t('Delete'),
                         icon: 'i-heroicons-trash-20-solid',
                         click: () => emit('delete-action', row)
                     }
@@ -257,9 +258,9 @@
             v-if="props.filtering || props.rowsPerPage"
             class="flex justify-between items-center w-full px-4 py-3">
             <div class="flex items-center gap-1.5">
-                <span v-if="props.rowsPerPage" class="text-sm leading-5"
-                    >Rows per page:</span
-                >
+                <span v-if="props.rowsPerPage" class="text-sm leading-5">
+                    {{ $t('Rows per page') }}:
+                </span>
 
                 <USelect
                     v-if="props.rowsPerPage"
@@ -279,7 +280,7 @@
                         icon="i-heroicons-view-columns"
                         color="gray"
                         size="xs">
-                        Columns
+                        {{ $t('Columns') }}
                     </UButton>
                 </USelectMenu>
 
@@ -288,7 +289,7 @@
                     color="gray"
                     size="xs"
                     @click="resetFilters">
-                    Reset
+                    {{ $t('Reset') }}
                 </UButton>
             </div>
         </div>
@@ -307,7 +308,7 @@
             :loading="props.loading"
             :loading-state="{
                 icon: 'i-heroicons-arrow-path-20-solid',
-                label: 'Loading...'
+                label: $t('Loading...')
             }"
             :progress="{ color: 'primary', animation: 'carousel' }"
             sort-asc-icon="i-heroicons-arrow-up"
@@ -322,9 +323,9 @@
                 Pass all other slots directly to the UTable component
                 This allows manipulating row data and row header
             -->
-            <template v-for="(_, name) in $slots" #[name]="slotData"
-                ><slot :name="name" v-bind="slotData"
-            /></template>
+            <template v-for="(_, name) in $slots" #[name]="slotData">
+                <slot :name="name" v-bind="slotData" />
+            </template>
 
             <template v-if="actionItems" #actions-data="{ row }">
                 <UDropdown :items="actionItems(row)">
@@ -341,13 +342,13 @@
             <div class="flex flex-wrap justify-between items-center">
                 <div>
                     <span class="text-sm leading-5">
-                        Showing
+                        {{ $t('Showing') }}
                         <span class="font-medium">{{ pageFrom }}</span>
-                        to
+                        {{ $t('to') }}
                         <span class="font-medium">{{ pageTo }}</span>
-                        of
+                        {{ $t('of') }}
                         <span class="font-medium">{{ props.rowCount }}</span>
-                        results
+                        {{ $t('results') }}
                     </span>
                 </div>
 
