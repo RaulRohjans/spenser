@@ -32,6 +32,7 @@
     }>()
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
 
@@ -47,7 +48,7 @@
         })
         .superRefine(({ name }) => {
             if (!name || name.length === 0)
-                error.value = 'Category name is required'
+                error.value = $t('Category name is required')
         })
     /* ------------------------------------------------ */
 
@@ -69,7 +70,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when creating your category.',
+                        $t('An error ocurred when creating your category.'),
                         'error'
                     )
 
@@ -78,7 +79,7 @@
 
                 // Disaply success message
                 displayMessage(
-                    `Category ${operation.value} successfully!`,
+                    $t('Operation completed successfully!'),
                     'success'
                 )
 
@@ -110,11 +111,11 @@
             <UFormGroup :error="error">
                 <div
                     class="flex flex-row justify-between items-center space-y-0 gap-8">
-                    <UFormGroup label="Name" name="name" class="w-full">
+                    <UFormGroup :label="$t('Name')" name="name" class="w-full">
                         <UInput v-model="state.name" />
                     </UFormGroup>
 
-                    <UFormGroup label="Icon" name="icon" class="w-full">
+                    <UFormGroup :label="$t('Icon')" name="icon" class="w-full">
                         <div class="flex flex-row gap-1">
                             <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
                             <UInput v-model="state.icon" class="hide-span">
@@ -137,7 +138,7 @@
                 </div>
             </UFormGroup>
 
-            <UButton type="submit"> Submit </UButton>
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>
     </UModal>
 </template>

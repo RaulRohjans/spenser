@@ -42,27 +42,28 @@
     }>()
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
     const periodOptions: Ref<SelectOption[]> = ref([
         {
-            label: 'Daily',
+            label: $t('Daily'),
             value: 'daily'
         },
         {
-            label: 'Monthly',
+            label: $t('Monthly'),
             value: 'monthly'
         },
         {
-            label: 'Quarterly',
+            label: $t('Quarterly'),
             value: 'quarterly'
         },
         {
-            label: 'Semi-Annual',
+            label: $t('Semi-Annual'),
             value: 'semi-annual'
         },
         {
-            label: 'Yearly',
+            label: $t('Yearly'),
             value: 'yearly'
         }
     ])
@@ -70,7 +71,7 @@
     const schema = z.object({
         id: z.number().optional(),
         name: z.string().optional(),
-        value: z.number().min(0.01, 'The value has to be bigger than 0.')
+        value: z.number().min(0.01, $t('The value has to be bigger than 0.'))
     })
 
     type Schema = z.output<typeof schema>
@@ -144,7 +145,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when creating your budget.',
+                        $t('An error ocurred when creating your budget.'),
                         'error'
                     )
 
@@ -153,7 +154,7 @@
 
                 // Disaply success message
                 displayMessage(
-                    `Budget ${operation.value} successfully!`,
+                    $t('Operation completed successfully!'),
                     'success'
                 )
 
@@ -172,7 +173,7 @@
             class="space-y-4 p-6"
             @submit="onCreateCategory">
             <UFormGroup
-                label="Name"
+                :label="$t('Name')"
                 name="name"
                 class="w-full"
                 :error="!!error">
@@ -180,7 +181,7 @@
             </UFormGroup>
 
             <UFormGroup
-                label="Category"
+                :label="$t('Category')"
                 name="category"
                 class="w-full"
                 :error="!!error">
@@ -199,7 +200,7 @@
             </UFormGroup>
 
             <UFormGroup
-                label="Period"
+                :label="$t('Period')"
                 name="period"
                 class="w-full"
                 :error="!!error">
@@ -210,14 +211,14 @@
             </UFormGroup>
 
             <UFormGroup
-                label="Value"
+                :label="$t('Value')"
                 name="value"
                 class="w-full"
                 :error="error">
                 <UInput v-model="state.value" type="number" step="any" />
             </UFormGroup>
 
-            <UButton type="submit"> Submit </UButton>
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>
     </UModal>
 </template>

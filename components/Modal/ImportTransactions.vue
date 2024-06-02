@@ -24,38 +24,39 @@
 
     const model = defineModel<boolean>()
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const vTransactions: Ref<LlmTransactionObject[]> = ref(props.transactions)
     const tableColumns = [
         {
             key: 'name',
-            label: 'Name',
+            label: $t('Name'),
             sortable: true
         },
         {
             key: 'value',
-            label: 'Value',
+            label: $t('Value'),
             sortable: true
         },
         {
             key: 'category',
-            label: 'Category',
+            label: $t('Category'),
             sortable: true
         },
         {
             key: 'date',
-            label: 'Date',
+            label: $t('Date'),
             sortable: true
         },
         {
             key: 'actions',
-            label: 'Actions',
+            label: $t('Actions'),
             sortable: false,
             searchable: false
         }
     ]
     const selectedColumns = ref(tableColumns)
     const tableObj = {
-        label: 'Transactions To Import',
+        label: $t('Transactions To Import'),
         rowCount: vTransactions.value.length,
         disableFooter: true,
         filtering: false,
@@ -130,7 +131,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when importing the transactions.',
+                        $t('An error ocurred while importing the transactions.'),
                         'error'
                     )
 
@@ -138,7 +139,7 @@
                 emit('successful-submit')
 
                 // Disaply success message
-                displayMessage(`Transactions imported successfully!`, 'success')
+                displayMessage($t('Transactions imported successfully!'), 'success')
 
                 // Close modal
                 model.value = false
@@ -151,10 +152,10 @@
 
         if (tIdx > -1) {
             vTransactions.value.splice(tIdx, 1)
-            displayMessage('Transaction removed successfully', 'success')
+            displayMessage($t('Transaction removed successfully'), 'success')
         } else
             displayMessage(
-                'Could not find transaction record to be removed.',
+                $t('Could not find transaction record to be removed.'),
                 'error'
             )
     }
@@ -217,7 +218,7 @@
                                 icon="i-heroicons-view-columns"
                                 color="gray"
                                 size="xs">
-                                Columns
+                                {{ $t('Columns') }}
                             </UButton>
                         </USelectMenu>
 
@@ -226,7 +227,7 @@
                             color="primary"
                             size="xs"
                             @click="onImportData">
-                            Import Transactions
+                            {{ $t('Import Transactions') }}
                         </UButton>
                     </div>
                 </template>

@@ -9,6 +9,7 @@
     }>()
 
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const model = defineModel<boolean>()
     const error: Ref<null | string> = ref(null)
     const placementOptions = ref([
@@ -37,7 +38,7 @@
             .then((data) => {
                 if (!data.success)
                     return displayMessage(
-                        'An error ocurred when creating your currency.',
+                        $t('An error ocurred while creating your currency.'),
                         'error'
                     )
 
@@ -45,7 +46,7 @@
                 emit('successful-submit')
 
                 // Disaply success message
-                displayMessage(`Currency created successfully!`, 'success')
+                displayMessage($t('Currency created successfully!'), 'success')
 
                 // Close modal
                 model.value = false
@@ -62,7 +63,7 @@
             class="space-y-4 p-6"
             @submit="onCreateCurrency">
             <UFormGroup
-                label="Symbol"
+                :label="$t('Symbol')"
                 name="symbol"
                 class="w-full"
                 :error="!!error">
@@ -70,7 +71,7 @@
             </UFormGroup>
 
             <UFormGroup
-                label="Placement"
+                :label="$t('Placement')"
                 name="placement"
                 class="w-full"
                 :error="error">
@@ -78,11 +79,11 @@
                     v-model="state.placement"
                     :options="placementOptions" />
                 <template #help>
-                    Place the symbol before ($212) or after (310€).
+                    {{ $t('Place the symbol before ($212) or after (310€).') }}
                 </template>
             </UFormGroup>
 
-            <UButton type="submit"> Submit </UButton>
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>
     </UModal>
 </template>
