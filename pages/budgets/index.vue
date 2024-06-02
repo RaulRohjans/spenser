@@ -221,7 +221,7 @@
                             <div
                                 class="flex flex-row justify-between items-center w-full gap-8">
                                 <span class="text-xs cursor-auto">
-                                    {{ `${$t('Period')}: ${element.period}` }}
+                                    {{ `${$t('Period')}: ${$t(element.period)}` }}
                                 </span>
 
                                 <div
