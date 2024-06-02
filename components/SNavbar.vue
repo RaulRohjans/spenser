@@ -3,7 +3,7 @@
     import type { SelectOption } from '~/types/Options'
 
     const localePath = useLocalePath()
-    const { locale, setLocale } = useI18n()
+    const { locale, setLocale, t: $t } = useI18n()
     const { signOut } = useAuth()
     const route = useRoute()
 
@@ -14,27 +14,27 @@
     const navigationPages = computed((): NavigationItem[] => {
         return [
             {
-                name: 'Home',
+                name: $t('Home'),
                 href: '/',
                 selected: isRouteActive(route, '/', true)
             },
             {
-                name: 'Transactions',
+                name: $t('Transactions'),
                 href: '/transactions/all',
                 selected: isRouteActive(route, '/transactions')
             },
             {
-                name: 'Budgets',
+                name: $t('Budgets'),
                 href: '/budgets',
                 selected: isRouteActive(route, '/budgets')
             },
             {
-                name: 'Categories',
+                name: $t('Categories'),
                 href: '/categories/all',
                 selected: isRouteActive(route, '/categories')
             },
             {
-                name: 'Settings',
+                name: $t('Settings'),
                 href: '/settings/global',
                 selected: isRouteActive(route, '/settings')
             }

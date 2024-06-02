@@ -39,6 +39,7 @@
 
     const colorMode = useColorMode()
     const { token } = useAuth()
+    const { t: $t } = useI18n()
     const dateRange: Ref<Date[]> = ref([])
 
     const getTheme = computed(() => {
@@ -103,7 +104,7 @@
             },
             series: [
                 {
-                    name: 'Category',
+                    name: $t('Category'),
                     type: 'pie',
                     radius: ['40%', '70%'],
                     avoidLabelOverlap: true,
@@ -146,7 +147,7 @@
         <div class="flex flex-col justify-center items-center gap-4">
             <h2
                 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                Spending (%) per Category
+                {{ $t('Spending (%) per Category') }}
             </h2>
 
             <VChart
