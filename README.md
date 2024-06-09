@@ -46,7 +46,6 @@ A live demo for the platform can be checked [here](https://spenser.demo.rohjans.
 ### Prerequisites
 
 -   Node.js (version 20.14.0 or higher)
--   bun (version 1.1.8 or higher)
 -   PostgreSQL instance running
 
 ### Steps
@@ -55,11 +54,6 @@ A live demo for the platform can be checked [here](https://spenser.demo.rohjans.
 ```
 git clone https://github.com/yourusername/spenser.git
 cd spenser
-```
-
-#### Build docker image:
-```
-docker build -t spenser .
 ```
 
 #### Configure docker compose:
@@ -71,8 +65,8 @@ Open the docker-compose.yml file and configure it to your liking.
 docker compose up -d
 ```
 
-#### Create database:
-Create a new database in your PostgreSQL instance and import the file "schema.sql"
+#### Configure database:
+Configure your new database in PostgreSQL instance by importing the file "schema.sql"
 
 
 ## Contributing
