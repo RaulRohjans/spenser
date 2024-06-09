@@ -1,3 +1,4 @@
+![Spenser](https://github.com/RaulRohjans/spenser/assets/77687494/eb698583-b6b7-4c40-80a8-7fbb69017b87)
 # Spenser: Personal Expense Management
 
 ## Overview
