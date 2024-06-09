@@ -1,6 +1,5 @@
 ![Spenser](https://github.com/RaulRohjans/spenser/assets/77687494/eb698583-b6b7-4c40-80a8-7fbb69017b87)
-# Spenser: Personal Expense Management
-
+<br />
 ## Overview
 
 Spenser is a web application built with Nuxt 3 and TypeScript, designed to help users manage their personal transactions efficiently. The platform offers various features including transaction management, category creation, budget specification, and more, all through an intuitive user interface.
