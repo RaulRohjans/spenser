@@ -63,7 +63,7 @@ docker build -t spenser .
 ```
 
 #### Configure docker compose:
-Open the docker-compose.yml file and configure it to your liking
+Open the docker-compose.yml file and configure it to your liking.
 
 #### Run docker containers:
 
