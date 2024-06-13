@@ -23,6 +23,11 @@
     })
 
     const isModalOpen = ref(false)
+
+    const userIsAdmin = computed(() => {
+        return data.value.is_admin
+    })
+
     const onSubmit = function (event: FormSubmitEvent<Schema>) {
         $fetch('/api/account/update', {
             method: 'POST',
@@ -84,6 +89,7 @@
             </UFormGroup>
 
             <UCheckbox
+                v-if="userIsAdmin"
                 v-model="state.is_admin"
                 name="is_admin"
                 :label="$t('Administrator')"
