@@ -25,7 +25,7 @@
     // Fetch global settings
     const globalSettings = await $fetch<{
         success: boolean
-        data: GlobalSettingsObject
+        data: GlobalSettingsObject | null
     }>('/api/global-settings', {
         method: 'GET',
         headers: buildRequestHeaders(token.value)
@@ -33,12 +33,12 @@
 
     const state = reactive({
         provider:
-            globalSettings.data.importer_provider ||
+            globalSettings.data?.importer_provider ||
             getProviderOptions.value[0].value,
-        gptModel: globalSettings.data.gpt_model || 'gpt-4',
-        gptToken: globalSettings.data.gpt_token || '',
-        ollamaModel: globalSettings.data.ollama_model || '',
-        ollamaUrl: globalSettings.data.ollama_url || ''
+        gptModel: globalSettings.data?.gpt_model || 'gpt-4',
+        gptToken: globalSettings.data?.gpt_token || '',
+        ollamaModel: globalSettings.data?.ollama_model || '',
+        ollamaUrl: globalSettings.data?.ollama_url || ''
     })
 
     const onSave = function (event: FormSubmitEvent<typeof state>) {
