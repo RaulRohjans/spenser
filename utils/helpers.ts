@@ -1,27 +1,4 @@
 import type { RouteLocationNormalizedLoaded } from '#vue-router'
-import { useToast } from 'vue-toastification'
-
-export const displayMessage = function (
-    message: string | undefined | null,
-    type: 'info' | 'warning' | 'error' | 'success' = 'info'
-) {
-    const toast = useToast()
-
-    switch (type) {
-        case 'error':
-            toast.error(message)
-            break
-        case 'warning':
-            toast.warning(message)
-            break
-        case 'info':
-            toast.info(message)
-            break
-        case 'success':
-            toast.success(message)
-            break
-    }
-}
 
 export const capitalFirstWordLetters = function (message: string) {
     const words = message.split(' ')

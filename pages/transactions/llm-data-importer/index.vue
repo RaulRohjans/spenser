@@ -62,7 +62,7 @@
 
             url += 'query'
         } else
-            return displayMessage(
+            return Notifier.displayMessage(
                 $t('Please upload a document or provide some text.'),
                 'error'
             )
@@ -85,7 +85,7 @@
                 toggleLoading(false)
 
                 if (!parsedData.success)
-                    return displayMessage(
+                    return Notifier.displayMessage(
                         $t('An error occurred when uploading transaction data.'),
                         'error'
                     )
@@ -103,7 +103,7 @@
                 toggleLoading(false)
 
                 // Display error message
-                displayMessage(e.statusMessage, 'error')
+                Notifier.displayMessage(e.statusMessage, 'error')
             })
     }
 

@@ -37,7 +37,7 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return displayMessage(
+                    return Notifier.displayMessage(
                         $t('An error occurred while creating your currency.'),
                         'error'
                     )
@@ -46,7 +46,7 @@
                 emit('successful-submit')
 
                 // Disaply success message
-                displayMessage($t('Currency created successfully!'), 'success')
+                Notifier.displayMessage($t('Currency created successfully!'), 'success')
 
                 // Close modal
                 model.value = false

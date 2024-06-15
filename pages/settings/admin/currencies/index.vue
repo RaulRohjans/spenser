@@ -102,16 +102,16 @@
             })
                 .then((data) => {
                     if (!data.success)
-                        return displayMessage(
+                        return Notifier.displayMessage(
                             $t('An error occurred while removing your currency.'),
                             'error'
                         )
 
-                    displayMessage($t('Currency deleted successfully!'), 'success')
+                    Notifier.displayMessage($t('Currency deleted successfully!'), 'success')
                     reloadTableData()
                 })
                 .catch((e: NuxtError) =>
-                    displayMessage(e.statusMessage, 'error')
+                    Notifier.displayMessage(e.statusMessage, 'error')
                 )
         }
 

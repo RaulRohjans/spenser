@@ -37,12 +37,12 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return displayMessage(
+                    return Notifier.displayMessage(
                         $t('An error occurred when updating your password.'),
                         'error'
                     )
 
-                displayMessage($t('Password updated successfully!'), 'success')
+                    Notifier.displayMessage($t('Password updated successfully!'), 'success')
 
                 // Force signout to refresh  token
                 signOut({ callbackUrl: '/login' })

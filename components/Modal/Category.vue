@@ -69,7 +69,7 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return displayMessage(
+                    return Notifier.displayMessage(
                         $t('An error occurred when creating your category.'),
                         'error'
                     )
@@ -78,7 +78,7 @@
                 emit('successful-submit')
 
                 // Disaply success message
-                displayMessage(
+                Notifier.displayMessage(
                     $t('Operation completed successfully!'),
                     'success'
                 )
