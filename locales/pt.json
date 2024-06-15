@@ -135,5 +135,9 @@
     "Could not find transaction record to be removed.": "Não foi possível encontrar o registo da transação a ser removida.",
     "Import Transactions": "Importar Transações",
     "An error occurred when performing the action.": "Ocorreu um erro ao executar a ação.",
-    "Transaction Name": "Nome da Transação"
+    "Transaction Name": "Nome da Transação",
+    "Info": "Informação",
+    "Error": "Erro",
+    "Success": "Sucesso",
+    "Warning": "Aviso"
 }

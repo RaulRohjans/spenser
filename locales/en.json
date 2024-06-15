@@ -135,5 +135,9 @@
     "Could not find transaction record to be removed.": "Could not find transaction record to be removed.",
     "Import Transactions": "Import Transactions",
     "An error occurred when performing the action.": "An error occurred when performing the action.",
-    "Transaction Name": "Transaction Name"
+    "Transaction Name": "Transaction Name",
+    "Info": "Info",
+    "Error": "Error",
+    "Success": "Success",
+    "Warning": "Warning"
 }
