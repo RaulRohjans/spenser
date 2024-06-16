@@ -11,8 +11,8 @@ export const useSettingsStore = defineStore('settingsStore', {
     }),
     actions: {
         loadCurrency(settings: UserSettingsObject) {
-            if(settings.symbol) this.currency.symbol = settings.symbol
-            this.currency.placement = settings.placement 
+            if (settings.symbol) this.currency.symbol = settings.symbol
+            this.currency.placement = settings.placement
         }
     },
     persist: true

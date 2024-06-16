@@ -27,13 +27,17 @@
                 const settingsStore = useSettingsStore()
 
                 // Fetch user settings data
-                const userSettings: { data: UserSettingsObject | undefined, success: boolean } = await $fetch('/api/settings', {
+                const userSettings: {
+                    data: UserSettingsObject | undefined
+                    success: boolean
+                } = await $fetch('/api/settings', {
                     method: 'GET',
                     headers: buildRequestHeaders(token.value)
                 })
 
                 // Load user settings
-                if(userSettings.data) settingsStore.loadCurrency(userSettings.data)
+                if (userSettings.data)
+                    settingsStore.loadCurrency(userSettings.data)
                 //-------------------------
             })
             .catch((e: NuxtError) => {
