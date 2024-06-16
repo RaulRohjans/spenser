@@ -24,21 +24,21 @@
     const showModal: Ref<boolean> = ref(true)
     const locale = getLocaleFromRoute()
 
-    const onConfirm = function() {
+    const onConfirm = function () {
         showModal.value = false
 
         // Set timeout to display animation
         setTimeout(() => emit('confirm'), 250)
     }
 
-    const onCancel = function() {
+    const onCancel = function () {
         showModal.value = false
 
         // Set timeout to display animation
         setTimeout(() => emit('cancel'), 250)
     }
 
-    const onClose = function() {
+    const onClose = function () {
         showModal.value = false
 
         // Set timeout to display animation
@@ -47,7 +47,10 @@
 </script>
 
 <template>
-    <UModal v-model="showModal" :ui="{ container: 'items-center' }" @close="onClose">
+    <UModal
+        v-model="showModal"
+        :ui="{ container: 'items-center' }"
+        @close="onClose">
         <UCard>
             <div class="flex flex-row justify-start items-center">
                 <h2
@@ -59,7 +62,8 @@
             <div class="flex flex-col justify-start items-center">
                 <span class="w-full mb-4">{{ props.message }}</span>
 
-                <div class="flex flex-row justify-end items-center gap-2 w-full">
+                <div
+                    class="flex flex-row justify-end items-center gap-2 w-full">
                     <UButton class="px-4" @click="onCancel">
                         {{ $t('No', locale) }}
                     </UButton>

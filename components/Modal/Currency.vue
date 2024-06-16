@@ -46,7 +46,10 @@
                 emit('successful-submit')
 
                 // Disaply success message
-                Notifier.showAlert($t('Currency created successfully!'), 'success')
+                Notifier.showAlert(
+                    $t('Currency created successfully!'),
+                    'success'
+                )
 
                 // Close modal
                 model.value = false

@@ -71,19 +71,24 @@
                     headers: buildRequestHeaders(token.value),
                     body: { id: budget.id }
                 })
-                .then(async (data) => {
-                    if (!data.success)
-                        return Notifier.showAlert(
-                            $t('An error occurred while removing your budget.'),
-                            'error'
+                    .then(async (data) => {
+                        if (!data.success)
+                            return Notifier.showAlert(
+                                $t(
+                                    'An error occurred while removing your budget.'
+                                ),
+                                'error'
+                            )
+
+                        await loadData()
+                        Notifier.showAlert(
+                            $t('Budget deleted successfully!'),
+                            'success'
                         )
-    
-                    await loadData()
-                    Notifier.showAlert($t('Budget deleted successfully!'), 'success')
-                })
-                .catch((e: NuxtError) =>
-                    Notifier.showAlert(e.statusMessage, 'error')
-                )
+                    })
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
+                    )
             }
         )
     }
@@ -118,7 +123,9 @@
                         'error'
                     )
             })
-            .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage, 'error'))
+            .catch((e: NuxtError) =>
+                Notifier.showAlert(e.statusMessage, 'error')
+            )
     }
 
     // Reset vbind model when modal is closed
@@ -211,7 +218,9 @@
                             <div
                                 class="flex flex-row justify-between items-center w-full gap-8">
                                 <span class="text-xs cursor-auto">
-                                    {{ `${$t('Period')}: ${$t(element.period)}` }}
+                                    {{
+                                        `${$t('Period')}: ${$t(element.period)}`
+                                    }}
                                 </span>
 
                                 <div
@@ -230,9 +239,7 @@
                                         color="primary"
                                         square
                                         variant="ghost"
-                                        @click="
-                                            removeItem(element)
-                                        " />
+                                        @click="removeItem(element)" />
                                 </div>
                             </div>
                         </template>

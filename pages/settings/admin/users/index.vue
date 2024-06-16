@@ -128,23 +128,28 @@
                     headers: buildRequestHeaders(token.value),
                     body: { id: row.id }
                 })
-                .then((data) => {
-                    if (!data.success)
-                        return Notifier.showAlert(
-                            $t('An error occurred while removing the user.'),
-                            'error'
+                    .then((data) => {
+                        if (!data.success)
+                            return Notifier.showAlert(
+                                $t(
+                                    'An error occurred while removing the user.'
+                                ),
+                                'error'
+                            )
+
+                        // If the deleted user is the current one, logout
+                        if (row.id == authData.value.id)
+                            signOut({ callbackUrl: '/login' })
+                        else reloadTableData()
+
+                        Notifier.showAlert(
+                            $t('User deleted successfully!'),
+                            'success'
                         )
-    
-                    // If the deleted user is the current one, logout
-                    if (row.id == authData.value.id)
-                        signOut({ callbackUrl: '/login' })
-                    else reloadTableData()
-    
-                    Notifier.showAlert($t('User deleted successfully!'), 'success')
-                })
-                .catch((e: NuxtError) =>
-                    Notifier.showAlert(e.statusMessage, 'error')
-                )
+                    })
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
+                    )
             }
         )
     }

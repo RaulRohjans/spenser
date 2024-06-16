@@ -52,7 +52,7 @@
             {
                 label: 'en',
                 value: 'en'
-            }, 
+            },
             {
                 label: 'pt',
                 value: 'pt'
@@ -89,7 +89,7 @@
         isMobileMenuShown.value = !isMobileMenuShown.value
     }
 
-    const onLogout = function() {
+    const onLogout = function () {
         Notifier.showChooser(
             $t('Logout'),
             $t('Are you sure you want to logout?'),
@@ -157,13 +157,15 @@
                         <!-- Theme Switcher -->
                         <SThemeSwitcher />
 
-                        <USelect v-model="selectedLocale" :options="getLocales" >
+                        <USelect v-model="selectedLocale" :options="getLocales">
                             <template #leading>
-                                <UIcon name="i-heroicons-flag" class="w-4 h-4" dynamic/>
+                                <UIcon
+                                    name="i-heroicons-flag"
+                                    class="w-4 h-4"
+                                    dynamic />
                             </template>
                         </USelect>
                     </div>
-
 
                     <!-- Profile section -->
                     <UButton

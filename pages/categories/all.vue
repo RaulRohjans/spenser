@@ -111,7 +111,7 @@
 
     const delCategory = function (row: TableRow) {
         Notifier.showChooser(
-            $t('Delete Category'), 
+            $t('Delete Category'),
             $t('Are you sure you want to delete this category?'),
             () => {
                 //User accepted
@@ -120,19 +120,24 @@
                     headers: buildRequestHeaders(token.value),
                     body: { id: row.id }
                 })
-                .then((data) => {
-                    if (!data.success)
-                        return Notifier.showAlert(
-                            $t('An error occurred while removing your category.'),
-                            'error'
-                        )
+                    .then((data) => {
+                        if (!data.success)
+                            return Notifier.showAlert(
+                                $t(
+                                    'An error occurred while removing your category.'
+                                ),
+                                'error'
+                            )
 
-                    Notifier.showAlert($t('Category deleted successfully!'), 'success')
-                    reloadTableData()
-                })
-                .catch((e: NuxtError) =>
-                    Notifier.showAlert(e.statusMessage, 'error')
-                )
+                        Notifier.showAlert(
+                            $t('Category deleted successfully!'),
+                            'success'
+                        )
+                        reloadTableData()
+                    })
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
+                    )
             }
         )
     }

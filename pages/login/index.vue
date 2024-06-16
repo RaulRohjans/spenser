@@ -60,7 +60,10 @@
         :state="state"
         class="space-y-4"
         @submit="onSubmit">
-        <UFormGroup :label="$t('Username')" name="username" :error="error != null">
+        <UFormGroup
+            :label="$t('Username')"
+            name="username"
+            :error="error != null">
             <UInput v-model="state.username" />
         </UFormGroup>
 

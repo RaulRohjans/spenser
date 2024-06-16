@@ -6,7 +6,9 @@ export default withNuxt([
         rules: {
             'vue/require-default-prop': 'off',
             'vue/no-multiple-template-root': 'off',
-            '@typescript-eslint/unified-signatures': 'off'
+            '@typescript-eslint/unified-signatures': 'off',
+            'vue/html-self-closing': 'off',
+            '@typescript-eslint/no-extraneous-class': 'off'
         }
     }
 ])

@@ -96,19 +96,24 @@
                     headers: buildRequestHeaders(token.value),
                     body: { id: row.id }
                 })
-                .then((data) => {
-                    if (!data.success)
-                        return Notifier.showAlert(
-                            $t('An error occurred while removing your currency.'),
-                            'error'
+                    .then((data) => {
+                        if (!data.success)
+                            return Notifier.showAlert(
+                                $t(
+                                    'An error occurred while removing your currency.'
+                                ),
+                                'error'
+                            )
+
+                        Notifier.showAlert(
+                            $t('Currency deleted successfully!'),
+                            'success'
                         )
-    
-                    Notifier.showAlert($t('Currency deleted successfully!'), 'success')
-                    reloadTableData()
-                })
-                .catch((e: NuxtError) =>
-                    Notifier.showAlert(e.statusMessage, 'error')
-                )
+                        reloadTableData()
+                    })
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
+                    )
             }
         )
     }
@@ -147,7 +152,7 @@
                         color="primary"
                         size="xs"
                         @click="toggleModal">
-                        {{ $t('Create Currency') }}                        
+                        {{ $t('Create Currency') }}
                     </UButton>
                 </div>
             </template>

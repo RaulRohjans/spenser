@@ -10,7 +10,7 @@ export default defineNuxtConfig({
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
         '@nuxt/eslint',
-        "@nuxtjs/i18n"
+        '@nuxtjs/i18n'
     ],
     css: ['~/assets/css/main.scss'],
     build: {
@@ -31,7 +31,7 @@ export default defineNuxtConfig({
         '/en/settings': { redirect: '/en/settings/global' },
         '/en/settings/admin': { redirect: '/en/settings/global' },
         '/en/transactions': { redirect: '/en/transactions/all' },
-        '/en/categories': { redirect: '/en/categories/all' },
+        '/en/categories': { redirect: '/en/categories/all' }
         /* ------------------------------------------------------ */
     },
     auth: {

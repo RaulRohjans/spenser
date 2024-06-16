@@ -18,24 +18,28 @@ export const isRouteActive = function (
     const localePath = useLocalePath()
 
     /*
-    * localePath only works when the path passed by parameter is an actual path
-    * in the application.
-    * Since this method allows to search for partial url paths, that will cause problems,
-    * to get around this, we can always get the locale path for '/', which will return only
-    * the locale part (ex: '/pt') and add the rest of the path.
-    */
+     * localePath only works when the path passed by parameter is an actual path
+     * in the application.
+     * Since this method allows to search for partial url paths, that will cause problems,
+     * to get around this, we can always get the locale path for '/', which will return only
+     * the locale part (ex: '/pt') and add the rest of the path.
+     */
     const pathWithLocale = `${localePath('/')}${path !== '/' ? path : ''}`
 
     /*
-    * When comparing, we have to account for urls with the locale, or
-    * without the locale (they are using the default lang)
-    */
+     * When comparing, we have to account for urls with the locale, or
+     * without the locale (they are using the default lang)
+     */
     if (exactPath) {
         if (pathWithLocale === route.path || path === route.path) return true
         else return false
     }
 
-    if (route.path.substring(0, pathWithLocale.length) === pathWithLocale || route.path.substring(0, path.length) === path) return true
+    if (
+        route.path.substring(0, pathWithLocale.length) === pathWithLocale ||
+        route.path.substring(0, path.length) === path
+    )
+        return true
     else return false
 }
 
@@ -57,12 +61,12 @@ export const formatCurrencyValue = function (value: number) {
     else return `${settingsStore.currency.symbol}${value.toFixed(2)}`
 }
 
-export const getLocaleFromRoute = function() {
+export const getLocaleFromRoute = function () {
     /**
      * This is a very weird way of doing it, yes, however
      * using const { locale } = useI18n() will cause issues if
      * done outside a component/template.
-     * 
+     *
      * For example, Notifier.showAlert will stop being executed!
      */
 

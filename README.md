@@ -1,14 +1,13 @@
 ![Spenser](https://github.com/RaulRohjans/spenser/assets/77687494/eb698583-b6b7-4c40-80a8-7fbb69017b87)
 <br />
+
 ## Overview
 
 Spenser is a web application built with Nuxt 3 and TypeScript, designed to help users manage their personal transactions efficiently. The platform offers various features including transaction management, category creation, budget specification, and more, all through an intuitive user interface.
 
-
 ## Live Demo
 
 A live demo for the platform can be checked [here](https://spenser.demo.rohjans.com/).
-
 
 ## Features
 
@@ -40,7 +39,6 @@ A live demo for the platform can be checked [here](https://spenser.demo.rohjans.
 -   **Currency Management:** Add more currencies to the platform.
 -   **LLM Configuration:** Choose between different LLM providers (currently supports ChatGPT and Ollama).
 
-
 ## Installation
 
 ### Prerequisites
@@ -51,12 +49,14 @@ A live demo for the platform can be checked [here](https://spenser.demo.rohjans.
 ### Steps
 
 #### Clone the repository:
+
 ```
 git clone https://github.com/yourusername/spenser.git
 cd spenser
 ```
 
 #### Configure docker compose:
+
 Open the docker-compose.yml file and configure it to your liking.
 
 #### Run docker containers:
@@ -66,13 +66,12 @@ docker compose up -d
 ```
 
 #### Configure database:
-Configure your new database in PostgreSQL instance by importing the file "schema.sql"
 
+Configure your new database in PostgreSQL instance by importing the file "schema.sql"
 
 ## Contributing
 
 Contributions are welcome! Please submit a pull request with detailed information about your changes!
-
 
 ## License
 

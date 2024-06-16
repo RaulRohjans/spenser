@@ -11,7 +11,7 @@ export class Notifier {
         const locale = getLocaleFromRoute()
 
         let title = ''
-        switch(type) {
+        switch (type) {
             case 'error':
                 title = $t('Error', locale)
                 break
@@ -40,28 +40,28 @@ export class Notifier {
     static showChooser(
         title: string,
         message: string,
-        confirmCallback?: { () : void },
-        cancelCallback?: { () : void }
+        confirmCallback?: { (): void },
+        cancelCallback?: { (): void }
     ) {
         const container = this.setupDomContainer()
 
         // Build component emit callbacks
         const emitCallbacks: { [key: string]: EmitEventCallback } = {
             confirm: (app: App<Element>) => {
-                if(confirmCallback) confirmCallback()
-                
+                if (confirmCallback) confirmCallback()
+
                 // Unmount alert app instance
                 app.unmount()
-                
+
                 // Remove alert div from dom
                 document.body.removeChild(container)
             },
-            cancel: (app: App<Element>) => {                
-                if(cancelCallback) cancelCallback()
-                
+            cancel: (app: App<Element>) => {
+                if (cancelCallback) cancelCallback()
+
                 // Unmount alert app instance
                 app.unmount()
-                
+
                 // Remove alert div from dom
                 document.body.removeChild(container)
             },
@@ -87,7 +87,7 @@ export class Notifier {
                     ...props,
                     onConfirm: () => emitCallbacks.confirm(app),
                     onCancel: () => emitCallbacks.cancel(app),
-                    onClose: () => emitCallbacks.close(app),
+                    onClose: () => emitCallbacks.close(app)
                 })
             }
         })
@@ -100,7 +100,7 @@ export class Notifier {
         type: 'info' | 'warning' | 'error' | 'success' = 'info'
     ) {
         const container = this.setupDomContainer()
-                
+
         // Build component emit callbacks
         const emitCallbacks: { [key: string]: EmitEventCallback } = {
             close: (app: App<Element>) => {

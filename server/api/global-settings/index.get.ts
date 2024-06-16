@@ -1,6 +1,6 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
-import { GlobalSettingsObject } from '~/types/Data'
+import type { GlobalSettingsObject } from '~/types/Data'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)

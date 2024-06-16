@@ -86,7 +86,9 @@
 
                 if (!parsedData.success)
                     return Notifier.showAlert(
-                        $t('An error occurred when uploading transaction data.'),
+                        $t(
+                            'An error occurred when uploading transaction data.'
+                        ),
                         'error'
                     )
 
@@ -117,11 +119,15 @@
         <div class="flex flex-col justify-center items-center w-full gap-4">
             <h2
                 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                {{ $t('LLM Transaction Importer') }}                
+                {{ $t('LLM Transaction Importer') }}
             </h2>
 
             <span class="mb-4">
-                {{ $t('Upload a file or write the transaction data you would like to feed the AI with.') }}                
+                {{
+                    $t(
+                        'Upload a file or write the transaction data you would like to feed the AI with.'
+                    )
+                }}
             </span>
 
             <UForm
@@ -159,7 +165,7 @@
                     <div
                         class="flex flex-row justify-start w-full items-center">
                         <UButton color="primary" type="submit" size="xs">
-                            {{ $t('Import Data') }}                            
+                            {{ $t('Import Data') }}
                         </UButton>
                     </div>
                 </div>

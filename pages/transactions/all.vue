@@ -155,22 +155,24 @@
                     headers: buildRequestHeaders(token.value),
                     body: { id: row.id }
                 })
-                .then((data) => {
-                    if (!data.success)
-                        return Notifier.showAlert(
-                            $t('An error occurred while removing your transaction.'),
-                            'error'
+                    .then((data) => {
+                        if (!data.success)
+                            return Notifier.showAlert(
+                                $t(
+                                    'An error occurred while removing your transaction.'
+                                ),
+                                'error'
+                            )
+
+                        Notifier.showAlert(
+                            $t('Transaction deleted successfully!'),
+                            'success'
                         )
-    
-                    Notifier.showAlert(
-                        $t('Transaction deleted successfully!'),
-                        'success'
+                        reloadTableData()
+                    })
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
                     )
-                    reloadTableData()
-                })
-                .catch((e: NuxtError) =>
-                    Notifier.showAlert(e.statusMessage, 'error')
-                )
             }
         )
     }
@@ -304,7 +306,7 @@
                         color="primary"
                         size="xs"
                         @click="createTransaction">
-                        {{ $t('Create Transaction') }}                        
+                        {{ $t('Create Transaction') }}
                     </UButton>
                 </div>
             </template>

@@ -38,28 +38,40 @@
     }>()
 
     const getColor = computed(() => {
-        switch(props.type) {
-            case 'info': return 'gray'
-            case 'error': return 'red'
-            case 'success': return 'green'
-            case 'warning': return 'yellow'
+        switch (props.type) {
+            case 'info':
+                return 'gray'
+            case 'error':
+                return 'red'
+            case 'success':
+                return 'green'
+            case 'warning':
+                return 'yellow'
+            default:
+                throw new Error('Invalid notification type')
         }
     })
 
     const getIcon = computed(() => {
         const prefix = 'i-heroicons-'
 
-        switch(props.type) {
-            case 'info': return prefix + 'information-circle'
-            case 'error': return prefix + 'x-circle'
-            case 'success': return prefix + 'check-circle'
-            case 'warning': return prefix + 'exclamation-circle'
+        switch (props.type) {
+            case 'info':
+                return prefix + 'information-circle'
+            case 'error':
+                return prefix + 'x-circle'
+            case 'success':
+                return prefix + 'check-circle'
+            case 'warning':
+                return prefix + 'exclamation-circle'
+            default:
+                throw new Error('Invalid notification type')
         }
     })
-    
+
     const onClose = function () {
         // Run callbacks if there are any
-        if(props.emitCallbacks && 'close' in props.emitCallbacks) 
+        if (props.emitCallbacks && 'close' in props.emitCallbacks)
             props.emitCallbacks.close()
 
         emit('close')
@@ -86,18 +98,17 @@
     </div>
     <!------------------------------------------------->
 
-    <div class="absolute top-4 right-4 w-[calc(100%-(1rem*2))] sm:w-[50%] lg:w-[30%]">
+    <div
+        class="absolute top-4 right-4 w-[calc(100%-(1rem*2))] sm:w-[50%] lg:w-[30%]">
         <div class="sticky">
             <UNotification
+                :id="1"
                 :icon="getIcon"
                 :title="props.title"
                 :description="props.message"
-                :id="1"
                 :color="getColor"
                 :timeout="timeout"
-                @close="onClose">
-            </UNotification>
-            
+                @close="onClose" />
         </div>
     </div>
 </template>
