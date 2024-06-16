@@ -52,7 +52,7 @@
             {
                 label: 'en',
                 value: 'en'
-            }, 
+            },
             {
                 label: 'pt',
                 value: 'pt'
@@ -87,6 +87,16 @@
 
     const toggleMobileMenu = function () {
         isMobileMenuShown.value = !isMobileMenuShown.value
+    }
+
+    const onLogout = function () {
+        Notifier.showChooser(
+            $t('Logout'),
+            $t('Are you sure you want to logout?'),
+            () => {
+                signOut({ callbackUrl: '/login' })
+            }
+        )
     }
 
     watch(selectedLocale, (newVal) => setLocale(newVal))
@@ -147,13 +157,15 @@
                         <!-- Theme Switcher -->
                         <SThemeSwitcher />
 
-                        <USelect v-model="selectedLocale" :options="getLocales" >
+                        <USelect v-model="selectedLocale" :options="getLocales">
                             <template #leading>
-                                <UIcon name="i-heroicons-flag" class="w-4 h-4" dynamic/>
+                                <UIcon
+                                    name="i-heroicons-flag"
+                                    class="w-4 h-4"
+                                    dynamic />
                             </template>
                         </USelect>
                     </div>
-
 
                     <!-- Profile section -->
                     <UButton
@@ -162,7 +174,7 @@
                         color="red"
                         square
                         variant="link"
-                        @click="signOut({ callbackUrl: '/login' })" />
+                        @click="onLogout" />
                 </div>
             </div>
         </div>

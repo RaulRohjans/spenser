@@ -92,7 +92,10 @@
                 updateStore(Number(event.data.currency))
 
                 // Disaply success message
-                Notifier.showAlert($t('Settings saved successfully!'), 'success')
+                Notifier.showAlert(
+                    $t('Settings saved successfully!'),
+                    'success'
+                )
             })
             .catch((e: NuxtError) => (error.value = e.statusMessage || null))
     }

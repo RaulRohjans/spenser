@@ -37,7 +37,9 @@
             .then((data) => {
                 if (!data.success)
                     return Notifier.showAlert(
-                        $t('An error occurred while updating your account profile.'),
+                        $t(
+                            'An error occurred while updating your account profile.'
+                        ),
                         'error'
                     )
 
@@ -71,16 +73,25 @@
             @submit="onSubmit">
             <div
                 class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
-                <UFormGroup :label="$t('First Name')" name="first_name" class="w-full">
+                <UFormGroup
+                    :label="$t('First Name')"
+                    name="first_name"
+                    class="w-full">
                     <UInput v-model="state.first_name" />
                 </UFormGroup>
 
-                <UFormGroup :label="$t('Last Name')" name="last_name" class="w-full">
+                <UFormGroup
+                    :label="$t('Last Name')"
+                    name="last_name"
+                    class="w-full">
                     <UInput v-model="state.last_name" />
                 </UFormGroup>
             </div>
 
-            <UFormGroup :label="$t('Username')" name="username" class="makeit-static">
+            <UFormGroup
+                :label="$t('Username')"
+                name="username"
+                class="makeit-static">
                 <UInput v-model="state.username" />
             </UFormGroup>
 
@@ -97,9 +108,13 @@
 
             <div
                 class="flex flex-col-reverse sm:flex-row items-center justify-center sm:items-start sm:justify-start sm:space-x-4">
-                <UButton type="submit" class="mt-2 sm:mt-0"> {{ $t('Submit') }} </UButton>
+                <UButton type="submit" class="mt-2 sm:mt-0">
+                    {{ $t('Submit') }}
+                </UButton>
 
-                <UButton @click="openChangePwModal"> {{ $t('Change Password') }} </UButton>
+                <UButton @click="openChangePwModal">
+                    {{ $t('Change Password') }}
+                </UButton>
             </div>
         </UForm>
     </div>

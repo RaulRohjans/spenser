@@ -154,7 +154,10 @@
             :state="state"
             class="space-y-4 p-6"
             @submit="onCreateTransaction">
-            <UFormGroup :label="$t('Transaction Name')" name="name" :error="!!error">
+            <UFormGroup
+                :label="$t('Transaction Name')"
+                name="name"
+                :error="!!error">
                 <UInput v-model="state.name" />
             </UFormGroup>
 

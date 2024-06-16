@@ -10,7 +10,9 @@
 
     const schema = z
         .object({
-            new_password: z.string().min(4, $t('Must be at least 4 characters')),
+            new_password: z
+                .string()
+                .min(4, $t('Must be at least 4 characters')),
             repeat_new_password: z
                 .string()
                 .min(4, $t('Must be at least 4 characters'))
@@ -19,7 +21,7 @@
             if (new_password !== repeat_new_password)
                 ctx.addIssue({
                     code: 'custom',
-                    message: $t('The passwords don\'t match'),
+                    message: $t("The passwords don't match"),
                     path: ['repeat_new_password']
                 })
         })
@@ -42,7 +44,10 @@
                         'error'
                     )
 
-                    Notifier.showAlert($t('Password updated successfully!'), 'success')
+                Notifier.showAlert(
+                    $t('Password updated successfully!'),
+                    'success'
+                )
 
                 // Force signout to refresh  token
                 signOut({ callbackUrl: '/login' })

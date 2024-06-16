@@ -8,8 +8,6 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const isModalOpen: Ref<boolean> = ref(false)
-    const isChooserOpen: Ref<boolean> = ref(false)
-    const selectedBudgetId: Ref<number | null> = ref(null)
     const reloadModal: Ref<number> = ref(0)
     const budgetLoaderObj: Ref<ModalBudgetProps | null> = ref(null)
     const drag: Ref<boolean> = ref(false)
@@ -53,49 +51,46 @@
 
     onBeforeMount(async () => await loadData())
 
-    const toggleChooser = function (state: boolean) {
-        isChooserOpen.value = state
-    }
-
     const toggleModal = function () {
         isModalOpen.value = !isModalOpen.value
     }
 
-    const removeItemCardAction = function (budget: BudgetDataObject) {
-        selectedBudgetId.value = budget.id
-        toggleChooser(true)
-    }
-
-    const editItemCardAction = function (budget: BudgetDataObject) {
+    const editItem = function (budget: BudgetDataObject) {
         budgetLoaderObj.value = budget
         toggleModal()
     }
 
-    const removeItem = function (state: boolean) {
-        if (state) {
-            //User accepted
-            $fetch(`/api/budgets/delete`, {
-                method: 'POST',
-                headers: buildRequestHeaders(token.value),
-                body: { id: selectedBudgetId.value }
-            })
-                .then(async (data) => {
-                    if (!data.success)
-                        return Notifier.showAlert(
-                            $t('An error occurred while removing your budget.'),
-                            'error'
-                        )
-
-                    await loadData()
-                    Notifier.showAlert($t('Budget deleted successfully!'), 'success')
+    const removeItem = function (budget: BudgetDataObject) {
+        Notifier.showChooser(
+            $t('Delete Budget'),
+            $t('Are you sure you want to delete this budget?'),
+            () => {
+                //User accepted
+                $fetch(`/api/budgets/delete`, {
+                    method: 'POST',
+                    headers: buildRequestHeaders(token.value),
+                    body: { id: budget.id }
                 })
-                .catch((e: NuxtError) =>
-                    Notifier.showAlert(e.statusMessage, 'error')
-                )
-        }
+                    .then(async (data) => {
+                        if (!data.success)
+                            return Notifier.showAlert(
+                                $t(
+                                    'An error occurred while removing your budget.'
+                                ),
+                                'error'
+                            )
 
-        selectedBudgetId.value = null
-        toggleChooser(false)
+                        await loadData()
+                        Notifier.showAlert(
+                            $t('Budget deleted successfully!'),
+                            'success'
+                        )
+                    })
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
+                    )
+            }
+        )
     }
 
     const loadData = async function () {
@@ -128,7 +123,9 @@
                         'error'
                     )
             })
-            .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage, 'error'))
+            .catch((e: NuxtError) =>
+                Notifier.showAlert(e.statusMessage, 'error')
+            )
     }
 
     // Reset vbind model when modal is closed
@@ -221,7 +218,9 @@
                             <div
                                 class="flex flex-row justify-between items-center w-full gap-8">
                                 <span class="text-xs cursor-auto">
-                                    {{ `${$t('Period')}: ${$t(element.period)}` }}
+                                    {{
+                                        `${$t('Period')}: ${$t(element.period)}`
+                                    }}
                                 </span>
 
                                 <div
@@ -232,7 +231,7 @@
                                         color="primary"
                                         square
                                         variant="ghost"
-                                        @click="editItemCardAction(element)" />
+                                        @click="editItem(element)" />
 
                                     <UButton
                                         icon="i-heroicons-trash"
@@ -240,9 +239,7 @@
                                         color="primary"
                                         square
                                         variant="ghost"
-                                        @click="
-                                            removeItemCardAction(element)
-                                        " />
+                                        @click="removeItem(element)" />
                                 </div>
                             </div>
                         </template>
@@ -266,12 +263,6 @@
             </template>
         </Draggable>
     </div>
-
-    <ModalChooser
-        v-model="isChooserOpen"
-        :title="$t('Delete Budget')"
-        :message="$t('Are you sure you want to delete this budget?')"
-        @click="removeItem" />
 
     <ModalBudget
         :key="reloadModal"

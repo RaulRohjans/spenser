@@ -139,5 +139,7 @@
     "Info": "Informação",
     "Error": "Erro",
     "Success": "Sucesso",
-    "Warning": "Aviso"
+    "Warning": "Aviso",
+    "Logout": "Terminar Sessão",
+    "Are you sure you want to logout?": "Tem a certeza que pretende terminar a sessão?"
 }

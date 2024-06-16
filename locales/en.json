@@ -139,5 +139,7 @@
     "Info": "Info",
     "Error": "Error",
     "Success": "Success",
-    "Warning": "Warning"
+    "Warning": "Warning",
+    "Logout": "Logout",
+    "Are you sure you want to logout?": "Are you sure you want to logout?"
 }

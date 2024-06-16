@@ -46,8 +46,6 @@
     })
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
-    const isChooserOpen: Ref<boolean> = ref(false)
-    const selectedCurrencyId: Ref<number | null> = ref(null)
 
     // Fetch Data
     const { data: tableData, pending: loading } =
@@ -87,44 +85,41 @@
             }
         )
 
-    const delCurrencyAction = function (row: TableRow) {
-        selectedCurrencyId.value = row.id
-        toggleChooser(true)
-    }
-
-    const delCurrency = function (state: boolean) {
-        if (state) {
-            //User accepted
-            $fetch(`/api/currencies/delete`, {
-                method: 'POST',
-                headers: buildRequestHeaders(token.value),
-                body: { id: selectedCurrencyId.value }
-            })
-                .then((data) => {
-                    if (!data.success)
-                        return Notifier.showAlert(
-                            $t('An error occurred while removing your currency.'),
-                            'error'
-                        )
-
-                    Notifier.showAlert($t('Currency deleted successfully!'), 'success')
-                    reloadTableData()
+    const delCurrency = function (row: TableRow) {
+        Notifier.showChooser(
+            $t('Delete Currency'),
+            $t('Are you sure you want to delete this currency?'),
+            () => {
+                //User accepted
+                $fetch(`/api/currencies/delete`, {
+                    method: 'POST',
+                    headers: buildRequestHeaders(token.value),
+                    body: { id: row.id }
                 })
-                .catch((e: NuxtError) =>
-                    Notifier.showAlert(e.statusMessage, 'error')
-                )
-        }
+                    .then((data) => {
+                        if (!data.success)
+                            return Notifier.showAlert(
+                                $t(
+                                    'An error occurred while removing your currency.'
+                                ),
+                                'error'
+                            )
 
-        selectedCurrencyId.value = null
-        toggleChooser(false)
+                        Notifier.showAlert(
+                            $t('Currency deleted successfully!'),
+                            'success'
+                        )
+                        reloadTableData()
+                    })
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
+                    )
+            }
+        )
     }
 
     const toggleModal = function () {
         isModalOpen.value = !isModalOpen.value
-    }
-
-    const toggleChooser = function (state: boolean) {
-        isChooserOpen.value = state
     }
 
     const reloadTableData = function () {
@@ -149,7 +144,7 @@
             :row-count="tableData?.data.totalRecordCount"
             :loading="loading"
             class="bg-none shadow-none w-full"
-            @delete-action="delCurrencyAction">
+            @delete-action="delCurrency">
             <template #extra-section>
                 <div class="flex flex-row items-end justify-end w-full">
                     <UButton
@@ -157,7 +152,7 @@
                         color="primary"
                         size="xs"
                         @click="toggleModal">
-                        {{ $t('Create Currency') }}                        
+                        {{ $t('Create Currency') }}
                     </UButton>
                 </div>
             </template>
@@ -165,10 +160,4 @@
     </div>
 
     <ModalCurrency v-model="isModalOpen" @successful-submit="reloadTableData" />
-
-    <ModalChooser
-        v-model="isChooserOpen"
-        :title="$t('Delete Currency')"
-        :message="$t('Are you sure you want to delete this currency?')"
-        @click="delCurrency" />
 </template>

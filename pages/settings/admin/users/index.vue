@@ -64,8 +64,6 @@
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
     const reloadModal: Ref<number> = ref(0)
-    const isChooserOpen: Ref<boolean> = ref(false)
-    const selectedUserId: Ref<number | null> = ref(null)
 
     // Fetch Data
     const { data: tableData, pending: loading } =
@@ -119,44 +117,41 @@
         toggleModal()
     }
 
-    const toggleChooser = function (state: boolean) {
-        isChooserOpen.value = state
-    }
-
-    const delUserAction = function (row: TableRow) {
-        selectedUserId.value = row.id
-        toggleChooser(true)
-    }
-
-    const delUser = function (state: boolean) {
-        if (state) {
-            //User accepted
-            $fetch(`/api/users/delete`, {
-                method: 'POST',
-                headers: buildRequestHeaders(token.value),
-                body: { id: selectedUserId.value }
-            })
-                .then((data) => {
-                    if (!data.success)
-                        return Notifier.showAlert(
-                            $t('An error occurred while removing the user.'),
-                            'error'
-                        )
-
-                    // If the deleted user is the current one, logout
-                    if (selectedUserId.value == authData.value.id)
-                        signOut({ callbackUrl: '/login' })
-                    else reloadTableData()
-
-                    Notifier.showAlert($t('User deleted successfully!'), 'success')
+    const delUser = function (row: TableRow) {
+        Notifier.showChooser(
+            $t('Delete User'),
+            $t('Are you sure you want to delete this user?'),
+            () => {
+                //User accepted
+                $fetch(`/api/users/delete`, {
+                    method: 'POST',
+                    headers: buildRequestHeaders(token.value),
+                    body: { id: row.id }
                 })
-                .catch((e: NuxtError) =>
-                    Notifier.showAlert(e.statusMessage, 'error')
-                )
-        }
+                    .then((data) => {
+                        if (!data.success)
+                            return Notifier.showAlert(
+                                $t(
+                                    'An error occurred while removing the user.'
+                                ),
+                                'error'
+                            )
 
-        selectedUserId.value = null
-        toggleChooser(false)
+                        // If the deleted user is the current one, logout
+                        if (row.id == authData.value.id)
+                            signOut({ callbackUrl: '/login' })
+                        else reloadTableData()
+
+                        Notifier.showAlert(
+                            $t('User deleted successfully!'),
+                            'success'
+                        )
+                    })
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
+                    )
+            }
+        )
     }
 
     const toggleModal = function () {
@@ -195,7 +190,7 @@
             :loading="loading"
             class="bg-none shadow-none w-full"
             @edit-action="editUser"
-            @delete-action="delUserAction">
+            @delete-action="delUser">
             <template #is_admin-data="{ row }">
                 {{ row.is_admin == true ? 'Yes' : 'No' }}
             </template>
@@ -219,10 +214,4 @@
         v-model="isModalOpen"
         v-bind="userLoaderObj"
         @successful-submit="reloadTableData" />
-
-    <ModalChooser
-        v-model="isChooserOpen"
-        :title="$t('Delete User')"
-        :message="$t('Are you sure you want to delete this user?')"
-        @click="delUser" />
 </template>
