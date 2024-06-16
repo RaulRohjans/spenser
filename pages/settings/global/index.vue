@@ -63,7 +63,7 @@
     // Fetch user settings
     const { data: userSettings } = await useLazyAsyncData<{
         success: boolean
-        data: UserSettingsObject
+        data: UserSettingsObject | undefined
     }>('settings', () =>
         $fetch('/api/settings', {
             method: 'GET',
@@ -72,7 +72,7 @@
     )
 
     const state = reactive({
-        currency: userSettings.value?.data.currency
+        currency: userSettings.value?.data?.currency
     })
 
     const onSave = function (event: FormSubmitEvent<typeof state>) {
@@ -101,7 +101,7 @@
     }
 
     watch(userSettings, () => {
-        state.currency = userSettings.value?.data.currency
+        state.currency = userSettings.value?.data?.currency
         currencySelectKey.value++
     })
 

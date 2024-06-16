@@ -2,6 +2,7 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
+    import type { UserSettingsObject } from '~/types/Data'
 
     const { signIn, token } = useAuth()
     const { t: $t } = useI18n()
@@ -26,14 +27,13 @@
                 const settingsStore = useSettingsStore()
 
                 // Fetch user settings data
-                const userSettings = await $fetch('/api/settings', {
+                const userSettings: { data: UserSettingsObject | undefined, success: boolean } = await $fetch('/api/settings', {
                     method: 'GET',
                     headers: buildRequestHeaders(token.value)
                 })
 
-                settingsStore.currency.id = userSettings.data.currency
-                settingsStore.currency.placement = userSettings.data.placement
-                settingsStore.currency.symbol = userSettings.data.symbol
+                // Load user settings
+                if(userSettings.data) settingsStore.loadCurrency(userSettings.data)
                 //-------------------------
             })
             .catch((e: NuxtError) => {
