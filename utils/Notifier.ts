@@ -1,5 +1,6 @@
-import { createApp as vueCreateApp } from 'vue'
+import { createApp as vueCreateApp, type App } from 'vue'
 import SNotification from '~/components/SNotification.vue'
+import { t as $t } from '~/locales/i18n.config'
 import type { SNotificationProps } from '~/components/SNotification.vue'
 import type { EmitEventCallback } from '~/types/Data'
 
@@ -8,44 +9,57 @@ export class Notifier {
         message: string | undefined | null,
         type: 'info' | 'warning' | 'error' | 'success' = 'info'
     ) {
-        const { t: $t } = useI18n()
-
         // Create container and add to DOM
         const mountEl = document.createElement('div')
         document.body.appendChild(mountEl)
-    
-        // Build title
+        
+        const locale = getLocaleFromRoute()
+        
+        // Build message title
         let title = ''
         switch(type) {
             case 'error':
-                title = $t('Error')
+                title = $t('Error', locale)
                 break
             case 'warning':
-                title = $t('Warning')
+                title = $t('Warning', locale)
                 break
             case 'info':
-                title = $t('Info')
+                title = $t('Info', locale)
                 break
             case 'success':
-                title = $t('Success')
+                title = $t('Success', locale)
                 break
         }
 
-
+        // Build component emit callbacks
         const emitCallbacks: { [key: string]: EmitEventCallback } = {
-            close: () => {
-                console.log('Hell Yeah!')
+            close: (app: App<Element>) => {
+                // Unmount alert app instance
+                //app.unmount()
+
+                // Remove alert div from dom
+                //document.body.removeChild(mountEl)
             }
         }
 
+        // Build component props
         const props: SNotificationProps = {
             title,
             message: message || '',
-            type,
-            emitCallbacks
+            type
         }
 
         // Create app vue instance & mount
-        vueCreateApp(SNotification, {...props}).mount(mountEl)
+        const app = vueCreateApp({
+            render() {
+                return h(SNotification, {
+                    ...props,
+                    onClose: () => emitCallbacks.close(app)
+                })
+            }
+        })
+
+        app.mount(mountEl!)
     }
 }

@@ -52,3 +52,16 @@ export const formatCurrencyValue = function (value: number) {
         return `${value.toFixed(2)}${settingsStore.currency.symbol}`
     else return `${settingsStore.currency.symbol}${value.toFixed(2)}`
 }
+
+export const getLocaleFromRoute = function() {
+    /**
+     * This is a very weird way of doing it, yes, however
+     * using const { locale } = useI18n() will cause issues if
+     * done outside a component/template.
+     * 
+     * For example, Notifier.displayMessage will stop being executed!
+     */
+
+    const localePath = useLocalePath()
+    return localePath('/').replaceAll('/', '')
+}

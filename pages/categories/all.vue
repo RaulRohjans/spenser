@@ -155,6 +155,10 @@
         tableDataKey.value++
     }
 
+    const test = function() {
+        Notifier.displayMessage('this is a test!')
+    }
+
     // Reset vbind model when modal is closed
     watch(isModalOpen, (newVal) => {
         if (!newVal) categoryLoaderObj.value = null
@@ -201,6 +205,13 @@
                         size="xs"
                         @click="toggleModal">
                         {{ $t('Create Category') }}
+                    </UButton>
+
+                    <UButton
+                        color="primary"
+                        size="xs"
+                        @click="test">
+                        Test
                     </UButton>
                 </div>
             </template>
