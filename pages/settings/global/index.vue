@@ -83,7 +83,7 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return Notifier.displayMessage(
+                    return Notifier.showAlert(
                         $t('An error occurred while saving your settings.'),
                         'error'
                     )
@@ -92,7 +92,7 @@
                 updateStore(Number(event.data.currency))
 
                 // Disaply success message
-                Notifier.displayMessage($t('Settings saved successfully!'), 'success')
+                Notifier.showAlert($t('Settings saved successfully!'), 'success')
             })
             .catch((e: NuxtError) => (error.value = e.statusMessage || null))
     }

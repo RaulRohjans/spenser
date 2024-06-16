@@ -39,8 +39,8 @@
 
     const getColor = computed(() => {
         switch(props.type) {
-            case 'info': return 'primary'
-            case 'error': return 'error'
+            case 'info': return 'gray'
+            case 'error': return 'red'
             case 'success': return 'green'
             case 'warning': return 'yellow'
         }

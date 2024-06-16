@@ -59,7 +59,7 @@ export const getLocaleFromRoute = function() {
      * using const { locale } = useI18n() will cause issues if
      * done outside a component/template.
      * 
-     * For example, Notifier.displayMessage will stop being executed!
+     * For example, Notifier.showAlert will stop being executed!
      */
 
     const localePath = useLocalePath()

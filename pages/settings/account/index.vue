@@ -36,12 +36,12 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return Notifier.displayMessage(
+                    return Notifier.showAlert(
                         $t('An error occurred while updating your account profile.'),
                         'error'
                     )
 
-                Notifier.displayMessage(
+                Notifier.showAlert(
                     $t('Account settings updated successfully!'),
                     'success'
                 )
@@ -50,7 +50,7 @@
                 signOut({ callbackUrl: '/login' })
             })
             .catch((e: NuxtError) => {
-                Notifier.displayMessage(e.statusMessage, 'error')
+                Notifier.showAlert(e.statusMessage, 'error')
             })
     }
     const openChangePwModal = function () {

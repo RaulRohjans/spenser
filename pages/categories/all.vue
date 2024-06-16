@@ -126,16 +126,16 @@
             })
                 .then((data) => {
                     if (!data.success)
-                        return Notifier.displayMessage(
+                        return Notifier.showAlert(
                             $t('An error occurred while removing your category.'),
                             'error'
                         )
 
-                    Notifier.displayMessage($t('Category deleted successfully!'), 'success')
+                    Notifier.showAlert($t('Category deleted successfully!'), 'success')
                     reloadTableData()
                 })
                 .catch((e: NuxtError) =>
-                    Notifier.displayMessage(e.statusMessage, 'error')
+                    Notifier.showAlert(e.statusMessage, 'error')
                 )
         }
 
@@ -153,10 +153,6 @@
 
     const reloadTableData = function () {
         tableDataKey.value++
-    }
-
-    const test = function() {
-        Notifier.displayMessage('this is a test!')
     }
 
     // Reset vbind model when modal is closed
@@ -205,13 +201,6 @@
                         size="xs"
                         @click="toggleModal">
                         {{ $t('Create Category') }}
-                    </UButton>
-
-                    <UButton
-                        color="primary"
-                        size="xs"
-                        @click="test">
-                        Test
                     </UButton>
                 </div>
             </template>

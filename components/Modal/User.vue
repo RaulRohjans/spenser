@@ -109,7 +109,7 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return Notifier.displayMessage(
+                    return Notifier.showAlert(
                         $t('An error occurred when performing the action.'),
                         'error'
                     )
@@ -118,7 +118,7 @@
                 emit('successful-submit')
 
                 // Display success message
-                Notifier.displayMessage(
+                Notifier.showAlert(
                     $t('Operation completed successfully!'),
                     'success'
                 )

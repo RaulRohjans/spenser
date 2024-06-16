@@ -5,17 +5,9 @@ import type { SNotificationProps } from '~/components/SNotification.vue'
 import type { EmitEventCallback } from '~/types/Data'
 
 export class Notifier {
-    static displayMessage(
-        message: string | undefined | null,
-        type: 'info' | 'warning' | 'error' | 'success' = 'info'
-    ) {
-        // Create container and add to DOM
-        const mountEl = document.createElement('div')
-        document.body.appendChild(mountEl)
-        
+    private static buildAlertTitle(type: string) {
         const locale = getLocaleFromRoute()
-        
-        // Build message title
+
         let title = ''
         switch(type) {
             case 'error':
@@ -32,20 +24,37 @@ export class Notifier {
                 break
         }
 
+        return title
+    }
+
+    private static setupDomContainer() {
+        // Create div container and add to body
+        const mountEl = document.createElement('div')
+        document.body.appendChild(mountEl)
+
+        return mountEl
+    }
+
+    static showAlert(
+        message: string | undefined | null,
+        type: 'info' | 'warning' | 'error' | 'success' = 'info'
+    ) {
+        const container = this.setupDomContainer()
+                
         // Build component emit callbacks
         const emitCallbacks: { [key: string]: EmitEventCallback } = {
             close: (app: App<Element>) => {
                 // Unmount alert app instance
-                //app.unmount()
+                app.unmount()
 
                 // Remove alert div from dom
-                //document.body.removeChild(mountEl)
+                document.body.removeChild(container)
             }
         }
 
         // Build component props
         const props: SNotificationProps = {
-            title,
+            title: this.buildAlertTitle(type),
             message: message || '',
             type
         }
@@ -60,6 +69,6 @@ export class Notifier {
             }
         })
 
-        app.mount(mountEl!)
+        app.mount(container)
     }
 }

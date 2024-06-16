@@ -81,16 +81,16 @@
             })
                 .then(async (data) => {
                     if (!data.success)
-                        return Notifier.displayMessage(
+                        return Notifier.showAlert(
                             $t('An error occurred while removing your budget.'),
                             'error'
                         )
 
                     await loadData()
-                    Notifier.displayMessage($t('Budget deleted successfully!'), 'success')
+                    Notifier.showAlert($t('Budget deleted successfully!'), 'success')
                 })
                 .catch((e: NuxtError) =>
-                    Notifier.displayMessage(e.statusMessage, 'error')
+                    Notifier.showAlert(e.statusMessage, 'error')
                 )
         }
 
@@ -123,12 +123,12 @@
         })
             .then((data) => {
                 if (!data.success)
-                    Notifier.displayMessage(
+                    Notifier.showAlert(
                         $t('An error occurred while saving budget positions.'),
                         'error'
                     )
             })
-            .catch((e: NuxtError) => Notifier.displayMessage(e.statusMessage, 'error'))
+            .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage, 'error'))
     }
 
     // Reset vbind model when modal is closed
