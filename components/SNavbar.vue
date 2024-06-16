@@ -89,6 +89,16 @@
         isMobileMenuShown.value = !isMobileMenuShown.value
     }
 
+    const onLogout = function() {
+        Notifier.showChooser(
+            $t('Logout'),
+            $t('Are you sure you want to logout?'),
+            () => {
+                signOut({ callbackUrl: '/login' })
+            }
+        )
+    }
+
     watch(selectedLocale, (newVal) => setLocale(newVal))
 </script>
 
@@ -162,7 +172,7 @@
                         color="red"
                         square
                         variant="link"
-                        @click="signOut({ callbackUrl: '/login' })" />
+                        @click="onLogout" />
                 </div>
             </div>
         </div>

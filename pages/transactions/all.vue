@@ -66,8 +66,6 @@
     const dateRange: Ref<Date[]> = ref([])
     const groupByCategory: Ref<boolean> = ref(false)
     const tableColumns: Ref<TableColumn[]> = ref(tableObj.columns)
-    const isChooserOpen: Ref<boolean> = ref(false)
-    const selectedTransactionId: Ref<number | null> = ref(null)
 
     /* ----------- Fetch Data ----------- */
     const { data: tableData, pending: loading } =
@@ -123,10 +121,6 @@
         isModalOpen.value = !isModalOpen.value
     }
 
-    const toggleChooser = function (state: boolean) {
-        isChooserOpen.value = state
-    }
-
     const editTransaction = function (row: TableRow) {
         transactionLoaderObj.value = {
             id: row.id,
@@ -150,26 +144,24 @@
         toggleModal()
     }
 
-    const delTransactionAction = function (row: TableRow) {
-        selectedTransactionId.value = row.id
-        toggleChooser(true)
-    }
-
-    const delTransaction = function (state: boolean) {
-        if (state) {
-            //User accepted
-            $fetch(`/api/transactions/delete`, {
-                method: 'POST',
-                headers: buildRequestHeaders(token.value),
-                body: { id: selectedTransactionId.value }
-            })
+    const delTransaction = function (row: TableRow) {
+        Notifier.showChooser(
+            $t('Delete Transaction'),
+            $t('Are you sure you want to delete this transaction?'),
+            () => {
+                //User accepted
+                $fetch(`/api/transactions/delete`, {
+                    method: 'POST',
+                    headers: buildRequestHeaders(token.value),
+                    body: { id: row.id }
+                })
                 .then((data) => {
                     if (!data.success)
                         return Notifier.showAlert(
                             $t('An error occurred while removing your transaction.'),
                             'error'
                         )
-
+    
                     Notifier.showAlert(
                         $t('Transaction deleted successfully!'),
                         'success'
@@ -179,10 +171,8 @@
                 .catch((e: NuxtError) =>
                     Notifier.showAlert(e.statusMessage, 'error')
                 )
-        }
-
-        selectedTransactionId.value = null
-        toggleChooser(false)
+            }
+        )
     }
 
     const toggleModal = function () {
@@ -263,7 +253,7 @@
             @reset-filters="resetTableFilters"
             @edit-action="editTransaction"
             @duplicate-action="dupTransaction"
-            @delete-action="delTransactionAction">
+            @delete-action="delTransaction">
             <template #date-data="{ row }">
                 <template v-for="date in [new Date(row.date)]" :key="date">
                     <!--
@@ -342,10 +332,4 @@
         v-model="isModalOpen"
         v-bind="transactionLoaderObj"
         @successful-submit="reloadTableData" />
-
-    <ModalChooser
-        v-model="isChooserOpen"
-        :title="$t('Delete Transaction')"
-        :message="$t('Are you sure you want to delete this transaction?')"
-        @click="delTransaction" />
 </template>

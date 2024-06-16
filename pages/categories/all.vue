@@ -41,7 +41,6 @@
     // booleans shouldn't be used as keys according to the linter
     // so we are forced to use this to reload the modal
     const reloadModal: Ref<number> = ref(0)
-    const isChooserOpen: Ref<boolean> = ref(false)
     const page: Ref<number> = ref(1)
     const pageCount: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
@@ -52,7 +51,6 @@
     })
     const isModalOpen: Ref<boolean> = ref(false)
     const tableDataKey: Ref<number> = ref(0)
-    const selectedCategoryId: Ref<number | null> = ref(null)
 
     // Fetch Data
     const { data: tableData, pending: loading } =
@@ -111,19 +109,17 @@
         toggleModal()
     }
 
-    const delCategoryAction = function (row: TableRow) {
-        selectedCategoryId.value = row.id
-        toggleChooser(true)
-    }
-
-    const delCategory = function (state: boolean) {
-        if (state) {
-            //User accepted
-            $fetch(`/api/categories/delete`, {
-                method: 'POST',
-                headers: buildRequestHeaders(token.value),
-                body: { id: selectedCategoryId.value }
-            })
+    const delCategory = function (row: TableRow) {
+        Notifier.showChooser(
+            $t('Delete Category'), 
+            $t('Are you sure you want to delete this category?'),
+            () => {
+                //User accepted
+                $fetch(`/api/categories/delete`, {
+                    method: 'POST',
+                    headers: buildRequestHeaders(token.value),
+                    body: { id: row.id }
+                })
                 .then((data) => {
                     if (!data.success)
                         return Notifier.showAlert(
@@ -137,18 +133,12 @@
                 .catch((e: NuxtError) =>
                     Notifier.showAlert(e.statusMessage, 'error')
                 )
-        }
-
-        selectedCategoryId.value = null
-        toggleChooser(false)
+            }
+        )
     }
 
     const toggleModal = function () {
         isModalOpen.value = !isModalOpen.value
-    }
-
-    const toggleChooser = function (state: boolean) {
-        isChooserOpen.value = state
     }
 
     const reloadTableData = function () {
@@ -183,7 +173,7 @@
             :loading="loading"
             @edit-action="editCategory"
             @duplicate-action="dupCategory"
-            @delete-action="delCategoryAction">
+            @delete-action="delCategory">
             <template #icon-data="{ row }">
                 <div class="hide-span">
                     <UIcon
@@ -212,10 +202,4 @@
         :key="reloadModal"
         v-model="isModalOpen"
         @successful-submit="reloadTableData" />
-
-    <ModalChooser
-        v-model="isChooserOpen"
-        :title="$t('Delete Category')"
-        :message="$t('Are you sure you want to delete this category?')"
-        @click="delCategory" />
 </template>

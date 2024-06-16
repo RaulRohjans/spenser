@@ -26,12 +26,16 @@ export const isRouteActive = function (
     */
     const pathWithLocale = `${localePath('/')}${path !== '/' ? path : ''}`
 
+    /*
+    * When comparing, we have to account for urls with the locale, or
+    * without the locale (they are using the default lang)
+    */
     if (exactPath) {
-        if (pathWithLocale === route.path) return true
+        if (pathWithLocale === route.path || path === route.path) return true
         else return false
     }
 
-    if (route.path.substring(0, pathWithLocale.length) === pathWithLocale) return true
+    if (route.path.substring(0, pathWithLocale.length) === pathWithLocale || route.path.substring(0, path.length) === path) return true
     else return false
 }
 
