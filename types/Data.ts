@@ -38,3 +38,6 @@ export interface LlmTransactionObject {
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export type CustomSQLQueryBuilder = SelectQueryBuilder<any, any, any>
+
+/* eslint-disable  @typescript-eslint/no-explicit-any */
+export type EmitEventCallback = (...args: any[]) => void

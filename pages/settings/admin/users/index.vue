@@ -138,7 +138,7 @@
             })
                 .then((data) => {
                     if (!data.success)
-                        return displayMessage(
+                        return Notifier.showAlert(
                             $t('An error occurred while removing the user.'),
                             'error'
                         )
@@ -148,10 +148,10 @@
                         signOut({ callbackUrl: '/login' })
                     else reloadTableData()
 
-                    displayMessage($t('User deleted successfully!'), 'success')
+                    Notifier.showAlert($t('User deleted successfully!'), 'success')
                 })
                 .catch((e: NuxtError) =>
-                    displayMessage(e.statusMessage, 'error')
+                    Notifier.showAlert(e.statusMessage, 'error')
                 )
         }
 

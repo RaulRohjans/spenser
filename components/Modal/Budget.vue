@@ -144,7 +144,7 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return displayMessage(
+                    return Notifier.showAlert(
                         $t('An error occurred when creating your budget.'),
                         'error'
                     )
@@ -153,7 +153,7 @@
                 emit('successful-submit')
 
                 // Disaply success message
-                displayMessage(
+                Notifier.showAlert(
                     $t('Operation completed successfully!'),
                     'success'
                 )

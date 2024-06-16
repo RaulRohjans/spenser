@@ -49,13 +49,13 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return displayMessage(
+                    return Notifier.showAlert(
                         $t('An error occurred while saving your settings.'),
                         'error'
                     )
 
                 // Disaply success message
-                displayMessage($t('Settings saved successfully!'), 'success')
+                Notifier.showAlert($t('Settings saved successfully!'), 'success')
             })
             .catch((e: NuxtError) => (error.value = e.statusMessage || null))
     }

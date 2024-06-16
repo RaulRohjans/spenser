@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import { displayMessage, buildRequestHeaders } from '@/utils/helpers'
+    import { buildRequestHeaders } from '@/utils/helpers'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
 
@@ -36,12 +36,12 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return displayMessage(
+                    return Notifier.showAlert(
                         $t('An error occurred while updating your account profile.'),
                         'error'
                     )
 
-                displayMessage(
+                Notifier.showAlert(
                     $t('Account settings updated successfully!'),
                     'success'
                 )
@@ -50,7 +50,7 @@
                 signOut({ callbackUrl: '/login' })
             })
             .catch((e: NuxtError) => {
-                displayMessage(e.statusMessage, 'error')
+                Notifier.showAlert(e.statusMessage, 'error')
             })
     }
     const openChangePwModal = function () {

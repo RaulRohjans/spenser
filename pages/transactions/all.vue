@@ -165,19 +165,19 @@
             })
                 .then((data) => {
                     if (!data.success)
-                        return displayMessage(
+                        return Notifier.showAlert(
                             $t('An error occurred while removing your transaction.'),
                             'error'
                         )
 
-                    displayMessage(
+                    Notifier.showAlert(
                         $t('Transaction deleted successfully!'),
                         'success'
                     )
                     reloadTableData()
                 })
                 .catch((e: NuxtError) =>
-                    displayMessage(e.statusMessage, 'error')
+                    Notifier.showAlert(e.statusMessage, 'error')
                 )
         }
 

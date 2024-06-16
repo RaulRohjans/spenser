@@ -1,27 +1,4 @@
 import type { RouteLocationNormalizedLoaded } from '#vue-router'
-import { useToast } from 'vue-toastification'
-
-export const displayMessage = function (
-    message: string | undefined | null,
-    type: 'info' | 'warning' | 'error' | 'success' = 'info'
-) {
-    const toast = useToast()
-
-    switch (type) {
-        case 'error':
-            toast.error(message)
-            break
-        case 'warning':
-            toast.warning(message)
-            break
-        case 'info':
-            toast.info(message)
-            break
-        case 'success':
-            toast.success(message)
-            break
-    }
-}
 
 export const capitalFirstWordLetters = function (message: string) {
     const words = message.split(' ')
@@ -74,4 +51,17 @@ export const formatCurrencyValue = function (value: number) {
     if (settingsStore.currency.placement == 'after')
         return `${value.toFixed(2)}${settingsStore.currency.symbol}`
     else return `${settingsStore.currency.symbol}${value.toFixed(2)}`
+}
+
+export const getLocaleFromRoute = function() {
+    /**
+     * This is a very weird way of doing it, yes, however
+     * using const { locale } = useI18n() will cause issues if
+     * done outside a component/template.
+     * 
+     * For example, Notifier.showAlert will stop being executed!
+     */
+
+    const localePath = useLocalePath()
+    return localePath('/').replaceAll('/', '')
 }

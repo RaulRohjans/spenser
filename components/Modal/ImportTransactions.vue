@@ -130,7 +130,7 @@
         })
             .then((data) => {
                 if (!data.success)
-                    return displayMessage(
+                    return Notifier.showAlert(
                         $t('An error occurred while importing the transactions.'),
                         'error'
                     )
@@ -139,12 +139,12 @@
                 emit('successful-submit')
 
                 // Disaply success message
-                displayMessage($t('Transactions imported successfully!'), 'success')
+                Notifier.showAlert($t('Transactions imported successfully!'), 'success')
 
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => displayMessage(e.statusMessage))
+            .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage))
     }
 
     const delTransaction = function (row: TableRow) {
@@ -152,9 +152,9 @@
 
         if (tIdx > -1) {
             vTransactions.value.splice(tIdx, 1)
-            displayMessage($t('Transaction removed successfully'), 'success')
+            Notifier.showAlert($t('Transaction removed successfully'), 'success')
         } else
-            displayMessage(
+            Notifier.showAlert(
                 $t('Could not find transaction record to be removed.'),
                 'error'
             )
