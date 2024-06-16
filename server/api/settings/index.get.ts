@@ -14,14 +14,8 @@ export default defineEventHandler(async (event) => {
         .where('user', '=', user.id)
         .executeTakeFirst()
 
-    if (!query)
-        throw createError({
-            statusCode: 500,
-            statusMessage: 'Could not load user settings.'
-        })
-
     return {
         success: true,
-        data: query as UserSettingsObject
+        data: query as UserSettingsObject | undefined
     }
 })
