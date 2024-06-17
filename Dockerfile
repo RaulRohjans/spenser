@@ -1,5 +1,6 @@
 # Use an official node image as the base image
-FROM node:20-alpine3.20 AS builder
+FROM oven/bun:1 as builder
+WORKDIR /usr/src/app
 
 # Set the working directory
 WORKDIR /app
@@ -8,13 +9,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN bun i
 
 # Copy the rest of the application files
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN bun run build
 
 # Use a smaller image for the production environment
 FROM node:20-alpine3.20
