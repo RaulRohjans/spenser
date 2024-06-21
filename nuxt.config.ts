@@ -61,17 +61,17 @@ export default defineNuxtConfig({
         }
     },
     runtimeConfig: {
-        JWT_SECRET: process.env.JWT_SECRET as string,
-        JWT_EXPIRATION: process.env.JWT_EXPIRATION || '900',
-        PASSWORD_SALT_ROUNDS: process.env.PASSWORD_SALT_ROUNDS || '10',
+        jwtSecret: process.env.JWT_SECRET as string,
+        jwtExpiration: process.env.JWT_EXPIRATION || '900',
+        passwordSaltRounds: process.env.PASSWORD_SALT_ROUNDS || '10',
 
-        DB_NAME: process.env.DB_NAME,
-        DB_HOST: process.env.DB_HOST,
-        DB_USER: process.env.DB_USER,
-        DB_PASSWORD: process.env.DB_PASSWORD,
-        DB_PORT: process.env.DB_PORT || '5432',
+        dbName: process.env.DB_NAME,
+        dbHost: process.env.DB_HOST,
+        dbUser: process.env.DB_USER,
+        dbPassword: process.env.DB_PASSWORD,
+        dbPort: process.env.DB_PORT || '5432',
 
-        MAX_TRANSACTION_FILE_SIZE: Number(
+        maxTransactionFileSize: Number(
             process.env.MAX_TRANSACTION_FILE_SIZE || 1024 * 1024 * 10
         ) //10 MB
     },

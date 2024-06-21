@@ -3,21 +3,23 @@ import { Kysely, PostgresDialect } from 'kysely'
 import type { DB } from 'kysely-codegen'
 import type { CustomSQLQueryBuilder } from '~/types/Data'
 
-const { DB_NAME, DB_HOST, DB_USER, DB_PASSWORD, DB_PORT } = useRuntimeConfig()
+const { dbName, dbHost, dbUser, dbPassword, dbPort } = useRuntimeConfig()
 
-if (!DB_NAME || !DB_HOST || !DB_USER || !DB_PASSWORD) {
+if (!dbName || !dbHost || !dbUser || !dbPassword) {
     console.error(
         'The PostgreSQL database instance configuration is invalid. Please make sure the .env is set correctly.'
     )
 }
 
+console.log(dbName, dbHost, dbUser, dbPassword, dbPort)
+
 const dialect = new PostgresDialect({
     pool: new pg.Pool({
-        database: DB_NAME as string,
-        host: DB_HOST as string,
-        user: DB_USER as string,
-        password: DB_PASSWORD as string,
-        port: Number(DB_PORT),
+        database: dbName as string,
+        host: dbHost as string,
+        user: dbUser as string,
+        password: dbPassword as string,
+        port: Number(dbPort),
         max: 10
     })
 })

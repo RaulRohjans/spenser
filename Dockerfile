@@ -1,6 +1,5 @@
 # Use an official node image as the base image
 FROM oven/bun:1 as builder
-WORKDIR /usr/src/app
 
 # Set the working directory
 WORKDIR /app
@@ -18,7 +17,7 @@ COPY . .
 RUN bun run build
 
 # Use a smaller image for the production environment
-FROM node:20-alpine3.20
+FROM node:22.3.0-alpine3.20
 
 # Set the working directory
 WORKDIR /app

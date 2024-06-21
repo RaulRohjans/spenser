@@ -11,15 +11,16 @@ services:
 
     app:
         build: .
+        # image: spenser
         container_name: 'spenser'
         ports:
             - 3000:3000
         environment:
-            JWT_SECRET: changeme
-            DB_NAME: spenser
-            DB_HOST: db
-            DB_USER: admin
-            DB_PASSWORD: 1234
-            DB_PORT: 5432
+            NUXT_JWT_SECRET: changeme
+            NUXT_DB_NAME: spenser
+            NUXT_DB_HOST: db
+            NUXT_DB_USER: admin
+            NUXT_DB_PASSWORD: 1234
+            NUXT_DB_PORT: 5432
         depends_on:
             - db
