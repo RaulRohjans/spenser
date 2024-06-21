@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     ],
     css: ['~/assets/css/main.scss'],
     build: {
-        transpile: ['@vuepic/vue-datepicker', /echarts/]
+        transpile: ['@vuepic/vue-datepicker', /echarts/, 'vue-echarts', 'resize-detector']
     },
     routeRules: {
         '/settings': { redirect: '/settings/global' },
