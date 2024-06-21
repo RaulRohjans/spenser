@@ -13,10 +13,10 @@ if (!dbName || !dbHost || !dbUser || !dbPassword) {
 
 const dialect = new PostgresDialect({
     pool: new pg.Pool({
-        database: dbName as string,
-        host: dbHost as string,
-        user: dbUser as string,
-        password: String(dbPassword),
+        database: dbName,
+        host: dbHost,
+        user: dbUser,
+        password: `${dbPassword}`,
         port: Number(dbPort),
         max: 10
     })
