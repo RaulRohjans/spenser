@@ -17,7 +17,10 @@ COPY . .
 RUN bun run build
 
 # Use a smaller image for the production environment
-FROM node:lts-alpine3.20
+# We can't use an alpine image of node
+# that will cause an error when any method from bcrypt is executed
+# "exited with code 139"
+FROM node:lts-buster-slim
 
 # Set the working directory
 WORKDIR /app
