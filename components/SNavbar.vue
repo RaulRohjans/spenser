@@ -152,12 +152,10 @@
 
                 <!-- Right nav side -->
                 <div
-                    class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-8 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    <div class="flex flex-row justify-start items-center gap-2">
+                    class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-3 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                    <div class="flex flex-row justify-start items-center gap-4">
                         <!-- Theme Switcher -->
-                        <SThemeSwitcher />
-
-                        <USelect v-model="selectedLocale" :options="getLocales">
+                        <USelect v-model="selectedLocale" class="hidden sm:block" :options="getLocales">
                             <template #leading>
                                 <UIcon
                                     name="i-heroicons-flag"
@@ -165,6 +163,9 @@
                                     dynamic />
                             </template>
                         </USelect>
+
+                        <SThemeSwitcher />
+
                     </div>
 
                     <!-- Profile section -->
@@ -183,6 +184,15 @@
         <Transition name="slide-fade">
             <div v-show="isMobileMenuShown" class="sm:hidden">
                 <div class="flex flex-col space-y-1 px-2 pb-3 pt-2">
+                    <USelect v-model="selectedLocale" class="mb-2" :options="getLocales">
+                        <template #leading>
+                            <UIcon
+                                name="i-heroicons-flag"
+                                class="w-4 h-4"
+                                dynamic />
+                        </template>
+                    </USelect>
+                    
                     <template v-for="page in navigationPages" :key="page.href">
                         <ULink
                             :to="localePath(page.href)"
