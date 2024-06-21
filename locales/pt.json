@@ -141,5 +141,6 @@
     "Success": "Sucesso",
     "Warning": "Aviso",
     "Logout": "Terminar Sessão",
-    "Are you sure you want to logout?": "Tem a certeza que pretende terminar a sessão?"
+    "Are you sure you want to logout?": "Tem a certeza que pretende terminar a sessão?",
+    "No data to display": "Não existem dados a mostrar"
 }
