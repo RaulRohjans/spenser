@@ -18,7 +18,7 @@ const dialect = new PostgresDialect({
         database: dbName as string,
         host: dbHost as string,
         user: dbUser as string,
-        password: dbPassword as string,
+        password: String(dbPassword),
         port: Number(dbPort),
         max: 10
     })

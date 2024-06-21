@@ -61,6 +61,10 @@ export default defineNuxtConfig({
         }
     },
     runtimeConfig: {
+        nitro: {
+            // Remove mandatory NUXT_ from system runtime variables
+            envPrefix: '',
+        },
         jwtSecret: process.env.JWT_SECRET as string,
         jwtExpiration: process.env.JWT_EXPIRATION || '900',
         passwordSaltRounds: process.env.PASSWORD_SALT_ROUNDS || '10',
