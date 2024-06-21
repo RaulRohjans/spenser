@@ -100,6 +100,11 @@
         }
     )
 
+    const hasDataToLoad = computed(() => {
+        if(fetchData.value.data.length > 0) return true
+        else return false
+    })
+
     const getGraphOptions = computed((): EChartsOption => {
         const categories = fetchData.value.data.map(
             (e) => e.category_name || ''
@@ -197,12 +202,20 @@
                 {{ $t('Transactions Per Category') }}
             </h2>
 
-            <VChart
-                class="w-full"
-                :style="`height: ${props.height}`"
-                :option="getGraphOptions"
-                :loading="loading"
-                autoresize />
+            <div class="relative z-0 w-full">
+                <VChart
+                    class="w-full"
+                    :style="`height: ${props.height}`"
+                    :option="getGraphOptions"
+                    :loading="loading"
+                    autoresize />
+
+                <div
+                    v-if="!hasDataToLoad" 
+                    class="absolute inset-0 flex justify-center items-center z-10 backdrop-blur-sm p-4 -m-1 rounded">
+                    <p class="text-2xl font-bold">{{ $t('No data to display') }}</p>
+                </div>
+            </div>
 
             <SDateTimePicker
                 v-model="dateRange"
