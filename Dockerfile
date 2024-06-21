@@ -17,7 +17,7 @@ COPY . .
 RUN bun run build
 
 # Use a smaller image for the production environment
-FROM node:22.3.0-alpine3.20
+FROM node:lts-alpine3.20
 
 # Set the working directory
 WORKDIR /app
