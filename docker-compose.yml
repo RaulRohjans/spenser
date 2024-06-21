@@ -11,9 +11,12 @@ services:
 
     app:
         build: .
+        # image: spenser
+        container_name: 'spenser'
         ports:
             - 3000:3000
         environment:
+            JWT_SECRET: changeme
             DB_NAME: spenser
             DB_HOST: db
             DB_USER: admin

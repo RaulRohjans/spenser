@@ -9,11 +9,11 @@ export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
 
     const maxFiles = 1
-    const { MAX_TRANSACTION_FILE_SIZE } = useRuntimeConfig()
+    const { maxTransactionFileSize } = useRuntimeConfig()
 
     const { files } = await readFiles(event, {
         maxFiles: maxFiles,
-        maxFileSize: Number(MAX_TRANSACTION_FILE_SIZE)
+        maxFileSize: Number(maxTransactionFileSize)
     })
 
     // Use uploaded file

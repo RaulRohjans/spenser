@@ -1,5 +1,5 @@
 # Use an official node image as the base image
-FROM node:20-alpine3.20 AS builder
+FROM oven/bun:1 as builder
 
 # Set the working directory
 WORKDIR /app
@@ -8,16 +8,19 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN bun i
 
 # Copy the rest of the application files
 COPY . .
 
 # Build the application
-RUN npm run build
+RUN bun run build
 
 # Use a smaller image for the production environment
-FROM node:20-alpine3.20
+# We can't use an alpine image of node
+# that will cause an error when any method from bcrypt is executed
+# "exited with code 139"
+FROM node:lts-buster-slim
 
 # Set the working directory
 WORKDIR /app

@@ -10,10 +10,10 @@ export const generateToken = function (
     user: Omit<Selectable<User>, 'password'>,
     expiration?: number | undefined
 ) {
-    const { JWT_SECRET, JWT_EXPIRATION } = useRuntimeConfig()
+    const { jwtSecret, jwtExpiration } = useRuntimeConfig()
 
-    return jwt.sign({ ...user, scope: ['user'] }, JWT_SECRET as string, {
-        expiresIn: expiration == undefined ? Number(JWT_EXPIRATION) : expiration
+    return jwt.sign({ ...user, scope: ['user'] }, jwtSecret as string, {
+        expiresIn: expiration == undefined ? Number(jwtExpiration) : expiration
     })
 }
 
@@ -21,9 +21,9 @@ export const validateJWT = function (
     token: string,
     ignoreExpired: boolean = false
 ) {
-    const { JWT_SECRET } = useRuntimeConfig()
+    const { jwtSecret } = useRuntimeConfig()
 
-    return jwt.verify(token, JWT_SECRET as string, {
+    return jwt.verify(token, jwtSecret as string, {
         ignoreExpiration: ignoreExpired
     }) as JwtPayload | undefined
 }
@@ -64,9 +64,9 @@ export const extractToken = (authHeaderValue: string) => {
 }
 
 export const hashPassword = function (password: string) {
-    const { PASSWORD_SALT_ROUNDS } = useRuntimeConfig()
+    const { passwordSaltRounds } = useRuntimeConfig()
 
-    return bcrypt.hashSync(password, Number(PASSWORD_SALT_ROUNDS))
+    return bcrypt.hashSync(password, Number(passwordSaltRounds))
 }
 
 export const comparePasswords = function (
