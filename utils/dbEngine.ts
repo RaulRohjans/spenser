@@ -7,11 +7,9 @@ const { dbName, dbHost, dbUser, dbPassword, dbPort } = useRuntimeConfig()
 
 if (!dbName || !dbHost || !dbUser || !dbPassword) {
     console.error(
-        'The PostgreSQL database instance configuration is invalid. Please make sure the .env is set correctly.'
+        'The PostgreSQL database instance configuration is invalid. Please make sure the environment variables are set correctly.'
     )
 }
-
-console.log(dbName, dbHost, dbUser, dbPassword, dbPort)
 
 const dialect = new PostgresDialect({
     pool: new pg.Pool({
