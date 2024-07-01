@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) => {
         .selectFrom('user')
         .select('password')
         .where('id', '=', user.id)
+        .where('deleted', '=', false)
         .executeTakeFirst()
 
     if (!res)
@@ -41,6 +42,7 @@ export default defineEventHandler(async (event) => {
         .updateTable('user')
         .set('password', hashPassword(password))
         .where('user.id', '=', user.id)
+        .where('deleted', '=', false)
         .executeTakeFirst()
 
     if (updateRes.numUpdatedRows < 1)

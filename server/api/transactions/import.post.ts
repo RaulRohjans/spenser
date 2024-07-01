@@ -24,6 +24,7 @@ export default defineEventHandler(async (event) => {
             .select(({ fn }) => [fn.count<number>('category.id').as('count')])
             .where('category.user', '=', user.id)
             .where('category.id', '=', categoryId)
+            .where('category.deleted', '=', false)
             .executeTakeFirst()
 
         if (!res)
@@ -51,7 +52,8 @@ export default defineEventHandler(async (event) => {
             category: transaction.category,
             name: transaction.name,
             value: transaction.value.toString(), //Kysely requires this cast for some reason
-            date: new Date(transaction.date) // This comes as a string, needs to be date
+            date: new Date(transaction.date), // This comes as a string, needs to be date
+            deleted: false
         })
     }
 

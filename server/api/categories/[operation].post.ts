@@ -11,12 +11,21 @@ export default defineEventHandler(async (event) => {
 
     // No need to do rest of the logic
     if (operation === 'delete' && id) {
-        // Remove category in the database
-        await db
-            .deleteFrom('category')
+        // Mark record as deleted in the database
+        const res = await db
+            .updateTable('category')
+            .set('deleted', true)
             .where('id', '=', id)
-            .where('category.user', '=', user.id)
+            .where('user', '=', user.id)
+            .where('deleted', '=', false)
             .execute()
+            
+        if(!res)
+            throw createError({
+                statusCode: 500,
+                statusMessage: 'Could not find record to be removed.'
+            })
+
         return { success: true }
     }
 
@@ -31,6 +40,7 @@ export default defineEventHandler(async (event) => {
         .selectFrom('category')
         .select(({ fn }) => [fn.count<number>('category.id').as('cat_count')])
         .where('category.user', '=', user.id)
+        .where('category.deleted', '=', false)
         .where(({ eb }) =>
             eb(
                 eb.fn('upper', ['category.name']),
@@ -60,7 +70,8 @@ export default defineEventHandler(async (event) => {
             const category: Omit<Selectable<Category>, 'id'> = {
                 name: name,
                 icon: icon || null,
-                user: user.id
+                user: user.id,
+                deleted: false
             }
 
             // Add category to persistent storage
@@ -79,6 +90,7 @@ export default defineEventHandler(async (event) => {
                 .set('icon', icon)
                 .where('id', '=', id)
                 .where('user', '=', user.id)
+                .where('deleted', '=', false)
                 .execute()
             break
         default:

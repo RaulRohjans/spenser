@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
             .set('order', Number(value))
             .where('id', '=', Number(key))
             .where('user', '=', user.id)
+            .where('deleted', '=', false)
             .execute()
 
         if (!opRes)

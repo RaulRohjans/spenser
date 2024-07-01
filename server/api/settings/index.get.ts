@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
         .innerJoin('currency', 'currency.id', 'user_settings.currency')
         .selectAll('user_settings')
         .select(['currency.placement', 'currency.symbol'])
+        .where('currency.deleted', '=', false)
         .where('user', '=', user.id)
         .executeTakeFirst()
 

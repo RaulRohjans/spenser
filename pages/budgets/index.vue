@@ -183,6 +183,7 @@
                                     variant="subtle"
                                     :ui="{ rounded: 'rounded-full' }">
                                     <div
+                                        v-if="!element.category_deleted"
                                         class="flex flex-row gap-2 justify-center items-center px-0.5">
                                         <UIcon
                                             class="h-3 w-3"
@@ -190,6 +191,7 @@
                                             dynamic />
                                         {{ element.category_name }}
                                     </div>
+                                    <span v-else>-</span>
                                 </UBadge>
                             </div>
                         </template>

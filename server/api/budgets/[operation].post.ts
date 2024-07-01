@@ -11,12 +11,22 @@ export default defineEventHandler(async (event) => {
 
     // No need to do rest of the logic
     if (operation === 'delete' && id) {
-        // Remove budget in the database
-        await db
-            .deleteFrom('budget')
+        // Mark record as deleted in the database
+        const res = await db
+            .updateTable('budget')
+            .set('deleted', true)
+            .set('period', period)
             .where('id', '=', id)
-            .where('budget.user', '=', user.id)
+            .where('user', '=', user.id)
+            .where('deleted', '=', false)
             .execute()
+
+        if(!res)
+            throw createError({
+                statusCode: 500,
+                statusMessage: 'Could find record to delete.'
+            })
+        
         return { success: true }
     }
 
@@ -37,7 +47,8 @@ export default defineEventHandler(async (event) => {
                 value,
                 period,
                 user: user.id,
-                order: 0
+                order: 0,
+                deleted: false
             }
 
             // Add category to persistent storage
@@ -58,6 +69,7 @@ export default defineEventHandler(async (event) => {
                 .set('period', period)
                 .where('id', '=', id)
                 .where('user', '=', user.id)
+                .where('deleted', '=', false)
                 .execute()
             break
         default:

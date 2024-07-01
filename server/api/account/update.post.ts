@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
         .selectFrom('user')
         .select(({ fn }) => [fn.count<number>('user.id').as('user_count')])
         .where('id', '!=', user.id)
+        .where('deleted', '=', false)
         .where(({ eb }) =>
             eb(
                 eb.fn('upper', ['username']),
@@ -50,6 +51,7 @@ export default defineEventHandler(async (event) => {
             qb.set('is_admin', is_admin == 'true' ? true : false)
         )
         .where('user.id', '=', user.id)
+        .where('deleted', '=', false)
         .executeTakeFirst()
 
     if (updateRes.numUpdatedRows < 1)

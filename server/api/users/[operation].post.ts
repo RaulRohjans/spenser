@@ -28,8 +28,19 @@ export default defineEventHandler(async (event) => {
 
     // No need to do rest of the logic
     if (operation === 'delete' && id) {
-        // Remove category in the database
-        await db.deleteFrom('user').where('id', '=', id).execute()
+        // Mark user as deleted in the database
+        const res = await db
+            .updateTable('user')
+            .set('deleted', true)
+            .where('id', '=', id)
+            .execute()
+        
+        if(!res)
+            throw createError({
+                statusCode: 500,
+                statusMessage: 'Could not remove user due to an unknown error.'
+            })
+        
         return { success: true }
     }
 
@@ -57,7 +68,8 @@ export default defineEventHandler(async (event) => {
                 email: email,
                 avatar: null,
                 is_admin: is_admin == 'true' ? true : false,
-                password: hashPassword(password)
+                password: hashPassword(password),
+                deleted: false
             }
 
             // Add category to persistent storage
@@ -82,6 +94,7 @@ export default defineEventHandler(async (event) => {
                     eb.set('password', hashPassword(password))
                 )
                 .where('id', '=', id)
+                .where('deleted', '=', false)
                 .execute()
             break
         default:

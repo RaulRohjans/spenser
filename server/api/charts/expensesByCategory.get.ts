@@ -23,6 +23,9 @@ export default defineEventHandler(async (event) => {
         .groupBy(['category.id', 'category.name'])
         .select('category.name as category_name')
 
+        .where('category.deleted', '=', false)
+        .where('transaction.deleted', '=', false)
+
         // Only fetch negative values (expenses)
         .where('transaction.value', '<=', '0')
 

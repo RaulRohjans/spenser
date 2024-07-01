@@ -68,7 +68,8 @@ export default defineEventHandler(async (event) => {
         .selectAll('budget')
         .select([
             'category.name as category_name',
-            'category.icon as category_icon'
+            'category.icon as category_icon',
+            'category.deleted as category_deleted'
         ])
 
         // Only add negative transactions to the sum (expenses)
@@ -93,6 +94,9 @@ export default defineEventHandler(async (event) => {
                 ])
             ])
         )
+
+        .where('budget.deleted', '=', false)
+        .where('transaction.deleted', '=', false)
 
         .groupBy(['budget.id', 'category.id'])
         .orderBy('budget.order asc')
