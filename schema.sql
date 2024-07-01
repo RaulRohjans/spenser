@@ -1,12 +1,13 @@
 CREATE TABLE IF NOT EXISTS "user" (
     id INT GENERATED ALWAYS AS IDENTITY,
-    username VARCHAR(50) NOT NULL UNIQUE,
+    username VARCHAR(50) NOT NULL,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(320) NOT NULL,
     avatar VARCHAR(50),
     is_admin BOOLEAN DEFAULT FALSE NOT NULL,
     password varchar(72) NOT NULL,
+    deleted BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id)
 );
 
@@ -15,6 +16,7 @@ CREATE TABLE IF NOT EXISTS category (
     "user" INT NOT NULL,
     name varchar(50) NOT NULL,
     icon varchar(50),
+    deleted BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_user
         FOREIGN KEY("user")
@@ -28,6 +30,7 @@ CREATE TABLE IF NOT EXISTS transaction (
     name varchar(150),
     value decimal NOT NULL,
     date TIMESTAMP NOT NULL,
+    deleted BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_user
         FOREIGN KEY("user")
@@ -41,6 +44,7 @@ CREATE TABLE IF NOT EXISTS currency (
     id INT GENERATED ALWAYS AS IDENTITY,
     symbol varchar(5) NOT NULL,
     placement varchar(6) NOT NULL,
+    deleted BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id)
 );
 
@@ -79,6 +83,7 @@ CREATE TABLE IF NOT EXISTS budget (
     value decimal NOT NULL,
     period varchar(100) NOT NULL,
     "order" INT NOT NULL,
+    deleted BOOLEAN DEFAULT FALSE NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_user
         FOREIGN KEY("user")

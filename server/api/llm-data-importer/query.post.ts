@@ -29,6 +29,7 @@ export default defineEventHandler(async (event) => {
         .selectFrom('category')
         .selectAll()
         .where('category.user', '=', user.id)
+        .where('category.deleted', '=', false)
         .execute()
 
     const llmInstance = new LLM(globalSettings) //Instance LLM

@@ -11,12 +11,22 @@ export default defineEventHandler(async (event) => {
 
     // No need to do rest of the logic
     if (operation === 'delete' && id) {
-        // Remove the transaction in the database
-        await db
-            .deleteFrom('transaction')
+        // Mark record as deleted in the database
+        const res = await db
+            .updateTable('transaction')
+            .set('deleted', true)
             .where('id', '=', id)
             .where('user', '=', user.id)
+            .where('deleted', '=', false)
             .execute()
+
+        if (!res)
+            throw createError({
+                statusCode: 500,
+                statusMessage:
+                    'Could not find the transaction record to remove.'
+            })
+
         return { success: true }
     }
 
@@ -33,6 +43,7 @@ export default defineEventHandler(async (event) => {
             .select(({ fn }) => [fn.count<number>('category.id').as('count')])
             .where('category.user', '=', user.id)
             .where('category.id', '=', category)
+            .where('category.deleted', '=', false)
             .executeTakeFirst()
 
         if (!res)
@@ -41,7 +52,7 @@ export default defineEventHandler(async (event) => {
                 statusMessage: 'Could not validate new data.'
             })
 
-        if (res.count === 0)
+        if (res.count == 0)
             throw createError({
                 statusCode: 400,
                 statusMessage: 'No category exists with the corresponding id.'
@@ -60,7 +71,8 @@ export default defineEventHandler(async (event) => {
                 category,
                 name,
                 value,
-                date
+                date,
+                deleted: false
             }
 
             // Add transaction to persistent storage
@@ -83,6 +95,7 @@ export default defineEventHandler(async (event) => {
                 .set('date', date)
                 .where('id', '=', id)
                 .where('user', '=', user.id)
+                .where('deleted', '=', false)
                 .execute()
             break
         default:

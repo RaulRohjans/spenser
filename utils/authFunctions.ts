@@ -81,6 +81,7 @@ export const fetchUserByUsername = async function (username: string) {
         .selectFrom('user')
         .selectAll()
         .where('user.username', '=', username)
+        .where('deleted', '=', false)
         .executeTakeFirst()
 
     return res
@@ -91,6 +92,7 @@ export const fetchUserById = async function (id: number) {
         .selectFrom('user')
         .selectAll()
         .where('user.id', '=', id)
+        .where('deleted', '=', false)
         .executeTakeFirst()
 
     return res

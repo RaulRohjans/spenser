@@ -96,9 +96,11 @@ export default defineEventHandler(async (event) => {
         .innerJoin('category', 'category.id', 'transaction.category')
         .select([
             'category.icon as category_icon',
-            'category.name as category_name'
+            'category.name as category_name',
+            'category.deleted as category_deleted'
         ])
         .$call((qb) => addSelectFields(qb))
+        .where('transaction.deleted', '=', false)
         .where('transaction.user', '=', user.id)
 
         // Start date filter

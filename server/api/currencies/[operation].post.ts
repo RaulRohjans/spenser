@@ -18,8 +18,20 @@ export default defineEventHandler(async (event) => {
 
     // No need to do rest of the logic
     if (operation === 'delete' && id) {
-        // Remove currency in the database
-        await db.deleteFrom('currency').where('id', '=', id).execute()
+        // Mark record as deleted in the database
+        const res = await db
+            .updateTable('currency')
+            .set('deleted', true)
+            .where('id', '=', id)
+            .where('deleted', '=', false)
+            .execute()
+
+        if (!res)
+            throw createError({
+                statusCode: 500,
+                statusMessage: 'Could not find currency record to remove.'
+            })
+
         return { success: true }
     }
 
@@ -36,7 +48,8 @@ export default defineEventHandler(async (event) => {
             // Create category record
             const currency: Omit<Selectable<Currency>, 'id'> = {
                 placement,
-                symbol
+                symbol,
+                deleted: false
             }
 
             // Add category to persistent storage
@@ -54,6 +67,7 @@ export default defineEventHandler(async (event) => {
                 .set('placement', placement)
                 .set('symbol', symbol)
                 .where('id', '=', id)
+                .where('deleted', '=', false)
                 .execute()
             break
         default:

@@ -30,6 +30,7 @@ export default defineEventHandler(async (event) => {
     const query = db
         .selectFrom('user')
         .selectAll()
+        .where('user.deleted', '=', false)
 
         // Search Filter
         .$if(true, (qb) =>
@@ -58,6 +59,7 @@ export default defineEventHandler(async (event) => {
     const totalRecordsRes = await db
         .selectFrom('user')
         .select(({ fn }) => [fn.countAll<number>().as('total')])
+        .where('user.deleted', '=', false)
         .$if(true, (qb) =>
             applySearchFilter(
                 qb,

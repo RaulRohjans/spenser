@@ -43,6 +43,7 @@ export default defineEventHandler(async (event) => {
         .selectFrom('category')
         .selectAll()
         .where('category.user', '=', user.id)
+        .where('category.deleted', '=', false)
         .execute()
 
     // Get first file value

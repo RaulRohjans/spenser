@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
         .select(({ fn }) => [
             fn.avg(sql<number>`"transaction"."value" * -1`).as('value')
         ])
+        .where('transaction.deleted', '=', false)
 
         // Only fetch negative values (expenses)
         .where('transaction.value', '<=', '0')

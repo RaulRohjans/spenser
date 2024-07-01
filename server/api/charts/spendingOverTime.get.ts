@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
                     sql`CURRENT_DATE - INTERVAL '30 days'`
                 )
                 .where('transaction.user', '=', user.id)
+                .where('transaction.deleted', '=', false)
                 .groupBy('transaction.date')
                 .orderBy('transaction.date')
                 .execute()
@@ -55,6 +56,7 @@ export default defineEventHandler(async (event) => {
                     )
                 )
                 .where('transaction.user', '=', user.id)
+                .where('transaction.deleted', '=', false)
                 .groupBy(sql`TO_CHAR("transaction"."date", 'YYYY-MM')`)
                 .orderBy(sql`TO_CHAR("transaction"."date", 'YYYY-MM')`)
                 .execute()

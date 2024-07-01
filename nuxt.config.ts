@@ -14,7 +14,12 @@ export default defineNuxtConfig({
     ],
     css: ['~/assets/css/main.scss'],
     build: {
-        transpile: ['@vuepic/vue-datepicker', /echarts/, 'vue-echarts', 'resize-detector']
+        transpile: [
+            '@vuepic/vue-datepicker',
+            /echarts/,
+            'vue-echarts',
+            'resize-detector'
+        ]
     },
     routeRules: {
         '/settings': { redirect: '/settings/global' },
@@ -63,7 +68,7 @@ export default defineNuxtConfig({
     runtimeConfig: {
         nitro: {
             // Remove mandatory NUXT_ from system runtime variables
-            envPrefix: '',
+            envPrefix: ''
         },
         jwtSecret: process.env.JWT_SECRET as string,
         jwtExpiration: process.env.JWT_EXPIRATION || '900',

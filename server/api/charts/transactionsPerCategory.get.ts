@@ -19,6 +19,10 @@ export default defineEventHandler(async (event) => {
 
                 // Validate transaction user
                 .where('transaction.user', '=', user.id)
+
+                // Make sure record is valid
+                .where('transaction.deleted', '=', false)
+                .where('category.deleted', '=', false)
         )
     }
 

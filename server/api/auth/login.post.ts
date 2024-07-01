@@ -44,6 +44,7 @@ const getUserCount = async function () {
     const res = await db
         .selectFrom('user')
         .select(({ fn }) => [fn.count<number>('user.id').as('user_count')])
+        .where('deleted', '=', false)
         .executeTakeFirst()
 
     return res?.user_count || 0
@@ -89,7 +90,8 @@ const firstLogin = async function () {
         email: 'admin@example.com',
         avatar: null,
         is_admin: true,
-        password: hashPassword('admin')
+        password: hashPassword('admin'),
+        deleted: false
     }
 
     // Add user to persistent storage
