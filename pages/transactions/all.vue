@@ -133,7 +133,7 @@
         toggleModal()
     }
 
-    const loadLoaderObj = function(row: TableRow) {
+    const loadLoaderObj = function (row: TableRow) {
         transactionLoaderObj.value = {
             name: row.name,
             value: row.value,
@@ -276,7 +276,9 @@
             </template>
 
             <template #category_name-data="{ row }">
-                <div v-if="row.category_deleted == false" class="flex flex-row justify-start items-center gap-3">
+                <div
+                    v-if="row.category_deleted == false"
+                    class="flex flex-row justify-start items-center gap-3">
                     <div class="hide-span">
                         <UIcon
                             class="h-5 w-5"
@@ -286,9 +288,7 @@
                     <span>{{ row.category_name }}</span>
                 </div>
 
-                <span v-if="row.category_deleted == true">
-                    -
-                </span>
+                <span v-if="row.category_deleted == true"> - </span>
             </template>
 
             <template #extra-section>

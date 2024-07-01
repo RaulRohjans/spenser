@@ -13,17 +13,18 @@ export default defineEventHandler(async (event) => {
     if (operation === 'delete' && id) {
         // Mark record as deleted in the database
         const res = await db
-                .updateTable('transaction')
-                .set('deleted', true)
-                .where('id', '=', id)
-                .where('user', '=', user.id)
-                .where('deleted', '=', false)
-                .execute()
+            .updateTable('transaction')
+            .set('deleted', true)
+            .where('id', '=', id)
+            .where('user', '=', user.id)
+            .where('deleted', '=', false)
+            .execute()
 
-        if(!res)
+        if (!res)
             throw createError({
                 statusCode: 500,
-                statusMessage: 'Could not find the transaction record to remove.'
+                statusMessage:
+                    'Could not find the transaction record to remove.'
             })
 
         return { success: true }
@@ -44,7 +45,7 @@ export default defineEventHandler(async (event) => {
             .where('category.id', '=', category)
             .where('category.deleted', '=', false)
             .executeTakeFirst()
-        
+
         if (!res)
             throw createError({
                 statusCode: 500,

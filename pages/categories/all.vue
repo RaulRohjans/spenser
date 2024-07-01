@@ -102,7 +102,7 @@
         toggleModal()
     }
 
-    const loadLoaderObj = function(row: TableRow) {
+    const loadLoaderObj = function (row: TableRow) {
         categoryLoaderObj.value = {
             name: row.name,
             icon: row.icon

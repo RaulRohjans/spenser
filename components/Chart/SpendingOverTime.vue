@@ -117,7 +117,7 @@
     })
 
     const hasDataToLoad = computed(() => {
-        if(fetchData.value.data.length > 0) return true
+        if (fetchData.value.data.length > 0) return true
         else return false
     })
 
@@ -147,46 +147,48 @@
                 padding: '',
                 base: 'divide-y divide-gray-200 dark:divide-gray-700'
             }
-        }">        
-            <div class="flex flex-col justify-center items-center gap-4">
-                <h2
-                    class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                    {{ $t('Spending Over Time') }}
-                </h2>
+        }">
+        <div class="flex flex-col justify-center items-center gap-4">
+            <h2
+                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                {{ $t('Spending Over Time') }}
+            </h2>
 
-                <div class="relative z-0 w-full">
-                    <VChart
-                        :option="getChartOptions"
-                        class="w-full"
-                        :style="`height: ${props.height}`"
-                        :loading="loading" />
+            <div class="relative z-0 w-full">
+                <VChart
+                    :option="getChartOptions"
+                    class="w-full"
+                    :style="`height: ${props.height}`"
+                    :loading="loading" />
 
-                    <div
-                        v-if="!hasDataToLoad" 
-                        class="absolute inset-0 flex justify-center items-center z-10 backdrop-blur-sm p-4 -m-1 rounded">
-                        <p class="text-2xl font-bold">{{ $t('No data to display') }}</p>
-                    </div>
-                </div>
-    
-                <div class="flex flex-row justify-center items-center gap-1">
-                    <UButton
-                        :variant="getMonthBtnStatus"
-                        @click="setTimeframe('month')">
-                        {{ $t('Month') }}
-                    </UButton>
-    
-                    <UButton
-                        :variant="getYearBtnStatus"
-                        @click="setTimeframe('year')">
-                        {{ $t('Year') }}
-                    </UButton>
-    
-                    <UButton
-                        :variant="getAllTimeBtnStatus"
-                        @click="setTimeframe('alltime')">
-                        {{ $t('All Time') }}
-                    </UButton>
+                <div
+                    v-if="!hasDataToLoad"
+                    class="absolute inset-0 flex justify-center items-center z-10 backdrop-blur-sm p-4 -m-1 rounded">
+                    <p class="text-2xl font-bold">
+                        {{ $t('No data to display') }}
+                    </p>
                 </div>
             </div>
+
+            <div class="flex flex-row justify-center items-center gap-1">
+                <UButton
+                    :variant="getMonthBtnStatus"
+                    @click="setTimeframe('month')">
+                    {{ $t('Month') }}
+                </UButton>
+
+                <UButton
+                    :variant="getYearBtnStatus"
+                    @click="setTimeframe('year')">
+                    {{ $t('Year') }}
+                </UButton>
+
+                <UButton
+                    :variant="getAllTimeBtnStatus"
+                    @click="setTimeframe('alltime')">
+                    {{ $t('All Time') }}
+                </UButton>
+            </div>
+        </div>
     </UCard>
 </template>

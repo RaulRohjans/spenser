@@ -20,12 +20,12 @@ export default defineEventHandler(async (event) => {
             .where('deleted', '=', false)
             .execute()
 
-        if(!res)
+        if (!res)
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Could find record to delete.'
             })
-        
+
         return { success: true }
     }
 
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
             .where('category.id', '=', category)
             .where('category.deleted', '=', false)
             .executeTakeFirst()
-        
+
         if (!res)
             throw createError({
                 statusCode: 500,
@@ -62,7 +62,7 @@ export default defineEventHandler(async (event) => {
     switch (operation) {
         case 'duplicate':
         case 'insert': {
-            if(category) await validateCategory()
+            if (category) await validateCategory()
 
             // Create category record
             const budget: Omit<Selectable<Budget>, 'id'> = {
@@ -84,7 +84,7 @@ export default defineEventHandler(async (event) => {
             break
         }
         case 'edit':
-            if(category) await validateCategory()
+            if (category) await validateCategory()
 
             // Update category in the database
             opRes = await db

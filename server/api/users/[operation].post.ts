@@ -35,13 +35,13 @@ export default defineEventHandler(async (event) => {
             .where('id', '=', id)
             .where('deleted', '=', false)
             .execute()
-        
-        if(!res)
+
+        if (!res)
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Could not remove user due to an unknown error.'
             })
-        
+
         return { success: true }
     }
 

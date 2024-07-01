@@ -71,8 +71,11 @@ export default defineEventHandler(async (event) => {
 
     // Get rows
     let rowRes
-    try { rowRes = await query.execute() } 
-    catch (e) { console.log((e as Error).message) }
+    try {
+        rowRes = await query.execute()
+    } catch (e) {
+        console.log((e as Error).message)
+    }
 
     if (!totalRecordsRes)
         throw createError({

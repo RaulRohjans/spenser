@@ -19,8 +19,8 @@ export default defineEventHandler(async (event) => {
             .where('user', '=', user.id)
             .where('deleted', '=', false)
             .execute()
-            
-        if(!res)
+
+        if (!res)
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Could not find record to be removed.'

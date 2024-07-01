@@ -25,8 +25,8 @@ export default defineEventHandler(async (event) => {
             .where('id', '=', id)
             .where('deleted', '=', false)
             .execute()
-        
-        if(!res)
+
+        if (!res)
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Could not find currency record to remove.'

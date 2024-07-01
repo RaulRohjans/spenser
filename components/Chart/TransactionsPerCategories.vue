@@ -101,7 +101,7 @@
     )
 
     const hasDataToLoad = computed(() => {
-        if(fetchData.value.data.length > 0) return true
+        if (fetchData.value.data.length > 0) return true
         else return false
     })
 
@@ -211,9 +211,11 @@
                     autoresize />
 
                 <div
-                    v-if="!hasDataToLoad" 
+                    v-if="!hasDataToLoad"
                     class="absolute inset-0 flex justify-center items-center z-10 backdrop-blur-sm p-4 -m-1 rounded">
-                    <p class="text-2xl font-bold">{{ $t('No data to display') }}</p>
+                    <p class="text-2xl font-bold">
+                        {{ $t('No data to display') }}
+                    </p>
                 </div>
             </div>
 
