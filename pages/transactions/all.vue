@@ -122,26 +122,24 @@
     }
 
     const editTransaction = function (row: TableRow) {
-        transactionLoaderObj.value = {
-            id: row.id,
-            name: row.name,
-            value: row.value,
-            category: row.category,
-            date: row.date
-        }
+        loadLoaderObj(row)
 
         toggleModal()
     }
 
     const dupTransaction = function (row: TableRow) {
+        loadLoaderObj(row)
+
+        toggleModal()
+    }
+
+    const loadLoaderObj = function(row: TableRow) {
         transactionLoaderObj.value = {
             name: row.name,
             value: row.value,
             category: row.category,
             date: row.date
         }
-
-        toggleModal()
     }
 
     const delTransaction = function (row: TableRow) {
@@ -278,18 +276,19 @@
             </template>
 
             <template #category_name-data="{ row }">
-                <div class="flex flex-row justify-start items-center gap-3">
-                    <template v-if="!row.category_deleted">
-                        <div class="hide-span">
-                            <UIcon
-                                class="h-5 w-5"
-                                :name="`i-heroicons-${row.category_icon}`"
-                                dynamic />
-                        </div>
-                        <span>{{ row.category_name }}</span>
-                    </template>                    
-                    <span v-else>-</span>
+                <div v-if="row.category_deleted == false" class="flex flex-row justify-start items-center gap-3">
+                    <div class="hide-span">
+                        <UIcon
+                            class="h-5 w-5"
+                            :name="`i-heroicons-${row.category_icon}`"
+                            dynamic />
+                    </div>
+                    <span>{{ row.category_name }}</span>
                 </div>
+
+                <span v-if="row.category_deleted == true">
+                    -
+                </span>
             </template>
 
             <template #extra-section>

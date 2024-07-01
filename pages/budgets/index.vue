@@ -186,6 +186,7 @@
                                         v-if="!element.category_deleted"
                                         class="flex flex-row gap-2 justify-center items-center px-0.5">
                                         <UIcon
+                                            v-if="element.category_ico"
                                             class="h-3 w-3"
                                             :name="`i-heroicons-${element.category_icon}`"
                                             dynamic />

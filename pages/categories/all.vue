@@ -91,22 +91,22 @@
         )
 
     const editCategory = function (row: TableRow) {
-        categoryLoaderObj.value = {
-            id: row.id,
-            name: row.name,
-            icon: row.icon
-        }
+        loadLoaderObj(row)
 
         toggleModal()
     }
 
     const dupCategory = function (row: TableRow) {
+        loadLoaderObj(row)
+
+        toggleModal()
+    }
+
+    const loadLoaderObj = function(row: TableRow) {
         categoryLoaderObj.value = {
             name: row.name,
             icon: row.icon
         }
-
-        toggleModal()
     }
 
     const delCategory = function (row: TableRow) {

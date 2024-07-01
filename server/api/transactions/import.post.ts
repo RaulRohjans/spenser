@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
                 statusMessage: `Could not validate new data for category ${categoryId}.`
             })
 
-        if (res.count === 0)
+        if (res.count == 0)
             throw createError({
                 statusCode: 400,
                 statusMessage: `Invalid category with id ${categoryId}, for the corresponding user.'`

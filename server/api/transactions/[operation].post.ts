@@ -44,14 +44,14 @@ export default defineEventHandler(async (event) => {
             .where('category.id', '=', category)
             .where('category.deleted', '=', false)
             .executeTakeFirst()
-
+        
         if (!res)
             throw createError({
                 statusCode: 500,
                 statusMessage: 'Could not validate new data.'
             })
 
-        if (res.count === 0)
+        if (res.count == 0)
             throw createError({
                 statusCode: 400,
                 statusMessage: 'No category exists with the corresponding id.'

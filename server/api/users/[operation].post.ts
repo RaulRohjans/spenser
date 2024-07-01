@@ -33,6 +33,7 @@ export default defineEventHandler(async (event) => {
             .updateTable('user')
             .set('deleted', true)
             .where('id', '=', id)
+            .where('deleted', '=', false)
             .execute()
         
         if(!res)
