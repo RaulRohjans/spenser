@@ -1,5 +1,5 @@
 # Use an official node image as the base image
-FROM oven/bun:1 as builder
+FROM oven/bun:1 AS builder
 
 # Set the working directory
 WORKDIR /app
