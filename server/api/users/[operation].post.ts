@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
                 username: username,
                 email: email,
                 avatar: null,
-                is_admin: is_admin == 'true' ? true : false,
+                is_admin: is_admin == true ? true : false,
                 password: hashPassword(password),
                 deleted: false
             }
@@ -90,7 +90,7 @@ export default defineEventHandler(async (event) => {
                 .set('username', username)
                 .set('email', email)
                 .set('avatar', avatar)
-                .set('is_admin', is_admin == 'true' ? true : false)
+                .set('is_admin', is_admin == true ? true : false)
                 .$if(!!password, (eb) =>
                     eb.set('password', hashPassword(password))
                 )
