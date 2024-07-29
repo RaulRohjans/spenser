@@ -40,9 +40,7 @@
                     settingsStore.loadCurrency(userSettings.data)
                 //-------------------------
             })
-            .catch((e: NuxtError) => {
-                error.value = e.statusMessage || null
-            })
+            .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage, 'error'))
     }
 
     definePageMeta({
