@@ -15,7 +15,6 @@ export default defineEventHandler(async (event) => {
     const globalSettings = await db
         .selectFrom('global_settings')
         .selectAll()
-        .where('user', '=', user.id)
         .executeTakeFirst()
 
     if (!globalSettings)
