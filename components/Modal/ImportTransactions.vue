@@ -149,7 +149,7 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage))
+            .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage, 'error'))
     }
 
     const delTransaction = function (row: TableRow) {
