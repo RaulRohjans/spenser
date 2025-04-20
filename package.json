@@ -27,6 +27,8 @@
         "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
         "@pinia/nuxt": "^0.11.0",
         "@sidebase/nuxt-auth": "^0.10.0",
+        "@tailwindcss/node": "^4.1.4",
+        "@tailwindcss/postcss": "^4.1.4",
         "@tailwindcss/vite": "^4.1.4",
         "@types/bcrypt": "^5.0.2",
         "@types/bun": "^1.1.2",
