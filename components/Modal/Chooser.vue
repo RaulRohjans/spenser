@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import { t as $t } from '~/locales/i18n.config'
+    const { t: $t } = useI18n()
 
     export type ModalChooserProps = {
         /**

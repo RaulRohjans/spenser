@@ -27,18 +27,6 @@ export default defineNuxtConfig({
         '/settings/admin': { redirect: '/settings/global' },
         '/transactions': { redirect: '/transactions/all' },
         '/categories': { redirect: '/categories/all' },
-
-        /* This has to be done due to i18n messing up routeRules */
-        '/pt/settings': { redirect: '/pt/settings/global' },
-        '/pt/settings/admin': { redirect: '/pt/settings/global' },
-        '/pt/transactions': { redirect: '/pt/transactions/all' },
-        '/pt/categories': { redirect: '/pt/categories/all' },
-
-        '/en/settings': { redirect: '/en/settings/global' },
-        '/en/settings/admin': { redirect: '/en/settings/global' },
-        '/en/transactions': { redirect: '/en/transactions/all' },
-        '/en/categories': { redirect: '/en/categories/all' }
-        /* ------------------------------------------------------ */
     },
     auth: {
         provider: {
@@ -96,8 +84,19 @@ export default defineNuxtConfig({
         ) //10 MB
     },
     i18n: {
-        locales: ['en', 'pt'],
         defaultLocale: 'en',
-        vueI18n: './locales/i18n.config.ts'
+        langDir: 'locales', // i18n/locales
+        strategy: 'no_prefix',
+        detectBrowserLanguage: {
+            useCookie: true,
+            cookieKey: 'i18n_redirected'
+        },
+        locales: [
+          { code: 'en', name: 'English', file: 'en.ts' },
+          { code: 'pt', name: 'Portugues', file: 'pt.ts' }
+        ],
+        compilation: {
+            strictMessage: false,
+        }
     }
 })

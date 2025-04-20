@@ -15,11 +15,12 @@
         "db:gen": "kysely-codegen"
     },
     "devDependencies": {
+        "@intlify/unplugin-vue-i18n": "^6.0.6",
         "@nuxt/devtools": "latest",
         "@nuxt/eslint": "^0.7.0",
-        "@nuxt/ui": "^2.13.0",
         "@nuxt/kit": "3.16.2",
         "@nuxt/schema": "3.16.2",
+        "@nuxt/ui": "^2.13.0",
         "@nuxtjs/color-mode": "^3.4.0",
         "@nuxtjs/eslint-config-typescript": "^12.1.0",
         "@nuxtjs/i18n": "9.3.0",

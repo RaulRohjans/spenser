@@ -1,5 +1,4 @@
 import { createApp as vueCreateApp, type App } from 'vue'
-import { t as $t } from '~/locales/i18n.config'
 import SNotification from '~/components/SNotification.vue'
 import ModalChooser from '~/components/Modal/Chooser.vue'
 import type { SNotificationProps } from '~/components/SNotification.vue'
@@ -8,6 +7,7 @@ import type { EmitEventCallback } from '~/types/Data'
 
 export class Notifier {
     private static buildAlertTitle(type: string) {
+        const { t: $t } = useI18n()
         const locale = getLocaleFromRoute()
 
         let title = ''

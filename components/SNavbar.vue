@@ -9,7 +9,7 @@
 
     const isMobileMenuShown = ref(false)
     const navbarRef: Ref<HTMLElement | null> = ref(null)
-    const selectedLocale: Ref<string> = ref(locale.value)
+    const selectedLocale: Ref<'en' | 'pt'> = ref(locale.value)
 
     const navigationPages = computed((): NavigationItem[] => {
         return [
