@@ -10,12 +10,12 @@
     const modalTransactions: Ref<LlmTransactionObject[] | null> = ref(null)
     const modalState: Ref<boolean> = ref(false)
     const isLoading: Ref<boolean> = ref(false)
-    const schema = z.object({
+    const _schema = z.object({
         file: z.string().optional(),
         transactionText: z.string().optional()
     })
 
-    type Schema = z.output<typeof schema>
+    type Schema = z.output<typeof _schema>
     const state = reactive({
         file: undefined,
         transactionText: undefined

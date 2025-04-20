@@ -4,7 +4,7 @@ import { db } from '@/utils/dbEngine'
 import type { JwtPayload } from '@/types/Jwt'
 import type { Selectable } from 'kysely'
 import type { User } from 'kysely-codegen'
-import { type H3Event } from 'h3'
+import type { H3Event } from 'h3'
 
 export const generateToken = function (
     user: Omit<Selectable<User>, 'password'>,
