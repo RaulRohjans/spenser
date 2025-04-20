@@ -41,7 +41,7 @@
         "typescript": "^5.4.5"
     },
     "dependencies": {
-        "@langchain/community": "^0.2.4",
+        "@langchain/community": "^0.3.0",
         "@langchain/core": "^0.2.4",
         "@langchain/openai": "^0.0.34",
         "@vuepic/vue-datepicker": "^8.6.0",
