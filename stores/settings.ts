@@ -1,6 +1,7 @@
 import type { Selectable } from 'kysely'
 import type { Currency } from 'kysely-codegen'
 import type { UserSettingsObject } from '~/types/Data'
+import { defineStore } from "pinia"
 
 export const useSettingsStore = defineStore('settingsStore', {
     state: () => ({
