@@ -17,7 +17,6 @@
     "devDependencies": {
         "@compodium/nuxt": "0.1.0-beta.9",
         "@iconify-json/heroicons": "^1.2.2",
-        "@intlify/unplugin-vue-i18n": "^6.0.6",
         "@nuxt/devtools": "latest",
         "@nuxt/eslint": "^1.3.0",
         "@nuxt/icon": "^1.12.0",
