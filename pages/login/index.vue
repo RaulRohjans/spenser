@@ -18,7 +18,7 @@
     })
     type ValidationSchema = z.output<typeof validationSchema>
 
-    const onSubmit = async function (event: FormSubmitEvent<ValidationSchema>) {
+    const onSubmit = function (event: FormSubmitEvent<ValidationSchema>) {
         signIn(
             { username: event.data.username, password: event.data.password },
             { callbackUrl: '/' }
