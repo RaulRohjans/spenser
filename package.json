@@ -17,7 +17,7 @@
     "devDependencies": {
         "@intlify/unplugin-vue-i18n": "^6.0.6",
         "@nuxt/devtools": "latest",
-        "@nuxt/eslint": "^0.7.0",
+        "@nuxt/eslint": "^1.0.0",
         "@nuxt/kit": "3.16.2",
         "@nuxt/schema": "3.16.2",
         "@nuxt/ui": "^2.13.0",
