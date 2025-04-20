@@ -1,4 +1,4 @@
-{
+export default {
     "Welcome": "Bem-vindo",
     "Home": "Início",
     "Global": "Global",

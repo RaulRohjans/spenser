@@ -9,27 +9,27 @@
         /**
          * Id of the transaction
          */
-        id?: number | null
+        id?: number
 
         /**
          * Id of the category
          */
-        category?: number | null
+        category?: number
 
         /**
          * Name of the transaction
          */
-        name?: string | null
+        name?: string
 
         /**
          * Total value of the transaction (can be positive or negative)
          */
-        value?: number | null
+        value?: number
 
         /**
          * Date of the transaction
          */
-        date?: Date | null
+        date?: Date
     }
 
     const props = defineProps<ModalTransactionProps>()
@@ -42,9 +42,9 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<string | undefined> = ref()
 
-    const schema = z.object({
+    const _schema = z.object({
         name: z.string().optional(),
         value: z
             .number()
@@ -53,7 +53,7 @@
         date: z.date()
     })
 
-    type Schema = z.output<typeof schema>
+    type Schema = z.output<typeof _schema>
     const state = reactive({
         id: props.id,
         category: props.category,
@@ -133,7 +133,7 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
     const categoryDisplayIcon = computed(() => {

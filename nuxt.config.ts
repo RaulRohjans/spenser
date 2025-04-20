@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+    compatibilityDate: '2025-04-20',
     devtools: { enabled: true },
     modules: [
         '@nuxt/ui',
@@ -26,25 +27,27 @@ export default defineNuxtConfig({
         '/settings/admin': { redirect: '/settings/global' },
         '/transactions': { redirect: '/transactions/all' },
         '/categories': { redirect: '/categories/all' },
-
-        /* This has to be done due to i18n messing up routeRules */
-        '/pt/settings': { redirect: '/pt/settings/global' },
-        '/pt/settings/admin': { redirect: '/pt/settings/global' },
-        '/pt/transactions': { redirect: '/pt/transactions/all' },
-        '/pt/categories': { redirect: '/pt/categories/all' },
-
-        '/en/settings': { redirect: '/en/settings/global' },
-        '/en/settings/admin': { redirect: '/en/settings/global' },
-        '/en/transactions': { redirect: '/en/transactions/all' },
-        '/en/categories': { redirect: '/en/categories/all' }
-        /* ------------------------------------------------------ */
     },
     auth: {
         provider: {
-            type: 'refresh',
+            type: 'local',
             endpoints: {
-                getSession: { path: '/user' },
-                refresh: { path: '/refresh', method: 'post' }
+                getSession: { path: '/user', method: 'get' },
+                signIn: { path: '/login', method: 'post' },
+                signOut: { path: '/logout', method: 'post' },
+                signUp: { path: '/register', method: 'post' },
+            },
+            refresh: {
+                isEnabled: true,
+                endpoint: { path: '/refresh', method: 'post' },
+                token: { 
+                    signInResponseRefreshTokenPointer: '/token/refreshToken',
+                    refreshRequestTokenPointer: '/refreshToken',
+                    maxAgeInSeconds: process.env.JWT_EXPIRATION
+                        ? Number(process.env.JWT_EXPIRATION)
+                        : 900,
+                    sameSiteAttribute: 'lax'
+                }
             },
             pages: {
                 login: '/login'
@@ -55,10 +58,6 @@ export default defineNuxtConfig({
                     ? Number(process.env.JWT_EXPIRATION)
                     : 900,
                 sameSiteAttribute: 'lax'
-            },
-            refreshToken: {
-                signInResponseRefreshTokenPointer: '/token/refreshToken',
-                refreshRequestTokenPointer: '/refreshToken'
             }
         },
         globalAppMiddleware: {
@@ -85,8 +84,19 @@ export default defineNuxtConfig({
         ) //10 MB
     },
     i18n: {
-        locales: ['en', 'pt'],
         defaultLocale: 'en',
-        vueI18n: './locales/i18n.config.ts'
+        langDir: 'locales', // i18n/locales
+        strategy: 'no_prefix',
+        detectBrowserLanguage: {
+            useCookie: true,
+            cookieKey: 'i18n_redirected'
+        },
+        locales: [
+          { code: 'en', name: 'English', file: 'en.ts' },
+          { code: 'pt', name: 'Portugues', file: 'pt.ts' }
+        ],
+        compilation: {
+            strictMessage: false,
+        }
     }
 })

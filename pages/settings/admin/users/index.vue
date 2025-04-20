@@ -138,7 +138,7 @@
                             )
 
                         // If the deleted user is the current one, logout
-                        if (row.id == authData.value.id)
+                        if (row.id == authData.value?.id)
                             signOut({ callbackUrl: '/login' })
                         else reloadTableData()
 
@@ -181,9 +181,9 @@
         <STable
             v-bind="tableObj"
             v-model:page="page"
-            v-model:pageCount="pageCount"
+            v-model:page-count="pageCount"
             v-model:search="searchQuery"
-            v-model:searchColumn="searchColumn"
+            v-model:search-column="searchColumn"
             v-model:sort="sort"
             :rows="tableData?.data.rows"
             :row-count="tableData?.data.totalRecordCount"

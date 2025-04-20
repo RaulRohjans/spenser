@@ -3,10 +3,11 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
     import type { UserSettingsObject } from '~/types/Data'
+    import { useSettingsStore } from '~/stores/settings'
 
     const { signIn, token } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
     const validationSchema = z.object({
         username: z.string().trim().min(1, $t('Invalid username')),
         password: z.string().trim().min(1, $t('Must be at least 8 characters'))
@@ -17,7 +18,7 @@
     })
     type ValidationSchema = z.output<typeof validationSchema>
 
-    const onSubmit = async function (event: FormSubmitEvent<ValidationSchema>) {
+    const onSubmit = function (event: FormSubmitEvent<ValidationSchema>) {
         signIn(
             { username: event.data.username, password: event.data.password },
             { callbackUrl: '/' }
