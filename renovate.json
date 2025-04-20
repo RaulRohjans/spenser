@@ -3,9 +3,6 @@
   "extends": [
     "config:recommended"
   ],
-  "assignees": [
-    "RaulRohjans"
-  ],
   "labels": [
     "dependency-update"
   ],
