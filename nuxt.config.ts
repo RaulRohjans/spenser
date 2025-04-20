@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+    compatibilityDate: '2025-04-20',
     devtools: { enabled: true },
     modules: [
         '@nuxt/ui',
@@ -41,10 +42,24 @@ export default defineNuxtConfig({
     },
     auth: {
         provider: {
-            type: 'refresh',
+            type: 'local',
             endpoints: {
-                getSession: { path: '/user' },
-                refresh: { path: '/refresh', method: 'post' }
+                getSession: { path: '/user', method: 'get' },
+                signIn: { path: '/login', method: 'post' },
+                signOut: { path: '/logout', method: 'post' },
+                signUp: { path: '/register', method: 'post' },
+            },
+            refresh: {
+                isEnabled: true,
+                endpoint: { path: '/refresh', method: 'post' },
+                token: { 
+                    signInResponseRefreshTokenPointer: '/token/refreshToken',
+                    refreshRequestTokenPointer: '/refreshToken',
+                    maxAgeInSeconds: process.env.JWT_EXPIRATION
+                        ? Number(process.env.JWT_EXPIRATION)
+                        : 900,
+                    sameSiteAttribute: 'lax'
+                }
             },
             pages: {
                 login: '/login'
@@ -55,10 +70,6 @@ export default defineNuxtConfig({
                     ? Number(process.env.JWT_EXPIRATION)
                     : 900,
                 sameSiteAttribute: 'lax'
-            },
-            refreshToken: {
-                signInResponseRefreshTokenPointer: '/token/refreshToken',
-                refreshRequestTokenPointer: '/refreshToken'
             }
         },
         globalAppMiddleware: {
