@@ -59,6 +59,16 @@ export default defineNuxtConfig({
                     ? Number(process.env.JWT_EXPIRATION)
                     : 900,
                 sameSiteAttribute: 'lax'
+            },
+            session: {
+                dataType: {
+                    id: 'number',
+                    username: 'string',
+                    first_name: 'string',
+                    last_name: 'string',
+                    email: 'string',
+                    is_admin: 'boolean'
+                },
             }
         },
         globalAppMiddleware: {

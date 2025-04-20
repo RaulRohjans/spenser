@@ -15,17 +15,17 @@
     })
     type Schema = z.output<typeof schema>
     const state = reactive({
-        first_name: data.value.first_name,
-        last_name: data.value.last_name,
-        username: data.value.username,
-        email: data.value.email,
-        is_admin: data.value.is_admin
+        first_name: data.value?.first_name,
+        last_name: data.value?.last_name,
+        username: data.value?.username,
+        email: data.value?.email,
+        is_admin: data.value?.is_admin
     })
 
     const isModalOpen = ref(false)
 
     const userIsAdmin = computed(() => {
-        return data.value.is_admin
+        return data.value?.is_admin
     })
 
     const onSubmit = function (event: FormSubmitEvent<Schema>) {

@@ -13,8 +13,8 @@
         password: z.string().trim().min(1, $t('Must be at least 8 characters'))
     })
     const state = reactive({
-        username: undefined,
-        password: undefined
+        username: '',
+        password: ''
     })
     type ValidationSchema = z.output<typeof validationSchema>
 

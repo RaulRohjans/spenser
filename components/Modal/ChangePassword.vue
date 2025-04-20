@@ -6,7 +6,7 @@
     const { signOut, token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
 
     const schema = z
         .object({
@@ -27,8 +27,8 @@
         })
     type Schema = z.output<typeof schema>
     const state = reactive({
-        new_password: undefined,
-        repeat_new_password: undefined
+        new_password: '',
+        repeat_new_password: ''
     })
 
     const onChangePasswordSubmit = function (event: FormSubmitEvent<Schema>) {
@@ -53,7 +53,7 @@
                 signOut({ callbackUrl: '/login' })
             })
             .catch((e: NuxtError) => {
-                error.value = e.statusMessage || null
+                error.value = e.statusMessage
             })
     }
 </script>

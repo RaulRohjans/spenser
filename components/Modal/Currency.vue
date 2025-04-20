@@ -23,7 +23,7 @@
 
     type Schema = z.output<typeof schema>
     const state = reactive({
-        symbol: undefined,
+        symbol: '',
         placement: placementOptions.value[0].value
     })
 
@@ -54,7 +54,7 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 </script>
 

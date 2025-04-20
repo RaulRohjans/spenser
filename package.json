@@ -8,8 +8,8 @@
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
-        "type-check": "tsc --noEmit",
-        "lint": "bun type-check && eslint .",
+        "lint": "eslint .",
+        "lint:type": "tsc --noEmit",
         "style": "prettier . --check",
         "style:fix": "prettier --write --list-different .",
         "db:gen": "kysely-codegen"
