@@ -1,12 +1,18 @@
+import tailwindcss from "@tailwindcss/vite"
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: '2025-04-20',
     devtools: { enabled: true },
+    vite: {
+        plugins: [
+            tailwindcss(),
+        ],
+    },
     modules: [
       '@nuxt/ui',
-      '@nuxtjs/tailwindcss',
       '@nuxtjs/color-mode',
-      'nuxt-icon',
+      '@nuxt/icon',
       '@sidebase/nuxt-auth',
       '@pinia/nuxt',
       '@pinia-plugin-persistedstate/nuxt',
@@ -108,6 +114,9 @@ export default defineNuxtConfig({
         ],
         compilation: {
             strictMessage: false,
+        },
+        bundle: {
+            optimizeTranslationDirective: false
         }
     }
 })
