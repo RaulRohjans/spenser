@@ -121,7 +121,7 @@
                         color="primary"
                         square
                         variant="link"
-                        @click="toggleMobileMenu" />
+                        @on-click="toggleMobileMenu" />
                 </div>
 
                 <div
@@ -158,7 +158,7 @@
                         <USelect
                             v-model="selectedLocale"
                             class="hidden sm:block"
-                            :options="getLocales">
+                            :items="getLocales">
                             <template #leading>
                                 <UIcon
                                     name="i-heroicons-flag"
@@ -174,10 +174,10 @@
                     <UButton
                         icon="i-heroicons-arrow-right-start-on-rectangle"
                         size="sm"
-                        color="red"
+                        color="error"
                         square
                         variant="link"
-                        @click="onLogout" />
+                        @on-click="onLogout" />
                 </div>
             </div>
         </div>
@@ -189,7 +189,7 @@
                     <USelect
                         v-model="selectedLocale"
                         class="mb-2"
-                        :options="getLocales">
+                        :items="getLocales">
                         <template #leading>
                             <UIcon
                                 name="i-heroicons-flag"

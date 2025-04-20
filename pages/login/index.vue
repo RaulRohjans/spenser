@@ -63,16 +63,16 @@
         :state="state"
         class="space-y-4"
         @submit="onSubmit">
-        <UFormGroup
+        <UFormField
             :label="$t('Username')"
             name="username"
             :error="error != null">
             <UInput v-model="state.username" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup :label="$t('Password')" name="password" :error="error">
+        <UFormField :label="$t('Password')" name="password" :error="error">
             <UInput v-model="state.password" type="password" />
-        </UFormGroup>
+        </UFormField>
 
         <UButton type="submit"> {{ $t('Submit') }} </UButton>
     </UForm>

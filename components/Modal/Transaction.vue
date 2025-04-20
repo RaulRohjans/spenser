@@ -149,36 +149,36 @@
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
+    <UModal v-model="model">
         <UForm
             :state="state"
             class="space-y-4 p-6"
             @submit="onCreateTransaction">
-            <UFormGroup
+            <UFormField
                 :label="$t('Transaction Name')"
                 name="name"
                 :error="!!error">
                 <UInput v-model="state.name" />
-            </UFormGroup>
+            </UFormField>
 
             <div
                 class="flex flex-row justify-between items-center space-y-0 gap-8">
-                <UFormGroup
+                <UFormField
                     :label="$t('Value')"
                     name="value"
                     class="w-full"
                     :error="!!error">
                     <UInput v-model="state.value" type="number" step="any" />
-                </UFormGroup>
+                </UFormField>
 
-                <UFormGroup
+                <UFormField
                     :label="$t('Category')"
                     name="category"
                     class="w-full"
                     :error="!!error">
                     <USelect
                         v-model="state.category"
-                        :options="getCategoryOptions"
+                        :items="getCategoryOptions"
                         :loading="categoryLoading"
                         class="hide-select-span">
                         <template #leading>
@@ -188,12 +188,12 @@
                                 dynamic />
                         </template>
                     </USelect>
-                </UFormGroup>
+                </UFormField>
             </div>
 
-            <UFormGroup :label="$t('Date')" name="date" :error="error">
+            <UFormField :label="$t('Date')" name="date" :error="error">
                 <SDateTimePicker v-model="state.date" type="datetime" />
-            </UFormGroup>
+            </UFormField>
 
             <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>

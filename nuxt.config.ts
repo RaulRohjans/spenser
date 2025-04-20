@@ -3,15 +3,16 @@ export default defineNuxtConfig({
     compatibilityDate: '2025-04-20',
     devtools: { enabled: true },
     modules: [
-        '@nuxt/ui',
-        '@nuxtjs/tailwindcss',
-        '@nuxtjs/color-mode',
-        'nuxt-icon',
-        '@sidebase/nuxt-auth',
-        '@pinia/nuxt',
-        '@pinia-plugin-persistedstate/nuxt',
-        '@nuxt/eslint',
-        '@nuxtjs/i18n'
+      '@nuxt/ui',
+      '@nuxtjs/tailwindcss',
+      '@nuxtjs/color-mode',
+      'nuxt-icon',
+      '@sidebase/nuxt-auth',
+      '@pinia/nuxt',
+      '@pinia-plugin-persistedstate/nuxt',
+      '@nuxt/eslint',
+      '@nuxtjs/i18n',
+      '@compodium/nuxt'
     ],
     css: ['~/assets/css/main.scss'],
     build: {

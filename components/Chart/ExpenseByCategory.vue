@@ -144,10 +144,7 @@
         :class="`shadow-xl p-4 ${props.class}`"
         :style="`width: ${props.width}`"
         :ui="{
-            body: {
-                padding: '',
-                base: 'divide-y divide-gray-200 dark:divide-gray-700'
-            }
+            body: 'p-0 divide-y divide-gray-200 dark:divide-gray-700'
         }">
         <div class="flex flex-col justify-center items-center gap-4">
             <h2

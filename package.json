@@ -8,19 +8,22 @@
         "generate": "nuxt generate",
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
-        "lint": "bun lint:eslint && bun lint:prettier",
-        "lint:eslint": "eslint .",
-        "lint:prettier": "prettier . --check",
-        "lint:fix": "eslint . --fix && prettier --write --list-different .",
+        "type-check": "tsc --noEmit",
+        "lint": "bun type-check && eslint .",
+        "style": "prettier . --check",
+        "style:fix": "prettier --write --list-different .",
         "db:gen": "kysely-codegen"
     },
     "devDependencies": {
+        "@compodium/nuxt": "0.1.0-beta.9",
+        "@iconify-json/heroicons": "^1.2.2",
         "@intlify/unplugin-vue-i18n": "^6.0.6",
         "@nuxt/devtools": "latest",
         "@nuxt/eslint": "^1.3.0",
+        "@nuxt/icon": "^1.12.0",
         "@nuxt/kit": "3.16.2",
         "@nuxt/schema": "3.16.2",
-        "@nuxt/ui": "^3.0.0",
+        "@nuxt/ui": "^3.0.2",
         "@nuxtjs/color-mode": "^3.4.0",
         "@nuxtjs/eslint-config-typescript": "^12.1.0",
         "@nuxtjs/i18n": "9.5.3",
@@ -38,7 +41,6 @@
         "eslint-plugin-prettier": "^5.2.6",
         "kysely-codegen": "^0.18.0",
         "nuxt": "3.16.2",
-        "nuxt-icon": "^0.6.10",
         "prettier": "^3.3.0",
         "sass": "^1.75.0",
         "typescript": "^5.4.5"
@@ -61,6 +63,6 @@
         "unhead": "^2.0.8",
         "vue-echarts": "^6.7.2",
         "vuedraggable": "^4.1.0",
-        "zod": "^3.22.5"
+        "zod": "^3.24.3"
     }
 }

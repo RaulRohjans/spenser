@@ -18,10 +18,10 @@
                     ? 'i-heroicons-moon-20-solid'
                     : 'i-heroicons-sun-20-solid'
             "
-            color="gray"
+            color="neutral"
             variant="ghost"
             aria-label="Theme"
-            @click="toggleDarkMode" />
+            @on-click="toggleDarkMode" />
 
         <template #fallback>
             <div class="w-8 h-8" />

@@ -201,7 +201,7 @@
                         icon="i-heroicons-plus"
                         color="primary"
                         size="xs"
-                        @click="toggleModal">
+                        @on-click="toggleModal">
                         {{ $t('Create User') }}
                     </UButton>
                 </div>

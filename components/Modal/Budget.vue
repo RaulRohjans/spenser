@@ -14,12 +14,12 @@
         /**
          * Id of the category
          */
-        category?: number | null
+        category?: number
 
         /**
          * Name of the budget
          */
-        name?: string | null
+        name?: string
 
         /**
          * Value of the budget
@@ -44,7 +44,7 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
     const periodOptions: Ref<SelectOption[]> = ref([
         {
             label: $t('Daily'),
@@ -161,33 +161,33 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
+    <UModal v-model="model">
         <UForm
             :schema="schema"
             :state="state"
             class="space-y-4 p-6"
             @submit="onCreateCategory">
-            <UFormGroup
+            <UFormField
                 :label="$t('Name')"
                 name="name"
                 class="w-full"
                 :error="!!error">
                 <UInput v-model="state.name" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup
+            <UFormField
                 :label="$t('Category')"
                 name="category"
                 class="w-full"
                 :error="!!error">
                 <USelect
                     v-model="state.category"
-                    :options="getCategoryOptions"
+                    :items="getCategoryOptions"
                     :loading="categoryLoading"
                     class="hide-select-span">
                     <template #leading>
@@ -197,26 +197,26 @@
                             dynamic />
                     </template>
                 </USelect>
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup
+            <UFormField
                 :label="$t('Period')"
                 name="period"
                 class="w-full"
                 :error="!!error">
                 <USelect
                     v-model="state.period"
-                    :options="periodOptions"
+                    :items="periodOptions"
                     class="hide-select-span" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup
+            <UFormField
                 :label="$t('Value')"
                 name="value"
                 class="w-full"
                 :error="error">
                 <UInput v-model="state.value" type="number" step="any" />
-            </UFormGroup>
+            </UFormField>
 
             <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>

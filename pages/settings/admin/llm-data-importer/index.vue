@@ -6,7 +6,7 @@
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
     const providerSelectKey: Ref<number> = ref(0)
 
     const getProviderOptions = computed((): SelectOption[] => {
@@ -60,7 +60,7 @@
                     'success'
                 )
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
     // Clear fields on provider change
@@ -87,7 +87,7 @@
 
 <template>
     <UForm :state="state" class="space-y-4" @submit="onSave">
-        <UFormGroup
+        <UFormField
             :label="$t('LLM Provider')"
             name="provider"
             class="w-full"
@@ -95,43 +95,43 @@
             <USelect
                 :key="providerSelectKey"
                 v-model="state.provider"
-                :options="getProviderOptions" />
-        </UFormGroup>
+                :items="getProviderOptions" />
+        </UFormField>
 
         <template v-if="state.provider === 'gpt'">
-            <UFormGroup
+            <UFormField
                 :label="$t('GPT Model')"
                 name="gptModel"
                 class="w-full"
                 :error="!!error">
                 <UInput v-model="state.gptModel" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup
+            <UFormField
                 :label="$t('GPT Token')"
                 name="gptToken"
                 class="makeit-static"
                 :error="!!error">
                 <UInput v-model="state.gptToken" type="password" />
-            </UFormGroup>
+            </UFormField>
         </template>
 
         <template v-else-if="state.provider === 'ollama'">
-            <UFormGroup
+            <UFormField
                 :label="$t('Ollama Model')"
                 name="ollamaModel"
                 class="w-full"
                 :error="!!error">
                 <UInput v-model="state.ollamaModel" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup
+            <UFormField
                 :label="$t('Ollama URL')"
                 name="ollamaUrl"
                 class="w-full"
                 :error="!!error">
                 <UInput v-model="state.ollamaUrl" />
-            </UFormGroup>
+            </UFormField>
         </template>
 
         <UButton type="submit"> {{ $t('Save') }} </UButton>

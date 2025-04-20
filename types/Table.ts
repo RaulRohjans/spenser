@@ -18,7 +18,7 @@ export interface TableAction {
 
 export interface TableSort {
     column: string
-    direction: string
+    direction: "desc" | "asc"
 }
 
 export interface TableSearch {

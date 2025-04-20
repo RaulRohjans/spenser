@@ -1,0 +1,12 @@
+/*
+ * Apply page transations
+*/
+.page-enter-active,
+.page-leave-active {
+  @apply transition-opacity duration-300 ease-in-out;
+}
+
+.page-enter-from,
+.page-leave-to {
+  @apply opacity-0;
+}

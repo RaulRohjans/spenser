@@ -73,31 +73,31 @@
             @submit="onSubmit">
             <div
                 class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
-                <UFormGroup
+                <UFormField
                     :label="$t('First Name')"
                     name="first_name"
                     class="w-full">
                     <UInput v-model="state.first_name" />
-                </UFormGroup>
+                </UFormField>
 
-                <UFormGroup
+                <UFormField
                     :label="$t('Last Name')"
                     name="last_name"
                     class="w-full">
                     <UInput v-model="state.last_name" />
-                </UFormGroup>
+                </UFormField>
             </div>
 
-            <UFormGroup
+            <UFormField
                 :label="$t('Username')"
                 name="username"
                 class="makeit-static">
                 <UInput v-model="state.username" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup :label="$t('Email')" name="email" class="">
+            <UFormField :label="$t('Email')" name="email" class="">
                 <UInput v-model="state.email" />
-            </UFormGroup>
+            </UFormField>
 
             <UCheckbox
                 v-if="userIsAdmin"
@@ -112,7 +112,7 @@
                     {{ $t('Submit') }}
                 </UButton>
 
-                <UButton @click="openChangePwModal">
+                <UButton @on-click="openChangePwModal">
                     {{ $t('Change Password') }}
                 </UButton>
             </div>

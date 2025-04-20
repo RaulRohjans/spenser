@@ -16,12 +16,12 @@
         /*
          * Columns of the table
          */
-        columns?: TableColumn[] | null
+        columns?: TableColumn[]
 
         /*
          * Rows of the table
          */
-        rows?: TableRow[] | null
+        rows?: TableRow[]
 
         /*
          * Total row count
@@ -31,7 +31,7 @@
         /*
          * Actions of each table row
          */
-        actions?: string[] | null
+        actions?: string[]
 
         /*
          * If the table data is loading
@@ -103,7 +103,7 @@
     }>()
 
     const { t: $t } = useI18n()
-    const selectedColumns = ref(props.columns)
+    const selectedColumns: Ref<TableColumn[] | undefined> = ref(props.columns || undefined)
     const selectLoadKey: Ref<number> = ref(0)
     const page = defineModel<number>('page', { default: 1 })
     const pageCount = defineModel<number>('pageCount', { default: 10 })
@@ -188,7 +188,7 @@
     const resetFilters = function () {
         if (!props.manualFilterReset) {
             search.value = ''
-            selectedColumns.value = props.columns
+            if(props.columns) selectedColumns.value = props.columns
         }
         emit('reset-filters')
     }
@@ -215,15 +215,9 @@
     <UCard
         :class="getClasses"
         :ui="{
-            base: '',
-            ring: '',
-            divide: 'divide-y divide-gray-200 dark:divide-gray-700',
-            header: { padding: 'px-4 py-5' },
-            body: {
-                padding: '',
-                base: 'divide-y divide-gray-200 dark:divide-gray-700'
-            },
-            footer: { padding: 'p-4' }
+            header: 'px-4 py-5' ,
+            body: 'p-0 divide-y divide-gray-200 dark:divide-gray-700',
+            footer: 'p-4'
         }">
         <template v-if="label" #header>
             <h2
@@ -241,8 +235,7 @@
                     v-if="hasSeachColumn"
                     :key="selectLoadKey"
                     v-model="searchColumn"
-                    :options="getSearchColumns"
-                    option-attribute="name" />
+                    :items="getSearchColumns.map(c => c.name || '')" />
                 <UInput
                     v-model="search"
                     icon="i-heroicons-magnifying-glass-20-solid"
@@ -266,7 +259,7 @@
                     v-if="props.rowsPerPage"
                     :key="selectLoadKey"
                     v-model="pageCount"
-                    :options="[5, 10, 20, 30, 40, 50]"
+                    :items="[5, 10, 20, 30, 40, 50]"
                     class="me-2 w-20"
                     size="xs" />
             </div>
@@ -274,11 +267,11 @@
             <div v-if="props.filtering" class="flex gap-1.5 items-center">
                 <USelectMenu
                     v-model="selectedColumns"
-                    :options="columns"
+                    :items="columns"
                     multiple>
                     <UButton
                         icon="i-heroicons-view-columns"
-                        color="gray"
+                        color="neutral"
                         size="xs">
                         {{ $t('Columns') }}
                     </UButton>
@@ -286,9 +279,9 @@
 
                 <UButton
                     icon="i-heroicons-funnel"
-                    color="gray"
+                    color="neutral"
                     size="xs"
-                    @click="resetFilters">
+                    @on-click="resetFilters">
                     {{ $t('Reset') }}
                 </UButton>
             </div>
@@ -316,8 +309,7 @@
             sort-mode="manual"
             class="w-full"
             :ui="{
-                td: { base: 'max-w-[0] truncate' },
-                default: { checkbox: { color: 'gray' } }
+                td: 'max-w-[0] truncate'
             }">
             <!-- 
                 Pass all other slots directly to the UTable component
@@ -328,12 +320,12 @@
             </template>
 
             <template v-if="actionItems" #actions-data="{ row }">
-                <UDropdown :items="actionItems(row)">
+                <UDropdownMenu :items="actionItems(row)">
                     <UButton
-                        color="gray"
+                        color="neutral"
                         variant="ghost"
                         icon="i-heroicons-ellipsis-horizontal-20-solid" />
-                </UDropdown>
+                </UDropdownMenu>
             </template>
         </UTable>
 

@@ -30,7 +30,7 @@ export interface BudgetDataObject {
 }
 
 export interface LlmTransactionObject {
-    category: number
+    category: string
     name: string
     value: number
     date: string //This value is meant to later be parsed into a Date format

@@ -307,7 +307,7 @@
                         icon="i-heroicons-plus"
                         color="primary"
                         size="xs"
-                        @click="createTransaction">
+                        @on-click="createTransaction">
                         {{ $t('Create Transaction') }}
                     </UButton>
                 </div>

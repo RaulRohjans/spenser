@@ -9,7 +9,7 @@
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
     const settingsStore = useSettingsStore()
     const currencySelectKey: Ref<number> = ref(0)
 
@@ -97,7 +97,7 @@
                     'success'
                 )
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
     watch(userSettings, () => {
@@ -112,7 +112,7 @@
 
 <template>
     <UForm :state="state" class="space-y-4" @submit="onSave">
-        <UFormGroup
+        <UFormField
             :label="$t('Currency')"
             name="currency"
             class="w-full"
@@ -121,7 +121,7 @@
                 :key="currencySelectKey"
                 v-model="state.currency"
                 :options="getCurrencyOptions" />
-        </UFormGroup>
+        </UFormField>
 
         <UButton type="submit"> {{ $t('Save') }} </UButton>
     </UForm>

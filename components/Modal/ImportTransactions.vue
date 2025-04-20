@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { formatCurrencyValue } from '#imports'
     import type { NuxtError } from '#app'
     import type { LlmTransactionObject } from '~/types/Data'
     import type { SelectOption } from '~/types/Options'
@@ -172,7 +173,7 @@
 <template>
     <UModal
         v-model="model"
-        :ui="{ container: 'items-center mx-12' }"
+        :ui="{ content: 'items-center mx-12' }"
         fullscreen>
         <div :class="props.class">
             <STable
@@ -201,7 +202,7 @@
                 <template #category-data="{ row }">
                     <USelect
                         v-model="vTransactions[findTransaction(row)].category"
-                        :options="getCategoryOptions"
+                        :items="getCategoryOptions"
                         :loading="categoryLoading"
                         class="hide-select-span">
                         <template #leading>
@@ -220,11 +221,11 @@
                         class="w-full flex flex-row justify-between items-center">
                         <USelectMenu
                             v-model="selectedColumns"
-                            :options="tableColumns"
+                            :items="tableColumns"
                             multiple>
                             <UButton
                                 icon="i-heroicons-view-columns"
-                                color="gray"
+                                color="neutral"
                                 size="xs">
                                 {{ $t('Columns') }}
                             </UButton>
@@ -234,7 +235,7 @@
                             icon="i-heroicons-plus"
                             color="primary"
                             size="xs"
-                            @click="onImportData">
+                            @on-click="onImportData">
                             {{ $t('Import Transactions') }}
                         </UButton>
                     </div>

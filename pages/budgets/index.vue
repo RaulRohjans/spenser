@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import Draggable from 'vuedraggable'
+    import { formatCurrencyValue } from '#imports'
     import type { NuxtError } from '#app'
     import type { ModalBudgetProps } from '~/components/Modal/Budget.vue'
     import type { BudgetDataObject } from '~/types/Data'
@@ -159,15 +160,9 @@
                     <UCard
                         class="drag-me shadow-xl cursor-grab transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
                         :ui="{
-                            base: '',
-                            ring: '',
-                            divide: '',
-                            header: { padding: 'px-10 py-3 sm:px-10 sm:py-3' },
-                            body: {
-                                padding: 'px-10 py-4 sm:px-10 sm:py-4',
-                                base: 'divide-y divide-gray-200 dark:divide-gray-700'
-                            },
-                            footer: { padding: 'p-2 sm:p-2' }
+                            header: 'px-10 py-3 sm:px-10 sm:py-3' ,
+                            body: 'px-10 py-4 sm:px-10 sm:py-4 divide-y divide-gray-200 dark:divide-gray-700',
+                            footer: 'p-2 sm:p-2'
                         }">
                         <template #header>
                             <div
@@ -181,7 +176,7 @@
                                     class="cursor-auto"
                                     color="primary"
                                     variant="subtle"
-                                    :ui="{ rounded: 'rounded-full' }">
+                                    :ui="{ base: 'rounded-full' }">
                                     <div
                                         v-if="!element.category_deleted"
                                         class="flex flex-row gap-2 justify-center items-center px-0.5">
@@ -234,7 +229,7 @@
                                         color="primary"
                                         square
                                         variant="ghost"
-                                        @click="editItem(element)" />
+                                        @on-click="editItem(element)" />
 
                                     <UButton
                                         icon="i-heroicons-trash"
@@ -242,7 +237,7 @@
                                         color="primary"
                                         square
                                         variant="ghost"
-                                        @click="removeItem(element)" />
+                                        @on-click="removeItem(element)" />
                                 </div>
                             </div>
                         </template>
@@ -252,7 +247,7 @@
                 <template v-else>
                     <a
                         class="dont-drag-me cursor-pointer transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
-                        @click="toggleModal">
+                        @on-click="toggleModal">
                         <UCard class="shadow-xl p-12">
                             <UButton
                                 icon="i-heroicons-squares-plus"

@@ -136,7 +136,7 @@
                 @submit="onImportData">
                 <div
                     class="flex flex-col justify-center items-center w-full sm:w-[70%] gap-2">
-                    <UFormGroup
+                    <UFormField
                         class="w-full border border-gray-200 dark:border-gray-700 rounded p-4 sm:p-8 mb-4">
                         <!-- 
                             NuxtUi file uploader is awful so we have to use
@@ -160,7 +160,7 @@
                             variant="outline"
                             :placeholder="$t('Transactions to import...')"
                             autoresize />
-                    </UFormGroup>
+                    </UFormField>
 
                     <div
                         class="flex flex-row justify-start w-full items-center">

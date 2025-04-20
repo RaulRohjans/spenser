@@ -102,20 +102,20 @@
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
+    <UModal v-model="model">
         <UForm
             :schema="schema"
             :state="state"
             class="space-y-4 p-6"
             @submit="onCreateCategory">
-            <UFormGroup :error="error">
+            <UFormField :error="error">
                 <div
                     class="flex flex-row justify-between items-center space-y-0 gap-8">
-                    <UFormGroup :label="$t('Name')" name="name" class="w-full">
+                    <UFormField :label="$t('Name')" name="name" class="w-full">
                         <UInput v-model="state.name" />
-                    </UFormGroup>
+                    </UFormField>
 
-                    <UFormGroup :label="$t('Icon')" name="icon" class="w-full">
+                    <UFormField :label="$t('Icon')" name="icon" class="w-full">
                         <div class="flex flex-row gap-1">
                             <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
                             <UInput v-model="state.icon" class="hide-span">
@@ -134,9 +134,9 @@
                                     variant="ghost" />
                             </ULink>
                         </div>
-                    </UFormGroup>
+                    </UFormField>
                 </div>
-            </UFormGroup>
+            </UFormField>
 
             <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>
