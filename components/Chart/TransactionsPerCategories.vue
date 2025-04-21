@@ -69,7 +69,7 @@
     provide(THEME_KEY, getTheme) // Set chart theme
 
     // Fetch data
-    const { data: fetchData, status: loading } = await useLazyAsyncData<{
+    const { data: fetchData, status } = await useLazyAsyncData<{
         success: boolean
         data: TransactionsPerCategoryData[]
     }>(
@@ -204,7 +204,7 @@
                     class="w-full"
                     :style="`height: ${props.height}`"
                     :option="getGraphOptions"
-                    :loading="loading"
+                    :loading="status === 'pending'"
                     autoresize />
 
                 <div

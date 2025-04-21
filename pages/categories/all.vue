@@ -53,7 +53,7 @@
     const tableDataKey: Ref<number> = ref(0)
 
     // Fetch Data
-    const { data: tableData, status: loading } =
+    const { data: tableData, status } =
         await useLazyAsyncData<FetchTableDataResult>(
             'tableData',
             () =>
@@ -175,7 +175,7 @@
             v-model:sort="sort"
             :rows="tableData?.data.rows"
             :row-count="tableData?.data.totalRecordCount"
-            :loading="loading"
+            :loading="status === 'pending'"
             @edit-action="editCategory"
             @duplicate-action="dupCategory"
             @delete-action="delCategory">

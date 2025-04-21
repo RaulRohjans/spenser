@@ -59,7 +59,7 @@
     provide(THEME_KEY, getTheme) // Set chart theme
 
     // Fetch data
-    const { data: fetchData, status: loading } = await useLazyAsyncData<{
+    const { data: fetchData, status } = await useLazyAsyncData<{
         success: boolean
         data: SpendingOverTimeData[]
     }>(
@@ -156,7 +156,7 @@
                     :option="getChartOptions"
                     class="w-full"
                     :style="`height: ${props.height}`"
-                    :loading="loading" />
+                    :loading="status === 'pending'" />
 
                 <div
                     v-if="!hasDataToLoad"
