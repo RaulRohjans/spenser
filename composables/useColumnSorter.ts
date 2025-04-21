@@ -3,6 +3,7 @@ import type { Column } from '@tanstack/vue-table'
 import type { TableRow } from '@/types/Table'
 
 export const useColumnSorter = () => {
+    //TODO: implement server side by allowing a callback in the onClick
     return (column: Column<TableRow, unknown>, label: string) => {
         const isSorted = column.getIsSorted()
 
