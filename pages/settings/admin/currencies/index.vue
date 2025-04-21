@@ -48,7 +48,7 @@
     const tableDataKey: Ref<number> = ref(0)
 
     // Fetch Data
-    const { data: tableData, pending: loading } =
+    const { data: tableData, status: loading } =
         await useLazyAsyncData<FetchTableDataResult>(
             'currencies',
             () =>

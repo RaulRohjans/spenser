@@ -59,7 +59,7 @@
     provide(THEME_KEY, getTheme) // Set chart theme
 
     // Fetch data
-    const { data: fetchData, pending: loading } = await useLazyAsyncData<{
+    const { data: fetchData, status: loading } = await useLazyAsyncData<{
         success: boolean
         data: SpendingOverTimeData[]
     }>(

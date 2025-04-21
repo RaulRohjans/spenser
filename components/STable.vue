@@ -80,10 +80,7 @@
     }
 
     const props = withDefaults(defineProps<STableProps>(), {
-        columns: null,
-        rows: null,
         rowCount: 0,
-        actions: null,
         enableSearch: true,
         hasSeachColumn: true,
         sorting: true,
@@ -165,7 +162,7 @@
         Math.min(page.value * pageCount.value, props.rowCount)
     )
 
-    const getSearchColumns = computed(() => {
+    const getSearchColumns = computed((): SelectOption[] => {
         const options: SelectOption[] = []
 
         props.columns?.forEach((col) => {
@@ -235,7 +232,7 @@
                     v-if="hasSeachColumn"
                     :key="selectLoadKey"
                     v-model="searchColumn"
-                    :items="getSearchColumns.map(c => c.name || '')" />
+                    :items="getSearchColumns.map((c: SelectOption) => c.name || '')" />
                 <UInput
                     v-model="search"
                     icon="i-heroicons-magnifying-glass-20-solid"
