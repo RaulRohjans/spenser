@@ -1,34 +1,17 @@
-@import "tailwindcss" theme(static);
+@import "tailwindcss";
 @import "@nuxt/ui";
 
-@theme static {
-    --font-sans: 'Public Sans', sans-serif;
-    --color-green-50: #EFFDF5;
-    --color-green-100: #D9FBE8;
-    --color-green-200: #B3F5D1;
-    --color-green-300: #75EDAE;
-    --color-green-400: #00DC82;
-    --color-green-500: #00C16A;
-    --color-green-600: #00A155;
-    --color-green-700: #007F45;
-    --color-green-800: #016538;
-    --color-green-900: #0A5331;
-    --color-green-950: #052E16;
-}
-
-@import './transitions.css';
-
 /*
- * This is a funy one.
+ * This is a funny one.
  *
- * The UI package used, NuxtUI has position relative on ALL
+ * The UI package used, NuxtUI, has position relative on ALL
  * inputs and input groups, they hammered that on all the containers
  * and elements they could.
  *
  * This causes the fields to display over the user dropdown menu, so we
  * use this to hammer it back to static
  *
- * Im starting to regret using this library...
+ * I'm starting to regret using this library...
 */
 .makeit-static * {
     position: static !important;
@@ -51,7 +34,7 @@ input[type='number'] {
 
 /* 
  * When no matching icon is found, UIcon displays the text. This is to hide it 
- * There are two version due to the different structure Nuxt's components adopt
+ * There are two versions due to the different structure Nuxt's components adopt
 */
 .hide-span span {
     visibility: hidden;
@@ -59,4 +42,18 @@ input[type='number'] {
 
 .hide-select-span span span {
     visibility: hidden;
+}
+
+
+/*
+ * Apply page transations
+*/
+.page-enter-active,
+.page-leave-active {
+  @apply transition-opacity duration-300 ease-in-out;
+}
+
+.page-enter-from,
+.page-leave-to {
+  @apply opacity-0;
 }

@@ -1,14 +1,7 @@
-import tailwindcss from "@tailwindcss/vite"
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: '2025-04-20',
     devtools: { enabled: true },
-    vite: {
-        plugins: [
-            tailwindcss(),
-        ],
-    },
     modules: [
       '@nuxt/ui',
       '@nuxtjs/color-mode',
@@ -20,7 +13,7 @@ export default defineNuxtConfig({
       '@nuxtjs/i18n',
       '@compodium/nuxt'
     ],
-    css: ['~/assets/css/main.scss'],
+    css: ['~/assets/css/main.css'],
     build: {
         transpile: [
             '@vuepic/vue-datepicker',

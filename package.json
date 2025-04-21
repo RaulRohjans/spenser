@@ -27,9 +27,6 @@
         "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
         "@pinia/nuxt": "^0.11.0",
         "@sidebase/nuxt-auth": "^0.10.0",
-        "@tailwindcss/node": "^4.1.4",
-        "@tailwindcss/postcss": "^4.1.4",
-        "@tailwindcss/vite": "^4.1.4",
         "@types/bcrypt": "^5.0.2",
         "@types/bun": "^1.1.2",
         "@types/formidable": "^3.4.5",
@@ -42,7 +39,6 @@
         "kysely-codegen": "^0.18.0",
         "nuxt": "3.16.2",
         "prettier": "^3.3.0",
-        "sass": "^1.75.0",
         "typescript": "^5.4.5"
     },
     "dependencies": {
@@ -59,7 +55,6 @@
         "langchain": "^0.3.0",
         "pg": "^8.11.5",
         "pinia": "^3.0.2",
-        "tailwindcss": "^4.1.4",
         "unhead": "^2.0.8",
         "vue-echarts": "^6.7.2",
         "vuedraggable": "^4.1.0",
