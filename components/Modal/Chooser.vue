@@ -63,11 +63,11 @@
 
                 <div
                     class="flex flex-row justify-end items-center gap-2 w-full">
-                    <UButton class="px-4" @on-click="onCancel">
+                    <UButton class="px-4" @click="onCancel">
                         {{ $t('No', locale) }}
                     </UButton>
 
-                    <UButton class="px-4" @on-click="onConfirm">
+                    <UButton class="px-4" @click="onConfirm">
                         {{ $t('Yes', locale) }}
                     </UButton>
                 </div>

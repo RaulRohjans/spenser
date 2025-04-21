@@ -112,7 +112,7 @@
                     {{ $t('Submit') }}
                 </UButton>
 
-                <UButton @on-click="openChangePwModal">
+                <UButton @click="openChangePwModal">
                     {{ $t('Change Password') }}
                 </UButton>
             </div>

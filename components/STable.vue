@@ -278,7 +278,7 @@
                     icon="i-heroicons-funnel"
                     color="neutral"
                     size="xs"
-                    @on-click="resetFilters">
+                    @click="resetFilters">
                     {{ $t('Reset') }}
                 </UButton>
             </div>

@@ -229,7 +229,7 @@
                                         color="primary"
                                         square
                                         variant="ghost"
-                                        @on-click="editItem(element)" />
+                                        @click="editItem(element)" />
 
                                     <UButton
                                         icon="i-heroicons-trash"
@@ -237,7 +237,7 @@
                                         color="primary"
                                         square
                                         variant="ghost"
-                                        @on-click="removeItem(element)" />
+                                        @click="removeItem(element)" />
                                 </div>
                             </div>
                         </template>
@@ -247,7 +247,7 @@
                 <template v-else>
                     <a
                         class="dont-drag-me cursor-pointer transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
-                        @on-click="toggleModal">
+                        @click="toggleModal">
                         <UCard class="shadow-xl p-12">
                             <UButton
                                 icon="i-heroicons-squares-plus"

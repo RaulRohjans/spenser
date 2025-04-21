@@ -1,4 +1,5 @@
-import { h, resolveComponent } from 'vue'
+import { UDropdownMenu, UButton } from '#components'
+import { h } from 'vue'
 
 interface ActionCallbacks<T> {
   onEdit?: (row: T) => void
@@ -47,11 +48,8 @@ export function useActionColumnCell<T>(options: {
         )
       ]
 
-      const DropdownMenu = resolveComponent('UDropdownMenu')
-      const UButton = resolveComponent('UButton')
-
       return h('div', { class: 'text-right' }, [
-        h(DropdownMenu, {
+        h(UDropdownMenu, {
           content: { align: 'end' },
           items,
           'aria-label': $t('Actions')

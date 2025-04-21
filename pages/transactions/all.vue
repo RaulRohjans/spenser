@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    
+    import { UIcon } from '#components'
     import type { NuxtError } from '#app'
     import type { ModalTransactionProps } from '@/components/Modal/Transaction.vue'
     import type {
@@ -13,6 +13,7 @@
     const localePath = useLocalePath()
     const { token } = useAuth()
     const { t: $t } = useI18n()
+    const router = useRouter()
 
     // Table loading
     const columnSorter = useColumnSorter()
@@ -66,6 +67,7 @@
     const columns: TableColumn<TableRow>[] = [
         {
             accessorKey: 'id',
+            sortDescFirst: true,
             header: ({ column }) => columnSorter(column, '#')
         },
         {
@@ -93,8 +95,6 @@
                 const icon = row.original.category_icon
 
                 if (deleted) return h('span', '-')
-
-                const UIcon = resolveComponent('UIcon')
 
                 return h('div', { class: 'flex flex-row items-center gap-3' }, [
                     h('div', { class: 'hide-span' }, [
@@ -133,7 +133,7 @@
     const transactionLoaderObj: Ref<ModalTransactionProps | null> = ref(null)
     const isModalOpen: Ref<boolean> = ref(false)
     const page: Ref<number> = ref(1)
-    const pageCount: Ref<number> = ref(10)
+    const itemsPerPage: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
     const searchColumn: Ref<string> = ref('name')
     const sort: Ref<TableSort> = ref({
@@ -157,7 +157,7 @@
                         q: searchQuery.value,
                         qColumn: searchColumn.value,
                         page: page.value,
-                        limit: pageCount.value,
+                        limit: itemsPerPage.value,
                         sort: sort.value.column,
                         order: sort.value.direction,
                         startDate:
@@ -185,7 +185,7 @@
                     page,
                     searchQuery,
                     searchColumn,
-                    pageCount,
+                    itemsPerPage,
                     sort,
                     tableDataKey,
                     dateRange,
@@ -225,6 +225,10 @@
     const resetTableFilters = function () {
         dateRange.value = []
         groupByCategory.value = false
+    }
+
+    function navigateToLlm() {
+        navigateTo('/transactions/llm-data-importer')
     }
 
     // Reset vbind model when modal is closed
@@ -280,7 +284,7 @@
                     </span>
 
                     <USelect
-                        v-model="pageCount"
+                        v-model="itemsPerPage"
                         :items="[5, 10, 20, 30, 40, 50]"
                         class="me-2 w-20"
                         size="xs" />
@@ -291,20 +295,19 @@
 
             <!-- Extra Actions -->
             <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2 px-4 py-3">
-                <ULink :to="localePath('/transactions/llm-data-importer')">
-                    <UButton
-                        icon="i-heroicons-arrow-down-on-square-stack"
-                        color="primary"
-                        size="xs">
-                        {{ $t('LLM Data Import') }}
-                    </UButton>
-                </ULink>
+                <UButton
+                    icon="i-heroicons-arrow-down-on-square-stack"
+                    color="primary"
+                    size="xs"
+                    @click="navigateToLlm">
+                    {{ $t('LLM Data Import') }}
+                </UButton>
 
                 <UButton
                     icon="i-heroicons-plus"
                     color="primary"
                     size="xs"
-                    @on-click="createTransaction">
+                    @click="createTransaction">
                     {{ $t('Create Transaction') }}
                 </UButton>
             </div>
@@ -322,7 +325,7 @@
             <template #footer>
                 <SPaginationFooter
                     v-model:page="page"
-                    v-model:page-count="pageCount"
+                    v-model:items-per-page="itemsPerPage"
                     :total="tableData.data.totalRecordCount" />
             </template>
         </UCard>

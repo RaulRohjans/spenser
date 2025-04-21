@@ -235,7 +235,7 @@
                             icon="i-heroicons-plus"
                             color="primary"
                             size="xs"
-                            @on-click="onImportData">
+                            @click="onImportData">
                             {{ $t('Import Transactions') }}
                         </UButton>
                     </div>

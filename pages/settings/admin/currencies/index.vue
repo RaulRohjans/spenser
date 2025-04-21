@@ -151,7 +151,7 @@
                         icon="i-heroicons-plus"
                         color="primary"
                         size="xs"
-                        @on-click="toggleModal">
+                        @click="toggleModal">
                         {{ $t('Create Currency') }}
                     </UButton>
                 </div>

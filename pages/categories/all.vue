@@ -194,7 +194,7 @@
                         icon="i-heroicons-plus"
                         color="primary"
                         size="xs"
-                        @on-click="toggleModal">
+                        @click="toggleModal">
                         {{ $t('Create Category') }}
                     </UButton>
                 </div>

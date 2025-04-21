@@ -1,6 +1,6 @@
 <script setup lang="ts">
     const page = defineModel<number>('page', { default: 1 })
-    const pageCount = defineModel<number>('pageCount', { default: 10 })
+    const itemsPerPage = defineModel<number>('itemsPerPage', { default: 10 })
 
     const props = defineProps<{
         total: number
@@ -8,8 +8,8 @@
 
     const { t } = useI18n()
 
-    const pageFrom = computed(() => (page.value - 1) * pageCount.value + 1)
-    const pageTo = computed(() => props.total == 0 ? 1 : Math.min(page.value * pageCount.value, props.total))
+    const pageFrom = computed(() => (page.value - 1) * itemsPerPage.value + 1)
+    const pageTo = computed(() => props.total == 0 ? 1 : Math.min(page.value * itemsPerPage.value, props.total))
 </script>
 
 <template>
@@ -25,8 +25,8 @@
         </span>
 
         <UPagination
-            v-model="page"
-            :page-count="pageCount"
-            :total="props.total" />
+            :items-per-page="itemsPerPage"
+            :total="props.total"
+            @update:page="(p) => page = p" />
     </div>
 </template>

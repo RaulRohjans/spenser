@@ -121,7 +121,7 @@
                         color="primary"
                         square
                         variant="link"
-                        @on-click="toggleMobileMenu" />
+                        @click="toggleMobileMenu" />
                 </div>
 
                 <div
@@ -177,7 +177,7 @@
                         color="error"
                         square
                         variant="link"
-                        @on-click="onLogout" />
+                        @click="onLogout" />
                 </div>
             </div>
         </div>

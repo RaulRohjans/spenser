@@ -170,19 +170,19 @@
             <div class="flex flex-row justify-center items-center gap-1">
                 <UButton
                     :variant="getMonthBtnStatus"
-                    @on-click="setTimeframe('month')">
+                    @click="setTimeframe('month')">
                     {{ $t('Month') }}
                 </UButton>
 
                 <UButton
                     :variant="getYearBtnStatus"
-                    @on-click="setTimeframe('year')">
+                    @click="setTimeframe('year')">
                     {{ $t('Year') }}
                 </UButton>
 
                 <UButton
                     :variant="getAllTimeBtnStatus"
-                    @on-click="setTimeframe('alltime')">
+                    @click="setTimeframe('alltime')">
                     {{ $t('All Time') }}
                 </UButton>
             </div>

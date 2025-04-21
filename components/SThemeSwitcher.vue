@@ -21,7 +21,7 @@
             color="neutral"
             variant="ghost"
             aria-label="Theme"
-            @on-click="toggleDarkMode" />
+            @click="toggleDarkMode" />
 
         <template #fallback>
             <div class="w-8 h-8" />
