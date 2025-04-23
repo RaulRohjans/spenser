@@ -34,14 +34,13 @@ export function usePaginatedTable<T>(opts: PaginatedTableOptions<T>) {
             })
         },
         {
-            watch: [page, limit, sort, order, reloadKey, ...(opts.watch ?? [])]
+            watch: [page, limit, sort, order, reloadKey, filters, ...(opts.watch ?? [])]
         }
     )
 
     const reload = () => reloadKey.value++
     const resetFilters = () => {
         filters.searchQuery = ''
-        filters.searchColumn = ''
         filters.groupCategory = false
         filters.dateRange = []
     }
