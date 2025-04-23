@@ -33,3 +33,8 @@ export interface FetchTableDataResult {
         rows: TableRow[]
     }
 }
+
+export interface FetchTableSingleDataResult {
+    success: boolean
+    data: TableRow
+}

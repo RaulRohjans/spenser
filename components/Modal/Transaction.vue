@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { z } from 'zod'
     import type { SelectOption } from '@/types/Options'
-    import type { FetchTableDataResult } from '@/types/Table'
+    import type { FetchTableDataResult, FetchTableSingleDataResult } from '@/types/Table'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
 
@@ -26,7 +26,6 @@
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const model = defineModel<boolean>()
     const error: Ref<string | undefined> = ref()
 
     const _schema = z.object({
@@ -39,7 +38,7 @@
     })
 
     type Schema = z.output<typeof _schema>
-    const state = reactive({
+    let state = reactive({
         id: props.id,
         category: 0,
         name: '',
@@ -49,11 +48,11 @@
 
     // Fetch transaction
     if(props.mode != 'create') {
-        const { data: transaction, status: transactionStatus } =
-            await useLazyAsyncData<FetchTableDataResult>(
-                'categoryData',
+        const { data: transaction } =
+            await useLazyAsyncData<FetchTableSingleDataResult>(
+                'transaction',
                 () =>
-                    $fetch('/api/categories', {
+                    $fetch(`/api/transactions/${props.id}`, {
                         method: 'GET',
                         headers: buildRequestHeaders(token.value)
                     }),
@@ -61,14 +60,20 @@
                     default: () => {
                         return {
                             success: false,
-                            data: {
-                                totalRecordCount: 0,
-                                rows: []
-                            }
+                            data: {}
                         }
                     }
                 }
             )
+
+        const data = transaction.value.data
+        state = reactive({
+            id: props.id,
+            category: data.category,
+            name: data.name,
+            value: data.value,
+            date: new Date(data.date)
+        })
     }
 
     // Fetch categories
@@ -138,73 +143,70 @@
                     $t('Operation completed successfully!'),
                     'success'
                 )
-
-                // Close modal
-                model.value = false
             })
             .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
     const categoryDisplayIcon = computed(() => {
-        if (!state.category) return ''
+        if (!state.category) return null
 
         // Find the icon corresponding to the selected category
         const icon =
             categoryData.value.data.rows.find((c) => c.id == state.category)
-                ?.icon || ''
+                ?.icon || null
+
+        if(!icon) return null
 
         return `i-heroicons-${icon}`
     })
 </script>
 
 <template>
-    <UModal v-model="model">
-        <UForm
-            :state="state"
-            class="space-y-4 p-6"
-            @submit="onCreateTransaction">
+    <UForm
+        :state="state"
+        class="space-y-4 p-6"
+        @submit="onCreateTransaction">
+        <UFormField
+            :label="$t('Transaction Name')"
+            name="name"
+            :error="!!error">
+            <UInput v-model="state.name" />
+        </UFormField>
+
+        <div
+            class="flex flex-row justify-between items-center space-y-0 gap-8">
             <UFormField
-                :label="$t('Transaction Name')"
-                name="name"
+                :label="$t('Value')"
+                name="value"
+                class="w-full"
                 :error="!!error">
-                <UInput v-model="state.name" />
+                <UInput v-model="state.value" type="number" step="any" />
             </UFormField>
 
-            <div
-                class="flex flex-row justify-between items-center space-y-0 gap-8">
-                <UFormField
-                    :label="$t('Value')"
-                    name="value"
-                    class="w-full"
-                    :error="!!error">
-                    <UInput v-model="state.value" type="number" step="any" />
-                </UFormField>
-
-                <UFormField
-                    :label="$t('Category')"
-                    name="category"
-                    class="w-full"
-                    :error="!!error">
-                    <USelect
-                        v-model="state.category"
-                        :items="getCategoryOptions"
-                        :loading="categoryStatus === 'pending'"
-                        class="hide-select-span">
-                        <template #leading>
-                            <UIcon
-                                :name="categoryDisplayIcon"
-                                class="h-full"
-                                dynamic />
-                        </template>
-                    </USelect>
-                </UFormField>
-            </div>
-
-            <UFormField :label="$t('Date')" name="date" :error="error">
-                <SDateTimePicker v-model="state.date" type="datetime" />
+            <UFormField
+                :label="$t('Category')"
+                name="category"
+                class="w-full"
+                :error="!!error">
+                <USelect
+                    v-model="state.category"
+                    :items="getCategoryOptions"
+                    :loading="categoryStatus === 'pending'"
+                    class="hide-select-span">
+                    <template v-if="categoryDisplayIcon" #leading>
+                        <UIcon
+                            :name="categoryDisplayIcon"
+                            class="h-full"
+                            dynamic />
+                    </template>
+                </USelect>
             </UFormField>
+        </div>
 
-            <UButton type="submit"> {{ $t('Submit') }} </UButton>
-        </UForm>
-    </UModal>
+        <UFormField :label="$t('Date')" name="date" :error="error">
+            <SDateTimePicker v-model="state.date" type="datetime" />
+        </UFormField>
+
+        <UButton type="submit"> {{ $t('Submit') }} </UButton>
+    </UForm>
 </template>

@@ -52,12 +52,10 @@
         actions: ['edit', 'duplicate', 'delete'],
         callbacks: {
             onEdit: row => {
-                loadLoaderObj(row)
-                toggleModal()
+                router.push(`/transactions/edit/${row.id}`)
             },
             onDuplicate: row => {
-                loadLoaderObj(row)
-                toggleModal()
+                router.push(`/transactions/duplicate/${row.id}`)
             },
             onDelete: delTransaction
         }
@@ -96,13 +94,13 @@
                 if (deleted) return h('span', '-')
 
                 return h('div', { class: 'flex flex-row items-center gap-3' }, [
-                    h('div', { class: 'hide-span' }, [
+                    h('div', { class: 'hide-span' }, icon ? [
                         h(UIcon, {
-                        name: `i-heroicons-${icon}`,
-                        class: 'h-5 w-5',
-                        dynamic: true
+                            name: `i-heroicons-${icon}`,
+                            class: 'h-5 w-5',
+                            dynamic: true
                         })
-                    ]),
+                    ] : []),
                     h('span', name)
                 ])
             }
@@ -198,19 +196,6 @@
         isModalOpen.value = !isModalOpen.value
     }
 
-    const loadLoaderObj = function (row: TableRow) {
-        transactionLoaderObj.value = {
-            name: row.name,
-            value: row.value,
-            category: row.category,
-            date: row.date
-        }
-    }    
-
-    const toggleModal = function () {
-        isModalOpen.value = !isModalOpen.value
-    }
-
     const reloadTableData = function () {
         tableDataKey.value++
     }
@@ -245,94 +230,96 @@
 </script>
 
 <template>
-    <div class="flex flex-row items-center justify-center">
-        <UCard>
-            <template #header>
-                <h2
-                    class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                    {{ $t('Transactions') }}
-                </h2>
-            </template>
-
-            <!-- Filters -->
-            <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 px-4 py-3">
-                <SSearchWithColumnFilter
-                    v-model:column="searchColumn"
-                    v-model:search="searchQuery" 
-                    :table-api="table?.tableApi" />
-                
-                <div class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
-                    <UCheckbox
-                        v-model="groupByCategory"
-                        :label="$t('Group by category')" />
-
-                    <SDateTimePicker
-                        v-model="dateRange"
-                        class="!w-56"
-                        type="date"
-                        range
-                        @clear="() => (dateRange = [])" />
+    <main>
+        <div class="flex flex-row items-center justify-center">
+            <UCard>
+                <template #header>
+                    <h2
+                        class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                        {{ $t('Transactions') }}
+                    </h2>
+                </template>
+    
+                <!-- Filters -->
+                <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 px-4 py-3">
+                    <SSearchWithColumnFilter
+                        v-model:column="searchColumn"
+                        v-model:search="searchQuery" 
+                        :table-api="table?.tableApi" />
+                    
+                    <div class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
+                        <UCheckbox
+                            v-model="groupByCategory"
+                            :label="$t('Group by category')" />
+    
+                        <SDateTimePicker
+                            v-model="dateRange"
+                            class="!w-56"
+                            type="date"
+                            range
+                            @clear="() => (dateRange = [])" />
+                    </div>
                 </div>
-            </div>
-
-            <!-- Header and Action buttons -->
-            <div class="flex justify-between items-center w-full px-4 py-3">
-                <div class="flex items-center gap-1.5">
-                    <span class="text-sm leading-5">
-                        {{ $t('Rows per page') }}:
-                    </span>
-
-                    <USelect
-                        v-model="itemsPerPage"
-                        :items="[5, 10, 20, 30, 40, 50]"
-                        class="me-2 w-20"
-                        size="xs" />
+    
+                <!-- Header and Action buttons -->
+                <div class="flex justify-between items-center w-full px-4 py-3">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm leading-5">
+                            {{ $t('Rows per page') }}:
+                        </span>
+    
+                        <USelect
+                            v-model="itemsPerPage"
+                            :items="[5, 10, 20, 30, 40, 50]"
+                            class="me-2 w-20"
+                            size="xs" />
+                    </div>
+    
+                    <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetTableFilters" />
                 </div>
-
-                <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetTableFilters" />
-            </div>
-
-            <!-- Extra Actions -->
-            <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2 px-4 py-3">
-                <UButton
-                    icon="i-heroicons-arrow-down-on-square-stack"
-                    color="primary"
-                    size="xs"
-                    @click="navigateToLlm">
-                    {{ $t('LLM Data Import') }}
-                </UButton>
-
-                <UButton
-                    icon="i-heroicons-plus"
-                    color="primary"
-                    size="xs"
-                    @click="createTransaction">
-                    {{ $t('Create Transaction') }}
-                </UButton>
-            </div>
-
-            <!-- Table -->
-            <UTable
-                ref="table"
-                :data="tableData?.data.rows"
-                :columns="columns"
-                sticky
-                :loading="status === 'pending'"
-                class="w-full" />
-
-            <!-- Number of rows & Pagination -->
-            <template #footer>
-                <SPaginationFooter
-                    v-model:page="page"
-                    v-model:items-per-page="itemsPerPage"
-                    :total="tableData.data.totalRecordCount" />
-            </template>
-        </UCard>
-    </div>
-
-    <UModal
-      prevent-close
-      @close="router.push('/transactions')">
-        <NuxtPage />
-    </UModal>
+    
+                <!-- Extra Actions -->
+                <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2 px-4 py-3">
+                    <UButton
+                        icon="i-heroicons-arrow-down-on-square-stack"
+                        color="primary"
+                        size="xs"
+                        @click="navigateToLlm">
+                        {{ $t('LLM Data Import') }}
+                    </UButton>
+    
+                    <UButton
+                        icon="i-heroicons-plus"
+                        color="primary"
+                        size="xs"
+                        @click="createTransaction">
+                        {{ $t('Create Transaction') }}
+                    </UButton>
+                </div>
+    
+                <!-- Table -->
+                <UTable
+                    ref="table"
+                    :data="tableData?.data.rows"
+                    :columns="columns"
+                    sticky
+                    :loading="status === 'pending'"
+                    class="w-full" />
+    
+                <!-- Number of rows & Pagination -->
+                <template #footer>
+                    <SPaginationFooter
+                        v-model:page="page"
+                        v-model:items-per-page="itemsPerPage"
+                        :total="tableData.data.totalRecordCount" />
+                </template>
+            </UCard>
+        </div>
+    
+        <UModal
+          prevent-close
+          @close="router.push('/transactions')">
+            <NuxtPage />
+        </UModal>
+    </main>
 </template>
