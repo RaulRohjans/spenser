@@ -12,24 +12,9 @@
         id?: number
 
         /**
-         * Id of the category
+         * Mode in which the modal will operate
          */
-        category?: number
-
-        /**
-         * Name of the transaction
-         */
-        name?: string
-
-        /**
-         * Total value of the transaction (can be positive or negative)
-         */
-        value?: number
-
-        /**
-         * Date of the transaction
-         */
-        date?: Date
+        mode: 'create' | 'edit' | 'remove'
     }
 
     const props = defineProps<ModalTransactionProps>()
@@ -56,14 +41,38 @@
     type Schema = z.output<typeof _schema>
     const state = reactive({
         id: props.id,
-        category: props.category,
-        name: props.name,
-        value: props.value,
-        date: props.date || new Date(Date.now())
+        category: 0,
+        name: '',
+        value: '',
+        date: new Date(Date.now())
     })
 
-    // Fetch Data
-    const { data: categoryData, pending: categoryLoading } =
+    // Fetch transaction
+    if(props.mode != 'create') {
+        const { data: transaction, status: transactionStatus } =
+            await useLazyAsyncData<FetchTableDataResult>(
+                'categoryData',
+                () =>
+                    $fetch('/api/categories', {
+                        method: 'GET',
+                        headers: buildRequestHeaders(token.value)
+                    }),
+                {
+                    default: () => {
+                        return {
+                            success: false,
+                            data: {
+                                totalRecordCount: 0,
+                                rows: []
+                            }
+                        }
+                    }
+                }
+            )
+    }
+
+    // Fetch categories
+    const { data: categoryData, status: categoryStatus } =
         await useLazyAsyncData<FetchTableDataResult>(
             'categoryData',
             () =>
@@ -179,7 +188,7 @@
                     <USelect
                         v-model="state.category"
                         :items="getCategoryOptions"
-                        :loading="categoryLoading"
+                        :loading="categoryStatus === 'pending'"
                         class="hide-select-span">
                         <template #leading>
                             <UIcon

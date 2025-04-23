@@ -10,7 +10,6 @@
     import type { TableColumn } from '@nuxt/ui'
 
     // Basic Setup
-    const localePath = useLocalePath()
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const router = useRouter()
@@ -331,9 +330,9 @@
         </UCard>
     </div>
 
-    <ModalTransaction
-        :key="reloadModal"
-        v-model="isModalOpen"
-        v-bind="transactionLoaderObj"
-        @successful-submit="reloadTableData" />
+    <UModal
+      prevent-close
+      @close="router.push('/transactions')">
+        <NuxtPage />
+    </UModal>
 </template>
