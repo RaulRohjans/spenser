@@ -1,10 +1,12 @@
 import { h } from 'vue'
-import type { Column } from '@tanstack/vue-table'
+import type { Column, Table } from '@tanstack/vue-table'
 import type { TableRow } from '@/types/Table'
 import { UButton } from '#components'
 
-export const useColumnSorter = () => {
-    //TODO: implement server side by allowing a callback in the onClick
+export const useColumnSorter = (
+        table: Table<TableRow>,
+        sortCallback?: (col: Column<TableRow, unknown>, dir: 'asc' | 'desc' | false) => void
+    ) => {
     return (column: Column<TableRow, unknown>, label: string) => {
         const isSorted = column.getIsSorted()
 
@@ -18,7 +20,29 @@ export const useColumnSorter = () => {
                 : 'i-heroicons-arrow-down'
             : 'i-heroicons-arrows-up-down-20-solid',
             class: '-mx-2.5',
-            onClick: () => column.toggleSorting(isSorted === 'asc')
+            onClick: () => {
+                // If the column was unsorted, sort the default one
+                // isSorted is actually the state of the column before being updated
+                // so when its 'desc' its actually about to turn false
+                if (isSorted == 'desc') {
+                    const defaultSortColumn = table.getAllColumns().find(c => c.id === 'id')
+                    if (defaultSortColumn) {
+                        table.getAllColumns().forEach(c => c.clearSorting())
+                        defaultSortColumn.toggleSorting(false)
+                        sortCallback?.(defaultSortColumn, 'desc')
+                    }
+                    return
+                }
+
+                table.getAllColumns().forEach(c => {
+                    if (c.id !== column.id && c.getIsSorted()) c.clearSorting()
+                })
+
+                column.toggleSorting()
+        
+                // Notify sort state to consumer
+                sortCallback?.(column, column.getIsSorted())
+            }
         })
     }
 }

@@ -38,3 +38,10 @@ export interface FetchTableSingleDataResult {
     success: boolean
     data: TableRow
 }
+
+export interface TableFilters {
+    searchQuery?: string
+    searchColumn?: string
+    groupCategory?: boolean
+    dateRange?: Date[]
+  }

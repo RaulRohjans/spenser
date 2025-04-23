@@ -3,8 +3,7 @@
     import type { NuxtError } from '#app'
     import type {
         FetchTableDataResult,
-        TableRow,
-        TableSort
+        TableRow
     } from '@/types/Table'
     import type { TableColumn } from '@nuxt/ui'
 
@@ -14,7 +13,18 @@
     const router = useRouter()
 
     // Table loading
-    const columnSorter = useColumnSorter()
+    const table = useTemplateRef('table')
+
+    const columnSorter = computed(() => {
+        if(table.value?.tableApi)
+            return useColumnSorter(table.value.tableApi, (col, dir) => {
+                sort.value = col.id
+                order.value = dir || 'asc'
+            })
+
+        return () => ({})
+    })
+    
     const delTransaction = function (row: TableRow) {
         Notifier.showChooser(
             $t('Delete Transaction'),
@@ -39,7 +49,7 @@
                             $t('Transaction deleted successfully!'),
                             'success'
                         )
-                        reloadTableData()
+                        reload()
                     })
                     .catch((e: NuxtError) =>
                         Notifier.showAlert(e.statusMessage, 'error')
@@ -47,6 +57,7 @@
             }
         )
     }
+    
     const { cell: actionCell } = useActionColumnCell<TableRow>({
         actions: ['edit', 'duplicate', 'delete'],
         callbacks: {
@@ -60,27 +71,27 @@
         {
             accessorKey: 'id',
             sortDescFirst: true,
-            header: ({ column }) => columnSorter(column, '#')
+            header: ({ column }) => columnSorter.value(column, '#')
         },
         {
             accessorKey: 'name',
-            header: ({ column }) => columnSorter(column, $t('Name'))
+            header: ({ column }) => columnSorter.value(column, $t('Name'))
         },
         {
             accessorKey: 'value',
-            header: ({ column }) => columnSorter(column, $t('Value')),
+            header: ({ column }) => columnSorter.value(column, $t('Value')),
             cell: ({ row }) => {
                 const value = Number(row.getValue('value'))
 
                 const formatted = formatCurrencyValue(value)
-                const style = getValueColColor(value)
+                const colorClass = getTransactionColor(value)
 
-                return h('span', { style }, formatted)
+                return h('span', { class: colorClass }, formatted)
             }
         },
         {
             accessorKey: 'category_name',
-            header: ({ column }) => columnSorter(column, $t('Category')),
+            header: ({ column }) => columnSorter.value(column, $t('Category')),
             cell: ({ row }) => {
                 const deleted = row.original.category_deleted
                 const name = row.original.category_name
@@ -102,15 +113,12 @@
         },
         {
             accessorKey: 'date',
-            header: ({ column }) => columnSorter(column, $t('Date')),
+            header: ({ column }) => columnSorter.value(column, $t('Date')),
             cell: ({ row }) => {
-                const ClientOnly = resolveComponent('ClientOnly')
                 const date = new Date(row.original.date)
                 const formatted = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
 
-                return h(ClientOnly, null, {
-                    default: () => h('span', formatted)
-                })
+                return h('span', formatted)
             }
         },
         {
@@ -120,89 +128,43 @@
         }
     ]
 
-    const table = useTemplateRef('table')
-
-    const page: Ref<number> = ref(1)
-    const itemsPerPage: Ref<number> = ref(10)
-    const searchQuery: Ref<string> = ref('')
-    const searchColumn: Ref<string> = ref('name')
-    const sort: Ref<TableSort> = ref({
-        column: 'id',
-        direction: 'asc' as const
-    })
-    const tableDataKey: Ref<number> = ref(0)
-    const dateRange: Ref<Date[]> = ref([])
-    const groupByCategory: Ref<boolean> = ref(false)
-
-    /* ----------- Fetch Data ----------- */
-    const { data: tableData, status } =
-        await useLazyAsyncData<FetchTableDataResult>(
-            'tableData',
-            () =>
-                $fetch(`/api/transactions`, {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value),
-                    query: {
-                        q: searchQuery.value,
-                        qColumn: searchColumn.value,
-                        page: page.value,
-                        limit: itemsPerPage.value,
-                        sort: sort.value.column,
-                        order: sort.value.direction,
-                        startDate:
-                            dateRange.value.length > 0
-                                ? dateRange.value[0].getTime()
-                                : '',
-                        endDate:
-                            dateRange.value.length > 0
-                                ? dateRange.value[1].getTime()
-                                : '',
-                        groupCategory: groupByCategory.value
-                    }
-                }),
-            {
-                default: () => {
-                    return {
-                        success: false,
-                        data: {
-                            totalRecordCount: 0,
-                            rows: []
-                        }
-                    }
-                },
-                watch: [
+    const {
+        page,
+        limit: itemsPerPage,
+        sort,
+        order,
+        filters,
+        data: tableData,
+        status,
+        reload,
+        resetFilters
+    } = usePaginatedTable<FetchTableDataResult>({
+        key: 'all-transactions',
+        fetcher: ({ page, limit, sort, order, filters }) =>
+            $fetch(`/api/transactions`, {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value),
+                query: {
+                    q: filters?.searchQuery,
+                    qColumn: filters?.searchColumn,
                     page,
-                    searchQuery,
-                    searchColumn,
-                    itemsPerPage,
+                    limit,
                     sort,
-                    tableDataKey,
-                    dateRange,
-                    groupByCategory
-                ]
-            }
-        )
-    /* ---------------------------------------- */
-
-    const reloadTableData = function () {
-        tableDataKey.value++
-    }
-
-    const getValueColColor = function (value: number) {
-        if (value > 0) return 'color: rgb(51, 153, 102)' // Green
-        else if (value < 0) return 'color: rgb(227, 0, 0)' // Red
-        else return ''
-    }
-
-    const resetTableFilters = function () {
-        dateRange.value = []
-        groupByCategory.value = false
-    }
-
-    function navigateToLlm() {
-        navigateTo('/transactions/llm-data-importer')
-    }
-
+                    order,
+                    startDate: filters?.dateRange?.[0]?.getTime() ?? '',
+                    endDate: filters?.dateRange?.[1]?.getTime() ?? '',
+                    groupCategory: filters?.groupCategory ?? false
+                }
+            }),
+        defaultFilters: {
+            searchQuery: '',
+            searchColumn: 'name',
+            dateRange: [],
+            groupCategory: false
+        },
+        watch: [] // optional: other filters to watch
+    })
+    
     useHead({
         title: `Spenser | ${$t('Transactions')}`
     })
@@ -222,21 +184,21 @@
                 <!-- Filters -->
                 <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 px-4 py-3">
                     <SSearchWithColumnFilter
-                        v-model:column="searchColumn"
-                        v-model:search="searchQuery" 
+                        v-model:column="filters.searchColumn"
+                        v-model:search="filters.searchQuery" 
                         :table-api="table?.tableApi" />
                     
                     <div class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
                         <UCheckbox
-                            v-model="groupByCategory"
+                            v-model="filters.groupCategory"
                             :label="$t('Group by category')" />
     
                         <SDateTimePicker
-                            v-model="dateRange"
+                            v-model="filters.dateRange"
                             class="!w-56"
                             type="date"
                             range
-                            @clear="() => (dateRange = [])" />
+                            @clear="() => (filters.dateRange = [])" />
                     </div>
                 </div>
     
@@ -254,7 +216,7 @@
                             size="xs" />
                     </div>
     
-                    <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetTableFilters" />
+                    <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
                 </div>
     
                 <!-- Extra Actions -->
@@ -263,7 +225,7 @@
                         icon="i-heroicons-arrow-down-on-square-stack"
                         color="primary"
                         size="xs"
-                        @click="navigateToLlm">
+                        @click="router.push(`/transactions/llm-data-importer`)">
                         {{ $t('LLM Data Import') }}
                     </UButton>
     
@@ -290,7 +252,7 @@
                     <SPaginationFooter
                         v-model:page="page"
                         v-model:items-per-page="itemsPerPage"
-                        :total="tableData.data.totalRecordCount" />
+                        :total="tableData!.data.totalRecordCount ?? 0" />
                 </template>
             </UCard>
         </div>
