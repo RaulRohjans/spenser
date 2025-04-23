@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { UIcon } from '#components'
     import type { NuxtError } from '#app'
-    import type { ModalTransactionProps } from '@/components/Modal/Transaction.vue'
     import type {
         FetchTableDataResult,
         TableRow,
@@ -51,12 +50,8 @@
     const { cell: actionCell } = useActionColumnCell<TableRow>({
         actions: ['edit', 'duplicate', 'delete'],
         callbacks: {
-            onEdit: row => {
-                router.push(`/transactions/edit/${row.id}`)
-            },
-            onDuplicate: row => {
-                router.push(`/transactions/duplicate/${row.id}`)
-            },
+            onEdit: row => router.push(`/transactions/edit/${row.id}`),
+            onDuplicate: row => router.push(`/transactions/duplicate/${row.id}`),
             onDelete: delTransaction
         }
     })
@@ -127,8 +122,6 @@
 
     const table = useTemplateRef('table')
 
-    const transactionLoaderObj: Ref<ModalTransactionProps | null> = ref(null)
-    const isModalOpen: Ref<boolean> = ref(false)
     const page: Ref<number> = ref(1)
     const itemsPerPage: Ref<number> = ref(10)
     const searchQuery: Ref<string> = ref('')
@@ -138,7 +131,6 @@
         direction: 'asc' as const
     })
     const tableDataKey: Ref<number> = ref(0)
-    const reloadModal: Ref<number> = ref(0)
     const dateRange: Ref<Date[]> = ref([])
     const groupByCategory: Ref<boolean> = ref(false)
 
@@ -192,17 +184,13 @@
         )
     /* ---------------------------------------- */
 
-    const createTransaction = function () {
-        isModalOpen.value = !isModalOpen.value
-    }
-
     const reloadTableData = function () {
         tableDataKey.value++
     }
 
     const getValueColColor = function (value: number) {
-        if (value > 0) return 'color: rgb(51, 153, 102)'
-        else if (value < 0) return 'color: rgb(227, 0, 0)'
+        if (value > 0) return 'color: rgb(51, 153, 102)' // Green
+        else if (value < 0) return 'color: rgb(227, 0, 0)' // Red
         else return ''
     }
 
@@ -214,15 +202,6 @@
     function navigateToLlm() {
         navigateTo('/transactions/llm-data-importer')
     }
-
-    // Reset vbind model when modal is closed
-    watch(isModalOpen, (newVal) => {
-        if (!newVal) transactionLoaderObj.value = null
-
-        // Reset modal and reload
-        // This will make sure new props are loaded correctly
-        reloadModal.value++
-    })
 
     useHead({
         title: `Spenser | ${$t('Transactions')}`
@@ -292,7 +271,7 @@
                         icon="i-heroicons-plus"
                         color="primary"
                         size="xs"
-                        @click="createTransaction">
+                        @click="router.push(`/transactions/create`)">
                         {{ $t('Create Transaction') }}
                     </UButton>
                 </div>
@@ -316,10 +295,7 @@
             </UCard>
         </div>
     
-        <UModal
-          prevent-close
-          @close="router.push('/transactions')">
-            <NuxtPage />
-        </UModal>
+        <!-- Slot for popup forms to CRUD over transactions -->
+        <NuxtPage />
     </main>
 </template>
