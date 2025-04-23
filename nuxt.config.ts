@@ -25,7 +25,6 @@ export default defineNuxtConfig({
     routeRules: {
         '/settings': { redirect: '/settings/global' },
         '/settings/admin': { redirect: '/settings/global' },
-        '/transactions': { redirect: '/transactions/all' },
         '/categories': { redirect: '/categories/all' },
     },
     auth: {

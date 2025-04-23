@@ -20,7 +20,7 @@
             },
             {
                 name: $t('Transactions'),
-                href: '/transactions/all',
+                href: '/transactions',
                 selected: isRouteActive(route, '/transactions')
             },
             {
