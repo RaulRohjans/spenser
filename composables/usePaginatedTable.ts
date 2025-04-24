@@ -34,7 +34,7 @@ export function usePaginatedTable<T>(opts: PaginatedTableOptions<T>) {
             })
         },
         {
-            watch: [page, limit, sort, order, reloadKey, filters, ...(opts.watch ?? [])]
+            watch: [page, limit, sort, order, reloadKey, ...Object.values(toRefs(filters)), ...(opts.watch ?? [])]
         }
     )
 

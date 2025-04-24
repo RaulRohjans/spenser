@@ -241,7 +241,7 @@
                 <!-- Table -->
                 <UTable
                     ref="table"
-                    :data="tableData?.data.rows"
+                    :data="tableData?.data?.rows ?? []"
                     :columns="columns"
                     sticky
                     :loading="status === 'pending'"
@@ -252,7 +252,7 @@
                     <SPaginationFooter
                         v-model:page="page"
                         v-model:items-per-page="itemsPerPage"
-                        :total="tableData!.data.totalRecordCount ?? 0" />
+                        :total="tableData?.data?.totalRecordCount ?? 0" />
                 </template>
             </UCard>
         </div>
