@@ -37,7 +37,7 @@
     })
 
     type Schema = z.output<typeof _schema>
-    let state = reactive({
+    const state = reactive({
         id: props.id,
         category: 0,
         name: '',
@@ -49,7 +49,8 @@
     if(props.mode != 'create') {
         const { data: transaction } =
             await useLazyAsyncData<FetchTableSingleDataResult>(
-                'transaction',
+                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+                `transaction-${props.mode}-${props.id}`,
                 () =>
                     $fetch(`/api/transactions/${props.id}`, {
                         method: 'GET',
@@ -61,18 +62,24 @@
                             success: false,
                             data: {}
                         }
-                    }
+                    },
+                    watch: [() => props.id, () => props.mode]
                 }
             )
 
-        const data = transaction.value.data
-        state = reactive({
-            id: props.id,
-            category: data.category,
-            name: data.name,
-            value: Number.parseFloat(data.value),
-            date: new Date(data.date)
-        })
+        // A watch is needed here because for some reason, using a then is still
+        // not enough to make sure the data is loaded after the request is made
+        watch(transaction, (newVal) => {
+            if (!newVal?.data) return
+
+            Object.assign(state, {
+                id: props.id,
+                category: newVal.data.category,
+                name: newVal.data.name,
+                value: newVal.data.value,
+                date: new Date(newVal.data.date)
+            })
+        }, { immediate: true })
     }
 
     // Fetch categories

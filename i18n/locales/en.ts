@@ -143,5 +143,6 @@ export default {
     "Logout": "Logout",
     "Are you sure you want to logout?": "Are you sure you want to logout?",
     "No data to display": "No data to display",
-    "Edit Transaction": "Edit Transaction"
+    "Edit Transaction": "Edit Transaction",
+    "Duplicate Transaction": "Duplicate Transaction"
 }
