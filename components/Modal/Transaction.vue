@@ -14,7 +14,7 @@
         /**
          * Mode in which the modal will operate
          */
-        mode: 'create' | 'edit' | 'remove'
+        mode: 'create' | 'edit' | 'duplicate'
     }
 
     const props = defineProps<ModalTransactionProps>()
@@ -41,7 +41,7 @@
         id: props.id,
         category: 0,
         name: '',
-        value: '',
+        value: 0,
         date: new Date(Date.now())
     })
 
@@ -70,7 +70,7 @@
             id: props.id,
             category: data.category,
             name: data.name,
-            value: data.value,
+            value: Number.parseFloat(data.value),
             date: new Date(data.date)
         })
     }
@@ -115,28 +115,30 @@
     })
 
     const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
-        $fetch(`/api/transactions/${props.mode}`, {
+        const operation = props.mode === 'edit' ? 'edit' : 'create'
+
+        $fetch(`/api/transactions/${operation}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
         })
-            .then((data) => {
-                if (!data.success)
-                    return Notifier.showAlert(
-                        $t('An error occurred when performing the action.'),
-                        'error'
-                    )
-
-                // Emit success
-                emit('successful-submit')
-
-                // Disaply success message
-                Notifier.showAlert(
-                    $t('Operation completed successfully!'),
-                    'success'
+        .then((data) => {
+            if (!data.success)
+                return Notifier.showAlert(
+                    $t('An error occurred when performing the action.'),
+                    'error'
                 )
-            })
-            .catch((e: NuxtError) => (error.value = e.statusMessage))
+
+            // Emit success
+            emit('successful-submit')
+
+            // Disaply success message
+            Notifier.showAlert(
+                $t('Operation completed successfully!'),
+                'success'
+            )
+        })
+        .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
     const categoryDisplayIcon = computed(() => {
