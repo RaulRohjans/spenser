@@ -173,7 +173,7 @@
 <template>
     <main>
         <div class="flex flex-row items-center justify-center">
-            <UCard>
+            <UCard class="w-full shadow-xl">
                 <template #header>
                     <h2
                         class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">

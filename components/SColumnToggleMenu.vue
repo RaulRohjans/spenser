@@ -38,17 +38,18 @@
   <div v-if="tableApi" class="flex items-center gap-2">
     <UDropdownMenu :items="items" :content="{ align: 'end' }">
         <UButton
-            :label="$t('Columns')"
+            icon="i-heroicons-view-columns"
             color="neutral"
             variant="outline"
-            leading-icon="i-heroicons-view-columns"
-            :aria-label="$t('Columns')"
-        />
+            size="xs">
+            {{ $t('Columns') }}
+        </UButton>
     </UDropdownMenu>
 
     <UButton
         icon="i-heroicons-funnel"
         color="neutral"
+        variant="outline"
         size="xs"
         @click="resetVisibility">
         {{ $t('Reset') }}

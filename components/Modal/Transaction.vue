@@ -20,7 +20,6 @@
     const props = defineProps<ModalTransactionProps>()
 
     const emit = defineEmits<{
-        (event: 'submit'): void
         (event: 'successful-submit'): void
     }>()
 
@@ -115,15 +114,8 @@
         return options
     })
 
-    const operation = computed(() => {
-        if (!props.id) return 'insert'
-        return 'edit'
-    })
-
     const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
-        emit('submit')
-
-        $fetch(`/api/transactions/${operation.value}`, {
+        $fetch(`/api/transactions/${props.mode}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
@@ -170,7 +162,7 @@
             :label="$t('Transaction Name')"
             name="name"
             :error="!!error">
-            <UInput v-model="state.name" />
+            <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
         <div
@@ -180,7 +172,7 @@
                 name="value"
                 class="w-full"
                 :error="!!error">
-                <UInput v-model="state.value" type="number" step="any" />
+                <UInput v-model="state.value" type="number" step="any" class="w-full" />
             </UFormField>
 
             <UFormField
@@ -192,7 +184,7 @@
                     v-model="state.category"
                     :items="getCategoryOptions"
                     :loading="categoryStatus === 'pending'"
-                    class="hide-select-span">
+                    class="hide-select-span w-full">
                     <template v-if="categoryDisplayIcon" #leading>
                         <UIcon
                             :name="categoryDisplayIcon"
@@ -207,6 +199,8 @@
             <SDateTimePicker v-model="state.date" type="datetime" />
         </UFormField>
 
-        <UButton type="submit"> {{ $t('Submit') }} </UButton>
+        <div class="flex flex-row justify-end">
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
+        </div>
     </UForm>
 </template>
