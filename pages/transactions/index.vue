@@ -17,7 +17,7 @@
 
     const columnSorter = computed(() => {
         if(table.value?.tableApi)
-            return useColumnSorter(table.value.tableApi, (col, dir) => {
+            return useColumnSorter(table.value.tableApi, sort, order, (col, dir) => {
                 sort.value = col.id
                 order.value = dir || 'asc'
             })
@@ -182,7 +182,7 @@
                 </template>
     
                 <!-- Filters -->
-                <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 px-4 py-3">
+                <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 px-4 py-2">
                     <SSearchWithColumnFilter
                         v-model:column="filters.searchColumn"
                         v-model:search="filters.searchQuery" 
@@ -203,7 +203,7 @@
                 </div>
     
                 <!-- Header and Action buttons -->
-                <div class="flex justify-between items-center w-full px-4 py-3">
+                <div class="flex justify-between items-center w-full px-4 py-2">
                     <div class="flex items-center gap-1.5">
                         <span class="text-sm leading-5">
                             {{ $t('Rows per page') }}:
@@ -220,7 +220,7 @@
                 </div>
     
                 <!-- Extra Actions -->
-                <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2 px-4 py-3">
+                <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2 px-4 py-2">
                     <UButton
                         icon="i-heroicons-arrow-down-on-square-stack"
                         color="primary"
