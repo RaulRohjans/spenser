@@ -67,11 +67,11 @@
             :label="$t('Username')"
             name="username"
             :error="error != null">
-            <UInput v-model="state.username" />
+            <UInput v-model="state.username" class="w-full" />
         </UFormField>
 
         <UFormField :label="$t('Password')" name="password" :error="error">
-            <UInput v-model="state.password" type="password" />
+            <UInput v-model="state.password" class="w-full" type="password" />
         </UFormField>
 
         <UButton type="submit"> {{ $t('Submit') }} </UButton>
