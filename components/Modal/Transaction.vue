@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { z } from 'zod'
     import type { SelectOption } from '@/types/Options'
-    import type { FetchTableDataResult, FetchTableSingleDataResult } from '@/types/Table'
+    import type { FetchTableSingleDataResult } from '@/types/Table'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
 
@@ -29,9 +29,7 @@
 
     const _schema = z.object({
         name: z.string().optional(),
-        value: z
-            .number()
-            .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+        value: z.coerce.number().refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
         category: z.number(),
         date: z.date()
     })
@@ -72,41 +70,16 @@
         watch(transaction, (newVal) => {
             if (!newVal?.data) return
 
-            Object.assign(state, {
-                id: props.id,
-                category: newVal.data.category,
-                name: newVal.data.name,
-                value: newVal.data.value,
-                date: new Date(newVal.data.date)
-            })
+            state.id = props.id
+            state.name = newVal.data.name
+            state.category = newVal.data.category
+            state.value = newVal.data.value
+            state.date = new Date(newVal.data.date)
         }, { immediate: true })
     }
 
     // Fetch categories
-    const { data: categoryData, status: categoryStatus } =
-        await useLazyAsyncData<FetchTableDataResult>(
-            'categoryData',
-            () =>
-                $fetch('/api/categories', {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value)
-                }),
-            {
-                default: () => {
-                    return {
-                        success: false,
-                        data: {
-                            totalRecordCount: 0,
-                            rows: []
-                        }
-                    }
-                }
-            }
-        )
-
-    // Load first category when creating a new record
-    if (!state.category && categoryData.value.data.rows.length > 0)
-        state.category = categoryData.value.data.rows[0].id
+    const { data: categoryData, status: categoryStatus } = useCategories()
 
     const getCategoryOptions = computed(() => {
         const options: SelectOption[] = []
@@ -121,13 +94,21 @@
         return options
     })
 
-    const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
-        const operation = props.mode === 'edit' ? 'edit' : 'create'
+    const operation = computed(() => {
+        return props.mode === 'edit' ? 'edit' : 'create'
+    })
 
-        $fetch(`/api/transactions/${operation}`, {
+    const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
+        const parsed = _schema.safeParse(event.data)
+        if (!parsed.success) {
+            error.value = $t('Invalid input')
+            return
+        }
+
+        $fetch(`/api/transactions/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
-            body: event.data
+            body: event.data // Use data from event instead of parsed bc it contains the ID
         })
         .then((data) => {
             if (!data.success)

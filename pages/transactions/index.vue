@@ -258,6 +258,6 @@
         </div>
     
         <!-- Slot for popup forms to CRUD over transactions -->
-        <NuxtPage />
+        <NuxtPage @successful-submit="reload" />
     </main>
 </template>

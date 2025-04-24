@@ -6,8 +6,17 @@
 
     const isOpen = true
 
+    const emit = defineEmits<{
+        (event: 'successful-submit'): void
+    }>()
+
     function handleOpenChange(state: boolean) {
         if(!state) router.push('/transactions')
+    }
+
+    function onSuccessfulSubmit() {
+        emit('successful-submit')
+        router.push('/transactions')
     }
 </script>
 
@@ -20,7 +29,7 @@
             <ModalTransaction
                 :id="id"
                 mode="duplicate"
-                @successful-submit="router.push('/transactions')" />
+                @successful-submit="onSuccessfulSubmit" />
         </template>
     </UModal>
 </template>
