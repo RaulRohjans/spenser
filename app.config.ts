@@ -7,6 +7,16 @@ export default defineAppConfig({
 
         modal: {
             base: "items-center" // container: "items-center"
-        }
+        },
+
+        button: {
+            base: "cursor-pointer"
+        },
+        select: {
+            base: "cursor-pointer"
+        },
+        checkbox: {
+            base: "cursor-pointer"
+        }        
     }
 })
