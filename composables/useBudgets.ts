@@ -1,11 +1,13 @@
 import { useDebounceFn } from '@vueuse/core'
 import type { BudgetDataObject } from '~/types/Data'
 
+type BudgetOrAdd = BudgetDataObject & { __isAddButton?: boolean }
+
 export function useBudgets() {
     const { token } = useAuth()
     const { t: $t } = useI18n()
 
-    const budgetDraggableList = ref<BudgetDataObject[] | null>(null)
+    const budgetDraggableList = ref<BudgetOrAdd[] | undefined>()
 
     // Track last saved order (only the IDs)
     const lastSavedOrder = ref<number[]>([])
@@ -18,28 +20,19 @@ export function useBudgets() {
         return data
     }
 
-    const loadBudgetDraggableList = async (): Promise<BudgetDataObject[]> => {
-        return [
-            ...(await loadBudgetData()),
-            {
-                id: -1,
-                user: 0,
-                category: null,
-                name: null,
-                value: 0,
-                period: 'daily',
-                order: 0,
-                category_name: null,
-                category_icon: null,
-                category_deleted: false,
-                expenses: 0
-            }
+    const assignDraggableList = (data: BudgetDataObject[]) => {
+        budgetDraggableList.value = [
+            ...(data ?? []),
+
+            // This item here is the create card that stays at
+            // the end of the draggable
+            { id: -1, __isAddButton: true } as BudgetOrAdd
         ]
     }
 
     const loadData = async () => {
-        const data = await loadBudgetDraggableList()
-        budgetDraggableList.value = data
+        const data = await loadBudgetData()
+        assignDraggableList(data)
 
         // Save the initial order to lastSavedOrder (ignore fake + button)
         lastSavedOrder.value = data

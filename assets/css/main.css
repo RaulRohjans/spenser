@@ -49,7 +49,6 @@ input[type='number'] {
 */
 .drag-me {
     cursor: grab;
-    transition: transform 0.2s ease, margin 0.2s ease;
 }
 
 .drag-me:active {
