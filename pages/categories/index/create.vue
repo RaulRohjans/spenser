@@ -22,9 +22,10 @@
     <UModal
         v-model:open="isOpen"
         :title="$t('Create Category')"
+        :description="$t('Create Category')"
         @update:open="handleOpenChange">
         <template #body>
-            <ModalTransaction
+            <ModalCategory
                 mode="create"
                 @successful-submit="onSuccessfulSubmit" />
         </template>

@@ -27,14 +27,14 @@
     const { t: $t } = useI18n()
     const error: Ref<string | undefined> = ref()
 
-    const _schema = z.object({
+    const schema = z.object({
         name: z.string().optional(),
         value: z.coerce.number().refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
         category: z.number(),
         date: z.date()
     })
 
-    type Schema = z.output<typeof _schema>
+    type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
         category: 0,
@@ -99,7 +99,7 @@
     })
 
     const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
-        const parsed = _schema.safeParse(event.data)
+        const parsed = schema.safeParse(event.data)
         if (!parsed.success) {
             error.value = $t('Invalid input')
             return

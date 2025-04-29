@@ -144,5 +144,7 @@ export default {
     "Are you sure you want to logout?": "Tem a certeza que pretende terminar a sessão?",
     "No data to display": "Não existem dados a mostrar",
     "Edit Transaction": "Editar Transação",
-    "Duplicate Transaction": "Duplicar Transação"
+    "Duplicate Transaction": "Duplicar Transação",
+    "Edit Category": "Editar Categoria",
+    "Duplicate Category": "Duplicar Categoria"
 }

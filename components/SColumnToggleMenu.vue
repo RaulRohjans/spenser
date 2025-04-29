@@ -16,7 +16,7 @@
         props.tableApi?.getAllColumns()
         .filter(column => column.getCanHide())
         .map(column => ({
-            label: upperFirst(column.id),
+            label: (column.columnDef.meta?.alias as string) || upperFirst(column.id),
             type: 'checkbox' as const,
             checked: column.getIsVisible(),
             onUpdateChecked(checked: boolean) {

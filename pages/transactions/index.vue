@@ -5,7 +5,7 @@
         FetchTableDataResult,
         TableRow
     } from '@/types/Table'
-    import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn } from '@nuxt/ui'
 
     // Basic Setup
     const { token } = useAuth()
@@ -71,11 +71,13 @@
         {
             accessorKey: 'id',
             sortDescFirst: true,
-            header: ({ column }) => columnSorter.value(column, '#')
+            header: ({ column }) => columnSorter.value(column, '#'),
+            meta: { alias: 'Id' }
         },
         {
             accessorKey: 'name',
-            header: ({ column }) => columnSorter.value(column, $t('Name'))
+            header: ({ column }) => columnSorter.value(column, $t('Name')),
+            meta: { alias: $t('Name') }
         },
         {
             accessorKey: 'value',
@@ -87,7 +89,8 @@
                 const colorClass = getTransactionColor(value)
 
                 return h('span', { class: colorClass }, formatted)
-            }
+            },
+            meta: { alias: $t('Value') }
         },
         {
             accessorKey: 'category_name',
@@ -109,7 +112,8 @@
                     ] : []),
                     h('span', name)
                 ])
-            }
+            },
+            meta: { alias: $t('Category') }
         },
         {
             accessorKey: 'date',
@@ -119,12 +123,14 @@
                 const formatted = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
 
                 return h('span', formatted)
-            }
+            },
+            meta: { alias: $t('Date') }
         },
         {
             id: 'actions',
             enableHiding: false,
-            cell: actionCell
+            cell: actionCell,
+            meta: { alias: $t('Actions'), searchable: false }
         }
     ]
 

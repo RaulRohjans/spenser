@@ -22,6 +22,7 @@
     <UModal
         v-model:open="isOpen"
         :title="$t('Create Transaction')"
+        :description="$t('Create Transaction')"
         @update:open="handleOpenChange">
         <template #body>
             <ModalTransaction

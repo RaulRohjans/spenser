@@ -24,9 +24,10 @@
     <UModal
         v-model:open="isOpen"
         :title="$t('Edit Category')"
+        :description="$t('Edit Category')"
         @update:open="handleOpenChange">
         <template #body>
-            <ModalTransaction
+            <ModalCategory
                 :id="id"
                 mode="edit"
                 @successful-submit="onSuccessfulSubmit" />

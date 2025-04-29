@@ -70,11 +70,13 @@
         {
             accessorKey: 'id',
             sortDescFirst: true,
-            header: ({ column }) => columnSorter.value(column, '#')
+            header: ({ column }) => columnSorter.value(column, '#'),
+            meta: { alias: 'Id' }
         },
         {
             accessorKey: 'name',
-            header: ({ column }) => columnSorter.value(column, $t('Name'))
+            header: ({ column }) => columnSorter.value(column, $t('Name')),
+            meta: { alias: $t('Name') }
         },
         {
             accessorKey: 'icon',
@@ -89,12 +91,14 @@
                         dynamic: true
                     })
                 ])
-            }
+            },
+            meta: { alias: $t('Icon'), searchable: false }
         },        
         {
             id: 'actions',
             enableHiding: false,
-            cell: actionCell
+            cell: actionCell,
+            meta: { alias: $t('Actions'), searchable: false }
         }
     ]
 
@@ -172,7 +176,7 @@
                 </div>
     
                 <!-- Extra Actions -->
-                <div class="flex flex-row items-end justify-end w-full">
+                <div class="flex flex-row items-end justify-end w-full px-4 py-2">
                     <UButton
                         icon="i-heroicons-plus"
                         color="primary"
@@ -201,6 +205,7 @@
             </UCard>
         </div>
 
-        <NuxtPage />
+        <!-- Slot for popup forms to CRUD over transactions -->
+        <NuxtPage @successful-submit="reload" />
     </main>    
 </template>
