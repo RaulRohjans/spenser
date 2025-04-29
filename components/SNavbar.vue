@@ -30,7 +30,7 @@
             },
             {
                 name: $t('Categories'),
-                href: '/categories/all',
+                href: '/categories',
                 selected: isRouteActive(route, '/categories')
             },
             {

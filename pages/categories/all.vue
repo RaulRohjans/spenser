@@ -1,113 +1,28 @@
 <script setup lang="ts">
-    import type { ModalCategoryProps } from '@/components/Modal/Category.vue'
+    import { UIcon } from '#components'
     import type {
-        TableSort,
         FetchTableDataResult,
         TableRow
     } from '@/types/Table'
     import type { NuxtError } from '#app'
+    import type { TableColumn } from '@nuxt/ui'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const tableObj = {
-        label: $t('Categories'),
-        actions: ['edit', 'duplicate', 'delete'],
-        columns: [
-            {
-                key: 'id',
-                label: '#',
-                sortable: true
-            },
-            {
-                key: 'name',
-                label: $t('Name'),
-                sortable: true
-            },
-            {
-                key: 'icon',
-                label: $t('Icon'),
-                sortable: true
-            },
-            {
-                key: 'actions',
-                label: $t('Actions'),
-                sortable: false,
-                searchable: false
-            }
-        ]
-    }
-    const categoryLoaderObj: Ref<ModalCategoryProps | null> = ref(null)
+    const router = useRouter()
 
-    // booleans shouldn't be used as keys according to the linter
-    // so we are forced to use this to reload the modal
-    const reloadModal: Ref<number> = ref(0)
-    const page: Ref<number> = ref(1)
-    const pageCount: Ref<number> = ref(10)
-    const searchQuery: Ref<string> = ref('')
-    const searchColumn: Ref<string> = ref('name')
-    const sort: Ref<TableSort> = ref({
-        column: 'id',
-        direction: 'asc' as const
+    // Table loading
+    const table = useTemplateRef('table')
+
+    const columnSorter = computed(() => {
+        if(table.value?.tableApi)
+            return useColumnSorter(table.value.tableApi, sort, order, (col, dir) => {
+                sort.value = col.id
+                order.value = dir || 'asc'
+            })
+
+        return () => ({})
     })
-    const isModalOpen: Ref<boolean> = ref(false)
-    const tableDataKey: Ref<number> = ref(0)
-
-    // Fetch Data
-    const { data: tableData, status } =
-        await useLazyAsyncData<FetchTableDataResult>(
-            'tableData',
-            () =>
-                $fetch('/api/categories', {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value),
-                    query: {
-                        q: searchQuery.value,
-                        qColumn: searchColumn.value,
-                        page: page.value,
-                        limit: pageCount.value,
-                        sort: sort.value.column,
-                        order: sort.value.direction
-                    }
-                }),
-            {
-                default: () => {
-                    return {
-                        success: false,
-                        data: {
-                            totalRecordCount: 0,
-                            rows: []
-                        }
-                    }
-                },
-                watch: [
-                    page,
-                    searchQuery,
-                    searchColumn,
-                    pageCount,
-                    sort,
-                    tableDataKey
-                ]
-            }
-        )
-
-    const editCategory = function (row: TableRow) {
-        loadLoaderObj(row)
-
-        toggleModal()
-    }
-
-    const dupCategory = function (row: TableRow) {
-        loadLoaderObj(row)
-
-        toggleModal()
-    }
-
-    const loadLoaderObj = function (row: TableRow) {
-        categoryLoaderObj.value = {
-            name: row.name,
-            icon: row.icon
-        }
-    }
 
     const delCategory = function (row: TableRow) {
         Notifier.showChooser(
@@ -133,7 +48,7 @@
                             $t('Category deleted successfully!'),
                             'success'
                         )
-                        reloadTableData()
+                        reload()
                     })
                     .catch((e: NuxtError) =>
                         Notifier.showAlert(e.statusMessage, 'error')
@@ -142,21 +57,77 @@
         )
     }
 
-    const toggleModal = function () {
-        isModalOpen.value = !isModalOpen.value
-    }
+    const { cell: actionCell } = useActionColumnCell<TableRow>({
+        actions: ['edit', 'duplicate', 'delete'],
+        callbacks: {
+            onEdit: row => router.push(`/categories/edit/${row.id}`),
+            onDuplicate: row => router.push(`/categories/duplicate/${row.id}`),
+            onDelete: delCategory
+        }
+    })
 
-    const reloadTableData = function () {
-        tableDataKey.value++
-    }
+    const columns: TableColumn<TableRow>[] = [
+        {
+            accessorKey: 'id',
+            sortDescFirst: true,
+            header: ({ column }) => columnSorter.value(column, '#')
+        },
+        {
+            accessorKey: 'name',
+            header: ({ column }) => columnSorter.value(column, $t('Name'))
+        },
+        {
+            accessorKey: 'icon',
+            header: $t('Icon'),
+            cell: ({ row }) => {
+                const icon = row.original.icon
 
-    // Reset vbind model when modal is closed
-    watch(isModalOpen, (newVal) => {
-        if (!newVal) categoryLoaderObj.value = null
+                return h('div', { class: 'hide-span' }, [
+                    h(UIcon, {
+                        name: `i-heroicons-${icon}`,
+                        class: 'h-5 w-5',
+                        dynamic: true
+                    })
+                ])
+            }
+        },        
+        {
+            id: 'actions',
+            enableHiding: false,
+            cell: actionCell
+        }
+    ]
 
-        // Reset modal and reload
-        // This will make sure new props are loaded correctly
-        reloadModal.value++
+    const {
+        page,
+        limit: itemsPerPage,
+        sort,
+        order,
+        filters,
+        data: tableData,
+        status,
+        reload,
+        resetFilters
+    } = usePaginatedTable<FetchTableDataResult>({
+        key: 'all-categories',
+        fetcher: ({ page, limit, sort, order, filters }) =>
+            $fetch(`/api/categories`, {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value),
+                query: {
+                    q: filters?.searchQuery,
+                    qColumn: filters?.searchColumn,
+                    page,
+                    limit,
+                    sort,
+                    order
+                }
+            }),
+        defaultFilters: {
+            searchQuery: '',
+            searchColumn: 'name'
+        },
+        watch: [] // optional: other filters to watch
     })
 
     useHead({
@@ -165,46 +136,71 @@
 </script>
 
 <template>
-    <div class="flex flex-row items-center justify-center">
-        <STable
-            v-bind="tableObj"
-            v-model:page="page"
-            v-model:page-count="pageCount"
-            v-model:search="searchQuery"
-            v-model:search-column="searchColumn"
-            v-model:sort="sort"
-            :rows="tableData?.data.rows"
-            :row-count="tableData?.data.totalRecordCount"
-            :loading="status === 'pending'"
-            @edit-action="editCategory"
-            @duplicate-action="dupCategory"
-            @delete-action="delCategory">
-            <template #icon-data="{ row }">
-                <div class="hide-span">
-                    <UIcon
-                        class="h-5 w-5"
-                        :name="`i-heroicons-${row.icon}`"
-                        dynamic />
+    <main>
+        <div class="flex flex-row items-center justify-center">
+            <UCard class="w-full shadow-xl">
+                <template #header>
+                    <h2
+                        class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                        {{ $t('Categories') }}
+                    </h2>
+                </template>
+    
+                <!-- Filters -->
+                <div class="flex flex-col sm:flex-row items-start justify-start px-4 py-2">
+                    <SSearchWithColumnFilter
+                        v-model:column="filters.searchColumn"
+                        v-model:search="filters.searchQuery" 
+                        :table-api="table?.tableApi" />
                 </div>
-            </template>
-
-            <template #extra-section>
+    
+                <!-- Header and Action buttons -->
+                <div class="flex justify-between items-center w-full px-4 py-2">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-sm leading-5">
+                            {{ $t('Rows per page') }}:
+                        </span>
+    
+                        <USelect
+                            v-model="itemsPerPage"
+                            :items="[5, 10, 20, 30, 40, 50]"
+                            class="me-2 w-20"
+                            size="xs" />
+                    </div>
+    
+                    <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
+                </div>
+    
+                <!-- Extra Actions -->
                 <div class="flex flex-row items-end justify-end w-full">
                     <UButton
                         icon="i-heroicons-plus"
                         color="primary"
                         size="xs"
-                        @click="toggleModal">
+                        @click="router.push(`/transactions/create`)">
                         {{ $t('Create Category') }}
                     </UButton>
                 </div>
-            </template>
-        </STable>
-    </div>
+    
+                <!-- Table -->
+                <UTable
+                    ref="table"
+                    :data="tableData?.data?.rows ?? []"
+                    :columns="columns"
+                    sticky
+                    :loading="status === 'pending'"
+                    class="w-full" />
+    
+                <!-- Number of rows & Pagination -->
+                <template #footer>
+                    <SPaginationFooter
+                        v-model:page="page"
+                        v-model:items-per-page="itemsPerPage"
+                        :total="tableData?.data?.totalRecordCount ?? 0" />
+                </template>
+            </UCard>
+        </div>
 
-    <ModalCategory
-        v-bind="categoryLoaderObj"
-        :key="reloadModal"
-        v-model="isModalOpen"
-        @successful-submit="reloadTableData" />
+        <NuxtPage />
+    </main>    
 </template>
