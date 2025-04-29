@@ -24,7 +24,6 @@
     <UModal
         v-model:open="isOpen"
         :title="$t('Duplicate Category')"
-        :description="$t('Duplicate Category')"
         @update:open="handleOpenChange">
         <template #body>
             <ModalCategory

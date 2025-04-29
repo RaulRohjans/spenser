@@ -24,7 +24,6 @@
     <UModal
         v-model:open="isOpen"
         :title="$t('Duplicate Transaction')"
-        :description="$t('Duplicate Transaction')"
         @update:open="handleOpenChange">
         <template #body>
             <ModalTransaction
