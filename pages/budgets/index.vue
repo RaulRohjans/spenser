@@ -1,16 +1,15 @@
 <script setup lang="ts">
+    import { upperFirst } from 'scule'
     import Draggable from 'vuedraggable'
     import { formatCurrencyValue } from '#imports'
     import type { NuxtError } from '#app'
-    import type { ModalBudgetProps } from '~/components/Modal/Budget.vue'
     import type { BudgetDataObject } from '~/types/Data'
     import type { DragableChangeEvent } from '~/types/Draggable'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const isModalOpen: Ref<boolean> = ref(false)
-    const reloadModal: Ref<number> = ref(0)
-    const budgetLoaderObj: Ref<ModalBudgetProps | null> = ref(null)
+    const router = useRouter()
+
     const drag: Ref<boolean> = ref(false)
 
     const loadBudgetData = async function () {
@@ -52,16 +51,7 @@
 
     onBeforeMount(async () => await loadData())
 
-    const toggleModal = function () {
-        isModalOpen.value = !isModalOpen.value
-    }
-
-    const editItem = function (budget: BudgetDataObject) {
-        budgetLoaderObj.value = budget
-        toggleModal()
-    }
-
-    const removeItem = function (budget: BudgetDataObject) {
+    const deleteItem = function (budget: BudgetDataObject) {
         Notifier.showChooser(
             $t('Delete Budget'),
             $t('Are you sure you want to delete this budget?'),
@@ -117,26 +107,17 @@
             headers: buildRequestHeaders(token.value),
             body: { positions: budgetPos }
         })
-            .then((data) => {
-                if (!data.success)
-                    Notifier.showAlert(
-                        $t('An error occurred while saving budget positions.'),
-                        'error'
-                    )
-            })
-            .catch((e: NuxtError) =>
-                Notifier.showAlert(e.statusMessage, 'error')
-            )
+        .then((data) => {
+            if (!data.success)
+                Notifier.showAlert(
+                    $t('An error occurred while saving budget positions.'),
+                    'error'
+                )
+        })
+        .catch((e: NuxtError) =>
+            Notifier.showAlert(e.statusMessage, 'error')
+        )
     }
-
-    // Reset vbind model when modal is closed
-    watch(isModalOpen, (newVal) => {
-        if (!newVal) budgetLoaderObj.value = null
-
-        // Reset modal and reload
-        // This will make sure new props are loaded correctly
-        reloadModal.value++
-    })
 
     useHead({
         title: `Spenser | ${$t('Budgets')}`
@@ -144,127 +125,126 @@
 </script>
 
 <template>
-    <div class="flex flex-col justify-center items-center">
-        <Draggable
-            v-if="budgetDraggableList"
-            v-model="budgetDraggableList"
-            class="flex flex-col sm:flex-row justify-center sm:justify-start sm:flex-wrap items-center sm:max-w-[80%] gap-4"
-            group="budgets"
-            item-key="id"
-            draggable=".drag-me:not(.dont-drag-me)"
-            @change="onOrderChange"
-            @start="drag = true"
-            @end="drag = false">
-            <template #item="{ element }">
-                <template v-if="element.id !== -1">
-                    <UCard
-                        class="drag-me shadow-xl cursor-grab transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
-                        :ui="{
-                            header: 'px-10 py-3 sm:px-10 sm:py-3' ,
-                            body: 'px-10 py-4 sm:px-10 sm:py-4 divide-y divide-gray-200 dark:divide-gray-700',
-                            footer: 'p-2 sm:p-2'
-                        }">
-                        <template #header>
-                            <div
-                                class="flex flex-col items-center justify-center min-h-[58px]">
-                                <h2
-                                    class="font-semibold text-2xl text-gray-900 dark:text-white leading-tight mb-1 text-wrap text-center cursor-auto">
-                                    {{ element.name }}
-                                </h2>
-                                <UBadge
-                                    v-if="element.category"
-                                    class="cursor-auto"
-                                    color="primary"
-                                    variant="subtle"
-                                    :ui="{ base: 'rounded-full' }">
-                                    <div
-                                        v-if="!element.category_deleted"
-                                        class="flex flex-row gap-2 justify-center items-center px-0.5">
-                                        <UIcon
-                                            v-if="element.category_ico"
-                                            class="h-3 w-3"
-                                            :name="`i-heroicons-${element.category_icon}`"
-                                            dynamic />
-                                        {{ element.category_name }}
-                                    </div>
-                                    <span v-else>-</span>
-                                </UBadge>
-                            </div>
-                        </template>
-
-                        <div class="flex flex-col justify-center items-center">
-                            <span
-                                class="text-xl cursor-auto"
-                                :style="
-                                    Number(
-                                        Number(element.value) -
-                                            Number(element.expenses || 0)
-                                    ) < 0
-                                        ? 'color: rgb(227, 0, 0)'
-                                        : ''
-                                "
-                                >{{
-                                    formatCurrencyValue(
-                                        Number(element.value) -
-                                            Number(element.expenses || 0)
-                                    )
-                                }}</span
-                            >
-                        </div>
-
-                        <template #footer>
-                            <div
-                                class="flex flex-row justify-between items-center w-full gap-8">
-                                <span class="text-xs cursor-auto">
-                                    {{
-                                        `${$t('Period')}: ${$t(element.period)}`
-                                    }}
-                                </span>
-
+    <main>
+        <div class="flex flex-col justify-center items-center">
+            <Draggable
+                v-if="budgetDraggableList"
+                v-model="budgetDraggableList"
+                class="flex flex-col sm:flex-row justify-center sm:justify-start sm:flex-wrap items-center sm:max-w-[80%] gap-6"
+                group="budgets"
+                item-key="id"
+                draggable=".drag-me:not(.dont-drag-me)"
+                @change="onOrderChange"
+                @start="drag = true"
+                @end="drag = false">
+                <template #item="{ element }">
+                    <template v-if="element.id !== -1">
+                        <UCard
+                            class="drag-me shadow-xl cursor-grab transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+                            :ui="{
+                                header: 'px-10 py-3 sm:px-10 sm:py-3' ,
+                                body: 'px-10 py-4 sm:px-10 sm:py-4 divide-y divide-gray-200 dark:divide-gray-700',
+                                footer: 'p-2 sm:p-2'
+                            }">
+                            <template #header>
                                 <div
-                                    class="flex flex-row justify-start items-center">
-                                    <UButton
-                                        icon="i-heroicons-pencil-square"
-                                        size="xs"
+                                    class="flex flex-col items-center justify-center min-h-[58px]">
+                                    <h2
+                                        class="font-semibold text-2xl text-gray-900 dark:text-white leading-tight mb-1 text-wrap text-center cursor-auto">
+                                        {{ element.name }}
+                                    </h2>
+                                    <UBadge
+                                        v-if="element.category"
+                                        class="cursor-auto"
                                         color="primary"
-                                        square
-                                        variant="ghost"
-                                        @click="editItem(element)" />
-
-                                    <UButton
-                                        icon="i-heroicons-trash"
-                                        size="xs"
-                                        color="primary"
-                                        square
-                                        variant="ghost"
-                                        @click="removeItem(element)" />
+                                        variant="subtle"
+                                        :ui="{ base: 'rounded-full' }">
+                                        <div
+                                            v-if="!element.category_deleted"
+                                            class="flex flex-row gap-2 justify-center items-center px-0.5">
+                                            <UIcon
+                                                v-if="element.category_ico"
+                                                class="h-3 w-3"
+                                                :name="`i-heroicons-${element.category_icon}`"
+                                                dynamic />
+                                            {{ element.category_name }}
+                                        </div>
+                                        <span v-else>-</span>
+                                    </UBadge>
                                 </div>
+                            </template>
+    
+                            <div class="flex flex-col justify-center items-center">
+                                <span
+                                    class="text-xl cursor-auto"
+                                    :style="
+                                        Number(
+                                            Number(element.value) -
+                                                Number(element.expenses || 0)
+                                        ) < 0
+                                            ? 'color: rgb(227, 0, 0)'
+                                            : ''
+                                    "
+                                    >{{
+                                        formatCurrencyValue(
+                                            Number(element.value) -
+                                                Number(element.expenses || 0)
+                                        )
+                                    }}</span
+                                >
                             </div>
-                        </template>
-                    </UCard>
-                </template>
-
-                <template v-else>
-                    <a
-                        class="dont-drag-me cursor-pointer transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
-                        @click="toggleModal">
-                        <UCard class="shadow-xl p-12">
-                            <UButton
-                                icon="i-heroicons-squares-plus"
-                                size="xl"
-                                color="primary"
-                                square
-                                variant="link" />
+    
+                            <template #footer>
+                                <div
+                                    class="flex flex-row justify-between items-center w-full gap-8">
+                                    <span class="text-xs cursor-auto">
+                                        {{
+                                            `${$t('Period')}: ${ upperFirst($t(element.period)) }`
+                                        }}
+                                    </span>
+    
+                                    <div
+                                        class="flex flex-row justify-start items-center">
+                                        <UButton
+                                            icon="i-heroicons-pencil-square"
+                                            size="xs"
+                                            color="primary"
+                                            square
+                                            variant="ghost"
+                                            @click="router.push(`/budgets/edit/${element.id}`)" />
+    
+                                        <UButton
+                                            icon="i-heroicons-trash"
+                                            size="xs"
+                                            color="primary"
+                                            square
+                                            variant="ghost"
+                                            @click="deleteItem(element)" />
+                                    </div>
+                                </div>
+                            </template>
                         </UCard>
-                    </a>
+                    </template>
+    
+                    <template v-else>
+                        <a
+                            class="dont-drag-me cursor-pointer transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
+                            @click="router.push(`/budgets/create`)">
+                            <UCard class="shadow-xl p-12">
+                                <UButton
+                                    icon="i-heroicons-squares-plus"
+                                    size="xl"
+                                    color="primary"
+                                    square
+                                    variant="link" />
+                            </UCard>
+                        </a>
+                    </template>
                 </template>
-            </template>
-        </Draggable>
-    </div>
+            </Draggable>
+        </div>
 
-    <ModalBudget
-        :key="reloadModal"
-        v-model="isModalOpen"
-        v-bind="budgetLoaderObj"
-        @successful-submit="loadData" />
+        <!-- Slot for popup forms to CRUD over budgets -->
+        <NuxtPage @successful-submit="loadData" />
+    </main>
 </template>

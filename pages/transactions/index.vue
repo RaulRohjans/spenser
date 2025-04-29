@@ -5,7 +5,7 @@
         FetchTableDataResult,
         TableRow
     } from '@/types/Table'
-import type { TableColumn } from '@nuxt/ui'
+    import type { TableColumn } from '@nuxt/ui'
 
     // Basic Setup
     const { token } = useAuth()

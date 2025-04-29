@@ -205,7 +205,7 @@
             </UCard>
         </div>
 
-        <!-- Slot for popup forms to CRUD over transactions -->
+        <!-- Slot for popup forms to CRUD over categories -->
         <NuxtPage @successful-submit="reload" />
     </main>    
 </template>

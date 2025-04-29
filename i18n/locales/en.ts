@@ -146,5 +146,8 @@ export default {
     "Edit Transaction": "Edit Transaction",
     "Duplicate Transaction": "Duplicate Transaction",
     "Edit Category": "Edit Category",
-    "Duplicate Category": "Duplicate Category"
+    "Duplicate Category": "Duplicate Category",
+    "Edit Budget": "Edit Budget",
+    "Duplicate Budget": "Duplicate Budget",
+    "Create Budget": "Create Budget"
 }
