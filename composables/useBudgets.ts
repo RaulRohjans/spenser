@@ -1,4 +1,4 @@
-// composables/useBudgets.ts
+import { useDebounceFn } from '@vueuse/core'
 import type { BudgetDataObject } from '~/types/Data'
 
 export function useBudgets() {
@@ -6,6 +6,9 @@ export function useBudgets() {
     const { t: $t } = useI18n()
 
     const budgetDraggableList = ref<BudgetDataObject[] | null>(null)
+
+    // Track last saved order (only the IDs)
+    const lastSavedOrder = ref<number[]>([])
 
     const loadBudgetData = async () => {
         const { data } = await $fetch<{ success: boolean; data: BudgetDataObject[] }>('/api/budgets', {
@@ -15,9 +18,6 @@ export function useBudgets() {
         return data
     }
 
-    // This is a small hack to have an add item at the end
-    // draggable could have a slot for this, but it doesn't and I see
-    // no other way of adding it without breaking css
     const loadBudgetDraggableList = async (): Promise<BudgetDataObject[]> => {
         return [
             ...(await loadBudgetData()),
@@ -38,7 +38,13 @@ export function useBudgets() {
     }
 
     const loadData = async () => {
-        budgetDraggableList.value = await loadBudgetDraggableList()
+        const data = await loadBudgetDraggableList()
+        budgetDraggableList.value = data
+
+        // Save the initial order to lastSavedOrder (ignore fake + button)
+        lastSavedOrder.value = data
+            .filter(b => b.id !== -1)
+            .map(b => b.id)
     }
 
     const deleteItem = async (budget: BudgetDataObject) => {
@@ -55,8 +61,8 @@ export function useBudgets() {
 
                     if (!res.success) {
                         Notifier.showAlert(
-                        $t('An error occurred while removing your budget.'),
-                        'error'
+                            $t('An error occurred while removing your budget.'),
+                            'error'
                         )
                         return
                     }
@@ -70,10 +76,23 @@ export function useBudgets() {
         )
     }
 
-    const saveOrder = async (budgets: BudgetDataObject[]) => {
+    const _saveOrder = async (budgets: BudgetDataObject[]) => {
+        // Clean the budgets to ignore the last "Add" button fake item
+        const newOrder = budgets
+            .filter(b => b.id !== -1)
+            .map(b => b.id)
+
+        // Compare lastSavedOrder vs newOrder
+        const isSameOrder = newOrder.length === lastSavedOrder.value.length &&
+            newOrder.every((id, idx) => id === lastSavedOrder.value[idx])
+
+        // Nothing changed, skip saving
+        if (isSameOrder) return
+
+        // Otherwise, build the update payload
         const budgetPos: Record<number, number> = {}
-        for (let i = 0; i < budgets.length - 1; i++) {
-            budgetPos[budgets[i].id] = i + 1
+        for (let i = 0; i < newOrder.length; i++) {
+            budgetPos[newOrder[i]] = i + 1
         }
 
         try {
@@ -85,19 +104,25 @@ export function useBudgets() {
 
             if (!res.success) {
                 Notifier.showAlert(
-                $t('An error occurred while saving budget positions.'),
-                'error'
+                    $t('An error occurred while saving budget positions.'),
+                    'error'
                 )
+            } else {
+                // Save successful -> update last saved order
+                lastSavedOrder.value = [...newOrder]
             }
         } catch (e) {
             Notifier.showAlert(`${e}`, 'error')
         }
     }
 
+    const saveOrderDebounced = useDebounceFn(_saveOrder, 500)
+    
     return {
         budgetDraggableList,
         loadData,
         deleteItem,
-        saveOrder
+        saveOrder: saveOrderDebounced,
+        saveOrderImmediately: _saveOrder
     }
 }

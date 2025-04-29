@@ -9,10 +9,29 @@
         budgetDraggableList,
         loadData,
         deleteItem,
-        saveOrder
+        saveOrder,
+        saveOrderImmediately
     } = useBudgets()
 
     onBeforeMount(() => loadData())
+
+    onBeforeRouteLeave(() => {
+        if(!budgetDraggableList.value) return
+        
+        // Force the saving of the current order in case
+        // the user navigates before debounce logic is applied
+        saveOrderImmediately(budgetDraggableList.value)
+    })
+
+    if (import.meta.client) {
+        window.addEventListener('beforeunload', () => {
+            if(!budgetDraggableList.value) return
+
+            // Same here, force saving the current changed when the
+            // user closes the tab right after dragging
+            saveOrderImmediately(budgetDraggableList.value)
+        })
+    }
     
     const drag: Ref<boolean> = ref(false)
 
