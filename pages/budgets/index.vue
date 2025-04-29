@@ -1,7 +1,5 @@
 <script setup lang="ts">
-    import { upperFirst } from 'scule'
     import Draggable from 'vuedraggable'
-    import { formatCurrencyValue } from '#imports'
     import type { NuxtError } from '#app'
     import type { BudgetDataObject } from '~/types/Data'
     import type { DragableChangeEvent } from '~/types/Draggable'
@@ -42,6 +40,7 @@
                 order: 0,
                 category_name: null,
                 category_icon: null,
+                category_deleted: false,
                 expenses: 0
             }
         ]
@@ -82,6 +81,10 @@
                     )
             }
         )
+    }
+
+    function handleEdit(budget: BudgetDataObject) {
+        router.push(`/budgets/edit/${budget.id}`)
     }
 
     const loadData = async function () {
@@ -134,96 +137,15 @@
                 group="budgets"
                 item-key="id"
                 draggable=".drag-me:not(.dont-drag-me)"
+                :animation="200"
+                ghost-class="ghost"
+                chosen-class="chosen"
                 @change="onOrderChange"
                 @start="drag = true"
                 @end="drag = false">
                 <template #item="{ element }">
                     <template v-if="element.id !== -1">
-                        <UCard
-                            class="drag-me shadow-xl cursor-grab transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
-                            :ui="{
-                                header: 'px-10 py-3 sm:px-10 sm:py-3' ,
-                                body: 'px-10 py-4 sm:px-10 sm:py-4 divide-y divide-gray-200 dark:divide-gray-700',
-                                footer: 'p-2 sm:p-2'
-                            }">
-                            <template #header>
-                                <div
-                                    class="flex flex-col items-center justify-center min-h-[58px]">
-                                    <h2
-                                        class="font-semibold text-2xl text-gray-900 dark:text-white leading-tight mb-1 text-wrap text-center cursor-auto">
-                                        {{ element.name }}
-                                    </h2>
-                                    <UBadge
-                                        v-if="element.category"
-                                        class="cursor-auto"
-                                        color="primary"
-                                        variant="subtle"
-                                        :ui="{ base: 'rounded-full' }">
-                                        <div
-                                            v-if="!element.category_deleted"
-                                            class="flex flex-row gap-2 justify-center items-center px-0.5">
-                                            <UIcon
-                                                v-if="element.category_ico"
-                                                class="h-3 w-3"
-                                                :name="`i-heroicons-${element.category_icon}`"
-                                                dynamic />
-                                            {{ element.category_name }}
-                                        </div>
-                                        <span v-else>-</span>
-                                    </UBadge>
-                                </div>
-                            </template>
-    
-                            <div class="flex flex-col justify-center items-center">
-                                <span
-                                    class="text-xl cursor-auto"
-                                    :style="
-                                        Number(
-                                            Number(element.value) -
-                                                Number(element.expenses || 0)
-                                        ) < 0
-                                            ? 'color: rgb(227, 0, 0)'
-                                            : ''
-                                    "
-                                    >{{
-                                        formatCurrencyValue(
-                                            Number(element.value) -
-                                                Number(element.expenses || 0)
-                                        )
-                                    }}</span
-                                >
-                            </div>
-    
-                            <template #footer>
-                                <div
-                                    class="flex flex-row justify-between items-center w-full gap-8">
-                                    <span class="text-xs cursor-auto">
-                                        {{
-                                            `${$t('Period')}: ${ upperFirst($t(element.period)) }`
-                                        }}
-                                    </span>
-    
-                                    <div
-                                        class="flex flex-row justify-start items-center">
-                                        <UButton
-                                            icon="i-heroicons-pencil-square"
-                                            size="xs"
-                                            color="primary"
-                                            square
-                                            variant="ghost"
-                                            @click="router.push(`/budgets/edit/${element.id}`)" />
-    
-                                        <UButton
-                                            icon="i-heroicons-trash"
-                                            size="xs"
-                                            color="primary"
-                                            square
-                                            variant="ghost"
-                                            @click="deleteItem(element)" />
-                                    </div>
-                                </div>
-                            </template>
-                        </UCard>
+                        <SBudgetCard :budget="element" @edit="handleEdit" @delete="deleteItem" />
                     </template>
     
                     <template v-else>

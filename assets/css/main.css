@@ -36,13 +36,36 @@ input[type='number'] {
  * When no matching icon is found, UIcon displays the text. This is to hide it 
  * There are two versions due to the different structure Nuxt's components adopt
 */
-.hide-span span {
+/*.hide-span span {
     visibility: hidden;
 }
 
 .hide-select-span span span {
     visibility: hidden;
 }
+
+/*
+ * Style draggable elements
+*/
+.drag-me {
+    cursor: grab;
+    transition: transform 0.2s ease, margin 0.2s ease;
+}
+
+.drag-me:active {
+    cursor: grabbing;
+}
+
+.ghost {
+    opacity: 0.5;
+    transform: scale(0.95);
+    transition: all 0.2s ease;
+}
+
+.chosen {
+    transition: transform 0.15s ease;
+}
+  
 
 
 /*
