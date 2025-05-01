@@ -2,9 +2,12 @@
     import { upperFirst } from 'scule'
     import type { Table } from '@tanstack/vue-table'
 
-    const props = defineProps<{
+    const props = withDefaults(defineProps<{
         tableApi?: Table<T>
-    }>()
+        size?: "sm" | "md" | "xs" | "lg" | "xl"
+    }>(), {
+        size: 'md'
+    })
 
     const emit = defineEmits<{
         (event: 'reset'): void
@@ -36,23 +39,23 @@
 
 <template>
   <div v-if="tableApi" class="flex items-center gap-2">
-    <UDropdownMenu :items="items" :content="{ align: 'end' }">
+        <UDropdownMenu :items="items" :content="{ align: 'end' }">
+            <UButton
+                icon="i-heroicons-view-columns"
+                color="neutral"
+                variant="outline"
+                :size="size">
+                {{ $t('Columns') }}
+            </UButton>
+        </UDropdownMenu>
+
         <UButton
-            icon="i-heroicons-view-columns"
+            icon="i-heroicons-funnel"
             color="neutral"
             variant="outline"
-            size="xs">
-            {{ $t('Columns') }}
+            :size="size"
+            @click="resetVisibility">
+            {{ $t('Reset') }}
         </UButton>
-    </UDropdownMenu>
-
-    <UButton
-        icon="i-heroicons-funnel"
-        color="neutral"
-        variant="outline"
-        size="xs"
-        @click="resetVisibility">
-        {{ $t('Reset') }}
-    </UButton>
   </div>
 </template>

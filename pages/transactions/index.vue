@@ -187,61 +187,63 @@
                     </h2>
                 </template>
     
-                <!-- Filters -->
-                <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3 px-4 py-2">
-                    <SSearchWithColumnFilter
-                        v-model:column="filters.searchColumn"
-                        v-model:search="filters.searchQuery" 
-                        :table-api="table?.tableApi" />
-                    
-                    <div class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
-                        <UCheckbox
-                            v-model="filters.groupCategory"
-                            :label="$t('Group by category')" />
-    
-                        <SDateTimePicker
-                            v-model="filters.dateRange"
-                            class="!w-56"
-                            type="date"
-                            range
-                            @clear="() => (filters.dateRange = [])" />
+                <div class="flex flex-col px-4 gap-2">
+                    <!-- Filters -->
+                    <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3">
+                        <SSearchWithColumnFilter
+                            v-model:column="filters.searchColumn"
+                            v-model:search="filters.searchQuery" 
+                            :table-api="table?.tableApi" />
+                        
+                        <div class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
+                            <UCheckbox
+                                v-model="filters.groupCategory"
+                                :label="$t('Group by category')" />
+        
+                            <SDateTimePicker
+                                v-model="filters.dateRange"
+                                class="!w-56"
+                                type="date"
+                                range
+                                @clear="() => (filters.dateRange = [])" />
+                        </div>
                     </div>
-                </div>
-    
-                <!-- Header and Action buttons -->
-                <div class="flex justify-between items-center w-full px-4 py-2">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-sm leading-5">
-                            {{ $t('Rows per page') }}:
-                        </span>
-    
-                        <USelect
-                            v-model="itemsPerPage"
-                            :items="[5, 10, 20, 30, 40, 50]"
-                            class="me-2 w-20"
-                            size="xs" />
+        
+                    <!-- Header and Action buttons -->
+                    <div class="flex justify-between items-center w-full">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-sm leading-5">
+                                {{ $t('Rows per page') }}:
+                            </span>
+        
+                            <USelect
+                                v-model="itemsPerPage"
+                                :items="[5, 10, 20, 30, 40, 50]"
+                                class="me-2 w-20"
+                                size="md" />
+                        </div>
+        
+                        <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
                     </div>
-    
-                    <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
-                </div>
-    
-                <!-- Extra Actions -->
-                <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2 px-4 py-2">
-                    <UButton
-                        icon="i-heroicons-arrow-down-on-square-stack"
-                        color="primary"
-                        size="xs"
-                        @click="router.push(`/transactions/llm-data-importer`)">
-                        {{ $t('LLM Data Import') }}
-                    </UButton>
-    
-                    <UButton
-                        icon="i-heroicons-plus"
-                        color="primary"
-                        size="xs"
-                        @click="router.push(`/transactions/create`)">
-                        {{ $t('Create Transaction') }}
-                    </UButton>
+        
+                    <!-- Extra Actions -->
+                    <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2">
+                        <UButton
+                            icon="i-heroicons-arrow-down-on-square-stack"
+                            color="primary"
+                            size="md"
+                            @click="router.push(`/transactions/llm-data-importer`)">
+                            {{ $t('LLM Data Import') }}
+                        </UButton>
+        
+                        <UButton
+                            icon="i-heroicons-plus"
+                            color="primary"
+                            size="md"
+                            @click="router.push(`/transactions/create`)">
+                            {{ $t('Create Transaction') }}
+                        </UButton>
+                    </div>
                 </div>
     
                 <!-- Table -->
