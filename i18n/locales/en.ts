@@ -149,5 +149,8 @@ export default {
     "Duplicate Category": "Duplicate Category",
     "Edit Budget": "Edit Budget",
     "Duplicate Budget": "Duplicate Budget",
-    "Create Budget": "Create Budget"
+    "Create Budget": "Create Budget",
+    "Use Light Mode": "Use Light Mode",
+    "Use Dark Mode": "Use Dark Mode",
+    "Administration": "Administration"
 }

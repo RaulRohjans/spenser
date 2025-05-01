@@ -41,7 +41,7 @@
     ])
 
     const showAdminOptions = computed(() => {
-        return authData.value.is_admin
+        return authData.value?.is_admin ?? false
     })
 
     const getTextOptionClasses = function (selected: boolean) {
@@ -79,7 +79,7 @@
                             :to="localePath(option.href)">
                             <UButton
                                 :icon="option.icon"
-                                :color="option.selected ? 'primary' : 'gray'"
+                                :color="option.selected ? 'primary' : 'neutral'"
                                 size="xs" />
 
                             <span
@@ -114,7 +114,7 @@
                                 <UButton
                                     :icon="option.icon"
                                     :color="
-                                        option.selected ? 'primary' : 'gray'
+                                        option.selected ? 'primary' : 'neutral'
                                     "
                                     size="xs" />
 

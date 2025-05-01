@@ -4,7 +4,6 @@
 
     const localePath = useLocalePath()
     const { locale, setLocale, t: $t } = useI18n()
-    const { signOut } = useAuth()
     const route = useRoute()
 
     const isMobileMenuShown = ref(false)
@@ -32,11 +31,6 @@
                 name: $t('Categories'),
                 href: '/categories',
                 selected: isRouteActive(route, '/categories')
-            },
-            {
-                name: $t('Settings'),
-                href: '/settings/global',
-                selected: isRouteActive(route, '/settings')
             }
         ]
     })
@@ -87,16 +81,6 @@
 
     const toggleMobileMenu = function () {
         isMobileMenuShown.value = !isMobileMenuShown.value
-    }
-
-    const onLogout = function () {
-        Notifier.showChooser(
-            $t('Logout'),
-            $t('Are you sure you want to logout?'),
-            () => {
-                signOut({ callbackUrl: '/login' })
-            }
-        )
     }
 
     watch(selectedLocale, (newVal) => setLocale(newVal))
@@ -153,31 +137,13 @@
                 <!-- Right nav side -->
                 <div
                     class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-3 lg:static lg:inset-auto lg:ml-6 lg:pr-0">
-                    <div class="flex flex-row justify-start items-center gap-4">
-                        <!-- Theme Switcher -->
-                        <USelect
-                            v-model="selectedLocale"
-                            class="hidden lg:block"
-                            :items="getLocales">
-                            <template #leading>
-                                <UIcon
-                                    name="i-heroicons-flag"
-                                    class="w-4 h-4"
-                                    dynamic />
-                            </template>
-                        </USelect>
+                    <USelect
+                        v-model="selectedLocale"
+                        class="hidden lg:block"
+                        icon="i-heroicons-flag"
+                        :items="getLocales" />
 
-                        <SThemeSwitcher />
-                    </div>
-
-                    <!-- Profile section -->
-                    <UButton
-                        icon="i-heroicons-arrow-right-start-on-rectangle"
-                        size="sm"
-                        color="error"
-                        square
-                        variant="link"
-                        @click="onLogout" />
+                    <SUserNavMenu />
                 </div>
             </div>
         </div>
