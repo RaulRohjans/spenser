@@ -37,10 +37,10 @@ import { upperFirst } from 'scule';
 </script>
 
 <template>
-    <div v-if="tableApi" class="flex flex-row gap-1">
+    <div v-if="tableApi" class="flex flex-col sm:flex-row gap-1">
         <USelect
             v-model="column"
-            class="min-w-36"
+            class="min-w-26"
             :items="columnOptions"
         />
         <UInput

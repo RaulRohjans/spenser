@@ -187,62 +187,51 @@
                     </h2>
                 </template>
     
-                <div class="flex flex-col px-4 gap-2">
-                    <!-- Filters -->
-                    <div class="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-3">
-                        <SSearchWithColumnFilter
-                            v-model:column="filters.searchColumn"
-                            v-model:search="filters.searchQuery" 
-                            :table-api="table?.tableApi" />
-                        
-                        <div class="flex flex-col-reverse sm:flex-row justify-center sm:justify-start items-center gap-4">
-                            <UCheckbox
-                                v-model="filters.groupCategory"
-                                :label="$t('Group by category')" />
-        
+                <div class="flex flex-col gap-2">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
+                            <SSearchWithColumnFilter
+                                v-model:column="filters.searchColumn"
+                                v-model:search="filters.searchQuery" 
+                                :table-api="table?.tableApi" />
+    
                             <SDateTimePicker
                                 v-model="filters.dateRange"
-                                class="!w-56"
+                                class="sm:!w-56"
                                 type="date"
                                 range
                                 @clear="() => (filters.dateRange = [])" />
                         </div>
-                    </div>
-        
-                    <!-- Header and Action buttons -->
-                    <div class="flex justify-between items-center w-full">
-                        <div class="flex items-center gap-1.5">
-                            <span class="text-sm leading-5">
-                                {{ $t('Rows per page') }}:
-                            </span>
-        
-                            <USelect
-                                v-model="itemsPerPage"
-                                :items="[5, 10, 20, 30, 40, 50]"
-                                class="me-2 w-20"
-                                size="md" />
+
+                        <div class="flex flex-row justify-between items-center sm:justify-end sm:flex-col sm:items-end md:flex-row md:items-center gap-3 lg:gap-6">
+                            <SRowsPerPageSelector v-model="itemsPerPage" />
+
+                            <UCheckbox
+                                v-model="filters.groupCategory"
+                                :label="$t('Group by category')" />
                         </div>
-        
-                        <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
                     </div>
-        
-                    <!-- Extra Actions -->
-                    <div class="flex flex-row items-end justify-center sm:justify-end w-full gap-2">
-                        <UButton
-                            icon="i-heroicons-arrow-down-on-square-stack"
-                            color="primary"
-                            size="md"
-                            @click="router.push(`/transactions/llm-data-importer`)">
-                            {{ $t('LLM Data Import') }}
-                        </UButton>
-        
-                        <UButton
-                            icon="i-heroicons-plus"
-                            color="primary"
-                            size="md"
-                            @click="router.push(`/transactions/create`)">
-                            {{ $t('Create Transaction') }}
-                        </UButton>
+
+                    <div class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
+                        <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
+
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <UButton
+                                icon="i-heroicons-arrow-down-on-square-stack"
+                                color="primary"
+                                size="md"
+                                @click="router.push(`/transactions/llm-data-importer`)">
+                                {{ $t('LLM Data Import') }}
+                            </UButton>
+            
+                            <UButton
+                                icon="i-heroicons-plus"
+                                color="primary"
+                                size="md"
+                                @click="router.push(`/transactions/create`)">
+                                {{ $t('Create Transaction') }}
+                            </UButton>
+                        </div>
                     </div>
                 </div>
     

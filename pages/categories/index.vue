@@ -160,17 +160,7 @@
     
                 <!-- Header and Action buttons -->
                 <div class="flex justify-between items-center w-full px-4 py-2">
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-sm leading-5">
-                            {{ $t('Rows per page') }}:
-                        </span>
-    
-                        <USelect
-                            v-model="itemsPerPage"
-                            :items="[5, 10, 20, 30, 40, 50]"
-                            class="me-2 w-20"
-                            size="xs" />
-                    </div>
+                    <SRowsPerPageSelector v-model="itemsPerPage" />
     
                     <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
                 </div>
