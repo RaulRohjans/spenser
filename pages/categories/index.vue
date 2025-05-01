@@ -86,7 +86,7 @@
 
                 return h('div', { class: 'hide-span' }, [
                     h(UIcon, {
-                        name: `i-heroicons-${icon}`,
+                        name: getHeroIconName(icon),
                         class: 'h-5 w-5',
                         dynamic: true
                     })
@@ -181,7 +181,7 @@
                         icon="i-heroicons-plus"
                         color="primary"
                         size="xs"
-                        @click="router.push(`/transactions/create`)">
+                        @click="router.push(`/categories/create`)">
                         {{ $t('Create Category') }}
                     </UButton>
                 </div>

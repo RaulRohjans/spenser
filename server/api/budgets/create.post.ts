@@ -4,17 +4,22 @@ import type { Budget } from 'kysely-codegen'
 import type { Selectable } from 'kysely'
 
 export default defineEventHandler(async (event) => {
-    const { name, category, value, period } = await readBody(event)
+    const { name, category: rawCategory, value, period } = await readBody(event)
     const user = ensureAuth(event)
 
     if (!value || !period) {
         throw createError({
-        statusCode: 400,
-        statusMessage: 'One or more mandatory fields are empty.'
+            statusCode: 400,
+            statusMessage: 'One or more mandatory fields are empty.'
         })
     }
 
-    if (category) await validateCategory(user.id, category)
+    let category: undefined | number = undefined
+    if (rawCategory && Number(rawCategory) > 0) {
+        await validateCategory(user.id, rawCategory)
+
+        category = rawCategory
+    }
 
     const budget: Omit<Selectable<Budget>, 'id'> = {
         name,

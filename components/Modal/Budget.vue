@@ -102,35 +102,15 @@
     }
 
     // Fetch categories
-    const { data: categoryData, status: categoryStatus } = useCategories()
+    const { status: categoryStatus,
+        categorySelectOptions,
+        getCategoryIcon } = useCategories()
 
     const operation = computed(() => {
         return props.mode === 'edit' ? 'edit' : 'create'
     })
 
-    const categoryDisplayIcon = computed(() => {
-        if (!state.category) return ''
-
-        // Find the icon corresponding to the selected category
-        const icon =
-            categoryData.value.data.rows.find((c) => c.id == state.category)
-                ?.icon || ''
-
-        return `i-heroicons-${icon}`
-    })
-
-    const getCategoryOptions = computed(() => {
-        const options: SelectOption[] = [{ label: '-', value: '-' }]
-
-        categoryData.value.data.rows.forEach((category) => {
-            options.push({
-                label: category.name,
-                value: category.id
-            })
-        })
-
-        return options
-    })
+    const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
 
     const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
         const parsed = schema.safeParse(event.data)
@@ -168,54 +148,47 @@
     <UForm
         :schema="schema"
         :state="state"
-        class="space-y-4 p-6"
+        class="space-y-4"
         @submit="onCreateCategory">
         <UFormField
             :label="$t('Name')"
             name="name"
-            class="w-full"
             :error="!!error">
-            <UInput v-model="state.name" />
+            <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
         <UFormField
             :label="$t('Category')"
             name="category"
-            class="w-full"
             :error="!!error">
             <USelect
                 v-model="state.category"
-                :items="getCategoryOptions"
+                :items="categorySelectOptions"
                 :loading="categoryStatus === 'pending'"
-                class="hide-select-span">
-                <template v-if="categoryDisplayIcon" #leading>
-                    <UIcon
-                        :name="categoryDisplayIcon"
-                        class="h-full"
-                        dynamic />
-                </template>
+                :icon="categoryDisplayIcon"
+                class="hide-select-span w-full">                
             </USelect>
         </UFormField>
 
         <UFormField
             :label="$t('Period')"
             name="period"
-            class="w-full"
             :error="!!error">
             <USelect
                 v-model="state.period"
                 :items="periodOptions"
-                class="hide-select-span" />
+                class="hide-select-span w-full" />
         </UFormField>
 
         <UFormField
             :label="$t('Value')"
             name="value"
-            class="w-full"
             :error="error">
-            <UInput v-model="state.value" type="number" step="any" />
+            <UInput v-model="state.value" type="number" step="any" class="w-full" />
         </UFormField>
 
-        <UButton type="submit"> {{ $t('Submit') }} </UButton>
+        <div class="flex flex-row justify-end">
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
+        </div>
     </UForm>
 </template>

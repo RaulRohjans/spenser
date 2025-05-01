@@ -114,7 +114,7 @@
             categoryData.value.data.rows.find((c) => c.id == categoryId)
                 ?.icon || ''
 
-        return `i-heroicons-${icon}`
+        return getHeroIconName(icon)
     }
 
     const getValueColColor = function (value: number) {

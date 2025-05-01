@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { upperFirst } from 'scule'
-    import { formatCurrencyValue } from '#imports'
+    import { formatCurrencyValue, getHeroIconName } from '#imports'
     import type { BudgetDataObject } from '~/types/Data'
 
     const { t: $t } = useI18n()
@@ -42,7 +42,7 @@
                 <UIcon
                 v-if="budget.category_icon"
                 class="h-3 w-3"
-                :name="`i-heroicons-${budget.category_icon}`"
+                :name="getHeroIconName(budget.category_icon)"
                 dynamic />
                 {{ budget.category_name }}
             </div>

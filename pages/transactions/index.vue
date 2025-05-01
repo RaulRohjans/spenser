@@ -105,7 +105,7 @@
                 return h('div', { class: 'flex flex-row items-center gap-3' }, [
                     h('div', { class: 'hide-span' }, icon ? [
                         h(UIcon, {
-                            name: `i-heroicons-${icon}`,
+                            name: getHeroIconName(icon),
                             class: 'h-5 w-5',
                             dynamic: true
                         })

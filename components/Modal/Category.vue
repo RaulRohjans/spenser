@@ -26,21 +26,11 @@ import type { FetchTableSingleDataResult } from '~/types/Table'
     const { t: $t } = useI18n()
     const error: Ref<undefined | string> = ref()
 
-    /*
-     * The reason we need this abomination is to display a general
-     * form error, since the fields are in the same row, showing
-     * field specific stuff would deformat everything...
-     */
     const schema = z
         .object({
-            name: z.string().optional(),
+            name: z.string(),
             icon: z.string().optional()
         })
-        .superRefine(({ name }) => {
-            if (!name || name.length === 0)
-                error.value = $t('Category name is required')
-        })
-    /* ------------------------------------------------ */
 
     type Schema = z.output<typeof schema>
     const state = reactive({
@@ -118,9 +108,9 @@ import type { FetchTableSingleDataResult } from '~/types/Table'
     }
 
     const displayIcon = computed(() => {
-        if (!state.icon) return ''
+        if (!state.icon) return
 
-        return `i-heroicons-${state.icon}`
+        return getHeroIconName(state.icon)
     })
 </script>
 
@@ -128,37 +118,32 @@ import type { FetchTableSingleDataResult } from '~/types/Table'
     <UForm
         :schema="schema"
         :state="state"
-        class="space-y-4 p-6"
+        class="space-y-4"
         @submit="onCreateCategory">
-        <UFormField :error="error">
-            <div
-                class="flex flex-row justify-between items-center space-y-0 gap-8">
-                <UFormField :label="$t('Name')" name="name" class="w-full">
-                    <UInput v-model="state.name" />
-                </UFormField>
+        <UFormField :label="$t('Name')" name="name" :error="!!error">
+            <UInput v-model="state.name" class="w-full" />
+        </UFormField>
 
-                <UFormField :label="$t('Icon')" name="icon" class="w-full">
-                    <div class="flex flex-row gap-1">
-                        <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
-                        <UInput v-model="state.icon" class="hide-span">
-                            <template #trailing>
-                                <UIcon
-                                    class="h-full"
-                                    :name="displayIcon" />
-                            </template>
-                        </UInput>
-                        <ULink to="https://heroicons.com/" target="_blank">
-                            <UButton
-                                icon="i-heroicons-arrow-top-right-on-square"
-                                color="primary"
-                                square
-                                variant="ghost" />
-                        </ULink>
-                    </div>
-                </UFormField>
+        <UFormField :label="$t('Icon')" name="icon" :error="!!error">
+            <div class="flex flex-row gap-1">
+                <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
+                <UInput
+                    v-model="state.icon"
+                    class="hide-span w-full"
+                    :trailing-icon="displayIcon">                        
+                </UInput>
+                <ULink to="https://heroicons.com/" target="_blank">
+                    <UButton
+                        icon="i-heroicons-arrow-top-right-on-square"
+                        color="primary"
+                        square
+                        variant="ghost" />
+                </ULink>
             </div>
         </UFormField>
 
-        <UButton type="submit"> {{ $t('Submit') }} </UButton>
+        <div class="flex flex-row justify-end">
+            <UButton type="submit" :error="error"> {{ $t('Submit') }} </UButton>
+        </div>
     </UForm>
 </template>

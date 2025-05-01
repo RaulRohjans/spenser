@@ -1,6 +1,5 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { SelectOption } from '@/types/Options'
     import type { FetchTableSingleDataResult } from '@/types/Table'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
@@ -79,20 +78,9 @@
     }
 
     // Fetch categories
-    const { data: categoryData, status: categoryStatus } = useCategories()
-
-    const getCategoryOptions = computed(() => {
-        const options: SelectOption[] = []
-
-        categoryData.value.data.rows.forEach((category) => {
-            options.push({
-                label: category.name,
-                value: category.id
-            })
-        })
-
-        return options
-    })
+    const { status: categoryStatus, 
+        categorySelectOptions,
+        getCategoryIcon } = useCategories()
 
     const operation = computed(() => {
         return props.mode === 'edit' ? 'edit' : 'create'
@@ -129,24 +117,13 @@
         .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
-    const categoryDisplayIcon = computed(() => {
-        if (!state.category) return null
-
-        // Find the icon corresponding to the selected category
-        const icon =
-            categoryData.value.data.rows.find((c) => c.id == state.category)
-                ?.icon || null
-
-        if(!icon) return null
-
-        return `i-heroicons-${icon}`
-    })
+    const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
 </script>
 
 <template>
     <UForm
         :state="state"
-        class="space-y-4 p-6"
+        class="space-y-4"
         @submit="onCreateTransaction">
         <UFormField
             :label="$t('Transaction Name')"
@@ -172,15 +149,10 @@
                 :error="!!error">
                 <USelect
                     v-model="state.category"
-                    :items="getCategoryOptions"
+                    :items="categorySelectOptions"
                     :loading="categoryStatus === 'pending'"
-                    class="hide-select-span w-full">
-                    <template v-if="categoryDisplayIcon" #leading>
-                        <UIcon
-                            :name="categoryDisplayIcon"
-                            class="h-full"
-                            dynamic />
-                    </template>
+                    :icon="categoryDisplayIcon"
+                    class="hide-select-span w-full">                    
                 </USelect>
             </UFormField>
         </div>
