@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
         .leftJoin('transaction', (join) =>
             join
                 .onRef('transaction.user', '=', 'budget.user')
+                .on('transaction.deleted', '=', false)
                 .on((eb) =>
                     eb
                         //Sum transaction value per category if it exists
@@ -96,7 +97,6 @@ export default defineEventHandler(async (event) => {
         )
 
         .where('budget.deleted', '=', false)
-        .where('transaction.deleted', '=', false)
 
         .groupBy(['budget.id', 'category.id'])
         .orderBy('budget.order asc')
