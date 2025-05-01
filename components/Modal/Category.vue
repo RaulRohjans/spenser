@@ -129,7 +129,7 @@ import type { FetchTableSingleDataResult } from '~/types/Table'
                 <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
                 <UInput
                     v-model="state.icon"
-                    class="hide-span w-full"
+                    class="w-full"
                     :trailing-icon="displayIcon">                        
                 </UInput>
                 <ULink to="https://heroicons.com/" target="_blank">

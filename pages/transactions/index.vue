@@ -103,7 +103,7 @@
                 if (deleted) return h('span', '-')
 
                 return h('div', { class: 'flex flex-row items-center gap-3' }, [
-                    h('div', { class: 'hide-span' }, icon ? [
+                    h('div', undefined, icon ? [
                         h(UIcon, {
                             name: getHeroIconName(icon),
                             class: 'h-5 w-5',

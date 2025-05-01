@@ -84,7 +84,7 @@
             cell: ({ row }) => {
                 const icon = row.original.icon
 
-                return h('div', { class: 'hide-span' }, [
+                return h('div', undefined, [
                     h(UIcon, {
                         name: getHeroIconName(icon),
                         class: 'h-5 w-5',
