@@ -1,7 +1,7 @@
 <script setup lang="ts" generic="T">
     import { useDebounceFn } from '@vueuse/core'
     import type { Table } from '@tanstack/vue-table'
-import { upperFirst } from 'scule';
+    import { upperFirst } from 'scule'
 
     const props = defineProps<{
         tableApi?: Table<T>
