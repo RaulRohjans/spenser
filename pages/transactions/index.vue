@@ -187,6 +187,7 @@
                     </h2>
                 </template>
     
+                <!-- Filters header -->
                 <div class="flex flex-col gap-2">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                         <div class="flex flex-col lg:flex-row lg:items-center gap-2">

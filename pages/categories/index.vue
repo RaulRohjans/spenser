@@ -150,27 +150,26 @@
                     </h2>
                 </template>
     
-                <!-- Filters -->
-                <div class="flex flex-col sm:flex-row items-start justify-start px-4 py-2">
-                    <SSearchWithColumnFilter
-                        v-model:column="filters.searchColumn"
-                        v-model:search="filters.searchQuery" 
-                        :table-api="table?.tableApi" />
-                </div>
+                <!-- Filters header -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
+                    <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
+                        <SSearchWithColumnFilter
+                            v-model:column="filters.searchColumn"
+                            v-model:search="filters.searchQuery" 
+                            :table-api="table?.tableApi" />
     
-                <!-- Header and Action buttons -->
-                <div class="flex justify-between items-center w-full px-4 py-2">
-                    <SRowsPerPageSelector v-model="itemsPerPage" />
-    
-                    <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
-                </div>
-    
-                <!-- Extra Actions -->
-                <div class="flex flex-row items-end justify-end w-full px-4 py-2">
+                        <div class="flex flex-col md:flex-row sm:justify-start gap-2">
+                            <div class="flex flex-row justify-center sm:justify-start">
+                                <SRowsPerPageSelector v-model="itemsPerPage" />
+                            </div>
+                            <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
+                        </div>
+                    </div>
+
                     <UButton
                         icon="i-heroicons-plus"
                         color="primary"
-                        size="xs"
+                        size="md"
                         @click="router.push(`/categories/create`)">
                         {{ $t('Create Category') }}
                     </UButton>
