@@ -2,7 +2,7 @@
     const router = useRouter()
     const { t: $t } = useI18n()
 
-    const isOpen = true
+    const isOpen = ref<boolean>(true)
 
     const emit = defineEmits<{
         (event: 'successful-submit'): void

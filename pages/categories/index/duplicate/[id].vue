@@ -4,7 +4,7 @@
     const { t: $t } = useI18n()
     const id: number = Number.parseInt(route.params.id.toString())
 
-    const isOpen = true
+    const isOpen = ref<boolean>(true)
 
     const emit = defineEmits<{
         (event: 'successful-submit'): void
