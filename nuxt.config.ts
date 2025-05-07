@@ -23,8 +23,7 @@ export default defineNuxtConfig({
         ]
     },
     routeRules: {
-        '/settings': { redirect: '/settings/global' },
-        '/settings/admin': { redirect: '/settings/global' }
+        '/admin': { redirect: '/admin/users' }
     },
     auth: {
         provider: {
