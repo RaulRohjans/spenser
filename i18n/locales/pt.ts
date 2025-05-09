@@ -96,7 +96,7 @@ export default {
     "results": "resultados",
     "Average Expense Value": "Valor Médio de Despesa",
     "Spending (%) per Category": "Gastos (%) por Categoria",
-    "Spending Over Time": "Despesas ao longo do tempo",
+    "Spending Over Time": "Despesas ao Longo do Tempo",
     "Month": "Mês",
     "Year": "Ano",
     "All Time": "Todo o Tempo",
@@ -142,5 +142,15 @@ export default {
     "Warning": "Aviso",
     "Logout": "Terminar Sessão",
     "Are you sure you want to logout?": "Tem a certeza que pretende terminar a sessão?",
-    "No data to display": "Não existem dados a mostrar"
+    "No data to display": "Não existem dados a mostrar",
+    "Edit Transaction": "Editar Transação",
+    "Duplicate Transaction": "Duplicar Transação",
+    "Edit Category": "Editar Categoria",
+    "Duplicate Category": "Duplicar Categoria",
+    "Edit Budget": "Editar Budget",
+    "Duplicate Budget": "Duplicar Budget",
+    "Create Budget": "Criar Budget",
+    "Use Light Mode": "Usar Modo Claro",
+    "Use Dark Mode": "Usar Modo Escuro",
+    "Administration": "Administração"
 }

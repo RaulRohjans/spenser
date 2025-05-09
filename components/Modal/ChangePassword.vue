@@ -6,7 +6,7 @@
     const { signOut, token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
 
     const schema = z
         .object({
@@ -27,8 +27,8 @@
         })
     type Schema = z.output<typeof schema>
     const state = reactive({
-        new_password: undefined,
-        repeat_new_password: undefined
+        new_password: '',
+        repeat_new_password: ''
     })
 
     const onChangePasswordSubmit = function (event: FormSubmitEvent<Schema>) {
@@ -53,31 +53,31 @@
                 signOut({ callbackUrl: '/login' })
             })
             .catch((e: NuxtError) => {
-                error.value = e.statusMessage || null
+                error.value = e.statusMessage
             })
     }
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
+    <UModal v-model="model">
         <UForm
             :schema="schema"
             :state="state"
             class="space-y-4 p-6"
             @submit="onChangePasswordSubmit">
-            <UFormGroup
+            <UFormField
                 :label="$t('New Password')"
                 name="new_password"
                 :error="error != null">
                 <UInput v-model="state.new_password" type="password" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup
+            <UFormField
                 :label="$t('Repeat New Password')"
                 name="repeat_new_password"
                 :error="error">
                 <UInput v-model="state.repeat_new_password" type="password" />
-            </UFormGroup>
+            </UFormField>
 
             <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>

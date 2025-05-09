@@ -11,7 +11,7 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
     const placementOptions = ref([
         { label: 'Before', value: 'before' },
         { label: 'After', value: 'after' }
@@ -23,7 +23,7 @@
 
     type Schema = z.output<typeof schema>
     const state = reactive({
-        symbol: undefined,
+        symbol: '',
         placement: placementOptions.value[0].value
     })
 
@@ -54,37 +54,37 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
+    <UModal v-model="model">
         <UForm
             :schema="schema"
             :state="state"
             class="space-y-4 p-6"
             @submit="onCreateCurrency">
-            <UFormGroup
+            <UFormField
                 :label="$t('Symbol')"
                 name="symbol"
                 class="w-full"
                 :error="!!error">
                 <UInput v-model="state.symbol" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup
+            <UFormField
                 :label="$t('Placement')"
                 name="placement"
                 class="w-full"
                 :error="error">
                 <USelect
                     v-model="state.placement"
-                    :options="placementOptions" />
+                    :items="placementOptions" />
                 <template #help>
                     {{ $t('Place the symbol before ($212) or after (310€).') }}
                 </template>
-            </UFormGroup>
+            </UFormField>
 
             <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </UForm>

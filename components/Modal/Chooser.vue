@@ -49,7 +49,6 @@
 <template>
     <UModal
         v-model="showModal"
-        :ui="{ container: 'items-center' }"
         @close="onClose">
         <UCard>
             <div class="flex flex-row justify-start items-center">

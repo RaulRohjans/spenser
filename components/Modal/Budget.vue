@@ -2,8 +2,9 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { FetchTableDataResult } from '~/types/Table'
+    import type { FetchTableSingleDataResult } from '~/types/Table'
     import type { SelectOption } from '~/types/Options'
+    import type { BudgetPeriodType } from '~/types/budget-period'
 
     export type ModalBudgetProps = {
         /**
@@ -12,39 +13,21 @@
         id?: number
 
         /**
-         * Id of the category
+         * Mode in which the modal will operate
          */
-        category?: number | null
-
-        /**
-         * Name of the budget
-         */
-        name?: string | null
-
-        /**
-         * Value of the budget
-         *
-         * This needs to be string here because Kysely is stupid and converts postgresql decimal to string
-         */
-        value?: number | string
-
-        /**
-         * Period ('daily', 'monthly', 'quarterly', 'semi-annual', 'yearly')
-         */
-        period?: 'daily' | 'monthly' | 'quarterly' | 'semi-annual' | 'yearly'
+        mode: 'create' | 'edit' | 'duplicate'
     }
 
     const props = defineProps<ModalBudgetProps>()
 
     const emit = defineEmits<{
-        (event: 'submit'): void
         (event: 'successful-submit'): void
     }>()
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
+    
     const periodOptions: Ref<SelectOption[]> = ref([
         {
             label: $t('Daily'),
@@ -77,148 +60,135 @@
     type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
-        name: props.name,
-        category: props.category,
-        value: Number(props.value),
-        period: props.period || periodOptions.value[0].value
+        name: '',
+        category: 0,
+        value: 0,
+        period: periodOptions.value[0].value as BudgetPeriodType
     })
+
+    // Fetch budget
+    if(props.mode != 'create') {
+        const { data: budget } =
+            await useLazyAsyncData<FetchTableSingleDataResult>(
+                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+                `budget-${props.mode}-${props.id}`,
+                () =>
+                    $fetch(`/api/budgets/${props.id}`, {
+                        method: 'GET',
+                        headers: buildRequestHeaders(token.value)
+                    }),
+                {
+                    default: () => {
+                        return {
+                            success: false,
+                            data: {}
+                        }
+                    },
+                    watch: [() => props.id, () => props.mode]
+                }
+            )
+
+        // A watch is needed here because for some reason, using a then is still
+        // not enough to make sure the data is loaded after the request is made
+        watch(budget, (newVal) => {
+            if (!newVal?.data) return
+
+            state.id = props.id
+            state.name = newVal.data.name
+            state.category = newVal.data.category
+            state.value = newVal.data.value
+            state.period = newVal.data.period
+        }, { immediate: true })
+    }
 
     // Fetch categories
-    const { data: categoryData, pending: categoryLoading } =
-        await useLazyAsyncData<FetchTableDataResult>(
-            'categoryData',
-            () =>
-                $fetch('/api/categories', {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value)
-                }),
-            {
-                default: () => {
-                    return {
-                        success: false,
-                        data: {
-                            totalRecordCount: 0,
-                            rows: []
-                        }
-                    }
-                }
-            }
-        )
+    const { status: categoryStatus,
+        categorySelectOptions,
+        getCategoryIcon } = useCategories()
 
     const operation = computed(() => {
-        if (!props.id) return 'insert'
-        return 'edit'
+        return props.mode === 'edit' ? 'edit' : 'create'
     })
 
-    const categoryDisplayIcon = computed(() => {
-        if (!state.category) return ''
-
-        // Find the icon corresponding to the selected category
-        const icon =
-            categoryData.value.data.rows.find((c) => c.id == state.category)
-                ?.icon || ''
-
-        return `i-heroicons-${icon}`
-    })
-
-    const getCategoryOptions = computed(() => {
-        const options: SelectOption[] = [{ label: '-', value: '' }]
-
-        categoryData.value.data.rows.forEach((category) => {
-            options.push({
-                label: category.name,
-                value: category.id
-            })
-        })
-
-        return options
-    })
+    const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
 
     const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
-        emit('submit')
+        const parsed = schema.safeParse(event.data)
+        if (!parsed.success) {
+            error.value = $t('Invalid input')
+            return
+        }
 
         $fetch(`/api/budgets/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: event.data
         })
-            .then((data) => {
-                if (!data.success)
-                    return Notifier.showAlert(
-                        $t('An error occurred when creating your budget.'),
-                        'error'
-                    )
-
-                // Emit success
-                emit('successful-submit')
-
-                // Disaply success message
-                Notifier.showAlert(
-                    $t('Operation completed successfully!'),
-                    'success'
+        .then((data) => {
+            if (!data.success)
+                return Notifier.showAlert(
+                    $t('An error occurred when creating your budget.'),
+                    'error'
                 )
 
-                // Close modal
-                model.value = false
-            })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            // Emit success
+            emit('successful-submit')
+
+            // Disaply success message
+            Notifier.showAlert(
+                $t('Operation completed successfully!'),
+                'success'
+            )
+        })
+        .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
-        <UForm
-            :schema="schema"
-            :state="state"
-            class="space-y-4 p-6"
-            @submit="onCreateCategory">
-            <UFormGroup
-                :label="$t('Name')"
-                name="name"
-                class="w-full"
-                :error="!!error">
-                <UInput v-model="state.name" />
-            </UFormGroup>
+    <UForm
+        :schema="schema"
+        :state="state"
+        class="space-y-4"
+        @submit="onCreateCategory">
+        <UFormField
+            :label="$t('Name')"
+            name="name"
+            :error="!!error">
+            <UInput v-model="state.name" class="w-full" />
+        </UFormField>
 
-            <UFormGroup
-                :label="$t('Category')"
-                name="category"
-                class="w-full"
-                :error="!!error">
-                <USelect
-                    v-model="state.category"
-                    :options="getCategoryOptions"
-                    :loading="categoryLoading"
-                    class="hide-select-span">
-                    <template #leading>
-                        <UIcon
-                            :name="categoryDisplayIcon"
-                            class="h-full"
-                            dynamic />
-                    </template>
-                </USelect>
-            </UFormGroup>
+        <UFormField
+            :label="$t('Category')"
+            name="category"
+            :error="!!error">
+            <USelect
+                v-model="state.category"
+                :items="categorySelectOptions"
+                :loading="categoryStatus === 'pending'"
+                :icon="categoryDisplayIcon"
+                class="hide-select-span w-full">                
+            </USelect>
+        </UFormField>
 
-            <UFormGroup
-                :label="$t('Period')"
-                name="period"
-                class="w-full"
-                :error="!!error">
-                <USelect
-                    v-model="state.period"
-                    :options="periodOptions"
-                    class="hide-select-span" />
-            </UFormGroup>
+        <UFormField
+            :label="$t('Period')"
+            name="period"
+            :error="!!error">
+            <USelect
+                v-model="state.period"
+                :items="periodOptions"
+                class="hide-select-span w-full" />
+        </UFormField>
 
-            <UFormGroup
-                :label="$t('Value')"
-                name="value"
-                class="w-full"
-                :error="error">
-                <UInput v-model="state.value" type="number" step="any" />
-            </UFormGroup>
+        <UFormField
+            :label="$t('Value')"
+            name="value"
+            :error="error">
+            <UInput v-model="state.value" type="number" step="any" class="w-full" />
+        </UFormField>
 
+        <div class="flex flex-row justify-end">
             <UButton type="submit"> {{ $t('Submit') }} </UButton>
-        </UForm>
-    </UModal>
+        </div>
+    </UForm>
 </template>

@@ -53,7 +53,7 @@
     >
 
     // Fetch data
-    const { data: fetchData, pending: loading } = await useLazyAsyncData<{
+    const { data: fetchData, status } = await useLazyAsyncData<{
         success: boolean
         data: ExpensesByCategoryData[]
     }>(
@@ -144,10 +144,7 @@
         :class="`shadow-xl p-4 ${props.class}`"
         :style="`width: ${props.width}`"
         :ui="{
-            body: {
-                padding: '',
-                base: 'divide-y divide-gray-200 dark:divide-gray-700'
-            }
+            body: 'p-0 divide-y divide-gray-200 dark:divide-gray-700'
         }">
         <div class="flex flex-col justify-center items-center gap-4">
             <h2
@@ -160,7 +157,7 @@
                     class="w-full"
                     :style="`height: ${props.height}`"
                     :option="getGraphOptions"
-                    :loading="loading"
+                    :loading="status === 'pending'"
                     autoresize />
 
                 <div

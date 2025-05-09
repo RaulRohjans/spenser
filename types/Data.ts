@@ -26,6 +26,7 @@ export interface BudgetDataObject {
     order: number
     category_name: string | null
     category_icon: string | null
+    category_deleted: boolean
     expenses: number
 }
 

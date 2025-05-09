@@ -1,0 +1,1 @@
+export type BudgetPeriodType = 'daily' | 'monthly' | 'quarterly' | 'semi-annual' | 'yearly'

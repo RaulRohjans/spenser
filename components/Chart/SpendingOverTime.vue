@@ -59,7 +59,7 @@
     provide(THEME_KEY, getTheme) // Set chart theme
 
     // Fetch data
-    const { data: fetchData, pending: loading } = await useLazyAsyncData<{
+    const { data: fetchData, status } = await useLazyAsyncData<{
         success: boolean
         data: SpendingOverTimeData[]
     }>(
@@ -143,10 +143,7 @@
         :class="`shadow-xl p-4 ${props.class}`"
         :style="`width: ${props.width}`"
         :ui="{
-            body: {
-                padding: '',
-                base: 'divide-y divide-gray-200 dark:divide-gray-700'
-            }
+            body: 'p-0 divide-y divide-gray-200 dark:divide-gray-700'
         }">
         <div class="flex flex-col justify-center items-center gap-4">
             <h2
@@ -159,7 +156,7 @@
                     :option="getChartOptions"
                     class="w-full"
                     :style="`height: ${props.height}`"
-                    :loading="loading" />
+                    :loading="status === 'pending'" />
 
                 <div
                     v-if="!hasDataToLoad"

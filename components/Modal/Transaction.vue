@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { SelectOption } from '@/types/Options'
-    import type { FetchTableDataResult } from '@/types/Table'
+    import type { FetchTableSingleDataResult } from '@/types/Table'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
 
@@ -12,190 +11,158 @@
         id?: number
 
         /**
-         * Id of the category
+         * Mode in which the modal will operate
          */
-        category?: number
-
-        /**
-         * Name of the transaction
-         */
-        name?: string
-
-        /**
-         * Total value of the transaction (can be positive or negative)
-         */
-        value?: number
-
-        /**
-         * Date of the transaction
-         */
-        date?: Date
+        mode: 'create' | 'edit' | 'duplicate'
     }
 
     const props = defineProps<ModalTransactionProps>()
 
     const emit = defineEmits<{
-        (event: 'submit'): void
         (event: 'successful-submit'): void
     }>()
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const model = defineModel<boolean>()
     const error: Ref<string | undefined> = ref()
 
-    const _schema = z.object({
+    const schema = z.object({
         name: z.string().optional(),
-        value: z
-            .number()
-            .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+        value: z.coerce.number().refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
         category: z.number(),
         date: z.date()
     })
 
-    type Schema = z.output<typeof _schema>
+    type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
-        category: props.category,
-        name: props.name,
-        value: props.value,
-        date: props.date || new Date(Date.now())
+        category: 0,
+        name: '',
+        value: 0,
+        date: new Date(Date.now())
     })
 
-    // Fetch Data
-    const { data: categoryData, pending: categoryLoading } =
-        await useLazyAsyncData<FetchTableDataResult>(
-            'categoryData',
-            () =>
-                $fetch('/api/categories', {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value)
-                }),
-            {
-                default: () => {
-                    return {
-                        success: false,
-                        data: {
-                            totalRecordCount: 0,
-                            rows: []
+    // Fetch transaction
+    if(props.mode != 'create') {
+        const { data: transaction } =
+            await useLazyAsyncData<FetchTableSingleDataResult>(
+                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+                `transaction-${props.mode}-${props.id}`,
+                () =>
+                    $fetch(`/api/transactions/${props.id}`, {
+                        method: 'GET',
+                        headers: buildRequestHeaders(token.value)
+                    }),
+                {
+                    default: () => {
+                        return {
+                            success: false,
+                            data: {}
                         }
-                    }
+                    },
+                    watch: [() => props.id, () => props.mode]
                 }
-            }
-        )
+            )
 
-    // Load first category when creating a new record
-    if (!state.category && categoryData.value.data.rows.length > 0)
-        state.category = categoryData.value.data.rows[0].id
+        // A watch is needed here because for some reason, using a then is still
+        // not enough to make sure the data is loaded after the request is made
+        watch(transaction, (newVal) => {
+            if (!newVal?.data) return
 
-    const getCategoryOptions = computed(() => {
-        const options: SelectOption[] = []
+            state.id = props.id
+            state.name = newVal.data.name
+            state.category = newVal.data.category
+            state.value = newVal.data.value
+            state.date = new Date(newVal.data.date)
+        }, { immediate: true })
+    }
 
-        categoryData.value.data.rows.forEach((category) => {
-            options.push({
-                label: category.name,
-                value: category.id
-            })
-        })
-
-        return options
-    })
+    // Fetch categories
+    const { status: categoryStatus, 
+        categorySelectOptions,
+        getCategoryIcon } = useCategories()
 
     const operation = computed(() => {
-        if (!props.id) return 'insert'
-        return 'edit'
+        return props.mode === 'edit' ? 'edit' : 'create'
     })
 
     const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
-        emit('submit')
+        const parsed = schema.safeParse(event.data)
+        if (!parsed.success) {
+            error.value = $t('Invalid input')
+            return
+        }
 
         $fetch(`/api/transactions/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
-            body: event.data
+            body: event.data // Use data from event instead of parsed bc it contains the ID
         })
-            .then((data) => {
-                if (!data.success)
-                    return Notifier.showAlert(
-                        $t('An error occurred when performing the action.'),
-                        'error'
-                    )
-
-                // Emit success
-                emit('successful-submit')
-
-                // Disaply success message
-                Notifier.showAlert(
-                    $t('Operation completed successfully!'),
-                    'success'
+        .then((data) => {
+            if (!data.success)
+                return Notifier.showAlert(
+                    $t('An error occurred when performing the action.'),
+                    'error'
                 )
 
-                // Close modal
-                model.value = false
-            })
-            .catch((e: NuxtError) => (error.value = e.statusMessage))
+            // Emit success
+            emit('successful-submit')
+
+            // Disaply success message
+            Notifier.showAlert(
+                $t('Operation completed successfully!'),
+                'success'
+            )
+        })
+        .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
-    const categoryDisplayIcon = computed(() => {
-        if (!state.category) return ''
-
-        // Find the icon corresponding to the selected category
-        const icon =
-            categoryData.value.data.rows.find((c) => c.id == state.category)
-                ?.icon || ''
-
-        return `i-heroicons-${icon}`
-    })
+    const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
-        <UForm
-            :state="state"
-            class="space-y-4 p-6"
-            @submit="onCreateTransaction">
-            <UFormGroup
-                :label="$t('Transaction Name')"
-                name="name"
+    <UForm
+        :state="state"
+        class="space-y-4"
+        @submit="onCreateTransaction">
+        <UFormField
+            :label="$t('Transaction Name')"
+            name="name"
+            :error="!!error">
+            <UInput v-model="state.name" class="w-full" />
+        </UFormField>
+
+        <div
+            class="flex flex-row justify-between items-center space-y-0 gap-8">
+            <UFormField
+                :label="$t('Value')"
+                name="value"
+                class="w-full"
                 :error="!!error">
-                <UInput v-model="state.name" />
-            </UFormGroup>
+                <UInput v-model="state.value" type="number" step="any" class="w-full" />
+            </UFormField>
 
-            <div
-                class="flex flex-row justify-between items-center space-y-0 gap-8">
-                <UFormGroup
-                    :label="$t('Value')"
-                    name="value"
-                    class="w-full"
-                    :error="!!error">
-                    <UInput v-model="state.value" type="number" step="any" />
-                </UFormGroup>
+            <UFormField
+                :label="$t('Category')"
+                name="category"
+                class="w-full"
+                :error="!!error">
+                <USelect
+                    v-model="state.category"
+                    :items="categorySelectOptions"
+                    :loading="categoryStatus === 'pending'"
+                    :icon="categoryDisplayIcon"
+                    class="hide-select-span w-full">                    
+                </USelect>
+            </UFormField>
+        </div>
 
-                <UFormGroup
-                    :label="$t('Category')"
-                    name="category"
-                    class="w-full"
-                    :error="!!error">
-                    <USelect
-                        v-model="state.category"
-                        :options="getCategoryOptions"
-                        :loading="categoryLoading"
-                        class="hide-select-span">
-                        <template #leading>
-                            <UIcon
-                                :name="categoryDisplayIcon"
-                                class="h-full"
-                                dynamic />
-                        </template>
-                    </USelect>
-                </UFormGroup>
-            </div>
+        <UFormField :label="$t('Date')" name="date" :error="error">
+            <SDateTimePicker v-model="state.date" type="datetime" />
+        </UFormField>
 
-            <UFormGroup :label="$t('Date')" name="date" :error="error">
-                <SDateTimePicker v-model="state.date" type="datetime" />
-            </UFormGroup>
-
+        <div class="flex flex-row justify-end">
             <UButton type="submit"> {{ $t('Submit') }} </UButton>
-        </UForm>
-    </UModal>
+        </div>
+    </UForm>
 </template>
