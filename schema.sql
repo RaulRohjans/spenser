@@ -48,14 +48,15 @@ CREATE TABLE IF NOT EXISTS currency (
     PRIMARY KEY(id)
 );
 
-CREATE TABLE IF NOT EXISTS user_settings (
+CREATE TABLE IF NOT EXISTS user_preferences (
     id INT GENERATED ALWAYS AS IDENTITY,
-    "user" INT NOT NULL,
+    "user" INT NOT NULL UNIQUE,
     currency INT NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_user
         FOREIGN KEY("user")
-            REFERENCES "user"(id),
+            REFERENCES "user"(id)
+            ON DELETE CASCADE,
     CONSTRAINT fk_currency
         FOREIGN KEY("currency")
             REFERENCES currency(id)

@@ -2,7 +2,7 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-import type { FetchTableSingleDataResult } from '~/types/Table'
+    import type { FetchTableSingleDataResult } from '~/types/Table'
 
     export type ModalCategoryProps = {
         /**
