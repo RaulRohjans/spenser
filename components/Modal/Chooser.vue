@@ -47,18 +47,8 @@
 </script>
 
 <template>
-    <UModal
-        v-model="showModal"
-        :ui="{ container: 'items-center' }"
-        @close="onClose">
-        <UCard>
-            <div class="flex flex-row justify-start items-center">
-                <h2
-                    class="font-semibold text-2xl text-gray-900 dark:text-white leading-tight mb-1 text-wrap">
-                    {{ props.title }}
-                </h2>
-            </div>
-
+    <UModal v-model:open="showModal" :title="props.title" @close="onClose">
+        <template #body>
             <div class="flex flex-col justify-start items-center">
                 <span class="w-full mb-4">{{ props.message }}</span>
 
@@ -73,6 +63,6 @@
                     </UButton>
                 </div>
             </div>
-        </UCard>
+        </template>
     </UModal>
 </template>

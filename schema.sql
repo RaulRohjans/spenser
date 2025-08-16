@@ -48,14 +48,15 @@ CREATE TABLE IF NOT EXISTS currency (
     PRIMARY KEY(id)
 );
 
-CREATE TABLE IF NOT EXISTS user_settings (
+CREATE TABLE IF NOT EXISTS user_preferences (
     id INT GENERATED ALWAYS AS IDENTITY,
-    "user" INT NOT NULL,
+    "user" INT NOT NULL UNIQUE,
     currency INT NOT NULL,
     PRIMARY KEY(id),
     CONSTRAINT fk_user
         FOREIGN KEY("user")
-            REFERENCES "user"(id),
+            REFERENCES "user"(id)
+            ON DELETE CASCADE,
     CONSTRAINT fk_currency
         FOREIGN KEY("currency")
             REFERENCES currency(id)
@@ -92,3 +93,11 @@ CREATE TABLE IF NOT EXISTS budget (
         FOREIGN KEY(category)
             REFERENCES category(id)
 );
+
+/* User demo password demo */
+INSERT INTO "user" (username, first_name, last_name, email, avatar, is_admin, password, deleted)
+VALUES ('demo', 'Demo', 'Demo', 'demo@deded.com', NULL, TRUE, '$2b$10$DFQzRePFt0Wt6O3K621psuuV5E4VlpgnMnQfeEc59MpdopwJT.ZzO', FALSE);
+
+/* Seed currencies */
+INSERT INTO "currency" (symbol, placement, deleted) VALUES ('€', 'after', FALSE);
+INSERT INTO "currency" (symbol, placement, deleted) VALUES ('$', 'before', FALSE);

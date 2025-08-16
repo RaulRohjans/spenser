@@ -142,5 +142,15 @@ export default {
     "Warning": "Warning",
     "Logout": "Logout",
     "Are you sure you want to logout?": "Are you sure you want to logout?",
-    "No data to display": "No data to display"
+    "No data to display": "No data to display",
+    "Edit Transaction": "Edit Transaction",
+    "Duplicate Transaction": "Duplicate Transaction",
+    "Edit Category": "Edit Category",
+    "Duplicate Category": "Duplicate Category",
+    "Edit Budget": "Edit Budget",
+    "Duplicate Budget": "Duplicate Budget",
+    "Create Budget": "Create Budget",
+    "Use Light Mode": "Use Light Mode",
+    "Use Dark Mode": "Use Dark Mode",
+    "Administration": "Administration"
 }

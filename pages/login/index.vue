@@ -13,8 +13,8 @@
         password: z.string().trim().min(1, $t('Must be at least 8 characters'))
     })
     const state = reactive({
-        username: undefined,
-        password: undefined
+        username: '',
+        password: ''
     })
     type ValidationSchema = z.output<typeof validationSchema>
 
@@ -63,16 +63,16 @@
         :state="state"
         class="space-y-4"
         @submit="onSubmit">
-        <UFormGroup
+        <UFormField
             :label="$t('Username')"
             name="username"
             :error="error != null">
-            <UInput v-model="state.username" />
-        </UFormGroup>
+            <UInput v-model="state.username" class="w-full" />
+        </UFormField>
 
-        <UFormGroup :label="$t('Password')" name="password" :error="error">
-            <UInput v-model="state.password" type="password" />
-        </UFormGroup>
+        <UFormField :label="$t('Password')" name="password" :error="error">
+            <UInput v-model="state.password" class="w-full" type="password" />
+        </UFormField>
 
         <UButton type="submit"> {{ $t('Submit') }} </UButton>
     </UForm>

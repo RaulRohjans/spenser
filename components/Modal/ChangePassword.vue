@@ -3,10 +3,9 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
 
-    const { signOut, token } = useAuth()
+    const { token, refresh } = useAuth()
     const { t: $t } = useI18n()
-    const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
 
     const schema = z
         .object({
@@ -27,8 +26,8 @@
         })
     type Schema = z.output<typeof schema>
     const state = reactive({
-        new_password: undefined,
-        repeat_new_password: undefined
+        new_password: '',
+        repeat_new_password: ''
     })
 
     const onChangePasswordSubmit = function (event: FormSubmitEvent<Schema>) {
@@ -37,49 +36,52 @@
             headers: buildRequestHeaders(token.value),
             body: { password: event.data.new_password }
         })
-            .then((data) => {
+            .then(async (data) => {
                 if (!data.success)
                     return Notifier.showAlert(
                         $t('An error occurred when updating your password.'),
                         'error'
                     )
 
+                await refresh()
+
                 Notifier.showAlert(
                     $t('Password updated successfully!'),
                     'success'
                 )
-
-                // Force signout to refresh  token
-                signOut({ callbackUrl: '/login' })
             })
             .catch((e: NuxtError) => {
-                error.value = e.statusMessage || null
+                error.value = e.statusMessage
             })
     }
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
-        <UForm
-            :schema="schema"
-            :state="state"
-            class="space-y-4 p-6"
-            @submit="onChangePasswordSubmit">
-            <UFormGroup
-                :label="$t('New Password')"
-                name="new_password"
-                :error="error != null">
-                <UInput v-model="state.new_password" type="password" />
-            </UFormGroup>
+    <UForm
+        :schema="schema"
+        :state="state"
+        class="space-y-4 p-6"
+        @submit="onChangePasswordSubmit">
+        <UFormField
+            :label="$t('New Password')"
+            name="new_password"
+            :error="error != null">
+            <UInput
+                v-model="state.new_password"
+                class="w-full"
+                type="password" />
+        </UFormField>
 
-            <UFormGroup
-                :label="$t('Repeat New Password')"
-                name="repeat_new_password"
-                :error="error">
-                <UInput v-model="state.repeat_new_password" type="password" />
-            </UFormGroup>
+        <UFormField
+            :label="$t('Repeat New Password')"
+            name="repeat_new_password"
+            :error="error">
+            <UInput
+                v-model="state.repeat_new_password"
+                class="w-full"
+                type="password" />
+        </UFormField>
 
-            <UButton type="submit"> {{ $t('Submit') }} </UButton>
-        </UForm>
-    </UModal>
+        <UButton type="submit"> {{ $t('Submit') }} </UButton>
+    </UForm>
 </template>

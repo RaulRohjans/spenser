@@ -4,7 +4,6 @@
 
     const localePath = useLocalePath()
     const { locale, setLocale, t: $t } = useI18n()
-    const { signOut } = useAuth()
     const route = useRoute()
 
     const isMobileMenuShown = ref(false)
@@ -20,7 +19,7 @@
             },
             {
                 name: $t('Transactions'),
-                href: '/transactions/all',
+                href: '/transactions',
                 selected: isRouteActive(route, '/transactions')
             },
             {
@@ -30,13 +29,8 @@
             },
             {
                 name: $t('Categories'),
-                href: '/categories/all',
+                href: '/categories',
                 selected: isRouteActive(route, '/categories')
-            },
-            {
-                name: $t('Settings'),
-                href: '/settings/global',
-                selected: isRouteActive(route, '/settings')
             }
         ]
     })
@@ -89,26 +83,16 @@
         isMobileMenuShown.value = !isMobileMenuShown.value
     }
 
-    const onLogout = function () {
-        Notifier.showChooser(
-            $t('Logout'),
-            $t('Are you sure you want to logout?'),
-            () => {
-                signOut({ callbackUrl: '/login' })
-            }
-        )
-    }
-
     watch(selectedLocale, (newVal) => setLocale(newVal))
 </script>
 
 <template>
     <nav ref="navbarRef" class="bg-white drop-shadow-md dark:bg-gray-800">
-        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-2 lg:px-8">
             <div class="relative flex h-16 items-center justify-between">
                 <!-- Mobile Nav Header -->
                 <div
-                    class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                    class="absolute inset-y-0 left-0 flex items-center lg:hidden">
                     <!-- Mobile menu button-->
                     <UButton
                         :icon="
@@ -125,7 +109,7 @@
                 </div>
 
                 <div
-                    class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+                    class="flex flex-1 items-center justify-center lg:items-stretch lg:justify-start">
                     <div class="flex flex-shrink-0 items-center">
                         <SLogo
                             width="100%"
@@ -135,7 +119,7 @@
 
                     <!-- Desktop Navigation Items -->
                     <div
-                        class="hidden sm:ml-6 sm:flex sm:flex-col sm:justify-center sm:items-center">
+                        class="hidden lg:ml-6 lg:flex lg:flex-col lg:justify-center lg:items-center">
                         <div class="flex space-x-4">
                             <template
                                 v-for="page in navigationPages"
@@ -152,44 +136,26 @@
 
                 <!-- Right nav side -->
                 <div
-                    class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-3 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    <div class="flex flex-row justify-start items-center gap-4">
-                        <!-- Theme Switcher -->
-                        <USelect
-                            v-model="selectedLocale"
-                            class="hidden sm:block"
-                            :options="getLocales">
-                            <template #leading>
-                                <UIcon
-                                    name="i-heroicons-flag"
-                                    class="w-4 h-4"
-                                    dynamic />
-                            </template>
-                        </USelect>
+                    class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-3 lg:static lg:inset-auto lg:ml-6 lg:pr-0">
+                    <USelect
+                        v-model="selectedLocale"
+                        class="hidden lg:block"
+                        icon="i-heroicons-flag"
+                        :items="getLocales" />
 
-                        <SThemeSwitcher />
-                    </div>
-
-                    <!-- Profile section -->
-                    <UButton
-                        icon="i-heroicons-arrow-right-start-on-rectangle"
-                        size="sm"
-                        color="red"
-                        square
-                        variant="link"
-                        @click="onLogout" />
+                    <SUserNavMenu />
                 </div>
             </div>
         </div>
 
         <!-- Mobile menu, show/hide based on menu state. -->
         <Transition name="slide-fade">
-            <div v-show="isMobileMenuShown" class="sm:hidden">
+            <div v-show="isMobileMenuShown" class="lg:hidden">
                 <div class="flex flex-col space-y-1 px-2 pb-3 pt-2">
                     <USelect
                         v-model="selectedLocale"
                         class="mb-2"
-                        :options="getLocales">
+                        :items="getLocales">
                         <template #leading>
                             <UIcon
                                 name="i-heroicons-flag"

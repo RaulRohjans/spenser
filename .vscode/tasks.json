@@ -1,0 +1,14 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run bun dev",
+      "type": "shell",
+      "command": "bun",
+      "args": ["dev"],
+      "group": "build",
+      "problemMatcher": [],
+      "detail": "Runs bun dev for local development"
+    }
+  ]
+}
