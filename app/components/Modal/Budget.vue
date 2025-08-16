@@ -1,0 +1,192 @@
+<script setup lang="ts">
+    import { z } from 'zod'
+    import type { FormSubmitEvent } from '#ui/types'
+    import type { NuxtError } from '#app'
+    import type { FetchTableSingleDataResult } from '~/../types/Table'
+    import type { SelectOption } from '~/../types/Options'
+    import type { BudgetPeriodType } from '~/../types/budget-period'
+
+    export type ModalBudgetProps = {
+        /**
+         * Id of the budget
+         */
+        id?: number
+
+        /**
+         * Mode in which the modal will operate
+         */
+        mode: 'create' | 'edit' | 'duplicate'
+    }
+
+    const props = defineProps<ModalBudgetProps>()
+
+    const emit = defineEmits<{
+        (event: 'successful-submit'): void
+    }>()
+
+    const { token } = useAuth()
+    const { t: $t } = useI18n()
+    const error: Ref<undefined | string> = ref()
+
+    const periodOptions: Ref<SelectOption[]> = ref([
+        {
+            label: $t('Daily'),
+            value: 'daily'
+        },
+        {
+            label: $t('Monthly'),
+            value: 'monthly'
+        },
+        {
+            label: $t('Quarterly'),
+            value: 'quarterly'
+        },
+        {
+            label: $t('Semi-Annual'),
+            value: 'semi-annual'
+        },
+        {
+            label: $t('Yearly'),
+            value: 'yearly'
+        }
+    ])
+
+    const schema = z.object({
+        id: z.number().optional(),
+        name: z.string().optional(),
+        value: z.number().min(0.01, $t('The value has to be bigger than 0.'))
+    })
+
+    type Schema = z.output<typeof schema>
+    const state = reactive({
+        id: props.id,
+        name: '',
+        category: 0,
+        value: 0,
+        period: periodOptions.value[0].value as BudgetPeriodType
+    })
+
+    // Fetch budget
+    if (props.mode != 'create') {
+        const { data: budget } =
+            await useLazyAsyncData<FetchTableSingleDataResult>(
+                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+                `budget-${props.mode}-${props.id}`,
+                () =>
+                    $fetch(`/api/budgets/${props.id}`, {
+                        method: 'GET',
+                        headers: buildRequestHeaders(token.value)
+                    }),
+                {
+                    default: () => {
+                        return {
+                            success: false,
+                            data: {}
+                        }
+                    },
+                    watch: [() => props.id, () => props.mode]
+                }
+            )
+
+        // A watch is needed here because for some reason, using a then is still
+        // not enough to make sure the data is loaded after the request is made
+        watch(
+            budget,
+            (newVal) => {
+                if (!newVal?.data) return
+
+                state.id = props.id
+                state.name = newVal.data.name
+                state.category = newVal.data.category
+                state.value = newVal.data.value
+                state.period = newVal.data.period
+            },
+            { immediate: true }
+        )
+    }
+
+    // Fetch categories
+    const {
+        status: categoryStatus,
+        categorySelectOptions,
+        getCategoryIcon
+    } = useCategories()
+
+    const operation = computed(() => {
+        return props.mode === 'edit' ? 'edit' : 'create'
+    })
+
+    const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
+
+    const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
+        const parsed = schema.safeParse(event.data)
+        if (!parsed.success) {
+            error.value = $t('Invalid input')
+            return
+        }
+
+        $fetch(`/api/budgets/${operation.value}`, {
+            method: 'POST',
+            headers: buildRequestHeaders(token.value),
+            body: event.data
+        })
+            .then((data) => {
+                if (!data.success)
+                    return Notifier.showAlert(
+                        $t('An error occurred when creating your budget.'),
+                        'error'
+                    )
+
+                // Emit success
+                emit('successful-submit')
+
+                // Disaply success message
+                Notifier.showAlert(
+                    $t('Operation completed successfully!'),
+                    'success'
+                )
+            })
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
+    }
+</script>
+
+<template>
+    <UForm
+        :schema="schema"
+        :state="state"
+        class="space-y-4"
+        @submit="onCreateCategory">
+        <UFormField :label="$t('Name')" name="name" :error="!!error">
+            <UInput v-model="state.name" class="w-full" />
+        </UFormField>
+
+        <UFormField :label="$t('Category')" name="category" :error="!!error">
+            <USelect
+                v-model="state.category"
+                :items="categorySelectOptions"
+                :loading="categoryStatus === 'pending'"
+                :icon="categoryDisplayIcon"
+                class="hide-select-span w-full">
+            </USelect>
+        </UFormField>
+
+        <UFormField :label="$t('Period')" name="period" :error="!!error">
+            <USelect
+                v-model="state.period"
+                :items="periodOptions"
+                class="hide-select-span w-full" />
+        </UFormField>
+
+        <UFormField :label="$t('Value')" name="value" :error="error">
+            <UInput
+                v-model="state.value"
+                type="number"
+                step="any"
+                class="w-full" />
+        </UFormField>
+
+        <div class="flex flex-row justify-end">
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
+        </div>
+    </UForm>
+</template>

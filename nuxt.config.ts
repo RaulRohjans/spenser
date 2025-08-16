@@ -1,19 +1,19 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: '2025-04-20',
-    devtools: { enabled: true },
+    devtools: { enabled: false },
     modules: [
         '@nuxt/ui',
-        '@nuxtjs/tailwindcss',
         '@nuxtjs/color-mode',
-        'nuxt-icon',
+        '@nuxt/icon',
         '@sidebase/nuxt-auth',
         '@pinia/nuxt',
         '@pinia-plugin-persistedstate/nuxt',
         '@nuxt/eslint',
-        '@nuxtjs/i18n'
+        '@nuxtjs/i18n',
+        '@compodium/nuxt'
     ],
-    css: ['~/assets/css/main.scss'],
+    css: ['~/assets/css/main.css'],
     build: {
         transpile: [
             '@vuepic/vue-datepicker',
@@ -23,10 +23,7 @@ export default defineNuxtConfig({
         ]
     },
     routeRules: {
-        '/settings': { redirect: '/settings/global' },
-        '/settings/admin': { redirect: '/settings/global' },
-        '/transactions': { redirect: '/transactions/all' },
-        '/categories': { redirect: '/categories/all' },
+        '/admin': { redirect: '/admin/users' }
     },
     auth: {
         provider: {
@@ -35,12 +32,12 @@ export default defineNuxtConfig({
                 getSession: { path: '/user', method: 'get' },
                 signIn: { path: '/login', method: 'post' },
                 signOut: { path: '/logout', method: 'post' },
-                signUp: { path: '/register', method: 'post' },
+                signUp: { path: '/register', method: 'post' }
             },
             refresh: {
                 isEnabled: true,
                 endpoint: { path: '/refresh', method: 'post' },
-                token: { 
+                token: {
                     signInResponseRefreshTokenPointer: '/token/refreshToken',
                     refreshRequestTokenPointer: '/refreshToken',
                     maxAgeInSeconds: process.env.JWT_EXPIRATION
@@ -58,6 +55,16 @@ export default defineNuxtConfig({
                     ? Number(process.env.JWT_EXPIRATION)
                     : 900,
                 sameSiteAttribute: 'lax'
+            },
+            session: {
+                dataType: {
+                    id: 'number',
+                    username: 'string',
+                    first_name: 'string',
+                    last_name: 'string',
+                    email: 'string',
+                    is_admin: 'boolean'
+                }
             }
         },
         globalAppMiddleware: {
@@ -92,11 +99,14 @@ export default defineNuxtConfig({
             cookieKey: 'i18n_redirected'
         },
         locales: [
-          { code: 'en', name: 'English', file: 'en.ts' },
-          { code: 'pt', name: 'Portugues', file: 'pt.ts' }
+            { code: 'en', name: 'English', file: 'en.ts' },
+            { code: 'pt', name: 'Portugues', file: 'pt.ts' }
         ],
         compilation: {
-            strictMessage: false,
+            strictMessage: false
+        },
+        bundle: {
+            optimizeTranslationDirective: false
         }
     }
 })

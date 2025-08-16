@@ -1,7 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 import { sql } from 'kysely'
-import type { ExpensesByCategoryData } from '~/types/Chart'
+import type { ExpensesByCategoryData } from '~/../types/Chart'
 
 export default defineEventHandler(async (event) => {
     // Read body params
