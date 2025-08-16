@@ -12,7 +12,7 @@
     import { LineChart, type LineSeriesOption } from 'echarts/charts'
     import { UniversalTransition } from 'echarts/features'
     import { SVGRenderer } from 'echarts/renderers'
-    import type { SpendingOverTimeData } from '@/types/Chart'
+    import type { SpendingOverTimeData } from '~/../types/Chart'
 
     use([
         GridComponent,
@@ -109,6 +109,7 @@
             },
             series: [
                 {
+                    name: 'Value',
                     data: values,
                     type: 'line'
                 }

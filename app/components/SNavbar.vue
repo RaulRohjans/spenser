@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { NavigationItem } from '@/types/Navigation'
+    import type { NavigationItem } from '~/../types/Navigation'
     import type { SelectOption } from '~/../types/Options'
 
     const localePath = useLocalePath()
