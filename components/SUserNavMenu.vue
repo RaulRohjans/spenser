@@ -56,13 +56,14 @@
             }
         ]
 
-        if(showAdminOptions.value) //If admin, gets special option
+        if (showAdminOptions.value)
+            //If admin, gets special option
             misc.push({
                 label: $t('Administration'),
                 icon: 'i-heroicons-wrench-screwdriver',
-                onSelect: () => router.push(`/settings`)
+                onSelect: () => router.push(`/admin`)
             })
-        
+
         misc.push({
             label: $t('Settings'),
             icon: 'i-heroicons-cog',
