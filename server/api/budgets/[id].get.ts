@@ -1,7 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 import { sql } from 'kysely'
-import type { BudgetDataObject } from '~/types/Data'
+import type { BudgetDataObject } from '~/../types/Data'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
@@ -24,7 +24,11 @@ export default defineEventHandler(async (event) => {
                     eb.or([
                         eb.and([
                             eb('budget.category', 'is not', null),
-                            eb('budget.category', '=', eb.ref('transaction.category'))
+                            eb(
+                                'budget.category',
+                                '=',
+                                eb.ref('transaction.category')
+                            )
                         ]),
                         eb('budget.category', 'is', null)
                     ])
@@ -33,29 +37,42 @@ export default defineEventHandler(async (event) => {
                     eb
                         .case()
                         .when('budget.period', '=', 'daily')
-                        .then(sql<boolean>`extract(day from transaction.date) = extract(day from current_date)`) // daily
+                        .then(
+                            sql<boolean>`extract(day from transaction.date) = extract(day from current_date)`
+                        ) // daily
                         .when('budget.period', '=', 'monthly')
-                        .then(sql<boolean>`extract(month from transaction.date) = extract(month from current_date)`) // monthly
+                        .then(
+                            sql<boolean>`extract(month from transaction.date) = extract(month from current_date)`
+                        ) // monthly
                         .when('budget.period', '=', 'quarterly')
-                        .then(sql<boolean>`transaction.date >= current_date - interval '3 months'`) // quarterly
+                        .then(
+                            sql<boolean>`transaction.date >= current_date - interval '3 months'`
+                        ) // quarterly
                         .when('budget.period', '=', 'half-yearly')
-                        .then(sql<boolean>`transaction.date >= current_date - interval '6 months'`) // half-yearly
+                        .then(
+                            sql<boolean>`transaction.date >= current_date - interval '6 months'`
+                        ) // half-yearly
                         .when('budget.period', '=', 'yearly')
-                        .then(sql<boolean>`extract(year from transaction.date) = extract(year from current_date)`) // yearly
+                        .then(
+                            sql<boolean>`extract(year from transaction.date) = extract(year from current_date)`
+                        ) // yearly
                         .else(false)
                         .end()
                 )
         )
         .selectAll('budget')
-        .select([ // Category metadata
+        .select([
+            // Category metadata
             'category.name as category_name',
             'category.icon as category_icon',
             'category.deleted as category_deleted'
         ])
         .select(({ fn }) => [
-            fn.sum(
-                sql<number>`case when "transaction"."value" < 0 then "transaction"."value" * -1 when "transaction"."value" >= 0 then 0 end`
-            ).as('expenses')
+            fn
+                .sum(
+                    sql<number>`case when "transaction"."value" < 0 then "transaction"."value" * -1 when "transaction"."value" >= 0 then 0 end`
+                )
+                .as('expenses')
         ])
         .where('budget.id', '=', id)
         .where('budget.user', '=', user.id)

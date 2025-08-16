@@ -1,7 +1,7 @@
-import type { TableFilters } from "~/types/Table"
+import type { TableFilters } from '~/../types/Table'
 
 export type PaginatedTableOptions<T> = {
-    key: string,
+    key: string
     fetcher: (query: {
         page: number
         limit: number
@@ -34,7 +34,15 @@ export function usePaginatedTable<T>(opts: PaginatedTableOptions<T>) {
             })
         },
         {
-            watch: [page, limit, sort, order, reloadKey, ...Object.values(toRefs(filters)), ...(opts.watch ?? [])]
+            watch: [
+                page,
+                limit,
+                sort,
+                order,
+                reloadKey,
+                ...Object.values(toRefs(filters)),
+                ...(opts.watch ?? [])
+            ]
         }
     )
 

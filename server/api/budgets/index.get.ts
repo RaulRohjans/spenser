@@ -1,7 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 import { sql } from 'kysely'
-import type { BudgetDataObject } from '~/types/Data'
+import type { BudgetDataObject } from '~/../types/Data'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { EmitEventCallback } from '~/types/Data'
+    import type { EmitEventCallback } from '~/../types/Data'
 
     export interface SNotificationProps {
         /*

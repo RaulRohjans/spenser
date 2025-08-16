@@ -1,7 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db, applySearchFilter } from '@/utils/dbEngine'
 import type { OrderByDirectionExpression } from 'kysely'
-import type { TableRow } from '~/types/Table'
+import type { TableRow } from '~/../types/Table'
 
 export default defineEventHandler(async (event) => {
     // Read body params

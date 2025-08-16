@@ -2,7 +2,7 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { LlmTransactionObject } from '~/types/Data'
+    import type { LlmTransactionObject } from '~/../types/Data'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()

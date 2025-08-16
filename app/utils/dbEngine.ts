@@ -1,7 +1,7 @@
 import pg from 'pg'
 import { Kysely, PostgresDialect } from 'kysely'
 import type { DB } from 'kysely-codegen'
-import type { CustomSQLQueryBuilder } from '~/types/Data'
+import type { CustomSQLQueryBuilder } from '~/../types/Data'
 
 const { dbName, dbHost, dbUser, dbPassword, dbPort } = useRuntimeConfig()
 

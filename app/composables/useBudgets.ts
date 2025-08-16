@@ -1,5 +1,5 @@
 import { useDebounceFn } from '@vueuse/core'
-import type { BudgetDataObject } from '~/types/Data'
+import type { BudgetDataObject } from '~/../types/Data'
 
 type BudgetOrAdd = BudgetDataObject & { __isAddButton?: boolean }
 
@@ -13,7 +13,10 @@ export function useBudgets() {
     const lastSavedOrder = ref<number[]>([])
 
     const loadBudgetData = async () => {
-        const { data } = await $fetch<{ success: boolean; data: BudgetDataObject[] }>('/api/budgets', {
+        const { data } = await $fetch<{
+            success: boolean
+            data: BudgetDataObject[]
+        }>('/api/budgets', {
             method: 'GET',
             headers: buildRequestHeaders(token.value)
         })
@@ -35,9 +38,7 @@ export function useBudgets() {
         assignDraggableList(data)
 
         // Save the initial order to lastSavedOrder (ignore fake + button)
-        lastSavedOrder.value = data
-            .filter(b => b.id !== -1)
-            .map(b => b.id)
+        lastSavedOrder.value = data.filter((b) => b.id !== -1).map((b) => b.id)
     }
 
     const deleteItem = async (budget: BudgetDataObject) => {
@@ -61,7 +62,10 @@ export function useBudgets() {
                     }
 
                     await loadData()
-                    Notifier.showAlert($t('Budget deleted successfully!'), 'success')
+                    Notifier.showAlert(
+                        $t('Budget deleted successfully!'),
+                        'success'
+                    )
                 } catch (e) {
                     Notifier.showAlert(`${e}`, 'error')
                 }
@@ -71,12 +75,11 @@ export function useBudgets() {
 
     const _saveOrder = async (budgets: BudgetDataObject[]) => {
         // Clean the budgets to ignore the last "Add" button fake item
-        const newOrder = budgets
-            .filter(b => b.id !== -1)
-            .map(b => b.id)
+        const newOrder = budgets.filter((b) => b.id !== -1).map((b) => b.id)
 
         // Compare lastSavedOrder vs newOrder
-        const isSameOrder = newOrder.length === lastSavedOrder.value.length &&
+        const isSameOrder =
+            newOrder.length === lastSavedOrder.value.length &&
             newOrder.every((id, idx) => id === lastSavedOrder.value[idx])
 
         // Nothing changed, skip saving
@@ -85,7 +88,7 @@ export function useBudgets() {
         // Otherwise, build the update payload
         const budgetPos: Record<number, number> = {}
         for (let i = 0; i < newOrder.length; i++) {
-            budgetPos[newOrder[i]] = i + 1
+            budgetPos[newOrder[i]!] = i + 1
         }
 
         try {
@@ -110,7 +113,7 @@ export function useBudgets() {
     }
 
     const saveOrderDebounced = useDebounceFn(_saveOrder, 500)
-    
+
     return {
         budgetDraggableList,
         loadData,

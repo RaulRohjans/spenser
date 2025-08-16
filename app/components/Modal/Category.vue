@@ -2,7 +2,7 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { FetchTableSingleDataResult } from '~/types/Table'
+    import type { FetchTableSingleDataResult } from '~/../types/Table'
 
     export type ModalCategoryProps = {
         /**
@@ -26,11 +26,10 @@
     const { t: $t } = useI18n()
     const error: Ref<undefined | string> = ref()
 
-    const schema = z
-        .object({
-            name: z.string(),
-            icon: z.string().optional()
-        })
+    const schema = z.object({
+        name: z.string(),
+        icon: z.string().optional()
+    })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
@@ -40,7 +39,7 @@
     })
 
     // Fetch Category
-    if(props.mode != 'create') {
+    if (props.mode != 'create') {
         const { data: category } =
             await useLazyAsyncData<FetchTableSingleDataResult>(
                 // IMPORTANT! Key needs to be set like this so it doesnt cache old data
@@ -63,13 +62,17 @@
 
         // A watch is needed here because for some reason, using a then is still
         // not enough to make sure the data is loaded after the request is made
-        watch(category, (newVal) => {
-            if (!newVal?.data) return
+        watch(
+            category,
+            (newVal) => {
+                if (!newVal?.data) return
 
-            state.id = props.id
-            state.name = newVal.data.name
-            state.icon = newVal.data.icon
-        }, { immediate: true })
+                state.id = props.id
+                state.name = newVal.data.name
+                state.icon = newVal.data.icon
+            },
+            { immediate: true }
+        )
     }
 
     const operation = computed(() => {
@@ -88,23 +91,23 @@
             headers: buildRequestHeaders(token.value),
             body: event.data
         })
-        .then((data) => {
-            if (!data.success)
-                return Notifier.showAlert(
-                    $t('An error occurred when creating your category.'),
-                    'error'
+            .then((data) => {
+                if (!data.success)
+                    return Notifier.showAlert(
+                        $t('An error occurred when creating your category.'),
+                        'error'
+                    )
+
+                // Emit success
+                emit('successful-submit')
+
+                // Disaply success message
+                Notifier.showAlert(
+                    $t('Operation completed successfully!'),
+                    'success'
                 )
-
-            // Emit success
-            emit('successful-submit')
-
-            // Disaply success message
-            Notifier.showAlert(
-                $t('Operation completed successfully!'),
-                'success'
-            )
-        })
-        .catch((e: NuxtError) => (error.value = e.statusMessage ))
+            })
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
     const displayIcon = computed(() => {
@@ -130,7 +133,7 @@
                 <UInput
                     v-model="state.icon"
                     class="w-full"
-                    :trailing-icon="displayIcon">                        
+                    :trailing-icon="displayIcon">
                 </UInput>
                 <ULink to="https://heroicons.com/" target="_blank">
                     <UButton

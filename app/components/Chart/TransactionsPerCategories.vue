@@ -16,7 +16,7 @@
     import { BarChart, type BarSeriesOption } from 'echarts/charts'
     import { SVGRenderer } from 'echarts/renderers'
 
-    import type { TransactionsPerCategoryData } from '~/types/Chart'
+    import type { TransactionsPerCategoryData } from '~/../types/Chart'
 
     use([
         ToolboxComponent,

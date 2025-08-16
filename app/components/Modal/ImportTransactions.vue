@@ -1,9 +1,9 @@
 <script setup lang="ts">
     import { formatCurrencyValue } from '#imports'
     import type { NuxtError } from '#app'
-    import type { LlmTransactionObject } from '~/types/Data'
-    import type { SelectOption } from '~/types/Options'
-    import type { FetchTableDataResult, TableRow } from '~/types/Table'
+    import type { LlmTransactionObject } from '~/../types/Data'
+    import type { SelectOption } from '~/../types/Options'
+    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
 
     export type ModalBudgetProps = {
         /**
@@ -150,7 +150,9 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage, 'error'))
+            .catch((e: NuxtError) =>
+                Notifier.showAlert(e.statusMessage, 'error')
+            )
     }
 
     const delTransaction = function (row: TableRow) {
@@ -171,10 +173,7 @@
 </script>
 
 <template>
-    <UModal
-        v-model="model"
-        :ui="{ content: 'items-center mx-12' }"
-        fullscreen>
+    <UModal v-model="model" :ui="{ content: 'items-center mx-12' }" fullscreen>
         <div :class="props.class">
             <STable
                 v-bind="tableObj"

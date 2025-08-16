@@ -2,9 +2,9 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { UserSettingsObject } from '~/types/Data'
-    import type { SelectOption } from '~/types/Options'
-    import type { FetchTableDataResult } from '~/types/Table'
+    import type { UserSettingsObject } from '~/../types/Data'
+    import type { SelectOption } from '~/../types/Options'
+    import type { FetchTableDataResult } from '~/../types/Table'
 
     const { t: $t } = useI18n()
     const { token, data: authData, refresh } = useAuth()

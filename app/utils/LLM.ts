@@ -4,7 +4,7 @@ import { ChatPromptTemplate } from '@langchain/core/prompts'
 import type { Selectable } from 'kysely'
 import type { Category, GlobalSettings } from 'kysely-codegen'
 import type { BaseLLM } from '@langchain/core/language_models/llms'
-import type { LlmTransactionObject } from '~/types/Data'
+import type { LlmTransactionObject } from '~/../types/Data'
 
 export class LLM {
     llm: BaseLLM

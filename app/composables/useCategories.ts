@@ -1,4 +1,4 @@
-import type { FetchTableDataResult } from '~/types/Table'
+import type { FetchTableDataResult } from '~/../types/Table'
 
 export function useCategories() {
     const { token } = useAuth()
@@ -6,32 +6,31 @@ export function useCategories() {
     const { data, status, error } = useLazyAsyncData<FetchTableDataResult>(
         'categoryData',
         () =>
-        $fetch('/api/categories', {
-            method: 'GET',
-            headers: buildRequestHeaders(token.value)
-        }),
+            $fetch('/api/categories', {
+                method: 'GET',
+                headers: buildRequestHeaders(token.value)
+            }),
         {
-        default: () => ({
-            success: false,
-            data: { totalRecordCount: 0, rows: [] }
-        }),
-        server: false
+            default: () => ({
+                success: false,
+                data: { totalRecordCount: 0, rows: [] }
+            }),
+            server: false
         }
     )
 
     const categorySelectOptions = computed(() => {
-        return data.value.data.rows.map(category => ({
+        return data.value.data.rows.map((category) => ({
             label: category.name,
             value: category.id,
             icon: getHeroIconName(category.icon)
         }))
     })
 
-    const getCategoryIcon = (categoryId: number) => {      
-        const category = data.value.data.rows.find(c => c.id === categoryId)
+    const getCategoryIcon = (categoryId: number) => {
+        const category = data.value.data.rows.find((c) => c.id === categoryId)
         return category?.icon ? getHeroIconName(category.icon) : undefined
     }
-      
 
     return {
         data,
