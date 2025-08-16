@@ -29,7 +29,6 @@
         window.removeEventListener('resize', onResize)
     })
 
-
     useHead({
         title: `Spenser | ${$t('Home')}`
     })
@@ -43,10 +42,19 @@
 
         <div
             class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-0 sm:justify-between items-center w-full">
-            <ChartSpendingOverTime :key="chartKey" height="50vh" class="w-full sm:w-[65%]" />
-            <ChartExpenseByCategory :key="chartKey" height="50vh" class="w-full sm:w-[32%]" />
+            <ChartSpendingOverTime
+                :key="chartKey"
+                height="50vh"
+                class="w-full sm:w-[65%]" />
+            <ChartExpenseByCategory
+                :key="chartKey"
+                height="50vh"
+                class="w-full sm:w-[32%]" />
         </div>
 
-        <ChartTransactionsPerCategories :key="chartKey" height="50vh" width="100%" />
+        <ChartTransactionsPerCategories
+            :key="chartKey"
+            height="50vh"
+            width="100%" />
     </div>
 </template>

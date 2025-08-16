@@ -3,15 +3,15 @@ export default defineNuxtConfig({
     compatibilityDate: '2025-04-20',
     devtools: { enabled: false },
     modules: [
-      '@nuxt/ui',
-      '@nuxtjs/color-mode',
-      '@nuxt/icon',
-      '@sidebase/nuxt-auth',
-      '@pinia/nuxt',
-      '@pinia-plugin-persistedstate/nuxt',
-      '@nuxt/eslint',
-      '@nuxtjs/i18n',
-      '@compodium/nuxt'
+        '@nuxt/ui',
+        '@nuxtjs/color-mode',
+        '@nuxt/icon',
+        '@sidebase/nuxt-auth',
+        '@pinia/nuxt',
+        '@pinia-plugin-persistedstate/nuxt',
+        '@nuxt/eslint',
+        '@nuxtjs/i18n',
+        '@compodium/nuxt'
     ],
     css: ['~/assets/css/main.css'],
     build: {
@@ -32,12 +32,12 @@ export default defineNuxtConfig({
                 getSession: { path: '/user', method: 'get' },
                 signIn: { path: '/login', method: 'post' },
                 signOut: { path: '/logout', method: 'post' },
-                signUp: { path: '/register', method: 'post' },
+                signUp: { path: '/register', method: 'post' }
             },
             refresh: {
                 isEnabled: true,
                 endpoint: { path: '/refresh', method: 'post' },
-                token: { 
+                token: {
                     signInResponseRefreshTokenPointer: '/token/refreshToken',
                     refreshRequestTokenPointer: '/refreshToken',
                     maxAgeInSeconds: process.env.JWT_EXPIRATION
@@ -64,7 +64,7 @@ export default defineNuxtConfig({
                     last_name: 'string',
                     email: 'string',
                     is_admin: 'boolean'
-                },
+                }
             }
         },
         globalAppMiddleware: {
@@ -99,11 +99,11 @@ export default defineNuxtConfig({
             cookieKey: 'i18n_redirected'
         },
         locales: [
-          { code: 'en', name: 'English', file: 'en.ts' },
-          { code: 'pt', name: 'Portugues', file: 'pt.ts' }
+            { code: 'en', name: 'English', file: 'en.ts' },
+            { code: 'pt', name: 'Portugues', file: 'pt.ts' }
         ],
         compilation: {
-            strictMessage: false,
+            strictMessage: false
         },
         bundle: {
             optimizeTranslationDirective: false

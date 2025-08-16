@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 /*
  * This is a funny one.
@@ -52,18 +52,16 @@ input[type='number'] {
 .chosen {
     transition: transform 0.15s ease;
 }
-  
-
 
 /*
  * Apply page transations
 */
 .page-enter-active,
 .page-leave-active {
-  @apply transition-opacity duration-300 ease-in-out;
+    @apply transition-opacity duration-300 ease-in-out;
 }
 
 .page-enter-from,
 .page-leave-to {
-  @apply opacity-0;
+    @apply opacity-0;
 }

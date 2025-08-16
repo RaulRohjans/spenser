@@ -10,7 +10,10 @@ export default defineNuxtRouteMiddleware(async () => {
 
     const decodeBase64Url = (input: string) => {
         const base64 = input.replace(/-/g, '+').replace(/_/g, '/')
-        const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=')
+        const padded = base64.padEnd(
+            base64.length + ((4 - (base64.length % 4)) % 4),
+            '='
+        )
         if (typeof atob === 'function') return atob(padded)
 
         return Buffer.from(padded, 'base64').toString('binary')
@@ -29,5 +32,3 @@ export default defineNuxtRouteMiddleware(async () => {
         await signOut({ callbackUrl: localePath('/login') })
     }
 })
-
-

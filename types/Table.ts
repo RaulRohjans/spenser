@@ -18,7 +18,7 @@ export interface TableAction {
 
 export interface TableSort {
     column: string
-    direction: "desc" | "asc"
+    direction: 'desc' | 'asc'
 }
 
 export interface TableSearch {
@@ -44,4 +44,4 @@ export interface TableFilters {
     searchColumn?: string
     groupCategory?: boolean
     dateRange?: Date[]
-  }
+}

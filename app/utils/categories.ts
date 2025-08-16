@@ -1,4 +1,3 @@
-
 export async function validateCategory(userId: number, categoryId: number) {
     const res = await db
         .selectFrom('category')
@@ -7,7 +6,7 @@ export async function validateCategory(userId: number, categoryId: number) {
         .where('id', '=', categoryId)
         .where('deleted', '=', false)
         .executeTakeFirst()
-  
+
     if (!res || res.count === 0)
         throw createError({
             statusCode: 400,

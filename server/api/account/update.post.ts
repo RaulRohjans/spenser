@@ -3,8 +3,7 @@ import { db } from '@/utils/dbEngine'
 
 export default defineEventHandler(async (event) => {
     // Read body params
-    const { first_name, last_name, email } =
-        await readBody(event)
+    const { first_name, last_name, email } = await readBody(event)
     const user = ensureAuth(event)
 
     if (!first_name || !last_name || !email)

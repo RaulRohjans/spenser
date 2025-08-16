@@ -28,7 +28,9 @@
 
     const schema = z.object({
         name: z.string().optional(),
-        value: z.coerce.number().refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
+        value: z.coerce
+            .number()
+            .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
         category: z.number(),
         date: z.date()
     })
@@ -43,7 +45,7 @@
     })
 
     // Fetch transaction
-    if(props.mode != 'create') {
+    if (props.mode != 'create') {
         const { data: transaction } =
             await useLazyAsyncData<FetchTableSingleDataResult>(
                 // IMPORTANT! Key needs to be set like this so it doesnt cache old data
@@ -66,21 +68,27 @@
 
         // A watch is needed here because for some reason, using a then is still
         // not enough to make sure the data is loaded after the request is made
-        watch(transaction, (newVal) => {
-            if (!newVal?.data) return
+        watch(
+            transaction,
+            (newVal) => {
+                if (!newVal?.data) return
 
-            state.id = props.id
-            state.name = newVal.data.name
-            state.category = newVal.data.category
-            state.value = newVal.data.value
-            state.date = new Date(newVal.data.date)
-        }, { immediate: true })
+                state.id = props.id
+                state.name = newVal.data.name
+                state.category = newVal.data.category
+                state.value = newVal.data.value
+                state.date = new Date(newVal.data.date)
+            },
+            { immediate: true }
+        )
     }
 
     // Fetch categories
-    const { status: categoryStatus, 
+    const {
+        status: categoryStatus,
         categorySelectOptions,
-        getCategoryIcon } = useCategories()
+        getCategoryIcon
+    } = useCategories()
 
     const operation = computed(() => {
         return props.mode === 'edit' ? 'edit' : 'create'
@@ -98,33 +106,30 @@
             headers: buildRequestHeaders(token.value),
             body: event.data // Use data from event instead of parsed bc it contains the ID
         })
-        .then((data) => {
-            if (!data.success)
-                return Notifier.showAlert(
-                    $t('An error occurred when performing the action.'),
-                    'error'
+            .then((data) => {
+                if (!data.success)
+                    return Notifier.showAlert(
+                        $t('An error occurred when performing the action.'),
+                        'error'
+                    )
+
+                // Emit success
+                emit('successful-submit')
+
+                // Disaply success message
+                Notifier.showAlert(
+                    $t('Operation completed successfully!'),
+                    'success'
                 )
-
-            // Emit success
-            emit('successful-submit')
-
-            // Disaply success message
-            Notifier.showAlert(
-                $t('Operation completed successfully!'),
-                'success'
-            )
-        })
-        .catch((e: NuxtError) => (error.value = e.statusMessage))
+            })
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 
     const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
 </script>
 
 <template>
-    <UForm
-        :state="state"
-        class="space-y-4"
-        @submit="onCreateTransaction">
+    <UForm :state="state" class="space-y-4" @submit="onCreateTransaction">
         <UFormField
             :label="$t('Transaction Name')"
             name="name"
@@ -132,14 +137,17 @@
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
-        <div
-            class="flex flex-row justify-between items-center space-y-0 gap-8">
+        <div class="flex flex-row justify-between items-center space-y-0 gap-8">
             <UFormField
                 :label="$t('Value')"
                 name="value"
                 class="w-full"
                 :error="!!error">
-                <UInput v-model="state.value" type="number" step="any" class="w-full" />
+                <UInput
+                    v-model="state.value"
+                    type="number"
+                    step="any"
+                    class="w-full" />
             </UFormField>
 
             <UFormField
@@ -152,7 +160,7 @@
                     :items="categorySelectOptions"
                     :loading="categoryStatus === 'pending'"
                     :icon="categoryDisplayIcon"
-                    class="hide-select-span w-full">                    
+                    class="hide-select-span w-full">
                 </USelect>
             </UFormField>
         </div>

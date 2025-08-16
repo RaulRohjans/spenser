@@ -6,19 +6,19 @@ export default defineAppConfig({
         },
 
         modal: {
-            base: "items-center" // container: "items-center"
+            base: 'items-center' // container: "items-center"
         },
 
         button: {
-            base: "cursor-pointer"
+            base: 'cursor-pointer'
         },
         select: {
-            base: "cursor-pointer"
+            base: 'cursor-pointer'
         },
         checkbox: {
-            base: "cursor-pointer"
+            base: 'cursor-pointer'
         },
-        
+
         icons: {
             arrowLeft: 'i-heroicons-arrow-left',
             arrowRight: 'i-heroicons-arrow-right',
