@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { UIcon } from '#components'
-    import type { FetchTableDataResult, TableRow } from '@/types/Table'
+    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
 

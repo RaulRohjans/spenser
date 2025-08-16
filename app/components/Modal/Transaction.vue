@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FetchTableSingleDataResult } from '@/types/Table'
+    import type { FetchTableSingleDataResult } from '~/../types/Table'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
 
