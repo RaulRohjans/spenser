@@ -59,34 +59,41 @@
 </script>
 
 <template>
-    <UModal v-model="model">
-        <UForm
-            :schema="schema"
-            :state="state"
-            class="space-y-4 p-6"
-            @submit="onCreateCurrency">
-            <UFormField
-                :label="$t('Symbol')"
-                name="symbol"
-                class="w-full"
-                :error="!!error">
-                <UInput v-model="state.symbol" />
-            </UFormField>
+    <UModal v-model:open="model" :title="$t('Create Currency')">
+        <template #body>
+            <UForm
+                :schema="schema"
+                :state="state"
+                class="space-y-4 px-6"
+                @submit="onCreateCurrency">
+                <UFormField
+                    :label="$t('Symbol')"
+                    name="symbol"
+                    class="w-full"
+                    :error="!!error">
+                    <UInput v-model="state.symbol" class="w-full" />
+                </UFormField>
 
-            <UFormField
-                :label="$t('Placement')"
-                name="placement"
-                class="w-full"
-                :error="error">
-                <USelect
-                    v-model="state.placement"
-                    :items="placementOptions" />
-                <template #help>
-                    {{ $t('Place the symbol before ($212) or after (310€).') }}
-                </template>
-            </UFormField>
+                <UFormField
+                    :label="$t('Placement')"
+                    name="placement"
+                    class="w-full"
+                    :error="error">
+                    <USelect
+                        v-model="state.placement"
+                        :items="placementOptions"
+                        class="w-full" />
+                    <template #help>
+                        {{
+                            $t(
+                                'Place the symbol before ($212) or after (310€).'
+                            )
+                        }}
+                    </template>
+                </UFormField>
 
-            <UButton type="submit"> {{ $t('Submit') }} </UButton>
-        </UForm>
+                <UButton type="submit"> {{ $t('Submit') }} </UButton>
+            </UForm>
+        </template>
     </UModal>
 </template>

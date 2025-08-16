@@ -39,14 +39,14 @@
 
 <template>
     <div
-        class="flex flex-col sm:flex-row justify-start sm:justify-center items-center sm:items-start border border-gray-200 dark:border-gray-700 relative rounded-t-md p-4 border-b-0 not-prose bg-white dark:bg-gray-900 min-h-screen">
+        class="flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start border border-gray-200 dark:border-gray-700 relative rounded-t-md p-4 border-b-0 not-prose bg-white dark:bg-gray-900 min-h-[calc(100vh-500px)]">
         <aside
-            class="block max-h-[calc(100vh-var(--header-height))] sticky top-[--header-height] px-4 -mx-4 w-60 py-0">
+            class="block max-h-[calc(100vh-var(--header-height))] sticky top-[--header-height] px-4 -mx-4 w-full lg:w-60 py-0">
             <div class="flex flex-col gap-4">
                 <div class="sticky">
                     <h2
                         class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Settings') }}
+                        {{ $t('Admin') }}
                     </h2>
                 </div>
 
@@ -56,14 +56,8 @@
                         class="flex border-gray-200 dark:border-gray-800 w-full border-t border-solid" />
                 </div>
 
-                <div class="sticky">
-                    <h2
-                        class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Admin') }}
-                    </h2>
-                </div>
-
-                <div class="space-y-3 mb-3 lg:mb-6 -mx-1 lg:mx-0">
+                <div
+                    class="space-y-3 mb-3 lg:mb-6 -mx-1 lg:mx-0 flex flex-row lg:flex-col justify-evenly items-start lg:justify-start">
                     <template
                         v-for="option in adminOptions"
                         :key="`${option.name}${option.href}`">
@@ -87,10 +81,8 @@
 
         <!------------------------------>
 
-        <div class="w-full sm:p-4">
+        <div class="w-full md:px-8">
             <NuxtPage />
         </div>
     </div>
 </template>
-
-

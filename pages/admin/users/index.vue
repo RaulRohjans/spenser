@@ -12,10 +12,15 @@
 
     const columnSorter = computed(() => {
         if (table.value?.tableApi)
-            return useColumnSorter(table.value.tableApi, sort, order, (col, dir) => {
-                sort.value = col.id
-                order.value = dir || 'asc'
-            })
+            return useColumnSorter(
+                table.value.tableApi,
+                sort,
+                order,
+                (col, dir) => {
+                    sort.value = col.id
+                    order.value = dir || 'asc'
+                }
+            )
 
         return () => ({})
     })
@@ -47,7 +52,9 @@
                     .then((data) => {
                         if (!data.success)
                             return Notifier.showAlert(
-                                $t('An error occurred while removing the user.'),
+                                $t(
+                                    'An error occurred while removing the user.'
+                                ),
                                 'error'
                             )
 
@@ -55,9 +62,14 @@
                             signOut({ callbackUrl: '/login' })
                         else reload()
 
-                        Notifier.showAlert($t('User deleted successfully!'), 'success')
+                        Notifier.showAlert(
+                            $t('User deleted successfully!'),
+                            'success'
+                        )
                     })
-                    .catch((e: NuxtError) => Notifier.showAlert(e.statusMessage, 'error'))
+                    .catch((e: NuxtError) =>
+                        Notifier.showAlert(e.statusMessage, 'error')
+                    )
             }
         )
     }
@@ -84,7 +96,8 @@
         },
         {
             accessorKey: 'first_name',
-            header: ({ column }) => columnSorter.value(column, $t('First Name')),
+            header: ({ column }) =>
+                columnSorter.value(column, $t('First Name')),
             meta: { alias: $t('First Name') }
         },
         {
@@ -99,7 +112,8 @@
         },
         {
             accessorKey: 'is_admin',
-            header: ({ column }) => columnSorter.value(column, $t('Administrator')),
+            header: ({ column }) =>
+                columnSorter.value(column, $t('Administrator')),
             cell: ({ row }) => {
                 return h('span', row.original.is_admin == true ? 'Yes' : 'No')
             },
@@ -166,48 +180,60 @@
 <template>
     <main>
         <div class="flex flex-row items-center justify-center">
-            <UCard class="w-full shadow-xl">
-                <template #header>
-                    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Users') }}
-                    </h2>
-                </template>
+            <div class="w-full flex flex-col gap-2">
+                <!-- Header -->
+                <h2
+                    class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-8">
+                    {{ $t('Users') }}
+                </h2>
 
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-                    <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
-                        <SSearchWithColumnFilter
-                            v-model:column="filters.searchColumn"
-                            v-model:search="filters.searchQuery"
-                            :table-api="table?.tableApi" />
+                <!-- Body -->
+                <div class="flex flex-col h-[calc(100vh-240px)] overflow-auto">
+                    <div
+                        class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
+                        <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
+                            <SSearchWithColumnFilter
+                                v-model:column="filters.searchColumn"
+                                v-model:search="filters.searchQuery"
+                                :table-api="table?.tableApi" />
 
-                        <div class="flex flex-col md:flex-row sm:justify-start gap-2">
-                            <div class="flex flex-row justify-center sm:justify-start">
-                                <SRowsPerPageSelector v-model="itemsPerPage" />
+                            <div
+                                class="flex flex-col md:flex-row sm:justify-start gap-2">
+                                <div
+                                    class="flex flex-row justify-center sm:justify-start">
+                                    <SRowsPerPageSelector
+                                        v-model="itemsPerPage" />
+                                </div>
+                                <SColumnToggleMenu
+                                    :table-api="table?.tableApi"
+                                    @reset="resetFilters" />
                             </div>
-                            <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
                         </div>
+
+                        <UButton
+                            icon="i-heroicons-plus"
+                            color="primary"
+                            size="md"
+                            @click="toggleModal">
+                            {{ $t('Create User') }}
+                        </UButton>
                     </div>
 
-                    <UButton icon="i-heroicons-plus" color="primary" size="md" @click="toggleModal">
-                        {{ $t('Create User') }}
-                    </UButton>
+                    <UTable
+                        ref="table"
+                        :data="tableData?.data?.rows ?? []"
+                        :columns="columns"
+                        sticky
+                        :loading="status === 'pending'"
+                        class="w-full" />
                 </div>
 
-                <UTable
-                    ref="table"
-                    :data="tableData?.data?.rows ?? []"
-                    :columns="columns"
-                    sticky
-                    :loading="status === 'pending'"
-                    class="w-full" />
-
-                <template #footer>
-                    <SPaginationFooter
-                        v-model:page="page"
-                        v-model:items-per-page="itemsPerPage"
-                        :total="tableData?.data?.totalRecordCount ?? 0" />
-                </template>
-            </UCard>
+                <!-- Footer -->
+                <SPaginationFooter
+                    v-model:page="page"
+                    v-model:items-per-page="itemsPerPage"
+                    :total="tableData?.data?.totalRecordCount ?? 0" />
+            </div>
         </div>
 
         <ModalUser
@@ -216,6 +242,4 @@
             v-bind="userLoaderObj"
             @successful-submit="reload" />
     </main>
-    
 </template>
-

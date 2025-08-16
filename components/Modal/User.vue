@@ -131,53 +131,52 @@
 </script>
 
 <template>
-    <UModal v-model="model">
-        <UForm
-            :schema="schema"
-            :state="state"
-            class="space-y-4 p-6"
-            @submit="onCreateUser">
-            <div
-                class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
-                <UFormField
-                    :label="$t('First Name')"
-                    name="first_name"
-                    class="w-full">
-                    <UInput v-model="state.first_name" />
-                </UFormField>
+    <UModal v-model:open="model" :title="$t('Create User')">
+        <template #body>
+            <UForm
+                :schema="schema"
+                :state="state"
+                class="space-y-4 p-6"
+                @submit="onCreateUser">
+                <div
+                    class="flex flex-col sm:flex-row justify-center sm:justify-between items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
+                    <UFormField :label="$t('First Name')" name="first_name">
+                        <UInput v-model="state.first_name" class="w-full" />
+                    </UFormField>
+
+                    <UFormField :label="$t('Last Name')" name="last_name">
+                        <UInput v-model="state.last_name" class="w-full" />
+                    </UFormField>
+                </div>
 
                 <UFormField
-                    :label="$t('Last Name')"
-                    name="last_name"
-                    class="w-full">
-                    <UInput v-model="state.last_name" />
+                    :label="$t('Username')"
+                    name="username"
+                    class="makeit-static">
+                    <UInput v-model="state.username" class="w-full" />
                 </UFormField>
-            </div>
 
-            <UFormField
-                :label="$t('Username')"
-                name="username"
-                class="makeit-static">
-                <UInput v-model="state.username" />
-            </UFormField>
+                <UFormField :label="$t('Email')" name="email">
+                    <UInput v-model="state.email" class="w-full" />
+                </UFormField>
 
-            <UFormField :label="$t('Email')" name="email">
-                <UInput v-model="state.email" />
-            </UFormField>
+                <UFormField :label="$t('Password')" name="password">
+                    <UInput
+                        v-model="state.password"
+                        type="password"
+                        class="w-full" />
+                </UFormField>
 
-            <UFormField :label="$t('Password')" name="password">
-                <UInput v-model="state.password" type="password" />
-            </UFormField>
+                <UCheckbox
+                    v-model="state.is_admin"
+                    name="is_admin"
+                    :label="$t('Administrator')"
+                    class="makeit-static" />
 
-            <UCheckbox
-                v-model="state.is_admin"
-                name="is_admin"
-                :label="$t('Administrator')"
-                class="makeit-static" />
-
-            <UButton type="submit" class="mt-2 sm:mt-0">
-                {{ $t('Submit') }}
-            </UButton>
-        </UForm>
+                <UButton type="submit" class="mt-2 sm:mt-0">
+                    {{ $t('Submit') }}
+                </UButton>
+            </UForm>
+        </template>
     </UModal>
 </template>
