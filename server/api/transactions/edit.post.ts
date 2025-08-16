@@ -1,6 +1,6 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
-import { validateCategory } from '~/server/utils/validateCategory'
+import { validateCategory } from '../../utils/validateCategory'
 
 export default defineEventHandler(async (event) => {
     const { id, category, name, value, date } = await readBody(event)

@@ -2,7 +2,7 @@ import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 import type { Selectable } from 'kysely'
 import type { Transaction } from 'kysely-codegen'
-import { validateCategory } from '~/server/utils/validateCategory'
+import { validateCategory } from '../../utils/validateCategory'
 
 export default defineEventHandler(async (event) => {
     const { category, name, value, date } = await readBody(event)
