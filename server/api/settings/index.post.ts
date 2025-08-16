@@ -1,7 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
 import type { Selectable } from 'kysely'
-import type { UserSettings } from 'kysely-codegen'
+import type { UserPreferences } from 'kysely-codegen'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -16,8 +16,8 @@ export default defineEventHandler(async (event) => {
 
     // Check if it's the first time saving settings
     const settingsCount = await db
-        .selectFrom('user_settings')
-        .select('user_settings.id')
+        .selectFrom('user_preferences')
+        .select('user_preferences.id')
         .where('user', '=', user.id)
         .executeTakeFirst()
 
@@ -25,19 +25,19 @@ export default defineEventHandler(async (event) => {
     // A record exists in the db, lets edit it
     if (settingsCount) {
         opRes = await db
-            .updateTable('user_settings')
+            .updateTable('user_preferences')
             .set('currency', currency)
             .where('id', '=', settingsCount.id)
-            .where('user_settings.user', '=', user.id)
+            .where('user_preferences.user', '=', user.id)
             .execute()
     } else {
-        const settings: Omit<Selectable<UserSettings>, 'id'> = {
+        const settings: Omit<Selectable<UserPreferences>, 'id'> = {
             user: user.id,
             currency
         }
 
         opRes = await db
-            .insertInto('user_settings')
+            .insertInto('user_preferences')
             .values(settings)
             .returning('id')
             .executeTakeFirst()
