@@ -105,7 +105,7 @@
                 :title="props.title"
                 :description="props.message"
                 :color="getColor"
-                :timeout="timeout"
+                :timeout="props.timeout"
                 @close="onClose" />
         </div>
     </div>

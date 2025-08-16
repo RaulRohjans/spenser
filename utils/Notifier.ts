@@ -1,9 +1,8 @@
-import { createApp as vueCreateApp, type App } from 'vue'
-import SNotification from '~/components/SNotification.vue'
+import { h, render, type App } from 'vue'
 import ModalChooser from '~/components/Modal/Chooser.vue'
-import type { SNotificationProps } from '~/components/SNotification.vue'
 import type { ModalChooserProps } from '~/components/Modal/Chooser.vue'
 import type { EmitEventCallback } from '~/types/Data'
+import { UApp } from '#components'
 
 export class Notifier {
     private static buildAlertTitle(type: string) {
@@ -30,7 +29,6 @@ export class Notifier {
     }
 
     private static setupDomContainer() {
-        // Create div container and add to body
         const mountEl = document.createElement('div')
         document.body.appendChild(mountEl)
 
@@ -44,33 +42,24 @@ export class Notifier {
         cancelCallback?: { (): void }
     ) {
         const container = this.setupDomContainer()
+        const nuxtApp = useNuxtApp()
 
         // Build component emit callbacks
+        const unmount = () => {
+            render(null, container)
+            document.body.removeChild(container)
+        }
         const emitCallbacks: { [key: string]: EmitEventCallback } = {
-            confirm: (app: App<Element>) => {
+            confirm: (_app: App<Element>) => {
                 if (confirmCallback) confirmCallback()
-
-                // Unmount alert app instance
-                app.unmount()
-
-                // Remove alert div from dom
-                document.body.removeChild(container)
+                unmount()
             },
-            cancel: (app: App<Element>) => {
+            cancel: (_app: App<Element>) => {
                 if (cancelCallback) cancelCallback()
-
-                // Unmount alert app instance
-                app.unmount()
-
-                // Remove alert div from dom
-                document.body.removeChild(container)
+                unmount()
             },
-            close: (app: App<Element>) => {
-                // Unmount alert app instance
-                app.unmount()
-
-                // Remove alert div from dom
-                document.body.removeChild(container)
+            close: (_app: App<Element>) => {
+                unmount()
             }
         }
 
@@ -80,55 +69,65 @@ export class Notifier {
             message
         }
 
-        // Create app vue instance & mount
-        const app = vueCreateApp({
-            render() {
-                return h(ModalChooser, {
+        // Render vnode within existing Nuxt app context
+        const vnode = h(UApp, null, {
+            default: () =>
+                h(ModalChooser, {
                     ...props,
-                    onConfirm: () => emitCallbacks.confirm(app),
-                    onCancel: () => emitCallbacks.cancel(app),
-                    onClose: () => emitCallbacks.close(app)
+                    onConfirm: () => emitCallbacks.confirm(nuxtApp.vueApp),
+                    onCancel: () => emitCallbacks.cancel(nuxtApp.vueApp),
+                    onClose: () => emitCallbacks.close(nuxtApp.vueApp)
                 })
-            }
         })
-
-        app.mount(container)
+        vnode.appContext = nuxtApp.vueApp._context
+        render(vnode, container)
     }
 
     static showAlert(
         message: string | undefined | null,
-        type: 'info' | 'warning' | 'error' | 'success' = 'info'
+        type:
+            | 'info'
+            | 'warning'
+            | 'error'
+            | 'success'
+            | 'primary'
+            | 'neutral'
+            | 'secondary' = 'info'
     ) {
+        // Prefer Nuxt UI 3 toast API
+        const toast = typeof useToast === 'function' ? useToast() : null
+        if (toast && typeof toast.add === 'function') {
+            toast.add({
+                title: this.buildAlertTitle(type),
+                description: message || '',
+                color: type
+            })
+            return
+        }
+
+        // Fallback: render our own component tree (should rarely be needed)
         const container = this.setupDomContainer()
-
-        // Build component emit callbacks
-        const emitCallbacks: { [key: string]: EmitEventCallback } = {
-            close: (app: App<Element>) => {
-                // Unmount alert app instance
-                app.unmount()
-
-                // Remove alert div from dom
-                document.body.removeChild(container)
-            }
-        }
-
-        // Build component props
-        const props: SNotificationProps = {
-            title: this.buildAlertTitle(type),
-            message: message || '',
-            type
-        }
-
-        // Create app vue instance & mount
-        const app = vueCreateApp({
-            render() {
-                return h(SNotification, {
-                    ...props,
-                    onClose: () => emitCallbacks.close(app)
-                })
-            }
+        const nuxtApp = useNuxtApp()
+        const vnode = h(UApp, null, {
+            default: () =>
+                h('div', { class: 'fixed right-4 top-4 z-[100]' }, [
+                    h(
+                        'div',
+                        {
+                            class: 'rounded-md px-4 py-3 shadow-md bg-white text-gray-900 dark:bg-gray-800 dark:text-white'
+                        },
+                        [
+                            h(
+                                'div',
+                                { class: 'font-semibold mb-1' },
+                                this.buildAlertTitle(type)
+                            ),
+                            h('div', null, message || '')
+                        ]
+                    )
+                ])
         })
-
-        app.mount(container)
+        vnode.appContext = nuxtApp.vueApp._context
+        render(vnode, container)
     }
 }
