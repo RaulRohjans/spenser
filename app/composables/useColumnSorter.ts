@@ -1,6 +1,6 @@
 import { h } from 'vue'
 import type { Column, Table } from '@tanstack/vue-table'
-import type { TableRow } from '@/types/Table'
+import type { TableRow } from '~/../types/Table'
 import { UButton } from '#components'
 
 export const useColumnSorter = (

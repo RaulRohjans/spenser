@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
-    import type { FetchTableDataResult, TableRow } from '@/types/Table'
+    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
     import type { ModalUserProps } from '@/components/Modal/User.vue'
 
     const { token, data: authData, signOut } = useAuth()

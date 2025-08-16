@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { db } from '@/utils/dbEngine'
-import type { JwtPayload } from '@/types/Jwt'
+import type { JwtPayload } from '~/../types/Jwt'
 import type { Selectable } from 'kysely'
 import type { User } from 'kysely-codegen'
 import type { H3Event } from 'h3'
