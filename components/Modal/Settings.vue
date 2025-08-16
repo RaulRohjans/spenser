@@ -11,8 +11,9 @@
 
     const emit = defineEmits(['close'])
 
-    const isOpen = ref<boolean>(true)
+    const isSettingsModelOpen = ref<boolean>(true)
     const error: Ref<undefined | string> = ref()
+    const isChangePasswordOpen = ref(false)
 
     const schema = z.object({
         first_name: z.string(),
@@ -84,6 +85,11 @@
         if (!open) emit('close')
     }
 
+    const toggleSettings = (open: boolean) => {
+        isChangePasswordOpen.value = open
+        isSettingsModelOpen.value = !open
+    }
+
     const onSaveSettings = async function (event: FormSubmitEvent<Schema>) {
         const parsed = schema.safeParse(event.data)
         if (!parsed.success) {
@@ -99,7 +105,7 @@
                 body: {
                     first_name: event.data.first_name,
                     last_name: event.data.last_name,
-                    email: event.data.email,
+                    email: event.data.email
                 }
             })
 
@@ -153,7 +159,7 @@
 
 <template>
     <UModal
-        v-model:open="isOpen"
+        v-model:open="isSettingsModelOpen"
         :title="$t('Settings')"
         @update:open="handleOpenChange">
         <template #body>
@@ -190,12 +196,25 @@
                         :items="getCurrencyOptions" />
                 </UFormField>
 
-                <div class="flex flex-row justify-end">
+                <div class="flex flex-row justify-between">
+                    <UButton variant="soft" @click="toggleSettings(true)">
+                        {{ $t('Change Password') }}
+                    </UButton>
+
                     <UButton type="submit" :error="error">
                         {{ $t('Submit') }}
                     </UButton>
                 </div>
             </UForm>
+        </template>
+    </UModal>
+
+    <UModal
+        :open="isChangePasswordOpen"
+        :title="$t('Change Password')"
+        @update:open="toggleSettings">
+        <template #body>
+            <ModalChangePassword />
         </template>
     </UModal>
 </template>
