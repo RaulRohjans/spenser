@@ -18,7 +18,7 @@
     ])
 
     const schema = z.object({
-        symbol: z.string().length(1, 'You can only have one symbol')
+        symbol: z.string().max(5, 'Currency code is too big')
     })
 
     type Schema = z.output<typeof schema>
