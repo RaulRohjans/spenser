@@ -109,12 +109,6 @@
                 }
             })
 
-            if (authData.value) {
-                authData.value.first_name = event.data.first_name
-                authData.value.last_name = event.data.last_name
-                authData.value.email = event.data.email
-            }
-
             // Save user preferences
             const prefRes = await $fetch(`/api/settings`, {
                 method: 'POST',
