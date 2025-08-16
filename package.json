@@ -48,7 +48,7 @@
         "@vuepic/vue-datepicker": "^11.0.2",
         "bcrypt": "^6.0.0",
         "caniuse-lite": "^1.0.30001715",
-        "echarts": "^5.5.0",
+        "echarts": "^6.0.0",
         "formidable": "^3.5.1",
         "h3-formidable": "^1.0.0",
         "jsonwebtoken": "^9.0.2",
