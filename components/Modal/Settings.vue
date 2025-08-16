@@ -7,7 +7,7 @@
     import type { FetchTableDataResult } from '~/types/Table'
 
     const { t: $t } = useI18n()
-    const { token, data: authData } = useAuth()
+    const { token, data: authData, refresh } = useAuth()
 
     const emit = defineEmits(['close'])
 
@@ -92,20 +92,24 @@
         }
 
         try {
-            // Update user profile data using current username and role from session
+            // Save user profile related data
             await $fetch('/api/account/update', {
                 method: 'POST',
                 headers: buildRequestHeaders(token.value),
                 body: {
                     first_name: event.data.first_name,
                     last_name: event.data.last_name,
-                    username: authData.value?.username,
                     email: event.data.email,
-                    is_admin: String(authData.value?.is_admin)
                 }
             })
 
-            // Save user preferences (currency)
+            if (authData.value) {
+                authData.value.first_name = event.data.first_name
+                authData.value.last_name = event.data.last_name
+                authData.value.email = event.data.email
+            }
+
+            // Save user preferences
             const prefRes = await $fetch(`/api/settings`, {
                 method: 'POST',
                 headers: buildRequestHeaders(token.value),
@@ -133,10 +137,10 @@
                 } as UserSettingsObject)
             }
 
-            // Emit success
-            emit('close')
+            // Force refresh of auth token/session so authData reflects latest user profile
+            await refresh()
 
-            // Display success message
+            emit('close')
             Notifier.showAlert(
                 $t('Operation completed successfully!'),
                 'success'
