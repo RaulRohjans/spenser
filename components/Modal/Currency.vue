@@ -11,19 +11,19 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
+    const error: Ref<undefined | string> = ref()
     const placementOptions = ref([
         { label: 'Before', value: 'before' },
         { label: 'After', value: 'after' }
     ])
 
     const schema = z.object({
-        symbol: z.string().length(1, 'You can only have one symbol')
+        symbol: z.string().max(5, 'Currency code is too big')
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
-        symbol: undefined,
+        symbol: '',
         placement: placementOptions.value[0].value
     })
 
@@ -54,39 +54,46 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 </script>
 
 <template>
-    <UModal v-model="model" :ui="{ container: 'items-center' }">
-        <UForm
-            :schema="schema"
-            :state="state"
-            class="space-y-4 p-6"
-            @submit="onCreateCurrency">
-            <UFormGroup
-                :label="$t('Symbol')"
-                name="symbol"
-                class="w-full"
-                :error="!!error">
-                <UInput v-model="state.symbol" />
-            </UFormGroup>
+    <UModal v-model:open="model" :title="$t('Create Currency')">
+        <template #body>
+            <UForm
+                :schema="schema"
+                :state="state"
+                class="space-y-4 px-6"
+                @submit="onCreateCurrency">
+                <UFormField
+                    :label="$t('Symbol')"
+                    name="symbol"
+                    class="w-full"
+                    :error="!!error">
+                    <UInput v-model="state.symbol" class="w-full" />
+                </UFormField>
 
-            <UFormGroup
-                :label="$t('Placement')"
-                name="placement"
-                class="w-full"
-                :error="error">
-                <USelect
-                    v-model="state.placement"
-                    :options="placementOptions" />
-                <template #help>
-                    {{ $t('Place the symbol before ($212) or after (310€).') }}
-                </template>
-            </UFormGroup>
+                <UFormField
+                    :label="$t('Placement')"
+                    name="placement"
+                    class="w-full"
+                    :error="error">
+                    <USelect
+                        v-model="state.placement"
+                        :items="placementOptions"
+                        class="w-full" />
+                    <template #help>
+                        {{
+                            $t(
+                                'Place the symbol before ($212) or after (310€).'
+                            )
+                        }}
+                    </template>
+                </UFormField>
 
-            <UButton type="submit"> {{ $t('Submit') }} </UButton>
-        </UForm>
+                <UButton type="submit"> {{ $t('Submit') }} </UButton>
+            </UForm>
+        </template>
     </UModal>
 </template>

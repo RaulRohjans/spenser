@@ -53,17 +53,15 @@
     })
 
     const getIcon = computed(() => {
-        const prefix = 'i-heroicons-'
-
         switch (props.type) {
             case 'info':
-                return prefix + 'information-circle'
+                return getHeroIconName('information-circle')
             case 'error':
-                return prefix + 'x-circle'
+                return getHeroIconName('x-circle')
             case 'success':
-                return prefix + 'check-circle'
+                return getHeroIconName('check-circle')
             case 'warning':
-                return prefix + 'exclamation-circle'
+                return getHeroIconName('exclamation-circle')
             default:
                 throw new Error('Invalid notification type')
         }
@@ -107,7 +105,7 @@
                 :title="props.title"
                 :description="props.message"
                 :color="getColor"
-                :timeout="timeout"
+                :timeout="props.timeout"
                 @close="onClose" />
         </div>
     </div>

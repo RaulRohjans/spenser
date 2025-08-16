@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { formatCurrencyValue } from '#imports'
     import type { AvgExpenseValueData } from '~/types/Chart'
 
     const { token } = useAuth()
@@ -30,10 +31,7 @@
     <UCard
         class="shadow-xl p-4"
         :ui="{
-            body: {
-                padding: '',
-                base: 'divide-y divide-gray-200 dark:divide-gray-700'
-            }
+            body: 'p-0 divide-y divide-gray-200 dark:divide-gray-700'
         }">
         <div class="flex flex-col justify-center items-center">
             <h2

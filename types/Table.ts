@@ -18,7 +18,7 @@ export interface TableAction {
 
 export interface TableSort {
     column: string
-    direction: string
+    direction: "desc" | "asc"
 }
 
 export interface TableSearch {
@@ -33,3 +33,15 @@ export interface FetchTableDataResult {
         rows: TableRow[]
     }
 }
+
+export interface FetchTableSingleDataResult {
+    success: boolean
+    data: TableRow
+}
+
+export interface TableFilters {
+    searchQuery?: string
+    searchColumn?: string
+    groupCategory?: boolean
+    dateRange?: Date[]
+  }
