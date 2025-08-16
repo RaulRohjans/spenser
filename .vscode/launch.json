@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "name": "Launch: Run Bun Dev Task",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "Run bun dev"
+    },
+    {
+      "name": "Launch: Debug Frontend (Chrome)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}",
+      "runtimeExecutable": "/opt/homebrew/bin/chromium"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Bun + Chrome (Fullstack)",
+      "configurations": [
+        "Launch: Run Bun Dev Task",
+        "Launch: Debug Frontend (Chrome)"
+      ]
+    }
+  ]
+}
