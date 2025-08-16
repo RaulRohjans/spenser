@@ -1,9 +1,6 @@
 <script setup lang="ts">
     import { UIcon } from '#components'
-    import type {
-        FetchTableDataResult,
-        TableRow
-    } from '@/types/Table'
+    import type { FetchTableDataResult, TableRow } from '@/types/Table'
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
 
@@ -15,11 +12,16 @@
     const table = useTemplateRef('table')
 
     const columnSorter = computed(() => {
-        if(table.value?.tableApi)
-            return useColumnSorter(table.value.tableApi, sort, order, (col, dir) => {
-                sort.value = col.id
-                order.value = dir || 'asc'
-            })
+        if (table.value?.tableApi)
+            return useColumnSorter(
+                table.value.tableApi,
+                sort,
+                order,
+                (col, dir) => {
+                    sort.value = col.id
+                    order.value = dir || 'asc'
+                }
+            )
 
         return () => ({})
     })
@@ -60,8 +62,9 @@
     const { cell: actionCell } = useActionColumnCell<TableRow>({
         actions: ['edit', 'duplicate', 'delete'],
         callbacks: {
-            onEdit: row => router.push(`/categories/edit/${row.id}`),
-            onDuplicate: row => router.push(`/categories/duplicate/${row.id}`),
+            onEdit: (row) => router.push(`/categories/edit/${row.id}`),
+            onDuplicate: (row) =>
+                router.push(`/categories/duplicate/${row.id}`),
             onDelete: delCategory
         }
     })
@@ -93,7 +96,7 @@
                 ])
             },
             meta: { alias: $t('Icon'), searchable: false }
-        },        
+        },
         {
             id: 'actions',
             enableHiding: false,
@@ -149,20 +152,25 @@
                         {{ $t('Categories') }}
                     </h2>
                 </template>
-    
+
                 <!-- Filters header -->
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
+                <div
+                    class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
                     <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
                         <SSearchWithColumnFilter
                             v-model:column="filters.searchColumn"
-                            v-model:search="filters.searchQuery" 
+                            v-model:search="filters.searchQuery"
                             :table-api="table?.tableApi" />
-    
-                        <div class="flex flex-col md:flex-row sm:justify-start gap-2">
-                            <div class="flex flex-row justify-center sm:justify-start">
+
+                        <div
+                            class="flex flex-col md:flex-row sm:justify-start gap-2">
+                            <div
+                                class="flex flex-row justify-center sm:justify-start">
                                 <SRowsPerPageSelector v-model="itemsPerPage" />
                             </div>
-                            <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
+                            <SColumnToggleMenu
+                                :table-api="table?.tableApi"
+                                @reset="resetFilters" />
                         </div>
                     </div>
 
@@ -174,7 +182,7 @@
                         {{ $t('Create Category') }}
                     </UButton>
                 </div>
-    
+
                 <!-- Table -->
                 <UTable
                     ref="table"
@@ -183,7 +191,7 @@
                     sticky
                     :loading="status === 'pending'"
                     class="w-full" />
-    
+
                 <!-- Number of rows & Pagination -->
                 <template #footer>
                     <SPaginationFooter
@@ -196,5 +204,5 @@
 
         <!-- Slot for popup forms to CRUD over categories -->
         <NuxtPage @successful-submit="reload" />
-    </main>    
+    </main>
 </template>

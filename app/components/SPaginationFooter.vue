@@ -9,7 +9,11 @@
     const { t } = useI18n()
 
     const pageFrom = computed(() => (page.value - 1) * itemsPerPage.value + 1)
-    const pageTo = computed(() => props.total == 0 ? 1 : Math.min(page.value * itemsPerPage.value, props.total))
+    const pageTo = computed(() =>
+        props.total == 0
+            ? 1
+            : Math.min(page.value * itemsPerPage.value, props.total)
+    )
 </script>
 
 <template>
@@ -27,6 +31,6 @@
         <UPagination
             :items-per-page="itemsPerPage"
             :total="props.total"
-            @update:page="(p) => page = p" />
+            @update:page="(p) => (page = p)" />
     </div>
 </template>

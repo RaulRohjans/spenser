@@ -19,7 +19,9 @@ export default defineEventHandler(async (event) => {
         .select(({ fn }) => [fn.count<number>('id').as('cat_count')])
         .where('user', '=', user.id)
         .where('deleted', '=', false)
-        .where(({ eb }) => eb(eb.fn('upper', ['name']), '=', name.toUpperCase()))
+        .where(({ eb }) =>
+            eb(eb.fn('upper', ['name']), '=', name.toUpperCase())
+        )
         .executeTakeFirst()
 
     if (!res || res.cat_count > 0)

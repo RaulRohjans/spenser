@@ -13,38 +13,38 @@ A live demo for the platform can be checked [here](https://spenser.demo.rohjans.
 
 ### Dashboard
 
--   **Main Page:** Displays an overview of personal financial statistics.
+- **Main Page:** Displays an overview of personal financial statistics.
 
 ### Transactions
 
--   **Manage Transactions:** Users can view, add, edit, and delete their transactions.
--   **LLM Import:** Import transactions via text input (file upload or text). The app will parse the input and attempt to attribute categories to the records.
+- **Manage Transactions:** Users can view, add, edit, and delete their transactions.
+- **LLM Import:** Import transactions via text input (file upload or text). The app will parse the input and attempt to attribute categories to the records.
 
 ### Categories
 
--   **Category Management:** Create, edit, and delete categories to organize transactions.
+- **Category Management:** Create, edit, and delete categories to organize transactions.
 
 ### Budgets
 
--   **Budget Specification:** Set budgets for specific categories and time periods.
+- **Budget Specification:** Set budgets for specific categories and time periods.
 
 ### Settings
 
--   **Global Settings:** Configure display currency and other global settings.
--   **Account Management:** Manage personal account details.
+- **Global Settings:** Configure display currency and other global settings.
+- **Account Management:** Manage personal account details.
 
 ### Admin Features
 
--   **User Management:** Admins can perform CRUD operations on user accounts.
--   **Currency Management:** Add more currencies to the platform.
--   **LLM Configuration:** Choose between different LLM providers (currently supports ChatGPT and Ollama).
+- **User Management:** Admins can perform CRUD operations on user accounts.
+- **Currency Management:** Add more currencies to the platform.
+- **LLM Configuration:** Choose between different LLM providers (currently supports ChatGPT and Ollama).
 
 ## Installation
 
 ### Prerequisites
 
--   Node.js (version 20.14.0 or higher)
--   PostgreSQL instance running
+- Node.js (version 20.14.0 or higher)
+- PostgreSQL instance running
 
 ### Steps
 

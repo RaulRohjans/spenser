@@ -1,6 +1,6 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '@/utils/dbEngine'
-import type { TableRow } from '~/types/Table'
+import type { TableRow } from '~/../types/Table'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
@@ -35,7 +35,6 @@ export default defineEventHandler(async (event) => {
             statusCode: 404,
             statusMessage: 'Transaction not found or access denied.'
         })
-
 
     return {
         success: true,

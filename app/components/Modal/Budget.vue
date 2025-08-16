@@ -2,9 +2,9 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { FetchTableSingleDataResult } from '~/types/Table'
-    import type { SelectOption } from '~/types/Options'
-    import type { BudgetPeriodType } from '~/types/budget-period'
+    import type { FetchTableSingleDataResult } from '~/../types/Table'
+    import type { SelectOption } from '~/../types/Options'
+    import type { BudgetPeriodType } from '~/../types/budget-period'
 
     export type ModalBudgetProps = {
         /**
@@ -27,7 +27,7 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const error: Ref<undefined | string> = ref()
-    
+
     const periodOptions: Ref<SelectOption[]> = ref([
         {
             label: $t('Daily'),
@@ -67,7 +67,7 @@
     })
 
     // Fetch budget
-    if(props.mode != 'create') {
+    if (props.mode != 'create') {
         const { data: budget } =
             await useLazyAsyncData<FetchTableSingleDataResult>(
                 // IMPORTANT! Key needs to be set like this so it doesnt cache old data
@@ -90,21 +90,27 @@
 
         // A watch is needed here because for some reason, using a then is still
         // not enough to make sure the data is loaded after the request is made
-        watch(budget, (newVal) => {
-            if (!newVal?.data) return
+        watch(
+            budget,
+            (newVal) => {
+                if (!newVal?.data) return
 
-            state.id = props.id
-            state.name = newVal.data.name
-            state.category = newVal.data.category
-            state.value = newVal.data.value
-            state.period = newVal.data.period
-        }, { immediate: true })
+                state.id = props.id
+                state.name = newVal.data.name
+                state.category = newVal.data.category
+                state.value = newVal.data.value
+                state.period = newVal.data.period
+            },
+            { immediate: true }
+        )
     }
 
     // Fetch categories
-    const { status: categoryStatus,
+    const {
+        status: categoryStatus,
         categorySelectOptions,
-        getCategoryIcon } = useCategories()
+        getCategoryIcon
+    } = useCategories()
 
     const operation = computed(() => {
         return props.mode === 'edit' ? 'edit' : 'create'
@@ -124,23 +130,23 @@
             headers: buildRequestHeaders(token.value),
             body: event.data
         })
-        .then((data) => {
-            if (!data.success)
-                return Notifier.showAlert(
-                    $t('An error occurred when creating your budget.'),
-                    'error'
+            .then((data) => {
+                if (!data.success)
+                    return Notifier.showAlert(
+                        $t('An error occurred when creating your budget.'),
+                        'error'
+                    )
+
+                // Emit success
+                emit('successful-submit')
+
+                // Disaply success message
+                Notifier.showAlert(
+                    $t('Operation completed successfully!'),
+                    'success'
                 )
-
-            // Emit success
-            emit('successful-submit')
-
-            // Disaply success message
-            Notifier.showAlert(
-                $t('Operation completed successfully!'),
-                'success'
-            )
-        })
-        .catch((e: NuxtError) => (error.value = e.statusMessage))
+            })
+            .catch((e: NuxtError) => (error.value = e.statusMessage))
     }
 </script>
 
@@ -150,41 +156,33 @@
         :state="state"
         class="space-y-4"
         @submit="onCreateCategory">
-        <UFormField
-            :label="$t('Name')"
-            name="name"
-            :error="!!error">
+        <UFormField :label="$t('Name')" name="name" :error="!!error">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
-        <UFormField
-            :label="$t('Category')"
-            name="category"
-            :error="!!error">
+        <UFormField :label="$t('Category')" name="category" :error="!!error">
             <USelect
                 v-model="state.category"
                 :items="categorySelectOptions"
                 :loading="categoryStatus === 'pending'"
                 :icon="categoryDisplayIcon"
-                class="hide-select-span w-full">                
+                class="hide-select-span w-full">
             </USelect>
         </UFormField>
 
-        <UFormField
-            :label="$t('Period')"
-            name="period"
-            :error="!!error">
+        <UFormField :label="$t('Period')" name="period" :error="!!error">
             <USelect
                 v-model="state.period"
                 :items="periodOptions"
                 class="hide-select-span w-full" />
         </UFormField>
 
-        <UFormField
-            :label="$t('Value')"
-            name="value"
-            :error="error">
-            <UInput v-model="state.value" type="number" step="any" class="w-full" />
+        <UFormField :label="$t('Value')" name="value" :error="error">
+            <UInput
+                v-model="state.value"
+                type="number"
+                step="any"
+                class="w-full" />
         </UFormField>
 
         <div class="flex flex-row justify-end">

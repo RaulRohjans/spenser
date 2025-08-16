@@ -9,7 +9,7 @@
     }>()
 
     function handleOpenChange(state: boolean) {
-        if(!state) router.push('/budgets')
+        if (!state) router.push('/budgets')
     }
 
     function onSuccessfulSubmit() {

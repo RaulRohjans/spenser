@@ -197,9 +197,9 @@
 
     .dp__main {
         /*General*/
-        --dp-font-family: ui-sans-serif, system-ui, sans-serif,
-            'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-            'Noto Color Emoji';
+        --dp-font-family:
+            ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+            'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
         --dp-border-radius: 0.375rem; /*Configurable border-radius*/
         --dp-cell-border-radius: 4px; /*Specific border radius for the calendar cell*/
         --dp-common-transition: all 0.1s ease-in; /*Generic transition applied on buttons and calendar cells*/

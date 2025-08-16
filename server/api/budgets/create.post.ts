@@ -31,12 +31,17 @@ export default defineEventHandler(async (event) => {
         deleted: false
     }
 
-    const opRes = await db.insertInto('budget').values(budget).returning('id').executeTakeFirst()
+    const opRes = await db
+        .insertInto('budget')
+        .values(budget)
+        .returning('id')
+        .executeTakeFirst()
 
-    if (!opRes) throw createError({
-        statusCode: 500,
-        statusMessage: 'Could not perform the operation.'
-    })
+    if (!opRes)
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Could not perform the operation.'
+        })
 
     return { success: true }
 })

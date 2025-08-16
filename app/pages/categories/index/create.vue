@@ -9,7 +9,7 @@
     }>()
 
     function handleOpenChange(state: boolean) {
-        if(!state) router.push('/categories')
+        if (!state) router.push('/categories')
     }
 
     function onSuccessfulSubmit() {

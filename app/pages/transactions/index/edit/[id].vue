@@ -11,7 +11,7 @@
     }>()
 
     function handleOpenChange(state: boolean) {
-        if(!state) router.push('/transactions')
+        if (!state) router.push('/transactions')
     }
 
     function onSuccessfulSubmit() {

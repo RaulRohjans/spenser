@@ -100,7 +100,9 @@
     }>()
 
     const { t: $t } = useI18n()
-    const selectedColumns: Ref<TableColumn[] | undefined> = ref(props.columns || undefined)
+    const selectedColumns: Ref<TableColumn[] | undefined> = ref(
+        props.columns || undefined
+    )
     const selectLoadKey: Ref<number> = ref(0)
     const page = defineModel<number>('page', { default: 1 })
     const pageCount = defineModel<number>('pageCount', { default: 10 })
@@ -185,7 +187,7 @@
     const resetFilters = function () {
         if (!props.manualFilterReset) {
             search.value = ''
-            if(props.columns) selectedColumns.value = props.columns
+            if (props.columns) selectedColumns.value = props.columns
         }
         emit('reset-filters')
     }
@@ -212,7 +214,7 @@
     <UCard
         :class="getClasses"
         :ui="{
-            header: 'px-4 py-5' ,
+            header: 'px-4 py-5',
             body: 'p-0 divide-y divide-gray-200 dark:divide-gray-700',
             footer: 'p-4'
         }">
@@ -232,7 +234,9 @@
                     v-if="hasSeachColumn"
                     :key="selectLoadKey"
                     v-model="searchColumn"
-                    :items="getSearchColumns.map((c: SelectOption) => c.name || '')" />
+                    :items="
+                        getSearchColumns.map((c: SelectOption) => c.name || '')
+                    " />
                 <UInput
                     v-model="search"
                     icon="i-heroicons-magnifying-glass-20-solid"

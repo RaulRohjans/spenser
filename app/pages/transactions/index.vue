@@ -1,10 +1,7 @@
 <script setup lang="ts">
     import { UIcon } from '#components'
     import type { NuxtError } from '#app'
-    import type {
-        FetchTableDataResult,
-        TableRow
-    } from '@/types/Table'
+    import type { FetchTableDataResult, TableRow } from '@/types/Table'
     import type { TableColumn } from '@nuxt/ui'
 
     // Basic Setup
@@ -16,15 +13,20 @@
     const table = useTemplateRef('table')
 
     const columnSorter = computed(() => {
-        if(table.value?.tableApi)
-            return useColumnSorter(table.value.tableApi, sort, order, (col, dir) => {
-                sort.value = col.id
-                order.value = dir || 'asc'
-            })
+        if (table.value?.tableApi)
+            return useColumnSorter(
+                table.value.tableApi,
+                sort,
+                order,
+                (col, dir) => {
+                    sort.value = col.id
+                    order.value = dir || 'asc'
+                }
+            )
 
         return () => ({})
     })
-    
+
     const delTransaction = function (row: TableRow) {
         Notifier.showChooser(
             $t('Delete Transaction'),
@@ -57,12 +59,13 @@
             }
         )
     }
-    
+
     const { cell: actionCell } = useActionColumnCell<TableRow>({
         actions: ['edit', 'duplicate', 'delete'],
         callbacks: {
-            onEdit: row => router.push(`/transactions/edit/${row.id}`),
-            onDuplicate: row => router.push(`/transactions/duplicate/${row.id}`),
+            onEdit: (row) => router.push(`/transactions/edit/${row.id}`),
+            onDuplicate: (row) =>
+                router.push(`/transactions/duplicate/${row.id}`),
             onDelete: delTransaction
         }
     })
@@ -103,13 +106,19 @@
                 if (deleted) return h('span', '-')
 
                 return h('div', { class: 'flex flex-row items-center gap-3' }, [
-                    h('div', undefined, icon ? [
-                        h(UIcon, {
-                            name: getHeroIconName(icon),
-                            class: 'h-5 w-5',
-                            dynamic: true
-                        })
-                    ] : []),
+                    h(
+                        'div',
+                        undefined,
+                        icon
+                            ? [
+                                  h(UIcon, {
+                                      name: getHeroIconName(icon),
+                                      class: 'h-5 w-5',
+                                      dynamic: true
+                                  })
+                              ]
+                            : []
+                    ),
                     h('span', name)
                 ])
             },
@@ -170,7 +179,7 @@
         },
         watch: [] // optional: other filters to watch
     })
-    
+
     useHead({
         title: `Spenser | ${$t('Transactions')}`
     })
@@ -186,16 +195,18 @@
                         {{ $t('Transactions') }}
                     </h2>
                 </template>
-    
+
                 <!-- Filters header -->
                 <div class="flex flex-col gap-2">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-                        <div class="flex flex-col lg:flex-row lg:items-center gap-2">
+                    <div
+                        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
+                        <div
+                            class="flex flex-col lg:flex-row lg:items-center gap-2">
                             <SSearchWithColumnFilter
                                 v-model:column="filters.searchColumn"
-                                v-model:search="filters.searchQuery" 
+                                v-model:search="filters.searchQuery"
                                 :table-api="table?.tableApi" />
-    
+
                             <SDateTimePicker
                                 v-model="filters.dateRange"
                                 class="sm:!w-56"
@@ -204,7 +215,8 @@
                                 @clear="() => (filters.dateRange = [])" />
                         </div>
 
-                        <div class="flex flex-row justify-between items-center sm:justify-end sm:flex-col sm:items-end md:flex-row md:items-center gap-3 lg:gap-6">
+                        <div
+                            class="flex flex-row justify-between items-center sm:justify-end sm:flex-col sm:items-end md:flex-row md:items-center gap-3 lg:gap-6">
                             <SRowsPerPageSelector v-model="itemsPerPage" />
 
                             <UCheckbox
@@ -213,18 +225,25 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
-                        <SColumnToggleMenu :table-api="table?.tableApi" @reset="resetFilters" />
+                    <div
+                        class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
+                        <SColumnToggleMenu
+                            :table-api="table?.tableApi"
+                            @reset="resetFilters" />
 
                         <div class="flex flex-col sm:flex-row gap-2">
                             <UButton
                                 icon="i-heroicons-arrow-down-on-square-stack"
                                 color="primary"
                                 size="md"
-                                @click="router.push(`/transactions/llm-data-importer`)">
+                                @click="
+                                    router.push(
+                                        `/transactions/llm-data-importer`
+                                    )
+                                ">
                                 {{ $t('LLM Data Import') }}
                             </UButton>
-            
+
                             <UButton
                                 icon="i-heroicons-plus"
                                 color="primary"
@@ -235,7 +254,7 @@
                         </div>
                     </div>
                 </div>
-    
+
                 <!-- Table -->
                 <UTable
                     ref="table"
@@ -244,7 +263,7 @@
                     sticky
                     :loading="status === 'pending'"
                     class="w-full" />
-    
+
                 <!-- Number of rows & Pagination -->
                 <template #footer>
                     <SPaginationFooter
@@ -254,7 +273,7 @@
                 </template>
             </UCard>
         </div>
-    
+
         <!-- Slot for popup forms to CRUD over transactions -->
         <NuxtPage @successful-submit="reload" />
     </main>

@@ -13,16 +13,16 @@
 </script>
 
 <template>
-  <div class="flex items-center gap-1.5">
-    <span class="block font-medium text-(--ui-text) text-sm leading-5">
-      {{ $t('Rows per page') }}:
-    </span>
+    <div class="flex items-center gap-1.5">
+        <span class="block font-medium text-(--ui-text) text-sm leading-5">
+            {{ $t('Rows per page') }}:
+        </span>
 
-    <USelect
-        :model-value="modelValue"
-        :items="options"
-        class="me-2 w-20"
-        size="md"
-        @update:model-value="emit('update:modelValue', $event)" />
-  </div>
+        <USelect
+            :model-value="modelValue"
+            :items="options"
+            class="me-2 w-20"
+            size="md"
+            @update:model-value="emit('update:modelValue', $event)" />
+    </div>
 </template>

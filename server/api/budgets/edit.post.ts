@@ -7,8 +7,8 @@ export default defineEventHandler(async (event) => {
 
     if (!value || !period) {
         throw createError({
-        statusCode: 400,
-        statusMessage: 'One or more mandatory fields are empty.'
+            statusCode: 400,
+            statusMessage: 'One or more mandatory fields are empty.'
         })
     }
 
@@ -25,10 +25,11 @@ export default defineEventHandler(async (event) => {
         .where('deleted', '=', false)
         .execute()
 
-    if (!opRes) throw createError({
-        statusCode: 500,
-        statusMessage: 'Could not perform the operation.'
-    })
+    if (!opRes)
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Could not perform the operation.'
+        })
 
     return { success: true }
 })

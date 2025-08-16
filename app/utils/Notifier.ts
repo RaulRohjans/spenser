@@ -2,7 +2,7 @@ import { h, render, type App } from 'vue'
 import { useToast } from '#imports'
 import ModalChooser from '~/components/Modal/Chooser.vue'
 import type { ModalChooserProps } from '~/components/Modal/Chooser.vue'
-import type { EmitEventCallback } from '~/types/Data'
+import type { EmitEventCallback } from '~/../types/Data'
 import { UApp } from '#components'
 
 export class Notifier {
@@ -18,7 +18,11 @@ export class Notifier {
 
         const container = this.setupDomContainer()
         const nuxtApp = useNuxtApp()
-        const vnode = h(UApp, { toaster: this.toasterOptions }, { default: () => null })
+        const vnode = h(
+            UApp,
+            { toaster: this.toasterOptions },
+            { default: () => null }
+        )
         vnode.appContext = nuxtApp.vueApp._context
         render(vnode, container)
 
@@ -31,7 +35,11 @@ export class Notifier {
         if (!this.uiProviderContainer) return
 
         const nuxtApp = useNuxtApp()
-        const vnode = h(UApp, { toaster: this.toasterOptions }, { default: () => null })
+        const vnode = h(
+            UApp,
+            { toaster: this.toasterOptions },
+            { default: () => null }
+        )
         vnode.appContext = nuxtApp.vueApp._context
         render(vnode, this.uiProviderContainer)
     }
