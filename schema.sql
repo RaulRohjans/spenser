@@ -97,3 +97,7 @@ CREATE TABLE IF NOT EXISTS budget (
 /* User demo password demo */
 INSERT INTO "user" (username, first_name, last_name, email, avatar, is_admin, password, deleted)
 VALUES ('demo', 'Demo', 'Demo', 'demo@deded.com', NULL, TRUE, '$2b$10$DFQzRePFt0Wt6O3K621psuuV5E4VlpgnMnQfeEc59MpdopwJT.ZzO', FALSE);
+
+/* Seed currencies */
+INSERT INTO "currency" (symbol, placement, deleted) VALUES ('€', 'after', FALSE);
+INSERT INTO "currency" (symbol, placement, deleted) VALUES ('$', 'before', FALSE);
