@@ -54,9 +54,13 @@
     },
   },
   "trustedDependencies": [
+    "bcrypt",
+    "esbuild",
+    "vue-echarts",
     "@tailwindcss/oxide",
-    "protobufjs",
     "unrs-resolver",
+    "protobufjs",
+    "vue-demi",
     "@parcel/watcher",
   ],
   "packages": {
