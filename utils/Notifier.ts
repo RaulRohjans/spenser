@@ -1,31 +1,48 @@
 import { h, render, type App } from 'vue'
+import { useToast } from '#imports'
 import ModalChooser from '~/components/Modal/Chooser.vue'
 import type { ModalChooserProps } from '~/components/Modal/Chooser.vue'
 import type { EmitEventCallback } from '~/types/Data'
 import { UApp } from '#components'
 
 export class Notifier {
-    private static buildAlertTitle(type: string) {
-        const { t: $t } = useI18n()
-        const locale = getLocaleFromRoute()
+    private static uiProviderMounted = false
+    private static uiProviderContainer: HTMLDivElement | null = null
 
-        let title = ''
-        switch (type) {
-            case 'error':
-                title = $t('Error', locale)
-                break
-            case 'warning':
-                title = $t('Warning', locale)
-                break
-            case 'info':
-                title = $t('Info', locale)
-                break
-            case 'success':
-                title = $t('Success', locale)
-                break
+    private static ensureUiProvidersMounted() {
+        if (!import.meta.client) return
+        if (this.uiProviderMounted) return
+
+        const container = this.setupDomContainer()
+        const nuxtApp = useNuxtApp()
+        const vnode = h(UApp, null, { default: () => null })
+        vnode.appContext = nuxtApp.vueApp._context
+        render(vnode, container)
+
+        this.uiProviderMounted = true
+        this.uiProviderContainer = container
+    }
+
+    private static buildAlertTitle(type: string) {
+        const { $i18n } = useNuxtApp()
+        const translate = (key: string) => {
+            if ($i18n && typeof $i18n.t === 'function')
+                return $i18n.t(key) as string
+            return key
         }
 
-        return title
+        switch (type) {
+            case 'error':
+                return translate('Error')
+            case 'warning':
+                return translate('Warning')
+            case 'info':
+                return translate('Info')
+            case 'success':
+                return translate('Success')
+            default:
+                return ''
+        }
     }
 
     private static setupDomContainer() {
@@ -94,40 +111,23 @@ export class Notifier {
             | 'neutral'
             | 'secondary' = 'info'
     ) {
-        // Prefer Nuxt UI 3 toast API
-        const toast = typeof useToast === 'function' ? useToast() : null
-        if (toast && typeof toast.add === 'function') {
-            toast.add({
-                title: this.buildAlertTitle(type),
-                description: message || '',
-                color: type
-            })
-            return
-        }
+        // Ensure UI providers exist once (fixes cases where toast container isn't in DOM yet)
+        this.ensureUiProvidersMounted()
 
-        // Fallback: render our own component tree (should rarely be needed)
-        const container = this.setupDomContainer()
         const nuxtApp = useNuxtApp()
-        const vnode = h(UApp, null, {
-            default: () =>
-                h('div', { class: 'fixed right-4 top-4 z-[100]' }, [
-                    h(
-                        'div',
-                        {
-                            class: 'rounded-md px-4 py-3 shadow-md bg-white text-gray-900 dark:bg-gray-800 dark:text-white'
-                        },
-                        [
-                            h(
-                                'div',
-                                { class: 'font-semibold mb-1' },
-                                this.buildAlertTitle(type)
-                            ),
-                            h('div', null, message || '')
-                        ]
-                    )
-                ])
+        nuxtApp.vueApp.runWithContext(() => {
+            const toast = useToast()
+            if (toast && typeof toast.add === 'function') {
+                toast.add({
+                    title: this.buildAlertTitle(type),
+                    description: message || '',
+                    color: type,
+                    close: {
+                        color: 'neutral',
+                        variant: 'ghost'
+                    }
+                })
+            }
         })
-        vnode.appContext = nuxtApp.vueApp._context
-        render(vnode, container)
     }
 }
