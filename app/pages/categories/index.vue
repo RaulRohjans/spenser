@@ -88,13 +88,17 @@
             cell: ({ row }) => {
                 const icon = row.original.icon
 
-                return h('div', undefined, [
-                    h(UIcon, {
-                        name: getHeroIconName(icon),
-                        class: 'h-5 w-5',
-                        dynamic: true
-                    })
-                ])
+                const iconComponent = icon
+                    ? [
+                          h(UIcon, {
+                              name: getHeroIconName(icon),
+                              class: 'h-5 w-5',
+                              dynamic: true
+                          })
+                      ]
+                    : []
+
+                return h('div', undefined, iconComponent)
             },
             meta: { alias: $t('Icon'), searchable: false }
         },

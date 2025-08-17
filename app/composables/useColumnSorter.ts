@@ -1,18 +1,17 @@
 import { h } from 'vue'
 import type { Column, Table } from '@tanstack/vue-table'
-import type { TableRow } from '~/../types/Table'
 import { UButton } from '#components'
 
-export const useColumnSorter = (
-    table: Table<TableRow>,
+export const useColumnSorter = <T>(
+    table: Table<T>,
     sort: Ref<string>,
     order: Ref<'asc' | 'desc'>,
-    sortCallback?: (
-        col: Column<TableRow, unknown>,
+    sortCallback?: <T>(
+        col: Column<T, unknown>,
         dir: 'asc' | 'desc' | false
     ) => void
 ) => {
-    return (column: Column<TableRow, unknown>, label: string) => {
+    return <Y>(column: Column<Y, unknown>, label: string) => {
         const isSorted = column.getIsSorted()
 
         const icon = isSorted
@@ -42,7 +41,7 @@ export const useColumnSorter = (
                     if (defaultSortColumn) {
                         table.getAllColumns().forEach((c) => c.clearSorting())
                         defaultSortColumn.toggleSorting(false)
-                        sortCallback?.(defaultSortColumn, 'desc')
+                        sortCallback?.<T>(defaultSortColumn, 'desc')
                     }
                     return
                 }

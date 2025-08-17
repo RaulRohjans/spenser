@@ -5,7 +5,8 @@ export const capitalFirstWordLetters = function (message: string) {
 
     return words
         .map((word) => {
-            return word[0].toUpperCase() + word.substring(1)
+            if (!word) return ''
+            return word[0]!.toUpperCase() + word.substring(1)
         })
         .join(' ')
 }

@@ -2,7 +2,7 @@
     const route = useRoute()
     const router = useRouter()
     const { t: $t } = useI18n()
-    const id: number = Number.parseInt(route.params.id.toString())
+    const id: number = Number.parseInt(route.params.id!.toString())
 
     const isOpen = ref<boolean>(true)
 
