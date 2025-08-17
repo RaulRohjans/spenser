@@ -1,5 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '~~/server/db/client'
+import { budgets } from '~~/server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -12,20 +14,38 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'No positions to be persisted were found.'
         })
 
-    Object.entries(positions).forEach(async ([key, value]) => {
-        const opRes = await db
-            .updateTable('budget')
-            .set('order', Number(value))
-            .where('id', '=', Number(key))
-            .where('user', '=', user.id)
-            .where('deleted', '=', false)
-            .execute()
+    // Validate and persist inside a transaction to keep state consistent
+    await db.transaction(async (tx) => {
+        for (const [key, value] of Object.entries(positions as Record<string, number>)) {
+            const budgetId = Number(key)
+            const newOrder = Number(value)
 
-        if (!opRes)
-            throw createError({
-                statusCode: 500,
-                statusMessage: 'Could not persist order in the database.'
-            })
+            if (!Number.isFinite(budgetId) || !Number.isFinite(newOrder)) {
+                throw createError({
+                    statusCode: 400,
+                    statusMessage: 'Invalid positions payload.'
+                })
+            }
+
+            const updated = await tx
+                .update(budgets)
+                .set({ order: newOrder })
+                .where(
+                    and(
+                        eq(budgets.id, budgetId),
+                        eq(budgets.user, user.id),
+                        eq(budgets.deleted, false)
+                    )
+                )
+                .returning({ id: budgets.id })
+
+            if (updated.length === 0) {
+                throw createError({
+                    statusCode: 500,
+                    statusMessage: 'Could not persist order in the database.'
+                })
+            }
+        }
     })
 
     return {
