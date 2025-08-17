@@ -11,38 +11,34 @@ import {
 } from './schema'
 import { hashPassword } from '~~/app/utils/authFunctions'
 
-async function seedBase() {
-    console.log('[seed] start base seeding')
-    // Default user
-    const pwHash = hashPassword(
-        'admin',
-        Number(process.env.PASSWORD_SALT_ROUNDS)
-    )
-    const [{ count: userExists }] = await db
+async function ensureAdminUser() {
+    const [{ count }] = await db
         .select({ count: sql<number>`cast(count(*) as int)` })
         .from(users)
         .where(eq(users.username, 'admin'))
 
-    console.log(userExists, typeof userExists)
-    if (!userExists) {
+    if (!count) {
         await db.insert(users).values({
             username: 'admin',
             first_name: 'Admin',
             last_name: 'Admin',
             email: 'admin@example.com',
             is_admin: true,
-            password: pwHash,
+            password: hashPassword(
+                'admin',
+                Number(process.env.PASSWORD_SALT_ROUNDS)
+            ),
             deleted: false
         })
         console.log('[seed] created default admin user')
     }
+}
 
-    // Currencies
+async function ensureBaseCurrencies() {
     const [{ count: eurExists }] = await db
         .select({ count: sql<number>`cast(count(*) as int)` })
         .from(currencies)
         .where(and(eq(currencies.symbol, '€'), eq(currencies.deleted, false)))
-
     if (!eurExists) {
         await db.insert(currencies).values({
             symbol: '€',
@@ -56,7 +52,6 @@ async function seedBase() {
         .select({ count: sql<number>`cast(count(*) as int)` })
         .from(currencies)
         .where(and(eq(currencies.symbol, '$'), eq(currencies.deleted, false)))
-
     if (!usdExists) {
         await db.insert(currencies).values({
             symbol: '$',
@@ -67,40 +62,58 @@ async function seedBase() {
     }
 }
 
-async function seedDemo() {
-    const isDemo = String(process.env.DEMO || '').toLowerCase() === 'true'
-    if (!isDemo) return
-    console.log('[seed] DEMO mode enabled')
+async function ensureDemoUser() {
+    const [{ count }] = await db
+        .select({ count: sql<number>`cast(count(*) as int)` })
+        .from(users)
+        .where(eq(users.username, 'demo'))
+
+    if (!count) {
+        await db.insert(users).values({
+            username: 'demo',
+            first_name: 'Demo',
+            last_name: 'Demo',
+            email: 'demo@deded.com',
+            is_admin: false,
+            password: hashPassword(
+                'demo',
+                Number(process.env.PASSWORD_SALT_ROUNDS)
+            ),
+            deleted: false
+        })
+        console.log('[seed] created demo user')
+    }
 
     const demoUser = await db
         .select()
         .from(users)
         .where(eq(users.username, 'demo'))
         .then((r) => r[0])
-    if (!demoUser) return
+    return demoUser
+}
 
-    // Ensure a currency and user preferences exist
+async function ensureDemoUserPreferences(demoUserId: number) {
     const eur = await db
         .select()
         .from(currencies)
         .where(and(eq(currencies.symbol, '€'), eq(currencies.deleted, false)))
         .then((r) => r[0])
+    if (!eur) return
 
-    if (eur) {
-        const [{ count: prefExists }] = await db
-            .select({ count: sql<number>`cast(count(*) as int)` })
-            .from(userPreferences)
-            .where(eq(userPreferences.user, demoUser.id))
-        if (!prefExists) {
-            await db.insert(userPreferences).values({
-                user: demoUser.id,
-                currency: eur.id
-            })
-            console.log('[seed] created user preferences for demo user')
-        }
+    const [{ count: prefExists }] = await db
+        .select({ count: sql<number>`cast(count(*) as int)` })
+        .from(userPreferences)
+        .where(eq(userPreferences.user, demoUserId))
+    if (!prefExists) {
+        await db.insert(userPreferences).values({
+            user: demoUserId,
+            currency: eur.id
+        })
+        console.log('[seed] created user preferences for demo user')
     }
+}
 
-    // Categories
+async function ensureDemoCategories(demoUserId: number) {
     const categoryNames = [
         { name: 'Groceries', icon: 'i-heroicons-shopping-cart', sign: -1 },
         { name: 'Utilities', icon: 'i-heroicons-bolt', sign: -1 },
@@ -116,7 +129,7 @@ async function seedDemo() {
             .from(categories)
             .where(
                 and(
-                    eq(categories.user, demoUser.id),
+                    eq(categories.user, demoUserId),
                     eq(categories.name, c.name),
                     eq(categories.deleted, false)
                 )
@@ -126,7 +139,7 @@ async function seedDemo() {
             const inserted = await db
                 .insert(categories)
                 .values({
-                    user: demoUser.id,
+                    user: demoUserId,
                     name: c.name,
                     icon: c.icon,
                     deleted: false
@@ -137,14 +150,17 @@ async function seedDemo() {
             createdCategories.push({ id: existing.id, name: existing.name })
         }
     }
+    return createdCategories
+}
 
-    const byName = (n: string) => createdCategories.find((c) => c.name === n)!
-
-    // Budgets
+async function ensureDemoBudgets(
+    demoUserId: number,
+    categoriesByName: (n: string) => { id: number; name: string }
+) {
     const demoBudgets = [
         {
-            user: demoUser.id,
-            category: byName('Groceries').id,
+            user: demoUserId,
+            category: categoriesByName('Groceries').id,
             name: 'Groceries',
             value: '300.00',
             period: 'monthly',
@@ -152,8 +168,8 @@ async function seedDemo() {
             deleted: false
         },
         {
-            user: demoUser.id,
-            category: byName('Utilities').id,
+            user: demoUserId,
+            category: categoriesByName('Utilities').id,
             name: 'Utilities',
             value: '150.00',
             period: 'monthly',
@@ -161,7 +177,7 @@ async function seedDemo() {
             deleted: false
         },
         {
-            user: demoUser.id,
+            user: demoUserId,
             category: null,
             name: 'General',
             value: '1000.00',
@@ -176,7 +192,7 @@ async function seedDemo() {
             .from(budgets)
             .where(
                 and(
-                    eq(budgets.user, demoUser.id),
+                    eq(budgets.user, demoUserId),
                     eq(budgets.name, b.name as string),
                     eq(budgets.deleted, false)
                 )
@@ -184,64 +200,88 @@ async function seedDemo() {
             .then((r) => r[0].count)
         if (!exists) await db.insert(budgets).values(b)
     }
+}
 
-    // Transactions: spread around current date
+async function insertDemoTransactions(
+    demoUserId: number,
+    categoriesByName: (n: string) => { id: number; name: string }
+) {
     const today = new Date()
     const daysAgo = (n: number) =>
         new Date(today.getTime() - n * 24 * 3600 * 1000)
 
     const txs = [
         {
-            user: demoUser.id,
-            category: byName('Salary').id,
+            user: demoUserId,
+            category: categoriesByName('Salary').id,
             name: 'Monthly Salary',
             value: '2500.00',
             date: daysAgo(25),
             deleted: false
         },
         {
-            user: demoUser.id,
-            category: byName('Groceries').id,
+            user: demoUserId,
+            category: categoriesByName('Groceries').id,
             name: 'Supermarket',
             value: '-75.40',
             date: daysAgo(20),
             deleted: false
         },
         {
-            user: demoUser.id,
-            category: byName('Dining').id,
+            user: demoUserId,
+            category: categoriesByName('Dining').id,
             name: 'Restaurant dinner',
             value: '-42.15',
             date: daysAgo(14),
             deleted: false
         },
         {
-            user: demoUser.id,
-            category: byName('Utilities').id,
+            user: demoUserId,
+            category: categoriesByName('Utilities').id,
             name: 'Electric bill',
             value: '-60.00',
             date: daysAgo(10),
             deleted: false
         },
         {
-            user: demoUser.id,
-            category: byName('Transport').id,
+            user: demoUserId,
+            category: categoriesByName('Transport').id,
             name: 'Gas',
             value: '-35.75',
             date: daysAgo(6),
             deleted: false
         },
         {
-            user: demoUser.id,
-            category: byName('Groceries').id,
+            user: demoUserId,
+            category: categoriesByName('Groceries').id,
             name: 'Supermarket',
             value: '-55.20',
             date: daysAgo(2),
             deleted: false
         }
     ]
-
     for (const t of txs) await db.insert(transactions).values(t)
+}
+
+async function seedBase() {
+    console.log('[seed] start base seeding')
+    await ensureAdminUser()
+    await ensureBaseCurrencies()
+}
+
+async function seedDemo() {
+    const isDemo = String(process.env.DEMO || '').toLowerCase() === 'true'
+    if (!isDemo) return
+    console.log('[seed] DEMO mode enabled')
+
+    const demoUser = await ensureDemoUser()
+    if (!demoUser) return
+
+    await ensureDemoUserPreferences(demoUser.id)
+    const createdCategories = await ensureDemoCategories(demoUser.id)
+    const byName = (n: string) => createdCategories.find((c) => c.name === n)!
+    await ensureDemoBudgets(demoUser.id, byName)
+    await insertDemoTransactions(demoUser.id, byName)
     console.log('[seed] demo data inserted')
 }
 
