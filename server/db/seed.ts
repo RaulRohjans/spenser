@@ -14,12 +14,16 @@ import { hashPassword } from '~~/app/utils/authFunctions'
 async function seedBase() {
     console.log('[seed] start base seeding')
     // Default user
-    const pwHash = hashPassword('admin', Number(process.env.PASSWORD_SALT_ROUNDS))
+    const pwHash = hashPassword(
+        'admin',
+        Number(process.env.PASSWORD_SALT_ROUNDS)
+    )
     const [{ count: userExists }] = await db
-        .select({ count: sql<number>`count(*)` })
+        .select({ count: sql<number>`cast(count(*) as int)` })
         .from(users)
         .where(eq(users.username, 'admin'))
 
+    console.log(userExists, typeof userExists)
     if (!userExists) {
         await db.insert(users).values({
             username: 'admin',
@@ -35,7 +39,7 @@ async function seedBase() {
 
     // Currencies
     const [{ count: eurExists }] = await db
-        .select({ count: sql<number>`count(*)` })
+        .select({ count: sql<number>`cast(count(*) as int)` })
         .from(currencies)
         .where(and(eq(currencies.symbol, '€'), eq(currencies.deleted, false)))
 
@@ -49,7 +53,7 @@ async function seedBase() {
     }
 
     const [{ count: usdExists }] = await db
-        .select({ count: sql<number>`count(*)` })
+        .select({ count: sql<number>`cast(count(*) as int)` })
         .from(currencies)
         .where(and(eq(currencies.symbol, '$'), eq(currencies.deleted, false)))
 
@@ -84,7 +88,7 @@ async function seedDemo() {
 
     if (eur) {
         const [{ count: prefExists }] = await db
-            .select({ count: sql<number>`count(*)` })
+            .select({ count: sql<number>`cast(count(*) as int)` })
             .from(userPreferences)
             .where(eq(userPreferences.user, demoUser.id))
         if (!prefExists) {
@@ -168,7 +172,7 @@ async function seedDemo() {
     ]
     for (const b of demoBudgets) {
         const exists = await db
-            .select({ count: sql<number>`count(*)` })
+            .select({ count: sql<number>`cast(count(*) as int)` })
             .from(budgets)
             .where(
                 and(
