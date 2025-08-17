@@ -62,10 +62,25 @@ export const extractToken = (authHeaderValue: string): string => {
     return token || ''
 }
 
-export const hashPassword = function (password: string) {
-    const { passwordSaltRounds } = useRuntimeConfig()
+export const hashPassword = function (
+    password: string,
+    overrideSaltRounds?: number
+) {
+    // Prefer explicit override, then Nuxt runtime config, then environment
+    if (overrideSaltRounds && overrideSaltRounds > 0) {
+        return bcrypt.hashSync(password, overrideSaltRounds)
+    }
 
-    return bcrypt.hashSync(password, Number(passwordSaltRounds))
+    try {
+        const cfg = typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : null
+        if (cfg && cfg.passwordSaltRounds) return bcrypt.hashSync(password, Number(cfg.passwordSaltRounds))
+        else return bcrypt.hashSync(password, 10)
+    } catch (_) {
+        // ignore and fall back to env
+    }
+
+    const envRounds = Number(process.env.PASSWORD_SALT_ROUNDS || '10')
+    return bcrypt.hashSync(password, envRounds)
 }
 
 export const comparePasswords = function (

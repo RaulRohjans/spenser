@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { and, eq, sql } from 'drizzle-orm'
 import { db } from './client'
 import {
@@ -8,11 +9,12 @@ import {
     budgets,
     userPreferences
 } from './schema'
-import { hashPassword } from '@/utils/authFunctions'
+import { hashPassword } from '~~/app/utils/authFunctions'
 
 async function seedBase() {
+    console.log('[seed] start base seeding')
     // Default user
-    const pwHash = hashPassword('admin')
+    const pwHash = hashPassword('admin', Number(process.env.PASSWORD_SALT_ROUNDS))
     const [{ count: userExists }] = await db
         .select({ count: sql<number>`count(*)` })
         .from(users)
@@ -28,6 +30,7 @@ async function seedBase() {
             password: pwHash,
             deleted: false
         })
+        console.log('[seed] created default admin user')
     }
 
     // Currencies
@@ -42,6 +45,7 @@ async function seedBase() {
             placement: 'after',
             deleted: false
         })
+        console.log('[seed] inserted EUR')
     }
 
     const [{ count: usdExists }] = await db
@@ -55,12 +59,14 @@ async function seedBase() {
             placement: 'before',
             deleted: false
         })
+        console.log('[seed] inserted USD')
     }
 }
 
 async function seedDemo() {
     const isDemo = String(process.env.DEMO || '').toLowerCase() === 'true'
     if (!isDemo) return
+    console.log('[seed] DEMO mode enabled')
 
     const demoUser = await db
         .select()
@@ -86,6 +92,7 @@ async function seedDemo() {
                 user: demoUser.id,
                 currency: eur.id
             })
+            console.log('[seed] created user preferences for demo user')
         }
     }
 
@@ -231,11 +238,18 @@ async function seedDemo() {
     ]
 
     for (const t of txs) await db.insert(transactions).values(t)
+    console.log('[seed] demo data inserted')
 }
 
 async function main() {
-    await seedBase()
-    await seedDemo()
+    try {
+        await seedBase()
+        await seedDemo()
+        console.log('[seed] completed')
+    } catch (e) {
+        console.error('[seed] error', e)
+        process.exitCode = 1
+    }
 }
 
-main().then(() => process.exit(0))
+main().then(() => process.exit(process.exitCode || 0))
