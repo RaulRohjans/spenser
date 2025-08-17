@@ -6,3 +6,5 @@ declare module '@tanstack/table-core' {
         searchable?: boolean
     }
 }
+
+
