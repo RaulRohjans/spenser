@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import type { TableRow } from '~~/types/Table'
 import { categories, transactions } from '~~/server/db/schema'
@@ -61,42 +61,41 @@ export default defineEventHandler(async (event) => {
         sortKey === 'category_name'
             ? categories.name
             : sortKey === 'category_icon'
-            ? categories.icon
-            : sortKey === 'category_deleted'
-            ? categories.deleted
-            : sortKey === 'name'
-            ? transactions.name
-            : sortKey === 'value'
-            ? transactions.value
-            : sortKey === 'date'
-            ? transactions.date
-            : sortKey === 'category'
-            ? transactions.category
-            : sortKey === 'tz_offset_minutes'
-            ? transactions.tz_offset_minutes
-            : transactions.id
+              ? categories.icon
+              : sortKey === 'category_deleted'
+                ? categories.deleted
+                : sortKey === 'name'
+                  ? transactions.name
+                  : sortKey === 'value'
+                    ? transactions.value
+                    : sortKey === 'date'
+                      ? transactions.date
+                      : sortKey === 'category'
+                        ? transactions.category
+                        : sortKey === 'tz_offset_minutes'
+                          ? transactions.tz_offset_minutes
+                          : transactions.id
 
-    const selectedSearchKey = (
-        searchColumn?.toString() || (isGrouped ? 'category_name' : 'name')
-    ) as typeof sortKey
+    const selectedSearchKey = (searchColumn?.toString() ||
+        (isGrouped ? 'category_name' : 'name')) as typeof sortKey
     const searchColumnExpr =
         selectedSearchKey === 'category_name'
             ? categories.name
             : selectedSearchKey === 'category_icon'
-            ? categories.icon
-            : selectedSearchKey === 'category_deleted'
-            ? categories.deleted
-            : selectedSearchKey === 'name'
-            ? transactions.name
-            : selectedSearchKey === 'value'
-            ? transactions.value
-            : selectedSearchKey === 'date'
-            ? transactions.date
-            : selectedSearchKey === 'category'
-            ? transactions.category
-            : selectedSearchKey === 'tz_offset_minutes'
-            ? transactions.tz_offset_minutes
-            : transactions.name
+              ? categories.icon
+              : selectedSearchKey === 'category_deleted'
+                ? categories.deleted
+                : selectedSearchKey === 'name'
+                  ? transactions.name
+                  : selectedSearchKey === 'value'
+                    ? transactions.value
+                    : selectedSearchKey === 'date'
+                      ? transactions.date
+                      : selectedSearchKey === 'category'
+                        ? transactions.category
+                        : selectedSearchKey === 'tz_offset_minutes'
+                          ? transactions.tz_offset_minutes
+                          : transactions.name
 
     const mainSearch = search
         ? sql`${searchColumnExpr}::text ILIKE ${'%' + String(search) + '%'}`
@@ -151,7 +150,12 @@ export default defineEventHandler(async (event) => {
                     ...(rangeEnd ? [rangeEnd] : [])
                 )
             )
-            .groupBy(categories.id, categories.name, categories.icon, categories.deleted)
+            .groupBy(
+                categories.id,
+                categories.name,
+                categories.icon,
+                categories.deleted
+            )
 
         // Wrap grouped select so we can apply search/sort/pagination
         const g = grouped.as('main')
@@ -164,7 +168,8 @@ export default defineEventHandler(async (event) => {
         }
         const gSortCol = gColumnMap[sortKey as keyof typeof gColumnMap] || g.id
         const gSearchCol =
-            gColumnMap[selectedSearchKey as keyof typeof gColumnMap] || g.category_name
+            gColumnMap[selectedSearchKey as keyof typeof gColumnMap] ||
+            g.category_name
 
         let gQuery = db.select().from(g).$dynamic()
         const gSearch = search

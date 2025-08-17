@@ -3,7 +3,7 @@ import {
     fetchUserByUsername,
     hashPassword,
     comparePasswords
-} from '@/utils/authFunctions'
+} from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { users } from '~~/server/db/schema'
 import { eq, sql } from 'drizzle-orm'

@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { userPreferences } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'

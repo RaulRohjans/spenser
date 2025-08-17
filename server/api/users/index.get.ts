@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import type { TableRow } from '~~/types/Table'
 import { users } from '~~/server/db/schema'

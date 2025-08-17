@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 
 export default defineEventHandler(async (event) => {

@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { budgets } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
@@ -16,7 +16,9 @@ export default defineEventHandler(async (event) => {
 
     // Validate and persist inside a transaction to keep state consistent
     await db.transaction(async (tx) => {
-        for (const [key, value] of Object.entries(positions as Record<string, number>)) {
+        for (const [key, value] of Object.entries(
+            positions as Record<string, number>
+        )) {
             const budgetId = Number(key)
             const newOrder = Number(value)
 

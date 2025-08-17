@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { readFiles } from 'h3-formidable'
 import type { NuxtError } from 'nuxt/app'

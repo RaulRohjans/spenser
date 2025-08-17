@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { LLM } from '~/utils/LLM'
 import { globalSettings, categories } from '~~/server/db/schema'

@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { validateCategory } from '../../utils/validateCategory'
 import { transactions } from '~~/server/db/schema'
@@ -17,7 +17,8 @@ export default defineEventHandler(async (event) => {
 
     await validateCategory(user.id, category)
 
-    const { date: parsedDate, tz_offset_minutes } = coerceDateAndOffset(datetime)
+    const { date: parsedDate, tz_offset_minutes } =
+        coerceDateAndOffset(datetime)
 
     const res = await db
         .update(transactions)

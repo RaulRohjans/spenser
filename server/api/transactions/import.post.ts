@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import {
     categories,
@@ -59,9 +59,10 @@ export default defineEventHandler(async (event) => {
         // Validate transaction category
         await validateCategory(transaction.category)
 
-        const { date: parsedDate, tz_offset_minutes } = coerceDateAndOffset(
-            { date: transaction.date, tzOffsetMinutes: datetime?.tzOffsetMinutes ?? tzOffsetMinutes }
-        )
+        const { date: parsedDate, tz_offset_minutes } = coerceDateAndOffset({
+            date: transaction.date,
+            tzOffsetMinutes: datetime?.tzOffsetMinutes ?? tzOffsetMinutes
+        })
 
         insertTransactions.push({
             user: user.id,

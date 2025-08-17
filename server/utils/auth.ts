@@ -72,9 +72,11 @@ export const hashPassword = function (
     }
 
     try {
-        const cfg = typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : null
-        if (cfg && cfg.passwordSaltRounds) return bcrypt.hashSync(password, Number(cfg.passwordSaltRounds))
-    } catch (_) {
+        const cfg =
+            typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : null
+        if (cfg && cfg.passwordSaltRounds)
+            return bcrypt.hashSync(password, Number(cfg.passwordSaltRounds))
+    } catch {
         // ignore and fall back to env
     }
 

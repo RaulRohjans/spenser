@@ -2,7 +2,7 @@ import {
     comparePasswords,
     ensureAuth,
     hashPassword
-} from '@/utils/authFunctions'
+} from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { users } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'

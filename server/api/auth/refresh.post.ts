@@ -1,5 +1,5 @@
 import type { User } from '~~/server/db/schema'
-import { generateToken, validateJWT } from '@/utils/authFunctions'
+import { generateToken, validateJWT } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { users } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'

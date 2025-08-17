@@ -1,5 +1,5 @@
 import { db } from '~~/server/db/client'
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 import { budgets } from '~~/server/db/schema'
 import { validateCategory } from '../../utils/validateCategory'
 
