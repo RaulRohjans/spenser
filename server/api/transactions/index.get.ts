@@ -2,8 +2,7 @@ import { ensureAuth } from '@/utils/authFunctions'
 import { db } from '~~/server/db/client'
 import type { TableRow } from '~~/types/Table'
 import { categories, transactions } from '~~/server/db/schema'
-import { and, eq, sql } from 'drizzle-orm'
-import { makeOrderBy, makeSearchCondition } from '~~/server/db/utils'
+import { and, asc, desc, eq, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     // Read body params
@@ -25,12 +24,6 @@ export default defineEventHandler(async (event) => {
     const parsedStartDate: Date = new Date(Number(startDate))
     const parsedEndDate: Date = new Date(Number(endDate))
 
-    const addSearchWhere = (searchColDefault: string) =>
-        makeSearchCondition(
-            searchColumn ? `main.${searchColumn}` : searchColDefault,
-            search?.toString()
-        )
-
     /*
      * In order to use select column alias in the where clause, we need
      * to use a subquery to fetch the data and set the where with the
@@ -49,7 +42,57 @@ export default defineEventHandler(async (event) => {
             ? sql`${transactions.date} <= ${parsedEndDate}`
             : undefined
 
-    const subQuery = db
+    const sortKey = (sort?.toString() || 'id') as
+        | 'id'
+        | 'name'
+        | 'value'
+        | 'date'
+        | 'category'
+        | 'category_name'
+        | 'category_icon'
+        | 'category_deleted'
+    const orderDir = (order as 'asc' | 'desc') || 'asc'
+
+    const sortColumn =
+        sortKey === 'category_name'
+            ? categories.name
+            : sortKey === 'category_icon'
+            ? categories.icon
+            : sortKey === 'category_deleted'
+            ? categories.deleted
+            : sortKey === 'name'
+            ? transactions.name
+            : sortKey === 'value'
+            ? transactions.value
+            : sortKey === 'date'
+            ? transactions.date
+            : sortKey === 'category'
+            ? transactions.category
+            : transactions.id
+
+    const selectedSearchKey = (searchColumn?.toString() || 'name') as typeof sortKey
+    const searchColumnExpr =
+        selectedSearchKey === 'category_name'
+            ? categories.name
+            : selectedSearchKey === 'category_icon'
+            ? categories.icon
+            : selectedSearchKey === 'category_deleted'
+            ? categories.deleted
+            : selectedSearchKey === 'name'
+            ? transactions.name
+            : selectedSearchKey === 'value'
+            ? transactions.value
+            : selectedSearchKey === 'date'
+            ? transactions.date
+            : selectedSearchKey === 'category'
+            ? transactions.category
+            : transactions.name
+
+    const mainSearch = search
+        ? sql`${searchColumnExpr}::text ILIKE ${'%' + String(search) + '%'}`
+        : undefined
+
+    let query = db
         .select({
             category_icon: categories.icon,
             category_name: categories.name,
@@ -66,20 +109,14 @@ export default defineEventHandler(async (event) => {
             and(
                 baseWhere,
                 ...(rangeStart ? [rangeStart] : []),
-                ...(rangeEnd ? [rangeEnd] : [])
+                ...(rangeEnd ? [rangeEnd] : []),
+                ...(mainSearch ? [mainSearch] : [])
             )
         )
+        .$dynamic()
 
-    const mainSearch = addSearchWhere('transaction.name')
-    const orderBy = makeOrderBy(
-        sort?.toString(),
-        (order as 'asc' | 'desc') || 'asc'
-    )
-
-    let query = db.select().from(subQuery.as('main')).$dynamic()
-    if (mainSearch) query = query.where(and(mainSearch))
     query = query
-        .orderBy(orderBy || sql`id`)
+        .orderBy(orderDir === 'desc' ? desc(sortColumn) : asc(sortColumn))
         .offset((parsedPage - 1) * parsedLimit)
         .limit(parsedLimit)
     /* ----------------------------------------------------------------- */
@@ -87,10 +124,17 @@ export default defineEventHandler(async (event) => {
     // Get total record count
     let totalQuery = db
         .select({ total: sql<number>`count(*)` })
-        .from(subQuery.as('main'))
+        .from(transactions)
+        .innerJoin(categories, eq(categories.id, transactions.category))
+        .where(
+            and(
+                baseWhere,
+                ...(rangeStart ? [rangeStart] : []),
+                ...(rangeEnd ? [rangeEnd] : []),
+                ...(mainSearch ? [mainSearch] : [])
+            )
+        )
         .$dynamic()
-
-    if (mainSearch) totalQuery = totalQuery.where(and(mainSearch))
 
     const totalRecordsRes = await totalQuery.then((r) => r[0])
 
