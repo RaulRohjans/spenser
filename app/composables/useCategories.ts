@@ -1,9 +1,12 @@
+import type { CategoryRow } from '~~/types/ApiRows'
 import type { FetchTableDataResult } from '~~/types/Table'
 
 export function useCategories() {
     const { token } = useAuth()
 
-    const { data, status, error } = useLazyAsyncData<FetchTableDataResult>(
+    const { data, status, error } = useLazyAsyncData<
+        FetchTableDataResult<CategoryRow>
+    >(
         'categoryData',
         () =>
             $fetch('/api/categories', {
@@ -23,7 +26,7 @@ export function useCategories() {
         return data.value.data.rows.map((category) => ({
             label: category.name,
             value: category.id,
-            icon: getHeroIconName(category.icon)
+            icon: category.icon ? getHeroIconName(category.icon) : ''
         }))
     })
 

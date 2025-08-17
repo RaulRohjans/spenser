@@ -4,7 +4,7 @@
     import type { LlmTransactionObject } from '~~/types/Data'
     import type { SelectOption } from '~~/types/Options'
     import type { FetchTableDataResult, TableRow } from '~~/types/Table'
-    import type { Category } from '~~/server/db/schema'
+    import type { CategoryRow } from '~~/types/ApiRows'
 
     export type ModalBudgetProps = {
         /**
@@ -68,7 +68,7 @@
 
     // Fetch categories
     const { data: categoryData, pending: categoryLoading } =
-        await useLazyAsyncData<FetchTableDataResult<Category>>(
+        await useLazyAsyncData<FetchTableDataResult<CategoryRow>>(
             'categoryData',
             () =>
                 $fetch('/api/categories', {

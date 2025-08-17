@@ -5,6 +5,7 @@
     import type { UserSettingsObject } from '~~/types/Data'
     import type { SelectOption } from '~~/types/Options'
     import type { FetchTableDataResult } from '~~/types/Table'
+    import type { CurrencyRow } from '~~/types/ApiRows'
 
     const { t: $t } = useI18n()
     const { token, data: authData, refresh } = useAuth()
@@ -25,7 +26,9 @@
     type Schema = z.output<typeof schema>
 
     // Fetch currencies
-    const { data: currencies } = await useLazyAsyncData<FetchTableDataResult>(
+    const { data: currencies } = await useLazyAsyncData<
+        FetchTableDataResult<CurrencyRow>
+    >(
         'currencies',
         () =>
             $fetch('/api/currencies', {
