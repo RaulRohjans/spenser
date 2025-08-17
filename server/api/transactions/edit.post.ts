@@ -3,6 +3,7 @@ import { db } from '~~/server/db/client'
 import { validateCategory } from '../../utils/validateCategory'
 import { transactions } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
+import { parseDateOrThrow } from '~~/server/utils/date'
 
 export default defineEventHandler(async (event) => {
     const { id, category, name, value, date } = await readBody(event)
@@ -16,18 +17,7 @@ export default defineEventHandler(async (event) => {
 
     await validateCategory(user.id, category)
 
-    // Coerce incoming date to a proper Date object
-    let parsedDate: Date
-    if (date instanceof Date) parsedDate = date
-    else if (typeof date === 'string' || typeof date === 'number')
-        parsedDate = new Date(date)
-    else parsedDate = new Date(NaN)
-
-    if (Number.isNaN(parsedDate.getTime()))
-        throw createError({
-            statusCode: 400,
-            statusMessage: 'Invalid date format.'
-        })
+    const parsedDate = parseDateOrThrow(date)
 
     const res = await db
         .update(transactions)

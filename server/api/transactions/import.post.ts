@@ -6,6 +6,7 @@ import {
 } from '~~/server/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
 import type { LlmTransactionObject } from '~~/types/Data'
+import { parseDateOrThrow } from '~~/server/utils/date'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -60,7 +61,7 @@ export default defineEventHandler(async (event) => {
             category: transaction.category,
             name: transaction.name,
             value: transaction.value.toString(),
-            date: new Date(transaction.date), // This comes as a string, needs to be date
+            date: parseDateOrThrow(transaction.date),
             deleted: false
         })
     }
