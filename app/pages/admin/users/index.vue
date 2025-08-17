@@ -59,8 +59,10 @@
                                 'error'
                             )
 
-                        if (row.id == authData.value?.id)
+                        if (row.id == authData.value?.id) {
+                            try { sessionStorage.setItem('demoAutoSuppressOnce', '1') } catch {}
                             signOut({ callbackUrl: '/login' })
+                        }
                         else reload()
 
                         Notifier.showAlert(

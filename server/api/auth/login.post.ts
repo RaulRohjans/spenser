@@ -11,13 +11,32 @@ import type { User } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read body params
-    const { username, password } = await readBody(event)
+    const { username, password, demoAuto } = await readBody(event)
 
     if (!username || !password)
         throw createError({
             statusCode: 400,
             statusMessage: 'Empty login fields.'
         })
+
+    // If DEMO mode and demoAuto flag is set, try to auto-login demo user regardless of password
+    const config = useRuntimeConfig()
+    if (
+        String(process.env.DEMO || '').toLowerCase() === 'true' &&
+        demoAuto === true &&
+        username === 'demo'
+    ) {
+        const demoUser = await fetchUserByUsername('demo')
+        if (demoUser) {
+            const { password: _drop, ...jwtUser } = demoUser
+            const accessToken = generateToken(jwtUser)
+            const refreshToken = generateToken(jwtUser, 60 * 60 * 24)
+            return {
+                token: { accessToken, refreshToken }
+            }
+        }
+        // fallthrough to normal validation if demo user does not exist
+    }
 
     // Validate credentials
     const user: User = await validateLoginCredentials(username, password)

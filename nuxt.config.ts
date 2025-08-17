@@ -89,6 +89,10 @@ export default defineNuxtConfig({
         maxTransactionFileSize: Number(
             process.env.MAX_TRANSACTION_FILE_SIZE || 1024 * 1024 * 10
         ) //10 MB
+    ,
+        public: {
+            demoMode: String(process.env.DEMO || '').toLowerCase() === 'true'
+        }
     },
     i18n: {
         defaultLocale: 'en',

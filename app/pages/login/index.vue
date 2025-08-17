@@ -6,6 +6,7 @@
     import { useSettingsStore } from '~/stores/settings'
 
     const { signIn, token } = useAuth()
+    const config = useRuntimeConfig()
     const { t: $t } = useI18n()
     const error: Ref<undefined | string> = ref()
     const validationSchema = z.object({
@@ -45,6 +46,25 @@
                 Notifier.showAlert(e.statusMessage, 'error')
             )
     }
+
+    onMounted(async () => {
+        // Auto-login demo user on each visit to login page when DEMO is on,
+        // unless suppressed once (e.g., immediately after logout to allow manual login)
+        if (!config.public.demoMode) return
+        const suppressOnce = sessionStorage.getItem('demoAutoSuppressOnce')
+        if (suppressOnce) {
+            sessionStorage.removeItem('demoAutoSuppressOnce')
+            return
+        }
+        try {
+            await signIn(
+                { username: 'demo', password: 'demo', demoAuto: true },
+                { callbackUrl: '/' }
+            )
+        } catch {
+            // If demo user does not exist, do nothing and allow manual login
+        }
+    })
 
     definePageMeta({
         layout: 'auth',
