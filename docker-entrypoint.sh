@@ -14,6 +14,26 @@ else
   echo "[entrypoint] seed skipped (already seeded)"
 fi
 
+if [ "${DAILY_RESET}" = "true" ]; then
+  (
+    while true; do
+      echo "[entrypoint] daily reset will run at 03:00 UTC"
+      # Sleep until next 03:00 UTC
+      now=$(date -u +%s)
+      # seconds since midnight UTC
+      sec_midnight=$(( $(date -u -d @${now} +%H)*3600 + $(date -u -d @${now} +%M)*60 + $(date -u -d @${now} +%S) ))
+      target=$(( 3*3600 ))
+      sleep_for=$(( target - sec_midnight ))
+      if [ $sleep_for -le 0 ]; then
+        sleep_for=$(( 24*3600 + sleep_for ))
+      fi
+      sleep $sleep_for
+      echo "[entrypoint] running daily reset"
+      npx tsx server/db/reset.ts | cat || true
+    done
+  ) &
+fi
+
 echo "[entrypoint] starting server"
 exec node .output/server/index.mjs
 
