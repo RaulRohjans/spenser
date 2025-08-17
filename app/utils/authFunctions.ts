@@ -74,7 +74,6 @@ export const hashPassword = function (
     try {
         const cfg = typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : null
         if (cfg && cfg.passwordSaltRounds) return bcrypt.hashSync(password, Number(cfg.passwordSaltRounds))
-        else return bcrypt.hashSync(password, 10)
     } catch (_) {
         // ignore and fall back to env
     }
