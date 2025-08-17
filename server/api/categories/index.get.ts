@@ -1,9 +1,9 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
-import type { TableRow } from '~/../types/Table'
-import { categories } from '~/../server/db/schema'
+import { db } from '~~/server/db/client'
+import type { TableRow } from '~~/types/Table'
+import { categories } from '~~/server/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
-import { makeOrderBy, makeSearchCondition } from '~/../server/db/utils'
+import { makeOrderBy, makeSearchCondition } from '~~/server/db/utils'
 
 export default defineEventHandler(async (event) => {
     // Read body params

@@ -1,5 +1,5 @@
-import type { Currency } from '~/../server/db/schema'
-import type { UserSettingsObject } from '~/../types/Data'
+import type { Currency } from '~~/server/db/schema'
+import type { UserSettingsObject } from '~~/types/Data'
 
 export const useSettingsStore = defineStore('settingsStore', {
     state: () => ({

@@ -2,9 +2,9 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { FetchTableSingleDataResult } from '~/../types/Table'
-    import type { SelectOption } from '~/../types/Options'
-    import type { BudgetPeriodType } from '~/../types/budget-period'
+    import type { FetchTableSingleDataResult } from '~~/types/Table'
+    import type { SelectOption } from '~~/types/Options'
+    import type { BudgetPeriodType } from '~~/types/budget-period'
 
     export type ModalBudgetProps = {
         /**

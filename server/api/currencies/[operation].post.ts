@@ -1,8 +1,8 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
-import { currencies } from '~/../server/db/schema'
+import { db } from '~~/server/db/client'
+import { currencies } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
-import type { Currency } from '~/../server/db/schema'
+import type { Currency } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read params

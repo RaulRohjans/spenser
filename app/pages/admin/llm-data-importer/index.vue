@@ -1,8 +1,8 @@
 <script setup lang="ts">
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { SelectOption } from '~/../types/Options'
-    import type { GlobalSettingsObject } from '~/../types/Data'
+    import type { SelectOption } from '~~/types/Options'
+    import type { GlobalSettingsObject } from '~~/types/Data'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()

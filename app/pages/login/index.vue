@@ -2,7 +2,7 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { UserSettingsObject } from '~/../types/Data'
+    import type { UserSettingsObject } from '~~/types/Data'
     import { useSettingsStore } from '~/stores/settings'
 
     const { signIn, token } = useAuth()

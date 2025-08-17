@@ -2,7 +2,7 @@ import { h, render, type App } from 'vue'
 import { useToast } from '#imports'
 import ModalChooser from '~/components/Modal/Chooser.vue'
 import type { ModalChooserProps } from '~/components/Modal/Chooser.vue'
-import type { EmitEventCallback } from '~/../types/Data'
+import type { EmitEventCallback } from '~~/types/Data'
 import { UApp } from '#components'
 
 export class Notifier {

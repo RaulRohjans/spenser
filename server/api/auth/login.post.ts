@@ -4,10 +4,10 @@ import {
     hashPassword,
     comparePasswords
 } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
-import { users } from '~/../server/db/schema'
+import { db } from '~~/server/db/client'
+import { users } from '~~/server/db/schema'
 import { eq, sql } from 'drizzle-orm'
-import type { User } from '~/../server/db/schema'
+import type { User } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read body params

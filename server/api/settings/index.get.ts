@@ -1,8 +1,8 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
-import { userPreferences, currencies } from '~/../server/db/schema'
+import { db } from '~~/server/db/client'
+import { userPreferences, currencies } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
-import type { UserSettingsObject } from '~/../types/Data'
+import type { UserSettingsObject } from '~~/types/Data'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)

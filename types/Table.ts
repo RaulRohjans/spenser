@@ -3,6 +3,7 @@ export interface TableColumn {
     label?: string
     sortable: boolean
     searchable?: boolean
+    alias?: string
 }
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */

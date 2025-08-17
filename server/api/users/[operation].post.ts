@@ -1,8 +1,8 @@
 import { ensureAuth, hashPassword } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
-import { users } from '~/../server/db/schema'
+import { db } from '~~/server/db/client'
+import { users } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
-import type { User } from '~/../server/db/schema'
+import type { User } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read params

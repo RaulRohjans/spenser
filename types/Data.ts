@@ -1,4 +1,4 @@
-import type { GlobalSettings } from '~/../server/db/schema'
+import type { GlobalSettings } from '~~/server/db/schema'
 
 export interface UserSettingsObject {
     id: number

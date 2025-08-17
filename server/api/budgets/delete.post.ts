@@ -1,6 +1,6 @@
-import { db } from '~/../server/db/client'
+import { db } from '~~/server/db/client'
 import { ensureAuth } from '@/utils/authFunctions'
-import { budgets } from '~/../server/db/schema'
+import { budgets } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {

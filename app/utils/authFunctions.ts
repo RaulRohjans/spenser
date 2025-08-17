@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import { db } from '~/../server/db/client'
-import type { JwtPayload } from '~/../types/Jwt'
-import type { User } from '~/../server/db/schema'
+import { db } from '~~/server/db/client'
+import type { JwtPayload } from '~~/types/Jwt'
+import type { User } from '~~/server/db/schema'
 import type { H3Event } from 'h3'
 
 export const generateToken = function (

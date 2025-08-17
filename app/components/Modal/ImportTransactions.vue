@@ -1,9 +1,10 @@
 <script setup lang="ts">
     import { formatCurrencyValue } from '#imports'
     import type { NuxtError } from '#app'
-    import type { LlmTransactionObject } from '~/../types/Data'
-    import type { SelectOption } from '~/../types/Options'
-    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
+    import type { LlmTransactionObject } from '~~/types/Data'
+    import type { SelectOption } from '~~/types/Options'
+    import type { FetchTableDataResult, TableRow } from '~~/types/Table'
+    import type { Category } from '~~/server/db/schema'
 
     export type ModalBudgetProps = {
         /**
@@ -67,7 +68,7 @@
 
     // Fetch categories
     const { data: categoryData, pending: categoryLoading } =
-        await useLazyAsyncData<FetchTableDataResult>(
+        await useLazyAsyncData<FetchTableDataResult<Category>>(
             'categoryData',
             () =>
                 $fetch('/api/categories', {

@@ -4,8 +4,8 @@
         TableRow,
         TableAction,
         TableSort
-    } from '~/../types/Table'
-    import type { SelectOption } from '~/../types/Options'
+    } from '~~/types/Table'
+    import type { SelectOption } from '~~/types/Options'
 
     export interface STableProps {
         /*

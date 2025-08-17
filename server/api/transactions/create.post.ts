@@ -1,6 +1,6 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
-import { transactions } from '~/../server/db/schema'
+import { db } from '~~/server/db/client'
+import { transactions } from '~~/server/db/schema'
 import { validateCategory } from '../../utils/validateCategory'
 
 export default defineEventHandler(async (event) => {

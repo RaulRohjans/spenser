@@ -1,5 +1,5 @@
 import { eq, and, sql } from 'drizzle-orm'
-import { categories } from '~/../server/db/schema'
+import { categories } from '~~/server/db/schema'
 
 export async function validateCategory(userId: number, categoryId: number) {
     const res = await db

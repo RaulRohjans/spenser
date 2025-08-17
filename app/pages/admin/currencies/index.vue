@@ -1,8 +1,8 @@
 <script setup lang="ts">
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
-    import type { FetchTableDataResult } from '~/../types/Table'
-    import type { CurrencyRow } from '~/../types/ApiRows'
+    import type { FetchTableDataResult } from '~~/types/Table'
+    import type { CurrencyRow } from '~~/types/ApiRows'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()

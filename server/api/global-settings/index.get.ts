@@ -1,8 +1,8 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
-import { globalSettings } from '~/../server/db/schema'
+import { db } from '~~/server/db/client'
+import { globalSettings } from '~~/server/db/schema'
 import { eq } from 'drizzle-orm'
-import type { GlobalSettingsObject } from '~/../types/Data'
+import type { GlobalSettingsObject } from '~~/types/Data'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)

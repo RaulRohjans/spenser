@@ -1,9 +1,9 @@
 <script setup lang="ts">
     import { UIcon } from '#components'
-    import type { FetchTableDataResult } from '~/../types/Table'
+    import type { FetchTableDataResult } from '~~/types/Table'
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
-    import type { CategoryRow } from '~/../types/ApiRows'
+    import type { CategoryRow } from '~~/types/ApiRows'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()

@@ -1,4 +1,4 @@
-import type { FetchTableDataResult } from '~/../types/Table'
+import type { FetchTableDataResult } from '~~/types/Table'
 
 export function useCategories() {
     const { token } = useAuth()

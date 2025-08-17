@@ -1,11 +1,11 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
+import { db } from '~~/server/db/client'
 import {
     categories,
     transactions as transactionsTable
-} from '~/../server/db/schema'
+} from '~~/server/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
-import type { LlmTransactionObject } from '~/../types/Data'
+import type { LlmTransactionObject } from '~~/types/Data'
 
 export default defineEventHandler(async (event) => {
     // Read params

@@ -1,10 +1,10 @@
 import fs from 'fs'
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '~/../server/db/client'
+import { db } from '~~/server/db/client'
 import { readFiles } from 'h3-formidable'
 import type { NuxtError } from 'nuxt/app'
 import { LLM } from '~/utils/LLM'
-import { globalSettings, categories } from '~/../server/db/schema'
+import { globalSettings, categories } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {

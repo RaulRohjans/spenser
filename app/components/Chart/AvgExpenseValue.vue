@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import { formatCurrencyValue } from '#imports'
-    import type { AvgExpenseValueData } from '~/../types/Chart'
+    import type { AvgExpenseValueData } from '~~/types/Chart'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
