@@ -115,11 +115,11 @@ async function ensureDemoUserPreferences(demoUserId: number) {
 
 async function ensureDemoCategories(demoUserId: number) {
     const categoryNames = [
-        { name: 'Groceries', icon: 'i-heroicons-shopping-cart', sign: -1 },
-        { name: 'Utilities', icon: 'i-heroicons-bolt', sign: -1 },
-        { name: 'Transport', icon: 'i-heroicons-truck', sign: -1 },
-        { name: 'Dining', icon: 'i-heroicons-cake', sign: -1 },
-        { name: 'Salary', icon: 'i-heroicons-banknotes', sign: 1 }
+        { name: 'Groceries', icon: 'shopping-cart', sign: -1 },
+        { name: 'Utilities', icon: 'bolt', sign: -1 },
+        { name: 'Transport', icon: 'truck', sign: -1 },
+        { name: 'Dining', icon: 'cake', sign: -1 },
+        { name: 'Salary', icon: 'banknotes', sign: 1 }
     ]
 
     const createdCategories = [] as { id: number; name: string }[]
