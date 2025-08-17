@@ -1,6 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import { sql } from 'kysely'
+import { db } from '~/../server/db/client'
+import { sql, and, eq } from 'drizzle-orm'
+import { transactions, categories } from '~/../server/db/schema'
 import type { ExpensesByCategoryData } from '~/../types/Chart'
 
 export default defineEventHandler(async (event) => {
@@ -11,40 +12,28 @@ export default defineEventHandler(async (event) => {
     const parsedStartDate: Date = new Date(Number(startDate))
     const parsedEndDate: Date = new Date(Number(endDate))
     const res = await db
-        .selectFrom('transaction')
-        .select(({ fn }) => [
-            fn
-                .sum(
-                    sql<number>`case when "transaction"."value" < 0 then "transaction"."value" * -1 when "transaction"."value" >= 0 then 0 end`
-                )
-                .as('value')
-        ])
-        .innerJoin('category', 'category.id', 'transaction.category')
-        .groupBy(['category.id', 'category.name'])
-        .select('category.name as category_name')
-
-        .where('category.deleted', '=', false)
-        .where('transaction.deleted', '=', false)
-
-        // Only fetch negative values (expenses)
-        .where('transaction.value', '<=', '0')
-
-        // Start date filter
-        .$if(!!startDate && !!parsedStartDate, (qb) =>
-            qb.where('transaction.date', '>=', parsedStartDate)
+        .select({
+            value: sql<number>`sum(case when ${transactions.value} < 0 then ${transactions.value} * -1 when ${transactions.value} >= 0 then 0 end)`,
+            category_name: categories.name
+        })
+        .from(transactions)
+        .innerJoin(categories, eq(categories.id, transactions.category))
+        .where(
+            and(
+                eq(categories.deleted, false),
+                eq(transactions.deleted, false),
+                sql`${transactions.value} <= 0`,
+                startDate && parsedStartDate
+                    ? sql`${transactions.date} >= ${parsedStartDate}`
+                    : sql`true`,
+                endDate && parsedEndDate
+                    ? sql`${transactions.date} <= ${parsedEndDate}`
+                    : sql`true`,
+                eq(categories.user, user.id),
+                eq(transactions.user, user.id)
+            )
         )
-
-        // End date filter
-        .$if(!!endDate && !!parsedEndDate, (qb) =>
-            qb.where('transaction.date', '<=', parsedEndDate)
-        )
-
-        // Validate category user
-        .where('category.user', '=', user.id)
-
-        // Validate transaction user
-        .where('transaction.user', '=', user.id)
-        .execute()
+        .groupBy(categories.id, categories.name)
 
     return {
         success: true,

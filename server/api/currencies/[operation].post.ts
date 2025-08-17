@@ -1,7 +1,8 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { Currency } from 'kysely-codegen'
+import { db } from '~/../server/db/client'
+import { currencies } from '~/../server/db/schema'
+import { and, eq } from 'drizzle-orm'
+import type { Currency } from '~/../server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -20,11 +21,11 @@ export default defineEventHandler(async (event) => {
     if (operation === 'delete' && id) {
         // Mark record as deleted in the database
         const res = await db
-            .updateTable('currency')
-            .set('deleted', true)
-            .where('id', '=', id)
-            .where('deleted', '=', false)
-            .execute()
+            .update(currencies)
+            .set({ deleted: true })
+            .where(and(eq(currencies.id, id), eq(currencies.deleted, false)))
+            .returning({ id: currencies.id })
+            .then((r) => r[0])
 
         if (!res)
             throw createError({
@@ -45,30 +46,31 @@ export default defineEventHandler(async (event) => {
     switch (operation) {
         case 'duplicate':
         case 'insert': {
-            // Create category record
-            const currency: Omit<Selectable<Currency>, 'id'> = {
+            // Create currency record
+            const currency: Omit<Currency, 'id'> = {
                 placement,
                 symbol,
                 deleted: false
             }
 
-            // Add category to persistent storage
+            // Add currency to persistent storage
             opRes = await db
-                .insertInto('currency')
+                .insert(currencies)
                 .values(currency)
-                .returning('id')
-                .executeTakeFirst()
+                .returning({ id: currencies.id })
+                .then((r) => r[0])
             break
         }
         case 'edit':
-            // Update category in the database
+            // Update currency in the database
             opRes = await db
-                .updateTable('currency')
-                .set('placement', placement)
-                .set('symbol', symbol)
-                .where('id', '=', id)
-                .where('deleted', '=', false)
-                .execute()
+                .update(currencies)
+                .set({ placement, symbol })
+                .where(
+                    and(eq(currencies.id, id), eq(currencies.deleted, false))
+                )
+                .returning({ id: currencies.id })
+                .then((r) => r[0])
             break
         default:
             throw createError({

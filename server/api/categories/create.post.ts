@@ -1,7 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { Category } from 'kysely-codegen'
+import { db } from '~/../server/db/client'
+import { categories } from '~/../server/db/schema'
+import { and, eq, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     const { name, icon } = await readBody(event)
@@ -15,14 +15,16 @@ export default defineEventHandler(async (event) => {
 
     // Check if category already exists
     const res = await db
-        .selectFrom('category')
-        .select(({ fn }) => [fn.count<number>('id').as('cat_count')])
-        .where('user', '=', user.id)
-        .where('deleted', '=', false)
-        .where(({ eb }) =>
-            eb(eb.fn('upper', ['name']), '=', name.toUpperCase())
+        .select({ cat_count: sql<number>`count(*)` })
+        .from(categories)
+        .where(
+            and(
+                eq(categories.user, user.id),
+                eq(categories.deleted, false),
+                sql`upper(${categories.name}) = ${name.toUpperCase()}`
+            )
         )
-        .executeTakeFirst()
+        .then((r) => r[0])
 
     if (!res || res.cat_count > 0)
         throw createError({
@@ -31,18 +33,11 @@ export default defineEventHandler(async (event) => {
         })
 
     // Insert new category
-    const newCategory: Omit<Selectable<Category>, 'id'> = {
-        name,
-        icon: icon || null,
-        user: user.id,
-        deleted: false
-    }
-
     const insertRes = await db
-        .insertInto('category')
-        .values(newCategory)
-        .returning('id')
-        .executeTakeFirst()
+        .insert(categories)
+        .values({ name, icon: icon || null, user: user.id, deleted: false })
+        .returning({ id: categories.id })
+        .then((r) => r[0])
 
     if (!insertRes)
         throw createError({

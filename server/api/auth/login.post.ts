@@ -4,9 +4,10 @@ import {
     hashPassword,
     comparePasswords
 } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { User } from 'kysely-codegen'
+import { db } from '~/../server/db/client'
+import { users } from '~/../server/db/schema'
+import { eq, sql } from 'drizzle-orm'
+import type { User } from '~/../server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read body params
@@ -19,13 +20,10 @@ export default defineEventHandler(async (event) => {
         })
 
     // Validate credentials
-    const user: Selectable<User> = await validateLoginCredentials(
-        username,
-        password
-    )
+    const user: User = await validateLoginCredentials(username, password)
 
     //Remove password from the JWT object
-    const jwtUser: Omit<Selectable<User>, 'password'> = user
+    const { password: _, ...jwtUser } = user
 
     // Generate tokens
     const accessToken = generateToken(jwtUser)
@@ -42,10 +40,10 @@ export default defineEventHandler(async (event) => {
 const getUserCount = async function () {
     // Get amount of users in the platform
     const res = await db
-        .selectFrom('user')
-        .select(({ fn }) => [fn.count<number>('user.id').as('user_count')])
-        .where('deleted', '=', false)
-        .executeTakeFirst()
+        .select({ user_count: sql<number>`count(*)` })
+        .from(users)
+        .where(eq(users.deleted, false))
+        .then((r) => r[0])
 
     return res?.user_count || 0
 }
@@ -83,7 +81,7 @@ const validateLoginCredentials = async function (
  * We also create a user record with these credentials and store it
  */
 const firstLogin = async function () {
-    const user: Omit<Selectable<User>, 'id'> = {
+    const user: Omit<User, 'id'> = {
         first_name: 'Admin',
         last_name: 'Admin',
         username: 'admin',
@@ -96,12 +94,10 @@ const firstLogin = async function () {
 
     // Add user to persistent storage
     const res = await db
-        .insertInto('user')
+        .insert(users)
         .values(user)
-
-        //This is important since Postgresql doesnt support returningId in InsertResult
-        .returning('id')
-        .executeTakeFirst()
+        .returning({ id: users.id })
+        .then((r) => r[0])
 
     if (!res)
         throw createError({

@@ -1,5 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { db } from '~/../server/db/client'
+import { transactions } from '~/../server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     const { id } = await readBody(event)
@@ -12,12 +14,17 @@ export default defineEventHandler(async (event) => {
         })
 
     const res = await db
-        .updateTable('transaction')
-        .set('deleted', true)
-        .where('id', '=', id)
-        .where('user', '=', user.id)
-        .where('deleted', '=', false)
-        .execute()
+        .update(transactions)
+        .set({ deleted: true })
+        .where(
+            and(
+                eq(transactions.id, id),
+                eq(transactions.user, user.id),
+                eq(transactions.deleted, false)
+            )
+        )
+        .returning({ id: transactions.id })
+        .then((r) => r[0])
 
     if (!res)
         throw createError({

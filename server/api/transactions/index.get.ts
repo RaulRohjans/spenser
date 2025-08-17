@@ -1,8 +1,9 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db, applySearchFilter } from '@/utils/dbEngine'
-import type { OrderByDirectionExpression } from 'kysely'
-import type { CustomSQLQueryBuilder } from '~/../types/Data'
+import { db } from '~/../server/db/client'
 import type { TableRow } from '~/../types/Table'
+import { categories, transactions } from '~/../server/db/schema'
+import { and, eq, sql } from 'drizzle-orm'
+import { makeOrderBy, makeSearchCondition } from '~/../server/db/utils'
 
 export default defineEventHandler(async (event) => {
     // Read body params
@@ -14,8 +15,7 @@ export default defineEventHandler(async (event) => {
         sort,
         order,
         startDate,
-        endDate,
-        groupCategory
+        endDate
     } = getQuery(event)
     const user = ensureAuth(event)
 
@@ -25,115 +25,79 @@ export default defineEventHandler(async (event) => {
     const parsedStartDate: Date = new Date(Number(startDate))
     const parsedEndDate: Date = new Date(Number(endDate))
 
-    const addLimits = (qb: CustomSQLQueryBuilder): CustomSQLQueryBuilder => {
-        return (
-            qb
-                // Pager
-                .$if(!!page, (qb) => qb.offset((parsedPage - 1) * parsedLimit))
-
-                // Limit
-                .$if(!!limit, (qb) => qb.limit(parsedLimit))
-
-                // Sort
-                .$if(!!sort, (qb) =>
-                    qb.orderBy(
-                        db.dynamic.ref<string>(`${sort}`),
-                        (order || 'asc') as OrderByDirectionExpression
-                    )
-                )
+    const addSearchWhere = (searchColDefault: string) =>
+        makeSearchCondition(
+            searchColumn ? `main.${searchColumn}` : searchColDefault,
+            search?.toString()
         )
-    }
-
-    const addGlobalFilters = (
-        qb: CustomSQLQueryBuilder
-    ): CustomSQLQueryBuilder => {
-        return (
-            qb
-                // Apply search filter
-                .$call((qb) =>
-                    applySearchFilter(
-                        qb,
-                        search?.toString(),
-                        searchColumn
-                            ? `main.${searchColumn}`
-                            : 'transaction.name'
-                    )
-                )
-        )
-    }
-
-    /*
-     * This function is needed to deal with the group by category filter
-     */
-    const addSelectFields = (
-        qb: CustomSQLQueryBuilder
-    ): CustomSQLQueryBuilder => {
-        if (groupCategory?.toString() === 'true') {
-            return qb
-                .select(({ fn }) => [
-                    fn.max('transaction.id').as('id'),
-                    fn.sum('transaction.value').as('value')
-                ])
-                .$call((qb) =>
-                    qb.groupBy([
-                        'category.id',
-                        'category.name',
-                        'category.icon'
-                    ])
-                )
-        }
-
-        return qb.selectAll('transaction')
-    }
 
     /*
      * In order to use select column alias in the where clause, we need
      * to use a subquery to fetch the data and set the where with the
      * alias in the main select
      */
+    const baseWhere = and(
+        eq(transactions.deleted, false),
+        eq(transactions.user, user.id)
+    )
+    const rangeStart =
+        startDate && parsedStartDate
+            ? sql`${transactions.date} >= ${parsedStartDate}`
+            : undefined
+    const rangeEnd =
+        endDate && parsedEndDate
+            ? sql`${transactions.date} <= ${parsedEndDate}`
+            : undefined
+
     const subQuery = db
-        .selectFrom('transaction')
-        .innerJoin('category', 'category.id', 'transaction.category')
-        .select([
-            'category.icon as category_icon',
-            'category.name as category_name',
-            'category.deleted as category_deleted'
-        ])
-        .$call((qb) => addSelectFields(qb))
-        .where('transaction.deleted', '=', false)
-        .where('transaction.user', '=', user.id)
-
-        // Start date filter
-        .$if(!!startDate && !!parsedStartDate, (qb) =>
-            qb.where('transaction.date', '>=', parsedStartDate)
+        .select({
+            category_icon: categories.icon,
+            category_name: categories.name,
+            category_deleted: categories.deleted,
+            id: transactions.id,
+            value: transactions.value,
+            date: transactions.date,
+            name: transactions.name,
+            category: transactions.category
+        })
+        .from(transactions)
+        .innerJoin(categories, eq(categories.id, transactions.category))
+        .where(
+            and(
+                baseWhere,
+                ...(rangeStart ? [rangeStart] : []),
+                ...(rangeEnd ? [rangeEnd] : [])
+            )
         )
 
-        // End date filter
-        .$if(!!endDate && !!parsedEndDate, (qb) =>
-            qb.where('transaction.date', '<=', parsedEndDate)
-        )
+    const mainSearch = addSearchWhere('transaction.name')
+    const orderBy = makeOrderBy(
+        sort?.toString(),
+        (order as 'asc' | 'desc') || 'asc'
+    )
 
-    const query = db
-        .selectFrom(subQuery.$call((eb) => addLimits(eb)).as('main'))
-        .selectAll()
-
-        // Apply filters
-        .$call((qb) => addGlobalFilters(qb))
+    let query = db.select().from(subQuery.as('main')).$dynamic()
+    if (mainSearch) query = query.where(and(mainSearch))
+    query = query
+        .orderBy(orderBy || sql`id`)
+        .offset((parsedPage - 1) * parsedLimit)
+        .limit(parsedLimit)
     /* ----------------------------------------------------------------- */
 
     // Get total record count
-    const totalRecordsRes = await db
-        .selectFrom(subQuery.as('main'))
-        .select(({ fn }) => [fn.countAll<number>().as('total')])
+    let totalQuery = db
+        .select({ total: sql<number>`count(*)` })
+        .from(subQuery.as('main'))
+        .$dynamic()
 
-        // Apply filters
-        .$call((qb) => addGlobalFilters(qb))
-        .executeTakeFirst()
+    if (mainSearch) totalQuery = totalQuery.where(and(mainSearch))
+
+    const totalRecordsRes = await totalQuery.then((r) => r[0])
 
     // Get rows
     let rowRes
     try {
-        rowRes = await query.execute()
+        rowRes = await query
     } catch (e) {
         console.log((e as Error).message)
     }

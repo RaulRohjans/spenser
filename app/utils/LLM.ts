@@ -1,15 +1,14 @@
 import { OpenAI } from '@langchain/openai'
 import { Ollama } from '@langchain/community/llms/ollama'
 import { ChatPromptTemplate } from '@langchain/core/prompts'
-import type { Selectable } from 'kysely'
-import type { Category, GlobalSettings } from 'kysely-codegen'
+import type { Category, GlobalSettings } from '~/../server/db/schema'
 import type { BaseLLM } from '@langchain/core/language_models/llms'
 import type { LlmTransactionObject } from '~/../types/Data'
 
 export class LLM {
     llm: BaseLLM
 
-    constructor(settings: Selectable<GlobalSettings>) {
+    constructor(settings: GlobalSettings) {
         switch (settings.importer_provider) {
             case 'ollama':
                 this.llm = this.instanceOllama(
@@ -50,10 +49,7 @@ export class LLM {
         return ollamaLlm
     }
 
-    async parseTransactions(
-        transactions: string,
-        categories: Selectable<Category>[]
-    ) {
+    async parseTransactions(transactions: string, categories: Category[]) {
         const prompt = ChatPromptTemplate.fromMessages([
             [
                 'system',

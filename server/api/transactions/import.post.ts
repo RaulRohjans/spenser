@@ -1,7 +1,10 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { Transaction } from 'kysely-codegen'
+import { db } from '~/../server/db/client'
+import {
+    categories,
+    transactions as transactionsTable
+} from '~/../server/db/schema'
+import { and, eq, sql } from 'drizzle-orm'
 import type { LlmTransactionObject } from '~/../types/Data'
 
 export default defineEventHandler(async (event) => {
@@ -20,27 +23,32 @@ export default defineEventHandler(async (event) => {
     // Check if user has access to that category
     const validateCategory = async (categoryId: number) => {
         const res = await db
-            .selectFrom('category')
-            .select(({ fn }) => [fn.count<number>('category.id').as('count')])
-            .where('category.user', '=', user.id)
-            .where('category.id', '=', categoryId)
-            .where('category.deleted', '=', false)
-            .executeTakeFirst()
+            .select({ count: sql<number>`count(*)` })
+            .from(categories)
+            .where(
+                and(
+                    eq(categories.user, user.id),
+                    eq(categories.id, categoryId),
+                    eq(categories.deleted, false)
+                )
+            )
+            .then((r) => r[0])
 
-        if (!res)
-            throw createError({
-                statusCode: 500,
-                statusMessage: `Could not validate new data for category ${categoryId}.`
-            })
-
-        if (res.count == 0)
+        if (!res || res.count == 0)
             throw createError({
                 statusCode: 400,
                 statusMessage: `Invalid category with id ${categoryId}, for the corresponding user.'`
             })
     }
 
-    const insertTransactions: Omit<Selectable<Transaction>, 'id'>[] = []
+    const insertTransactions: Array<{
+        user: number
+        category: number
+        name: string
+        value: string
+        date: Date
+        deleted: boolean
+    }> = []
     for (let i = 0; i < transactions.length; i++) {
         const transaction = transactions[i]
 
@@ -51,7 +59,7 @@ export default defineEventHandler(async (event) => {
             user: user.id,
             category: transaction.category,
             name: transaction.name,
-            value: transaction.value.toString(), //Kysely requires this cast for some reason
+            value: transaction.value.toString(),
             date: new Date(transaction.date), // This comes as a string, needs to be date
             deleted: false
         })
@@ -59,10 +67,9 @@ export default defineEventHandler(async (event) => {
 
     // Insert transactions in db
     const res = await db
-        .insertInto('transaction')
+        .insert(transactionsTable)
         .values(insertTransactions)
-        .returning('id')
-        .execute()
+        .returning({ id: transactionsTable.id })
 
     if (!res || res.length === 0)
         throw createError({

@@ -1,5 +1,5 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { db } from '~/../server/db/client'
 
 export default defineEventHandler(async (event) => {
     // Read params

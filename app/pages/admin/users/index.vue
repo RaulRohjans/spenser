@@ -1,8 +1,9 @@
 <script setup lang="ts">
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
-    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
+    import type { FetchTableDataResult } from '~/../types/Table'
     import type { ModalUserProps } from '@/components/Modal/User.vue'
+    import type { UserRow } from '~/../types/ApiRows'
 
     const { token, data: authData, signOut } = useAuth()
     const { t: $t } = useI18n()
@@ -25,7 +26,7 @@
         return () => ({})
     })
 
-    const editUser = function (row: TableRow) {
+    const editUser = function (row: UserRow) {
         userLoaderObj.value = {
             id: row.id,
             username: row.username,
@@ -39,7 +40,7 @@
         toggleModal()
     }
 
-    const delUser = function (row: TableRow) {
+    const delUser = function (row: UserRow) {
         Notifier.showChooser(
             $t('Delete User'),
             $t('Are you sure you want to delete this user?'),
@@ -74,7 +75,7 @@
         )
     }
 
-    const { cell: actionCell } = useActionColumnCell<TableRow>({
+    const { cell: actionCell } = useActionColumnCell<UserRow>({
         actions: ['edit', 'delete'],
         callbacks: {
             onEdit: editUser,
@@ -82,7 +83,7 @@
         }
     })
 
-    const columns: TableColumn<TableRow>[] = [
+    const columns: TableColumn<UserRow>[] = [
         {
             accessorKey: 'id',
             sortDescFirst: true,
@@ -137,7 +138,7 @@
         status,
         reload,
         resetFilters
-    } = usePaginatedTable<FetchTableDataResult>({
+    } = usePaginatedTable<FetchTableDataResult<UserRow>>({
         key: 'all-users',
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/users`, {

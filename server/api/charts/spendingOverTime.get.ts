@@ -1,6 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import { sql } from 'kysely'
+import { db } from '~/../server/db/client'
+import { sql, and, eq } from 'drizzle-orm'
+import { transactions } from '~/../server/db/schema'
 import type { SpendingOverTimeData } from '~/../types/Chart'
 
 export default defineEventHandler(async (event) => {
@@ -11,24 +12,21 @@ export default defineEventHandler(async (event) => {
     switch (timeframe) {
         case 'month': {
             const monthRes = await db
-                .selectFrom('transaction')
-                .select(() => [
-                    sql<Date>`DATE("transaction"."date")`.as('expense_date'),
-                    sql<number>`SUM("transaction"."value" * -1)`.as(
-                        'expense_value'
-                    )
-                ])
-                .where('transaction.value', '<', '0')
+                .select({
+                    expense_date: sql<Date>`date(${transactions.date})`,
+                    expense_value: sql<number>`sum(${transactions.value} * -1)`
+                })
+                .from(transactions)
                 .where(
-                    sql`"transaction"."date"`,
-                    '>=',
-                    sql`CURRENT_DATE - INTERVAL '30 days'`
+                    and(
+                        sql`${transactions.value} < 0`,
+                        sql`${transactions.date} >= CURRENT_DATE - INTERVAL '30 days'`,
+                        eq(transactions.user, user.id),
+                        eq(transactions.deleted, false)
+                    )
                 )
-                .where('transaction.user', '=', user.id)
-                .where('transaction.deleted', '=', false)
-                .groupBy('transaction.date')
-                .orderBy('transaction.date')
-                .execute()
+                .groupBy(sql`date(${transactions.date})`)
+                .orderBy(sql`date(${transactions.date})`)
 
             return {
                 success: true,
@@ -37,29 +35,27 @@ export default defineEventHandler(async (event) => {
         }
         case 'alltime':
         case 'year': {
+            const whereYear =
+                timeframe === 'year'
+                    ? sql`extract(year from ${transactions.date}) = extract(year from current_date)`
+                    : undefined
+
             const res = await db
-                .selectFrom('transaction')
-                .select(({ fn }) => [
-                    sql<string>`TO_CHAR("transaction"."date", 'YYYY-MM')`.as(
-                        'month'
-                    ),
-                    fn
-                        .sum(sql<number>`"transaction"."value" * -1`)
-                        .as('expense_value')
-                ])
-                .where('transaction.value', '<', '0')
-                .$if(timeframe == 'year', (qb) =>
-                    qb.where(
-                        sql`EXTRACT(YEAR FROM "transaction"."date")`,
-                        '=',
-                        sql`EXTRACT(YEAR FROM CURRENT_DATE)`
+                .select({
+                    month: sql<string>`to_char(${transactions.date}, 'YYYY-MM')`,
+                    expense_value: sql<number>`sum(${transactions.value} * -1)`
+                })
+                .from(transactions)
+                .where(
+                    and(
+                        sql`${transactions.value} < 0`,
+                        eq(transactions.user, user.id),
+                        eq(transactions.deleted, false),
+                        ...(whereYear ? [whereYear] : [])
                     )
                 )
-                .where('transaction.user', '=', user.id)
-                .where('transaction.deleted', '=', false)
-                .groupBy(sql`TO_CHAR("transaction"."date", 'YYYY-MM')`)
-                .orderBy(sql`TO_CHAR("transaction"."date", 'YYYY-MM')`)
-                .execute()
+                .groupBy(sql`to_char(${transactions.date}, 'YYYY-MM')`)
+                .orderBy(sql`to_char(${transactions.date}, 'YYYY-MM')`)
 
             return {
                 success: true,

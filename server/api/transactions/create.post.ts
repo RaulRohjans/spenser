@@ -1,7 +1,6 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { Transaction } from 'kysely-codegen'
+import { db } from '~/../server/db/client'
+import { transactions } from '~/../server/db/schema'
 import { validateCategory } from '../../utils/validateCategory'
 
 export default defineEventHandler(async (event) => {
@@ -16,20 +15,18 @@ export default defineEventHandler(async (event) => {
 
     await validateCategory(user.id, category)
 
-    const transactionRecord: Omit<Selectable<Transaction>, 'id'> = {
-        user: user.id,
-        category,
-        name,
-        value,
-        date,
-        deleted: false
-    }
-
     const opRes = await db
-        .insertInto('transaction')
-        .values(transactionRecord)
-        .returning('id')
-        .executeTakeFirst()
+        .insert(transactions)
+        .values({
+            user: user.id,
+            category,
+            name,
+            value,
+            date,
+            deleted: false
+        })
+        .returning({ id: transactions.id })
+        .then((r) => r[0])
 
     if (!opRes)
         throw createError({

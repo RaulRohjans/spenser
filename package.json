@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "db:gen && nuxt build",
+        "build": "nuxt build",
         "dev": "nuxt dev",
         "generate": "nuxt generate",
         "preview": "nuxt preview",
@@ -12,7 +12,10 @@
         "lint:type": "tsc --noEmit",
         "style": "prettier . --check",
         "style:fix": "prettier --write --list-different .",
-        "db:gen": "kysely-codegen"
+        "db:generate": "drizzle-kit generate",
+        "db:push": "drizzle-kit push",
+        "db:migrate": "drizzle-kit migrate",
+        "db:seed": "tsx server/db/seed.ts"
     },
     "devDependencies": {
         "@iconify-json/heroicons": "^1.2.2",
@@ -35,9 +38,10 @@
         "eslint": "^9.4.0",
         "eslint-config-prettier": "^10.1.2",
         "eslint-plugin-prettier": "^5.2.6",
-        "kysely-codegen": "^0.18.0",
+        "drizzle-kit": "^0.31.4",
         "nuxt": "^4.0.3",
         "prettier": "^3.3.0",
+        "tsx": "^4.16.2",
         "sass-embedded": "^1.90.0",
         "typescript": "^5.4.5"
     },
@@ -53,7 +57,7 @@
         "formidable": "^3.5.1",
         "h3-formidable": "^1.0.0",
         "jsonwebtoken": "^9.0.2",
-        "kysely": "^0.28.0",
+        "drizzle-orm": "^0.44.4",
         "langchain": "^0.3.0",
         "pg": "^8.11.5",
         "pinia": "^3.0.2",

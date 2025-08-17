@@ -1,5 +1,8 @@
-import { db } from '@/utils/dbEngine'
+import { db } from '~/../server/db/client'
 import { ensureAuth } from '@/utils/authFunctions'
+import { budgets } from '~/../server/db/schema'
+import { and, eq } from 'drizzle-orm'
+import { validateCategory } from '../../utils/validateCategory'
 
 export default defineEventHandler(async (event) => {
     const { id, name, category, value, period } = await readBody(event)
@@ -14,16 +17,25 @@ export default defineEventHandler(async (event) => {
 
     if (category) await validateCategory(user.id, category)
 
+    const setObj: Record<string, unknown> = {
+        category: category ?? null,
+        value,
+        period
+    }
+    if (name) setObj.name = name
+
     const opRes = await db
-        .updateTable('budget')
-        .$if(!!name, (qb) => qb.set('name', name))
-        .set('category', category ?? null)
-        .set('value', value)
-        .set('period', period)
-        .where('id', '=', id)
-        .where('user', '=', user.id)
-        .where('deleted', '=', false)
-        .execute()
+        .update(budgets)
+        .set(setObj)
+        .where(
+            and(
+                eq(budgets.id, id),
+                eq(budgets.user, user.id),
+                eq(budgets.deleted, false)
+            )
+        )
+        .returning({ id: budgets.id })
+        .then((r) => r[0])
 
     if (!opRes)
         throw createError({

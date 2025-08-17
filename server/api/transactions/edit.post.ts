@@ -1,6 +1,8 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { db } from '~/../server/db/client'
 import { validateCategory } from '../../utils/validateCategory'
+import { transactions } from '~/../server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     const { id, category, name, value, date } = await readBody(event)
@@ -15,15 +17,17 @@ export default defineEventHandler(async (event) => {
     await validateCategory(user.id, category)
 
     const res = await db
-        .updateTable('transaction')
-        .set('category', category)
-        .set('name', name)
-        .set('value', value)
-        .set('date', date)
-        .where('id', '=', id)
-        .where('user', '=', user.id)
-        .where('deleted', '=', false)
-        .execute()
+        .update(transactions)
+        .set({ category, name, value, date })
+        .where(
+            and(
+                eq(transactions.id, id),
+                eq(transactions.user, user.id),
+                eq(transactions.deleted, false)
+            )
+        )
+        .returning({ id: transactions.id })
+        .then((r) => r[0])
 
     if (!res)
         throw createError({

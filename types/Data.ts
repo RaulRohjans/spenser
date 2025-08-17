@@ -1,5 +1,4 @@
-import type { SelectQueryBuilder, Selectable } from 'kysely'
-import type { GlobalSettings } from 'kysely-codegen'
+import type { GlobalSettings } from '~/../server/db/schema'
 
 export interface UserSettingsObject {
     id: number
@@ -9,19 +8,14 @@ export interface UserSettingsObject {
     placement: string
 }
 
-// This has to be created here since Nuxt doesnt support Kysely imports
-// on the client side. It throws a "global is undefined" error.
-export type GlobalSettingsObject = Selectable<GlobalSettings>
+export type GlobalSettingsObject = GlobalSettings
 
 export interface BudgetDataObject {
     id: number
     user: number
     category: number | null
     name: string | null
-
-    // This needs to be string here because Kysely is stupid and converts postgresql decimal to string
     value: number | string
-
     period: 'daily' | 'monthly' | 'quarterly' | 'semi-annual' | 'yearly'
     order: number
     category_name: string | null
@@ -36,9 +30,6 @@ export interface LlmTransactionObject {
     value: number
     date: string //This value is meant to later be parsed into a Date format
 }
-
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-export type CustomSQLQueryBuilder = SelectQueryBuilder<any, any, any>
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export type EmitEventCallback = (...args: any[]) => void

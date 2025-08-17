@@ -1,5 +1,7 @@
-import { db } from '@/utils/dbEngine'
+import { db } from '~/../server/db/client'
 import { ensureAuth } from '@/utils/authFunctions'
+import { budgets } from '~/../server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     const { id } = await readBody(event)
@@ -12,12 +14,17 @@ export default defineEventHandler(async (event) => {
         })
 
     const res = await db
-        .updateTable('budget')
-        .set('deleted', true)
-        .where('id', '=', id)
-        .where('user', '=', user.id)
-        .where('deleted', '=', false)
-        .execute()
+        .update(budgets)
+        .set({ deleted: true })
+        .where(
+            and(
+                eq(budgets.id, id),
+                eq(budgets.user, user.id),
+                eq(budgets.deleted, false)
+            )
+        )
+        .returning({ id: budgets.id })
+        .then((r) => r[0])
 
     if (!res)
         throw createError({

@@ -1,5 +1,7 @@
 import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { db } from '~/../server/db/client'
+import { transactions, categories } from '~/../server/db/schema'
+import { and, eq } from 'drizzle-orm'
 import type { TableRow } from '~/../types/Table'
 
 export default defineEventHandler(async (event) => {
@@ -13,22 +15,26 @@ export default defineEventHandler(async (event) => {
         })
 
     const result = await db
-        .selectFrom('transaction')
-        .innerJoin('category', 'category.id', 'transaction.category')
-        .select([
-            'transaction.id',
-            'transaction.name',
-            'transaction.value',
-            'transaction.date',
-            'transaction.category',
-            'category.name as category_name',
-            'category.icon as category_icon',
-            'category.deleted as category_deleted'
-        ])
-        .where('transaction.id', '=', Number.parseInt(id))
-        .where('transaction.user', '=', user.id)
-        .where('transaction.deleted', '=', false)
-        .executeTakeFirst()
+        .select({
+            id: transactions.id,
+            name: transactions.name,
+            value: transactions.value,
+            date: transactions.date,
+            category: transactions.category,
+            category_name: categories.name,
+            category_icon: categories.icon,
+            category_deleted: categories.deleted
+        })
+        .from(transactions)
+        .innerJoin(categories, eq(categories.id, transactions.category))
+        .where(
+            and(
+                eq(transactions.id, Number.parseInt(id)),
+                eq(transactions.user, user.id),
+                eq(transactions.deleted, false)
+            )
+        )
+        .then((r) => r[0])
 
     if (!result)
         throw createError({

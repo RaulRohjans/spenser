@@ -3,7 +3,9 @@ import {
     ensureAuth,
     hashPassword
 } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { db } from '~/../server/db/client'
+import { users } from '~/../server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     // Read body params
@@ -18,11 +20,10 @@ export default defineEventHandler(async (event) => {
 
     // Get user password
     const res = await db
-        .selectFrom('user')
-        .select('password')
-        .where('id', '=', user.id)
-        .where('deleted', '=', false)
-        .executeTakeFirst()
+        .select({ password: users.password })
+        .from(users)
+        .where(and(eq(users.id, user.id), eq(users.deleted, false)))
+        .then((r) => r[0])
 
     if (!res)
         throw createError({
@@ -39,13 +40,13 @@ export default defineEventHandler(async (event) => {
         })
 
     const updateRes = await db
-        .updateTable('user')
-        .set('password', hashPassword(password))
-        .where('user.id', '=', user.id)
-        .where('deleted', '=', false)
-        .executeTakeFirst()
+        .update(users)
+        .set({ password: hashPassword(password) })
+        .where(and(eq(users.id, user.id), eq(users.deleted, false)))
+        .returning({ id: users.id })
+        .then((r) => r[0])
 
-    if (updateRes.numUpdatedRows < 1)
+    if (!updateRes)
         throw createError({
             statusCode: 500,
             statusMessage: 'Could not update the password on the database.'

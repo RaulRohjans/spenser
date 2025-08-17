@@ -1,8 +1,9 @@
 <script setup lang="ts">
     import { UIcon } from '#components'
-    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
+    import type { FetchTableDataResult } from '~/../types/Table'
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
+    import type { CategoryRow } from '~/../types/ApiRows'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
@@ -26,7 +27,7 @@
         return () => ({})
     })
 
-    const delCategory = function (row: TableRow) {
+    const delCategory = function (row: CategoryRow) {
         Notifier.showChooser(
             $t('Delete Category'),
             $t('Are you sure you want to delete this category?'),
@@ -59,7 +60,7 @@
         )
     }
 
-    const { cell: actionCell } = useActionColumnCell<TableRow>({
+    const { cell: actionCell } = useActionColumnCell<CategoryRow>({
         actions: ['edit', 'duplicate', 'delete'],
         callbacks: {
             onEdit: (row) => router.push(`/categories/edit/${row.id}`),
@@ -69,7 +70,7 @@
         }
     })
 
-    const columns: TableColumn<TableRow>[] = [
+    const columns: TableColumn<CategoryRow>[] = [
         {
             accessorKey: 'id',
             sortDescFirst: true,
@@ -115,7 +116,7 @@
         status,
         reload,
         resetFilters
-    } = usePaginatedTable<FetchTableDataResult>({
+    } = usePaginatedTable<FetchTableDataResult<CategoryRow>>({
         key: 'all-categories',
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/categories`, {

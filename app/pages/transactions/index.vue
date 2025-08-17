@@ -1,8 +1,9 @@
 <script setup lang="ts">
     import { UIcon } from '#components'
     import type { NuxtError } from '#app'
-    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
+    import type { FetchTableDataResult } from '~/../types/Table'
     import type { TableColumn } from '@nuxt/ui'
+    import type { TransactionRow } from '~/../types/ApiRows'
 
     // Basic Setup
     const { token } = useAuth()
@@ -27,7 +28,7 @@
         return () => ({})
     })
 
-    const delTransaction = function (row: TableRow) {
+    const delTransaction = function (row: TransactionRow) {
         Notifier.showChooser(
             $t('Delete Transaction'),
             $t('Are you sure you want to delete this transaction?'),
@@ -60,7 +61,7 @@
         )
     }
 
-    const { cell: actionCell } = useActionColumnCell<TableRow>({
+    const { cell: actionCell } = useActionColumnCell<TransactionRow>({
         actions: ['edit', 'duplicate', 'delete'],
         callbacks: {
             onEdit: (row) => router.push(`/transactions/edit/${row.id}`),
@@ -70,7 +71,7 @@
         }
     })
 
-    const columns: TableColumn<TableRow>[] = [
+    const columns: TableColumn<TransactionRow>[] = [
         {
             accessorKey: 'id',
             sortDescFirst: true,
@@ -153,7 +154,7 @@
         status,
         reload,
         resetFilters
-    } = usePaginatedTable<FetchTableDataResult>({
+    } = usePaginatedTable<FetchTableDataResult<TransactionRow>>({
         key: 'all-transactions',
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/transactions`, {
