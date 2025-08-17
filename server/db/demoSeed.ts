@@ -8,7 +8,7 @@ import {
     userPreferences,
     budgets
 } from './schema'
-import { hashPassword } from '../utils/auth'
+import { hashPassword } from '~~/server/utils/auth'
 
 type CategorySeed = {
     name: string
