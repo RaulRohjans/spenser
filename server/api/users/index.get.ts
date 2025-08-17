@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
         success: true,
         data: {
             totalRecordCount: Number(totalRecordsRes.total),
-            rows: rowRes || ([] as TableRow[])
+            rows: rowRes
         }
     }
 })
