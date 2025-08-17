@@ -15,6 +15,19 @@ export default defineEventHandler(async (event) => {
 
     await validateCategory(user.id, category)
 
+    // Coerce incoming date (string/number) into a proper Date for Drizzle
+    let parsedDate: Date
+    if (date instanceof Date) parsedDate = date
+    else if (typeof date === 'string' || typeof date === 'number')
+        parsedDate = new Date(date)
+    else parsedDate = new Date(NaN)
+
+    if (Number.isNaN(parsedDate.getTime()))
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Invalid date format.'
+        })
+
     const opRes = await db
         .insert(transactions)
         .values({
@@ -22,7 +35,7 @@ export default defineEventHandler(async (event) => {
             category,
             name,
             value,
-            date,
+            date: parsedDate,
             deleted: false
         })
         .returning({ id: transactions.id })

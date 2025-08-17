@@ -16,9 +16,22 @@ export default defineEventHandler(async (event) => {
 
     await validateCategory(user.id, category)
 
+    // Coerce incoming date to a proper Date object
+    let parsedDate: Date
+    if (date instanceof Date) parsedDate = date
+    else if (typeof date === 'string' || typeof date === 'number')
+        parsedDate = new Date(date)
+    else parsedDate = new Date(NaN)
+
+    if (Number.isNaN(parsedDate.getTime()))
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'Invalid date format.'
+        })
+
     const res = await db
         .update(transactions)
-        .set({ category, name, value, date })
+        .set({ category, name, value, date: parsedDate })
         .where(
             and(
                 eq(transactions.id, id),
