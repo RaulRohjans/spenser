@@ -71,7 +71,7 @@
         }
     })
 
-    const columns: TableColumn<TransactionRow>[] = [
+    const baseColumns: TableColumn<TransactionRow>[] = [
         {
             accessorKey: 'id',
             sortDescFirst: true,
@@ -144,6 +144,59 @@
         }
     ]
 
+    // Columns to display when grouping by category
+    const groupedColumns: TableColumn<TransactionRow>[] = [
+        {
+            accessorKey: 'id',
+            sortDescFirst: true,
+            header: ({ column }) => columnSorter.value(column, '#'),
+            meta: { alias: 'Id' }
+        },
+        {
+            accessorKey: 'value',
+            header: ({ column }) => columnSorter.value(column, $t('Value')),
+            cell: ({ row }) => {
+                const value = Number(row.getValue('value'))
+
+                const formatted = formatCurrencyValue(value)
+                const colorClass = getTransactionColor(value)
+
+                return h('span', { class: colorClass }, formatted)
+            },
+            meta: { alias: $t('Value') }
+        },
+        {
+            accessorKey: 'category_name',
+            header: ({ column }) => columnSorter.value(column, $t('Category')),
+            cell: ({ row }) => {
+                const name = row.original.category_name
+                const icon = row.original.category_icon
+
+                return h('div', { class: 'flex flex-row items-center gap-3' }, [
+                    h(
+                        'div',
+                        undefined,
+                        icon
+                            ? [
+                                  h(UIcon, {
+                                      name: getHeroIconName(icon),
+                                      class: 'h-5 w-5',
+                                      dynamic: true
+                                  })
+                              ]
+                            : []
+                    ),
+                    h('span', name || '-')
+                ])
+            },
+            meta: { alias: $t('Category') }
+        }
+    ]
+
+    const visibleColumns = computed(() =>
+        filters.groupCategory ? groupedColumns : baseColumns
+    )
+
     const {
         page,
         limit: itemsPerPage,
@@ -188,6 +241,14 @@
             page.value = 1
         },
         { deep: true }
+    )
+
+    // Ensure search column matches available columns when toggling grouping
+    watch(
+        () => filters.groupCategory,
+        (isGrouped) => {
+            filters.searchColumn = isGrouped ? 'category_name' : 'name'
+        }
     )
 
     useHead({
@@ -239,6 +300,7 @@
                         class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
                         <SColumnToggleMenu
                             :table-api="table?.tableApi"
+                            :disabled-columns="filters.groupCategory ? ['name', 'date', 'actions'] : []"
                             @reset="resetFilters" />
 
                         <div class="flex flex-col sm:flex-row gap-2">
@@ -269,7 +331,7 @@
                 <UTable
                     ref="table"
                     :data="tableData?.data?.rows ?? []"
-                    :columns="columns"
+                    :columns="visibleColumns"
                     sticky
                     :loading="status === 'pending'"
                     class="w-full" />
