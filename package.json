@@ -13,8 +13,8 @@
         "style": "prettier . --check",
         "style:fix": "prettier --write --list-different .",
         "db:generate": "drizzle-kit generate",
-        "db:push": "drizzle-kit push",
         "db:migrate": "drizzle-kit migrate",
+        "db:push": "drizzle-kit push",
         "db:seed": "tsx server/db/seed.ts"
     },
     "devDependencies": {
