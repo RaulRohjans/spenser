@@ -88,7 +88,7 @@
         if (!open) emit('close')
     }
 
-    const toggleSettings = (open: boolean) => {
+    const toggleChangePassword = (open: boolean) => {
         isChangePasswordOpen.value = open
         isSettingsModelOpen.value = !open
     }
@@ -194,7 +194,7 @@
                 </UFormField>
 
                 <div class="flex flex-row justify-between">
-                    <UButton variant="soft" @click="toggleSettings(true)">
+                    <UButton variant="soft" @click="toggleChangePassword(true)">
                         {{ $t('Change Password') }}
                     </UButton>
 
@@ -209,9 +209,9 @@
     <UModal
         :open="isChangePasswordOpen"
         :title="$t('Change Password')"
-        @update:open="toggleSettings">
+        @update:open="toggleChangePassword">
         <template #body>
-            <ModalChangePassword />
+            <ModalChangePassword @close-modal="toggleChangePassword(false)" />
         </template>
     </UModal>
 </template>

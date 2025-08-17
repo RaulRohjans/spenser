@@ -7,6 +7,10 @@
     const { t: $t } = useI18n()
     const error: Ref<undefined | string> = ref()
 
+    const emit = defineEmits<{
+        (event: 'close-modal'): void
+    }>()
+
     const schema = z
         .object({
             new_password: z
@@ -44,6 +48,7 @@
                     )
 
                 await refresh()
+                emit('close-modal')
 
                 Notifier.showAlert(
                     $t('Password updated successfully!'),
