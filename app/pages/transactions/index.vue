@@ -300,7 +300,11 @@
                         class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
                         <SColumnToggleMenu
                             :table-api="table?.tableApi"
-                            :disabled-columns="filters.groupCategory ? ['name', 'date', 'actions'] : []"
+                            :disabled-columns="
+                                filters.groupCategory
+                                    ? ['name', 'date', 'actions']
+                                    : []
+                            "
                             @reset="resetFilters" />
 
                         <div class="flex flex-col sm:flex-row gap-2">

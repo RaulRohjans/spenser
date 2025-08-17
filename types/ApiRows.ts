@@ -33,5 +33,3 @@ export interface CurrencyRow {
     symbol: string
     placement: string
 }
-
-

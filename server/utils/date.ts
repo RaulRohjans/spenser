@@ -24,7 +24,10 @@ export function parseDateOrThrow(input: unknown, fieldName = 'date'): Date {
     })
 }
 
-export function resolveTzOffsetMinutes(input: unknown, fallback: number = 0): number {
+export function resolveTzOffsetMinutes(
+    input: unknown,
+    fallback: number = 0
+): number {
     // If client provides numeric offset explicitly, trust it
     if (typeof input === 'number') return clampOffset(input)
 
@@ -35,7 +38,8 @@ export function resolveTzOffsetMinutes(input: unknown, fallback: number = 0): nu
         if (isoOffsetMatch) {
             const off = isoOffsetMatch[1]
             if (off === 'Z') return 0
-            const [sign, hh, mm] = off.replace(':', '').match(/^([+-])(\d{2})(\d{2})$/) ?? []
+            const [sign, hh, mm] =
+                off.replace(':', '').match(/^([+-])(\d{2})(\d{2})$/) ?? []
             if (sign && hh && mm) {
                 const total = Number(hh) * 60 + Number(mm)
                 return clampOffset(sign === '-' ? -total : total)
@@ -45,7 +49,8 @@ export function resolveTzOffsetMinutes(input: unknown, fallback: number = 0): nu
 
     // If Date object, derive offset based on local environment at that instant
     if (input instanceof Date) {
-        if (!Number.isNaN(input.getTime())) return clampOffset(-input.getTimezoneOffset())
+        if (!Number.isNaN(input.getTime()))
+            return clampOffset(-input.getTimezoneOffset())
     }
 
     return clampOffset(fallback)
@@ -63,7 +68,9 @@ export function coerceDateAndOffset(
     tzOffsetMinutesInput?: unknown
 ): { date: Date; tz_offset_minutes: number } {
     // If input is the shared DateTimeWithOffset object
-    const maybe = input as { date?: unknown; tzOffsetMinutes?: number } | undefined
+    const maybe = input as
+        | { date?: unknown; tzOffsetMinutes?: number }
+        | undefined
     if (
         maybe &&
         Object.prototype.hasOwnProperty.call(maybe, 'date') &&
@@ -71,7 +78,9 @@ export function coerceDateAndOffset(
     ) {
         const date = parseDateOrThrow(maybe.date)
         const tz_offset_minutes = clampOffset(
-            typeof maybe.tzOffsetMinutes === 'number' ? maybe.tzOffsetMinutes : 0
+            typeof maybe.tzOffsetMinutes === 'number'
+                ? maybe.tzOffsetMinutes
+                : 0
         )
         return { date, tz_offset_minutes }
     }
@@ -84,5 +93,3 @@ export function coerceDateAndOffset(
     )
     return { date, tz_offset_minutes }
 }
-
-

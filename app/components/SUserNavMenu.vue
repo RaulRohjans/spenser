@@ -17,7 +17,9 @@
             $t('Are you sure you want to logout?'),
             () => {
                 // Suppress the next auto login once, so user can log into a different account
-                try { sessionStorage.setItem('demoAutoSuppressOnce', '1') } catch {}
+                try {
+                    sessionStorage.setItem('demoAutoSuppressOnce', '1')
+                } catch {}
                 signOut({ callbackUrl: '/login' })
             }
         )

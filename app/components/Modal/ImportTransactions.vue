@@ -132,7 +132,10 @@
             body: {
                 transactions: vTransactions.value,
                 // Provide a request-level DateTimeWithOffset config
-                datetime: { tzOffsetMinutes: buildDateTimeWithOffset(new Date()).tzOffsetMinutes }
+                datetime: {
+                    tzOffsetMinutes: buildDateTimeWithOffset(new Date())
+                        .tzOffsetMinutes
+                }
             }
         })
             .then((data) => {

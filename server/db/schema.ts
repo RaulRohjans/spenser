@@ -95,5 +95,3 @@ export type NewGlobalSettings = typeof globalSettings.$inferInsert
 
 export type Budget = typeof budgets.$inferSelect
 export type NewBudget = typeof budgets.$inferInsert
-
-

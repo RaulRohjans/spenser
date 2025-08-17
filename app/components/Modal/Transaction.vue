@@ -48,33 +48,34 @@
 
     // Fetch transaction
     if (props.mode != 'create') {
-        const { data: transaction } =
-            await useLazyAsyncData<FetchTableSingleDataResult<TransactionRow>>(
-                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
-                `transaction-${props.mode}-${props.id}`,
-                () =>
-                    $fetch(`/api/transactions/${props.id}`, {
-                        method: 'GET',
-                        headers: buildRequestHeaders(token.value)
-                    }),
-                {
-                    default: () => ({
-                        success: false,
-                        data: {
-                            id: 0,
-                            name: null,
-                            value: 0,
-                            date: new Date(),
-                            category: 0,
-                            category_name: null,
-                            category_icon: null,
-                            category_deleted: false,
-                            tz_offset_minutes: 0
-                        }
-                    }),
-                    watch: [() => props.id, () => props.mode]
-                }
-            )
+        const { data: transaction } = await useLazyAsyncData<
+            FetchTableSingleDataResult<TransactionRow>
+        >(
+            // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+            `transaction-${props.mode}-${props.id}`,
+            () =>
+                $fetch(`/api/transactions/${props.id}`, {
+                    method: 'GET',
+                    headers: buildRequestHeaders(token.value)
+                }),
+            {
+                default: () => ({
+                    success: false,
+                    data: {
+                        id: 0,
+                        name: null,
+                        value: 0,
+                        date: new Date(),
+                        category: 0,
+                        category_name: null,
+                        category_icon: null,
+                        category_deleted: false,
+                        tz_offset_minutes: 0
+                    }
+                }),
+                watch: [() => props.id, () => props.mode]
+            }
+        )
 
         // A watch is needed here because for some reason, using a then is still
         // not enough to make sure the data is loaded after the request is made

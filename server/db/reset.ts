@@ -11,7 +11,9 @@ async function truncateAll() {
     // Safety: only operate in DEMO mode
     const isDemo = String(process.env.DEMO || '').toLowerCase() === 'true'
     if (!isDemo) {
-        console.error('[reset] DEMO mode is not enabled; aborting to avoid data loss')
+        console.error(
+            '[reset] DEMO mode is not enabled; aborting to avoid data loss'
+        )
         return
     }
 
@@ -37,5 +39,3 @@ async function main() {
 }
 
 main().then(() => process.exit(process.exitCode || 0))
-
-

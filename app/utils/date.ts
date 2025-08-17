@@ -11,5 +11,3 @@ export function buildDateTimeWithOffset(
             : -date.getTimezoneOffset()
     return { date, tzOffsetMinutes: offset }
 }
-
-

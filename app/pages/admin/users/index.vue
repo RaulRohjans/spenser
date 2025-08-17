@@ -60,10 +60,14 @@
                             )
 
                         if (row.id == authData.value?.id) {
-                            try { sessionStorage.setItem('demoAutoSuppressOnce', '1') } catch {}
+                            try {
+                                sessionStorage.setItem(
+                                    'demoAutoSuppressOnce',
+                                    '1'
+                                )
+                            } catch {}
                             signOut({ callbackUrl: '/login' })
-                        }
-                        else reload()
+                        } else reload()
 
                         Notifier.showAlert(
                             $t('User deleted successfully!'),
