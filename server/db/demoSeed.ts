@@ -29,7 +29,7 @@ function endOfMonth(date: Date): Date {
 
 function lastBusinessDayOfMonth(date: Date): Date {
     const eom = endOfMonth(date)
-    let day = eom.getUTCDay()
+    const day = eom.getUTCDay()
     const d = new Date(eom)
     // 0 = Sun, 6 = Sat
     if (day === 0) d.setUTCDate(d.getUTCDate() - 2)
