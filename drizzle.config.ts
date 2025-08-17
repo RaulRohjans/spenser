@@ -10,8 +10,7 @@ export default {
         port: Number(process.env.DB_PORT || '5432'),
         user: process.env.DB_USER as string,
         password: process.env.DB_PASSWORD as string,
-        database: process.env.DB_NAME as string
+        database: process.env.DB_NAME as string,
+        ssl: false
     }
 } satisfies Config
-
-
