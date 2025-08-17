@@ -120,7 +120,7 @@
                               ]
                             : []
                     ),
-                    h('span', name)
+                    h('span', name!)
                 ])
             },
             meta: { alias: $t('Category') }
