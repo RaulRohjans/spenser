@@ -31,6 +31,7 @@
         <UPagination
             :items-per-page="itemsPerPage"
             :total="props.total"
+            :page="page"
             @update:page="(p) => (page = p)" />
     </div>
 </template>

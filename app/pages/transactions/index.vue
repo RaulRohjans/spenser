@@ -181,6 +181,15 @@
         watch: [] // optional: other filters to watch
     })
 
+    // When any of the filter change make the page 1
+    watch(
+        filters,
+        () => {
+            page.value = 1
+        },
+        { deep: true }
+    )
+
     useHead({
         title: `Spenser | ${$t('Transactions')}`
     })
