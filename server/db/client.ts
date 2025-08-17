@@ -10,7 +10,8 @@ let dbPassword: string | undefined
 let dbPort: string | undefined
 
 try {
-    const cfg = typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : null
+    const cfg =
+        typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : null
     if (cfg) {
         dbName = cfg.dbName
         dbHost = cfg.dbHost
@@ -18,7 +19,7 @@ try {
         dbPassword = cfg.dbPassword
         dbPort = cfg.dbPort
     }
-} catch (_) {
+} catch {
     // ignore, fallback to env
 }
 

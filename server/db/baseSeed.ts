@@ -1,7 +1,7 @@
 import { and, eq, sql } from 'drizzle-orm'
 import { db } from './client'
 import { users, currencies } from './schema'
-import { hashPassword } from '~~/server/utils/auth'
+import { hashPassword } from '../utils/auth'
 
 export async function ensureAdminUser() {
     const [{ count }] = await db
