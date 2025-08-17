@@ -3,13 +3,13 @@ import { db } from '~~/server/db/client'
 import { validateCategory } from '../../utils/validateCategory'
 import { transactions } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
-import { parseDateOrThrow } from '~~/server/utils/date'
+import { coerceDateAndOffset } from '~~/server/utils/date'
 
 export default defineEventHandler(async (event) => {
-    const { id, category, name, value, date } = await readBody(event)
+    const { id, category, name, value, datetime } = await readBody(event)
     const user = ensureAuth(event)
 
-    if (!id || !category || !value || !date)
+    if (!id || !category || !value || !datetime)
         throw createError({
             statusCode: 400,
             statusMessage: 'One or more mandatory fields are missing.'
@@ -17,11 +17,11 @@ export default defineEventHandler(async (event) => {
 
     await validateCategory(user.id, category)
 
-    const parsedDate = parseDateOrThrow(date)
+    const { date: parsedDate, tz_offset_minutes } = coerceDateAndOffset(datetime)
 
     const res = await db
         .update(transactions)
-        .set({ category, name, value, date: parsedDate })
+        .set({ category, name, value, date: parsedDate, tz_offset_minutes })
         .where(
             and(
                 eq(transactions.id, id),

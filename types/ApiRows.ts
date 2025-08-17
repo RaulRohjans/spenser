@@ -9,6 +9,7 @@ export interface TransactionRow {
     category_name: string | null
     category_icon: string | null
     category_deleted: boolean
+    tz_offset_minutes?: number
 }
 
 export interface CategoryRow {

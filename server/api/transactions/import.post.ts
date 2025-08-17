@@ -6,12 +6,14 @@ import {
 } from '~~/server/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
 import type { LlmTransactionObject } from '~~/types/Data'
-import { parseDateOrThrow } from '~~/server/utils/date'
+import { coerceDateAndOffset } from '~~/server/utils/date'
 
 export default defineEventHandler(async (event) => {
     // Read params
-    const { transactions } = await readBody<{
+    const { transactions, tzOffsetMinutes, datetime } = await readBody<{
         transactions: LlmTransactionObject[]
+        tzOffsetMinutes?: number
+        datetime?: { tzOffsetMinutes?: number }
     }>(event)
     const user = ensureAuth(event)
 
@@ -48,6 +50,7 @@ export default defineEventHandler(async (event) => {
         name: string
         value: string
         date: Date
+        tz_offset_minutes: number
         deleted: boolean
     }> = []
     for (let i = 0; i < transactions.length; i++) {
@@ -56,12 +59,17 @@ export default defineEventHandler(async (event) => {
         // Validate transaction category
         await validateCategory(transaction.category)
 
+        const { date: parsedDate, tz_offset_minutes } = coerceDateAndOffset(
+            { date: transaction.date, tzOffsetMinutes: datetime?.tzOffsetMinutes ?? tzOffsetMinutes }
+        )
+
         insertTransactions.push({
             user: user.id,
             category: transaction.category,
             name: transaction.name,
             value: transaction.value.toString(),
-            date: parseDateOrThrow(transaction.date),
+            date: parsedDate,
+            tz_offset_minutes,
             deleted: false
         })
     }

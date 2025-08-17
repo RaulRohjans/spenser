@@ -5,6 +5,7 @@
     import type { SelectOption } from '~~/types/Options'
     import type { FetchTableDataResult, TableRow } from '~~/types/Table'
     import type { CategoryRow } from '~~/types/ApiRows'
+    import { buildDateTimeWithOffset } from '~~/app/utils/date'
 
     export type ModalBudgetProps = {
         /**
@@ -128,7 +129,11 @@
         $fetch(`/api/transactions/import`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
-            body: { transactions: vTransactions.value }
+            body: {
+                transactions: vTransactions.value,
+                // Provide a request-level DateTimeWithOffset config
+                datetime: { tzOffsetMinutes: buildDateTimeWithOffset(new Date()).tzOffsetMinutes }
+            }
         })
             .then((data) => {
                 if (!data.success)

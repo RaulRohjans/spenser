@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) => {
             value: transactions.value,
             date: transactions.date,
             category: transactions.category,
+            tz_offset_minutes: transactions.tz_offset_minutes,
             category_name: categories.name,
             category_icon: categories.icon,
             category_deleted: categories.deleted

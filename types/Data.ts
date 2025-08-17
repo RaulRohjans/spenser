@@ -31,5 +31,10 @@ export interface LlmTransactionObject {
     date: string //This value is meant to later be parsed into a Date format
 }
 
+export interface DateTimeWithOffset {
+    date: string | number | Date
+    tzOffsetMinutes: number
+}
+
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export type EmitEventCallback = (...args: any[]) => void

@@ -1,0 +1,1 @@
+ALTER TABLE "transaction" ADD COLUMN "tz_offset_minutes" smallint DEFAULT 0 NOT NULL;

@@ -5,7 +5,8 @@ import {
     boolean,
     integer,
     timestamp,
-    numeric
+    numeric,
+    smallint
 } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('user', {
@@ -35,6 +36,7 @@ export const transactions = pgTable('transaction', {
     name: varchar('name', { length: 150 }),
     value: numeric('value', { precision: 12, scale: 2 }).notNull(),
     date: timestamp('date', { mode: 'date' }).notNull(),
+    tz_offset_minutes: smallint('tz_offset_minutes').notNull().default(0),
     deleted: boolean('deleted').notNull().default(false)
 })
 

@@ -51,6 +51,7 @@ export default defineEventHandler(async (event) => {
         | 'category_name'
         | 'category_icon'
         | 'category_deleted'
+        | 'tz_offset_minutes'
     const orderDir = (order as 'asc' | 'desc') || 'asc'
 
     const sortColumn =
@@ -68,6 +69,8 @@ export default defineEventHandler(async (event) => {
             ? transactions.date
             : sortKey === 'category'
             ? transactions.category
+            : sortKey === 'tz_offset_minutes'
+            ? transactions.tz_offset_minutes
             : transactions.id
 
     const selectedSearchKey = (searchColumn?.toString() || 'name') as typeof sortKey
@@ -86,6 +89,8 @@ export default defineEventHandler(async (event) => {
             ? transactions.date
             : selectedSearchKey === 'category'
             ? transactions.category
+            : selectedSearchKey === 'tz_offset_minutes'
+            ? transactions.tz_offset_minutes
             : transactions.name
 
     const mainSearch = search
@@ -101,7 +106,8 @@ export default defineEventHandler(async (event) => {
             value: transactions.value,
             date: transactions.date,
             name: transactions.name,
-            category: transactions.category
+            category: transactions.category,
+            tz_offset_minutes: transactions.tz_offset_minutes
         })
         .from(transactions)
         .innerJoin(categories, eq(categories.id, transactions.category))

@@ -1,8 +1,10 @@
 <script setup lang="ts">
     import { z } from 'zod'
     import type { FetchTableSingleDataResult } from '~~/types/Table'
+    import type { TransactionRow } from '~~/types/ApiRows'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
+    import { buildDateTimeWithOffset } from '~~/app/utils/date'
 
     export type ModalTransactionProps = {
         /**
@@ -47,7 +49,7 @@
     // Fetch transaction
     if (props.mode != 'create') {
         const { data: transaction } =
-            await useLazyAsyncData<FetchTableSingleDataResult>(
+            await useLazyAsyncData<FetchTableSingleDataResult<TransactionRow>>(
                 // IMPORTANT! Key needs to be set like this so it doesnt cache old data
                 `transaction-${props.mode}-${props.id}`,
                 () =>
@@ -56,12 +58,20 @@
                         headers: buildRequestHeaders(token.value)
                     }),
                 {
-                    default: () => {
-                        return {
-                            success: false,
-                            data: {}
+                    default: () => ({
+                        success: false,
+                        data: {
+                            id: 0,
+                            name: null,
+                            value: 0,
+                            date: new Date(),
+                            category: 0,
+                            category_name: null,
+                            category_icon: null,
+                            category_deleted: false,
+                            tz_offset_minutes: 0
                         }
-                    },
+                    }),
                     watch: [() => props.id, () => props.mode]
                 }
             )
@@ -74,9 +84,9 @@
                 if (!newVal?.data) return
 
                 state.id = props.id
-                state.name = newVal.data.name
+                state.name = newVal.data.name || ''
                 state.category = newVal.data.category
-                state.value = newVal.data.value
+                state.value = Number(newVal.data.value)
                 state.date = new Date(newVal.data.date)
             },
             { immediate: true }
@@ -104,7 +114,10 @@
         $fetch(`/api/transactions/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
-            body: event.data // Use data from event instead of parsed bc it contains the ID
+            body: {
+                ...event.data,
+                datetime: buildDateTimeWithOffset(event.data.date)
+            } // Use data from event instead of parsed bc it contains the ID
         })
             .then((data) => {
                 if (!data.success)
