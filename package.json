@@ -65,7 +65,8 @@
         "unhead": "^2.0.8",
         "vue-echarts": "8.0.0-beta.1",
         "vuedraggable": "^4.1.0",
-        "zod": "^4.0.17"
+        "zod": "^4.0.17",
+        "tsconfig-paths": "^4.2.0"
     },
     "trustedDependencies": [
         "@parcel/watcher",

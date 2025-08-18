@@ -7,7 +7,7 @@ npx drizzle-kit migrate | cat
 # Seed only once per container data lifecycle to avoid duplicating demo data
 if [ ! -f "/app/.seeded" ]; then
   echo "[entrypoint] running seed"
-  npx tsx server/db/seed.ts | cat || true
+  NODE_OPTIONS="--enable-source-maps --import tsconfig-paths/register.js" npx tsx --tsconfig tsconfig.runtime.json server/db/seed.ts | cat || true
   # Mark as seeded to avoid re-seeding on every restart
   touch /app/.seeded
 else
@@ -29,7 +29,7 @@ if [ "${DAILY_RESET}" = "true" ]; then
       fi
       sleep $sleep_for
       echo "[entrypoint] running daily reset"
-      npx tsx server/db/reset.ts | cat || true
+      NODE_OPTIONS="--enable-source-maps --import tsconfig-paths/register.js" npx tsx --tsconfig tsconfig.runtime.json server/db/reset.ts | cat || true
     done
   ) &
 fi

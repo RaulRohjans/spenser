@@ -31,6 +31,8 @@ COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/server ./server
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/tsconfig.runtime.json ./tsconfig.runtime.json
 COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
 
 # Ensure entrypoint is executable
