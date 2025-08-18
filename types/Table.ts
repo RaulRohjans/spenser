@@ -3,6 +3,7 @@ export interface TableColumn {
     label?: string
     sortable: boolean
     searchable?: boolean
+    alias?: string
 }
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
@@ -26,17 +27,17 @@ export interface TableSearch {
     query: string
 }
 
-export interface FetchTableDataResult {
+export interface FetchTableDataResult<T> {
     success: boolean
     data: {
         totalRecordCount: number
-        rows: TableRow[]
+        rows: T[]
     }
 }
 
-export interface FetchTableSingleDataResult {
+export interface FetchTableSingleDataResult<T> {
     success: boolean
-    data: TableRow
+    data: T
 }
 
 export interface TableFilters {

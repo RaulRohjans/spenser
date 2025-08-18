@@ -1,5 +1,5 @@
-import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { ensureAuth } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
@@ -11,13 +11,10 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'Invalid category ID.'
         })
 
-    const category = await db
-        .selectFrom('category')
-        .selectAll()
-        .where('id', '=', id)
-        .where('user', '=', user.id)
-        .where('deleted', '=', false)
-        .executeTakeFirst()
+    const category = await db.query.categories.findFirst({
+        where: (c, { and, eq }) =>
+            and(eq(c.id, id), eq(c.user, user.id), eq(c.deleted, false))
+    })
 
     if (!category)
         throw createError({

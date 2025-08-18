@@ -1,7 +1,7 @@
-import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { GlobalSettings } from 'kysely-codegen'
+import { ensureAuth } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import { globalSettings } from '~~/server/db/schema'
+import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -20,37 +20,40 @@ export default defineEventHandler(async (event) => {
         })
 
     // Check if it's the first time saving global settings
-    const globalSettingsCount = await db
-        .selectFrom('global_settings')
-        .select('id')
-        .executeTakeFirst()
+    const saved = await db
+        .select({ id: globalSettings.id })
+        .from(globalSettings)
+        .where(eq(globalSettings.user, user.id))
+        .then((r) => r[0])
 
     let opRes
     // A record exists in the db, lets edit it
-    if (globalSettingsCount) {
+    if (saved) {
         opRes = await db
-            .updateTable('global_settings')
-            .set('importer_provider', provider)
-            .set('gpt_token', gptToken)
-            .set('ollama_model', ollamaModel)
-            .set('ollama_url', ollamaUrl)
-            .where('id', '=', globalSettingsCount.id)
-            .execute()
+            .update(globalSettings)
+            .set({
+                importer_provider: provider,
+                gpt_model: gptModel,
+                gpt_token: gptToken,
+                ollama_model: ollamaModel,
+                ollama_url: ollamaUrl
+            })
+            .where(eq(globalSettings.id, saved.id))
+            .returning({ id: globalSettings.id })
+            .then((r) => r[0])
     } else {
-        const settings: Omit<Selectable<GlobalSettings>, 'id'> = {
-            user: user.id,
-            importer_provider: provider,
-            gpt_model: gptModel,
-            gpt_token: gptToken,
-            ollama_model: ollamaModel,
-            ollama_url: ollamaUrl
-        }
-
         opRes = await db
-            .insertInto('global_settings')
-            .values(settings)
-            .returning('id')
-            .executeTakeFirst()
+            .insert(globalSettings)
+            .values({
+                user: user.id,
+                importer_provider: provider,
+                gpt_model: gptModel,
+                gpt_token: gptToken,
+                ollama_model: ollamaModel,
+                ollama_url: ollamaUrl
+            })
+            .returning({ id: globalSettings.id })
+            .then((r) => r[0])
     }
 
     if (!opRes)

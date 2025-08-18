@@ -1,13 +1,12 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import { db } from '@/utils/dbEngine'
-import type { JwtPayload } from '~/../types/Jwt'
-import type { Selectable } from 'kysely'
-import type { User } from 'kysely-codegen'
+import { db } from '~~/server/db/client'
+import type { JwtPayload } from '~~/types/Jwt'
+import type { User } from '~~/server/db/schema'
 import type { H3Event } from 'h3'
 
 export const generateToken = function (
-    user: Omit<Selectable<User>, 'password'>,
+    user: Omit<User, 'password'>,
     expiration?: number | undefined
 ) {
     const { jwtSecret, jwtExpiration } = useRuntimeConfig()
@@ -56,17 +55,33 @@ export const ensureAuth = (event: H3Event) => {
     }
 }
 
-export const extractToken = (authHeaderValue: string) => {
+export const extractToken = (authHeaderValue: string): string => {
     const TOKEN_TYPE = 'Bearer'
 
     const [, token] = authHeaderValue.split(`${TOKEN_TYPE} `)
-    return token
+    return token || ''
 }
 
-export const hashPassword = function (password: string) {
-    const { passwordSaltRounds } = useRuntimeConfig()
+export const hashPassword = function (
+    password: string,
+    overrideSaltRounds?: number
+) {
+    // Prefer explicit override, then Nuxt runtime config, then environment
+    if (overrideSaltRounds && overrideSaltRounds > 0) {
+        return bcrypt.hashSync(password, overrideSaltRounds)
+    }
 
-    return bcrypt.hashSync(password, Number(passwordSaltRounds))
+    try {
+        const cfg =
+            typeof useRuntimeConfig === 'function' ? useRuntimeConfig() : null
+        if (cfg && cfg.passwordSaltRounds)
+            return bcrypt.hashSync(password, Number(cfg.passwordSaltRounds))
+    } catch {
+        // ignore and fall back to env
+    }
+
+    const envRounds = Number(process.env.PASSWORD_SALT_ROUNDS || '10')
+    return bcrypt.hashSync(password, envRounds)
 }
 
 export const comparePasswords = function (
@@ -77,23 +92,17 @@ export const comparePasswords = function (
 }
 
 export const fetchUserByUsername = async function (username: string) {
-    const res = await db
-        .selectFrom('user')
-        .selectAll()
-        .where('user.username', '=', username)
-        .where('deleted', '=', false)
-        .executeTakeFirst()
-
+    const res = await db.query.users.findFirst({
+        where: (users, { and, eq }) =>
+            and(eq(users.username, username), eq(users.deleted, false))
+    })
     return res
 }
 
 export const fetchUserById = async function (id: number) {
-    const res = await db
-        .selectFrom('user')
-        .selectAll()
-        .where('user.id', '=', id)
-        .where('deleted', '=', false)
-        .executeTakeFirst()
-
+    const res = await db.query.users.findFirst({
+        where: (users, { and, eq }) =>
+            and(eq(users.id, id), eq(users.deleted, false))
+    })
     return res
 }

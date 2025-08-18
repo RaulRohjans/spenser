@@ -1,5 +1,7 @@
-import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { ensureAuth } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import { categories } from '~~/server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     const { id } = await readBody(event)
@@ -12,12 +14,17 @@ export default defineEventHandler(async (event) => {
         })
 
     const deleteRes = await db
-        .updateTable('category')
-        .set('deleted', true)
-        .where('id', '=', id)
-        .where('user', '=', user.id)
-        .where('deleted', '=', false)
-        .execute()
+        .update(categories)
+        .set({ deleted: true })
+        .where(
+            and(
+                eq(categories.id, id),
+                eq(categories.user, user.id),
+                eq(categories.deleted, false)
+            )
+        )
+        .returning({ id: categories.id })
+        .then((r) => r[0])
 
     if (!deleteRes)
         throw createError({

@@ -1,7 +1,7 @@
-import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { UserPreferences } from 'kysely-codegen'
+import { ensureAuth } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import { userPreferences } from '~~/server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -16,31 +16,31 @@ export default defineEventHandler(async (event) => {
 
     // Check if it's the first time saving settings
     const settingsCount = await db
-        .selectFrom('user_preferences')
-        .select('user_preferences.id')
-        .where('user', '=', user.id)
-        .executeTakeFirst()
+        .select({ id: userPreferences.id })
+        .from(userPreferences)
+        .where(eq(userPreferences.user, user.id))
+        .then((r) => r[0])
 
     let opRes
     // A record exists in the db, lets edit it
     if (settingsCount) {
         opRes = await db
-            .updateTable('user_preferences')
-            .set('currency', currency)
-            .where('id', '=', settingsCount.id)
-            .where('user_preferences.user', '=', user.id)
-            .execute()
+            .update(userPreferences)
+            .set({ currency })
+            .where(
+                and(
+                    eq(userPreferences.id, settingsCount.id),
+                    eq(userPreferences.user, user.id)
+                )
+            )
+            .returning({ id: userPreferences.id })
+            .then((r) => r[0])
     } else {
-        const settings: Omit<Selectable<UserPreferences>, 'id'> = {
-            user: user.id,
-            currency
-        }
-
         opRes = await db
-            .insertInto('user_preferences')
-            .values(settings)
-            .returning('id')
-            .executeTakeFirst()
+            .insert(userPreferences)
+            .values({ user: user.id, currency })
+            .returning({ id: userPreferences.id })
+            .then((r) => r[0])
     }
 
     if (!opRes)

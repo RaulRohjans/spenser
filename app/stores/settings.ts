@@ -1,13 +1,12 @@
-import type { Selectable } from 'kysely'
-import type { Currency } from 'kysely-codegen'
-import type { UserSettingsObject } from '~/../types/Data'
+import type { Currency } from '~~/server/db/schema'
+import type { UserSettingsObject } from '~~/types/Data'
 
 export const useSettingsStore = defineStore('settingsStore', {
     state: () => ({
         currency: {
             symbol: '€',
             placement: 'after'
-        } as Selectable<Currency>
+        } as Currency
     }),
     actions: {
         loadCurrency(settings: UserSettingsObject) {

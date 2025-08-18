@@ -1,8 +1,9 @@
 <script setup lang="ts">
     import { UIcon } from '#components'
     import type { NuxtError } from '#app'
-    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
+    import type { FetchTableDataResult } from '~~/types/Table'
     import type { TableColumn } from '@nuxt/ui'
+    import type { TransactionRow } from '~~/types/ApiRows'
 
     // Basic Setup
     const { token } = useAuth()
@@ -27,7 +28,7 @@
         return () => ({})
     })
 
-    const delTransaction = function (row: TableRow) {
+    const delTransaction = function (row: TransactionRow) {
         Notifier.showChooser(
             $t('Delete Transaction'),
             $t('Are you sure you want to delete this transaction?'),
@@ -60,7 +61,7 @@
         )
     }
 
-    const { cell: actionCell } = useActionColumnCell<TableRow>({
+    const { cell: actionCell } = useActionColumnCell<TransactionRow>({
         actions: ['edit', 'duplicate', 'delete'],
         callbacks: {
             onEdit: (row) => router.push(`/transactions/edit/${row.id}`),
@@ -70,7 +71,7 @@
         }
     })
 
-    const columns: TableColumn<TableRow>[] = [
+    const baseColumns: TableColumn<TransactionRow>[] = [
         {
             accessorKey: 'id',
             sortDescFirst: true,
@@ -119,7 +120,7 @@
                               ]
                             : []
                     ),
-                    h('span', name)
+                    h('span', name!)
                 ])
             },
             meta: { alias: $t('Category') }
@@ -143,6 +144,59 @@
         }
     ]
 
+    // Columns to display when grouping by category
+    const groupedColumns: TableColumn<TransactionRow>[] = [
+        {
+            accessorKey: 'id',
+            sortDescFirst: true,
+            header: ({ column }) => columnSorter.value(column, '#'),
+            meta: { alias: 'Id' }
+        },
+        {
+            accessorKey: 'value',
+            header: ({ column }) => columnSorter.value(column, $t('Value')),
+            cell: ({ row }) => {
+                const value = Number(row.getValue('value'))
+
+                const formatted = formatCurrencyValue(value)
+                const colorClass = getTransactionColor(value)
+
+                return h('span', { class: colorClass }, formatted)
+            },
+            meta: { alias: $t('Value') }
+        },
+        {
+            accessorKey: 'category_name',
+            header: ({ column }) => columnSorter.value(column, $t('Category')),
+            cell: ({ row }) => {
+                const name = row.original.category_name
+                const icon = row.original.category_icon
+
+                return h('div', { class: 'flex flex-row items-center gap-3' }, [
+                    h(
+                        'div',
+                        undefined,
+                        icon
+                            ? [
+                                  h(UIcon, {
+                                      name: getHeroIconName(icon),
+                                      class: 'h-5 w-5',
+                                      dynamic: true
+                                  })
+                              ]
+                            : []
+                    ),
+                    h('span', name || '-')
+                ])
+            },
+            meta: { alias: $t('Category') }
+        }
+    ]
+
+    const visibleColumns = computed(() =>
+        filters.groupCategory ? groupedColumns : baseColumns
+    )
+
     const {
         page,
         limit: itemsPerPage,
@@ -153,7 +207,7 @@
         status,
         reload,
         resetFilters
-    } = usePaginatedTable<FetchTableDataResult>({
+    } = usePaginatedTable<FetchTableDataResult<TransactionRow>>({
         key: 'all-transactions',
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/transactions`, {
@@ -179,6 +233,23 @@
         },
         watch: [] // optional: other filters to watch
     })
+
+    // When any of the filter change make the page 1
+    watch(
+        filters,
+        () => {
+            page.value = 1
+        },
+        { deep: true }
+    )
+
+    // Ensure search column matches available columns when toggling grouping
+    watch(
+        () => filters.groupCategory,
+        (isGrouped) => {
+            filters.searchColumn = isGrouped ? 'category_name' : 'name'
+        }
+    )
 
     useHead({
         title: `Spenser | ${$t('Transactions')}`
@@ -229,6 +300,11 @@
                         class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
                         <SColumnToggleMenu
                             :table-api="table?.tableApi"
+                            :disabled-columns="
+                                filters.groupCategory
+                                    ? ['name', 'date', 'actions']
+                                    : []
+                            "
                             @reset="resetFilters" />
 
                         <div class="flex flex-col sm:flex-row gap-2">
@@ -259,7 +335,7 @@
                 <UTable
                     ref="table"
                     :data="tableData?.data?.rows ?? []"
-                    :columns="columns"
+                    :columns="visibleColumns"
                     sticky
                     :loading="status === 'pending'"
                     class="w-full" />

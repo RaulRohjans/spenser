@@ -1,7 +1,8 @@
-import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import { sql } from 'kysely'
-import type { BudgetDataObject } from '~/../types/Data'
+import { ensureAuth } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import { sql, and, eq } from 'drizzle-orm'
+import { budgets, categories, transactions } from '~~/server/db/schema'
+import type { BudgetDataObject } from '~~/types/Data'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
@@ -15,71 +16,35 @@ export default defineEventHandler(async (event) => {
     }
 
     const result = await db
-        .selectFrom('budget')
-        .leftJoin('category', 'category.id', 'budget.category')
-        .leftJoin('transaction', (join) =>
-            join
-                .onRef('transaction.user', '=', 'budget.user')
-                .on((eb) =>
-                    eb.or([
-                        eb.and([
-                            eb('budget.category', 'is not', null),
-                            eb(
-                                'budget.category',
-                                '=',
-                                eb.ref('transaction.category')
-                            )
-                        ]),
-                        eb('budget.category', 'is', null)
-                    ])
-                )
-                .on((eb) =>
-                    eb
-                        .case()
-                        .when('budget.period', '=', 'daily')
-                        .then(
-                            sql<boolean>`extract(day from transaction.date) = extract(day from current_date)`
-                        ) // daily
-                        .when('budget.period', '=', 'monthly')
-                        .then(
-                            sql<boolean>`extract(month from transaction.date) = extract(month from current_date)`
-                        ) // monthly
-                        .when('budget.period', '=', 'quarterly')
-                        .then(
-                            sql<boolean>`transaction.date >= current_date - interval '3 months'`
-                        ) // quarterly
-                        .when('budget.period', '=', 'half-yearly')
-                        .then(
-                            sql<boolean>`transaction.date >= current_date - interval '6 months'`
-                        ) // half-yearly
-                        .when('budget.period', '=', 'yearly')
-                        .then(
-                            sql<boolean>`extract(year from transaction.date) = extract(year from current_date)`
-                        ) // yearly
-                        .else(false)
-                        .end()
-                )
+        .select({
+            id: budgets.id,
+            user: budgets.user,
+            category: budgets.category,
+            name: budgets.name,
+            value: budgets.value,
+            period: budgets.period,
+            order: budgets.order,
+            deleted: budgets.deleted,
+            category_name: categories.name,
+            category_icon: categories.icon,
+            category_deleted: categories.deleted,
+            expenses: sql<number>`sum(case when ${transactions.value} < 0 then ${transactions.value} * -1 when ${transactions.value} >= 0 then 0 end)`
+        })
+        .from(budgets)
+        .leftJoin(categories, eq(categories.id, budgets.category))
+        .leftJoin(
+            transactions,
+            sql`(${transactions.user} = ${budgets.user}) and (${transactions.deleted} = false) and (case when ${budgets.category} is not null then ${budgets.category} = ${transactions.category} else true end)`
         )
-        .selectAll('budget')
-        .select([
-            // Category metadata
-            'category.name as category_name',
-            'category.icon as category_icon',
-            'category.deleted as category_deleted'
-        ])
-        .select(({ fn }) => [
-            fn
-                .sum(
-                    sql<number>`case when "transaction"."value" < 0 then "transaction"."value" * -1 when "transaction"."value" >= 0 then 0 end`
-                )
-                .as('expenses')
-        ])
-        .where('budget.id', '=', id)
-        .where('budget.user', '=', user.id)
-        .where('budget.deleted', '=', false)
-        .where('transaction.deleted', '=', false)
-        .groupBy(['budget.id', 'category.id'])
-        .executeTakeFirst()
+        .where(
+            and(
+                eq(budgets.id, id),
+                eq(budgets.user, user.id),
+                eq(budgets.deleted, false)
+            )
+        )
+        .groupBy(budgets.id, categories.id)
+        .then((r) => r[0])
 
     if (!result) {
         throw createError({

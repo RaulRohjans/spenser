@@ -1,8 +1,9 @@
 <script setup lang="ts">
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
-    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
+    import type { FetchTableDataResult } from '~~/types/Table'
     import type { ModalUserProps } from '@/components/Modal/User.vue'
+    import type { UserRow } from '~~/types/ApiRows'
 
     const { token, data: authData, signOut } = useAuth()
     const { t: $t } = useI18n()
@@ -25,21 +26,21 @@
         return () => ({})
     })
 
-    const editUser = function (row: TableRow) {
+    const editUser = function (row: UserRow) {
         userLoaderObj.value = {
             id: row.id,
             username: row.username,
             firstName: row.first_name,
             lastName: row.last_name,
             email: row.email,
-            avatar: row.avatar,
+            avatar: row.avatar || undefined,
             isAdmin: row.is_admin
         }
 
         toggleModal()
     }
 
-    const delUser = function (row: TableRow) {
+    const delUser = function (row: UserRow) {
         Notifier.showChooser(
             $t('Delete User'),
             $t('Are you sure you want to delete this user?'),
@@ -58,9 +59,15 @@
                                 'error'
                             )
 
-                        if (row.id == authData.value?.id)
+                        if (row.id == authData.value?.id) {
+                            try {
+                                sessionStorage.setItem(
+                                    'demoAutoSuppressOnce',
+                                    '1'
+                                )
+                            } catch {}
                             signOut({ callbackUrl: '/login' })
-                        else reload()
+                        } else reload()
 
                         Notifier.showAlert(
                             $t('User deleted successfully!'),
@@ -74,7 +81,7 @@
         )
     }
 
-    const { cell: actionCell } = useActionColumnCell<TableRow>({
+    const { cell: actionCell } = useActionColumnCell<UserRow>({
         actions: ['edit', 'delete'],
         callbacks: {
             onEdit: editUser,
@@ -82,7 +89,7 @@
         }
     })
 
-    const columns: TableColumn<TableRow>[] = [
+    const columns: TableColumn<UserRow>[] = [
         {
             accessorKey: 'id',
             sortDescFirst: true,
@@ -137,7 +144,7 @@
         status,
         reload,
         resetFilters
-    } = usePaginatedTable<FetchTableDataResult>({
+    } = usePaginatedTable<FetchTableDataResult<UserRow>>({
         key: 'all-users',
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/users`, {

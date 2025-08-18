@@ -1,5 +1,5 @@
 import { useDebounceFn } from '@vueuse/core'
-import type { BudgetDataObject } from '~/../types/Data'
+import type { BudgetDataObject } from '~~/types/Data'
 
 type BudgetOrAdd = BudgetDataObject & { __isAddButton?: boolean }
 

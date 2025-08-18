@@ -1,9 +1,11 @@
 <script setup lang="ts">
     import { formatCurrencyValue } from '#imports'
     import type { NuxtError } from '#app'
-    import type { LlmTransactionObject } from '~/../types/Data'
-    import type { SelectOption } from '~/../types/Options'
-    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
+    import type { LlmTransactionObject } from '~~/types/Data'
+    import type { SelectOption } from '~~/types/Options'
+    import type { FetchTableDataResult, TableRow } from '~~/types/Table'
+    import type { CategoryRow } from '~~/types/ApiRows'
+    import { buildDateTimeWithOffset } from '~~/app/utils/date'
 
     export type ModalBudgetProps = {
         /**
@@ -67,7 +69,7 @@
 
     // Fetch categories
     const { data: categoryData, pending: categoryLoading } =
-        await useLazyAsyncData<FetchTableDataResult>(
+        await useLazyAsyncData<FetchTableDataResult<CategoryRow>>(
             'categoryData',
             () =>
                 $fetch('/api/categories', {
@@ -127,7 +129,14 @@
         $fetch(`/api/transactions/import`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
-            body: { transactions: vTransactions.value }
+            body: {
+                transactions: vTransactions.value,
+                // Provide a request-level DateTimeWithOffset config
+                datetime: {
+                    tzOffsetMinutes: buildDateTimeWithOffset(new Date())
+                        .tzOffsetMinutes
+                }
+            }
         })
             .then((data) => {
                 if (!data.success)

@@ -1,7 +1,9 @@
-import { ensureAuth } from '@/utils/authFunctions'
-import { db, applySearchFilter } from '@/utils/dbEngine'
-import type { OrderByDirectionExpression } from 'kysely'
-import type { TableRow } from '~/../types/Table'
+import { ensureAuth } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import type { TableRow } from '~~/types/Table'
+import { users } from '~~/server/db/schema'
+import { and, eq, sql } from 'drizzle-orm'
+import { makeOrderBy, makeSearchCondition } from '~~/server/db/utils'
 
 export default defineEventHandler(async (event) => {
     // Read body params
@@ -27,52 +29,35 @@ export default defineEventHandler(async (event) => {
     // Build query to fetch categories
     const parsedLimit: number = parseInt(limit?.toString() || '') || 100
     const parsedPage: number = parseInt(page?.toString() || '') || 1
+    const baseWhere = eq(users.deleted, false)
+    const searchSql = makeSearchCondition(
+        searchColumn?.toString() || 'user.username',
+        search?.toString()
+    )
+    const orderBy = makeOrderBy(
+        sort?.toString(),
+        (order as 'asc' | 'desc') || 'asc'
+    )
+
     const query = db
-        .selectFrom('user')
-        .selectAll()
-        .where('user.deleted', '=', false)
-
-        // Search Filter
-        .$if(true, (qb) =>
-            applySearchFilter(
-                qb,
-                search?.toString(),
-                searchColumn?.toString() || 'user.username'
-            )
-        )
-
-        // Pager
-        .$if(!!page, (qb) => qb.offset((parsedPage - 1) * parsedLimit))
-
-        // Limit
-        .$if(!!limit, (qb) => qb.limit(parsedLimit))
-
-        // Sort
-        .$if(!!sort, (qb) =>
-            qb.orderBy(
-                db.dynamic.ref<string>(`${sort}`),
-                (order || 'asc') as OrderByDirectionExpression
-            )
-        )
+        .select()
+        .from(users)
+        .where(searchSql ? and(baseWhere, searchSql) : baseWhere)
+        .offset((parsedPage - 1) * parsedLimit)
+        .limit(parsedLimit)
+        .orderBy(orderBy || users.id)
 
     // Get total record count
     const totalRecordsRes = await db
-        .selectFrom('user')
-        .select(({ fn }) => [fn.countAll<number>().as('total')])
-        .where('user.deleted', '=', false)
-        .$if(true, (qb) =>
-            applySearchFilter(
-                qb,
-                search?.toString(),
-                searchColumn?.toString() || 'user.username'
-            )
-        )
-        .executeTakeFirst()
+        .select({ total: sql<number>`count(*)` })
+        .from(users)
+        .where(searchSql ? and(baseWhere, searchSql) : baseWhere)
+        .then((r) => r[0])
 
     // Get rows
     let rowRes
     try {
-        rowRes = await query.execute()
+        rowRes = await query
     } catch (e) {
         console.log((e as Error).message)
     }
@@ -87,7 +72,7 @@ export default defineEventHandler(async (event) => {
         success: true,
         data: {
             totalRecordCount: Number(totalRecordsRes.total),
-            rows: rowRes || ([] as TableRow[])
+            rows: rowRes
         }
     }
 })

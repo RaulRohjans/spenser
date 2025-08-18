@@ -3,14 +3,15 @@ import {
     fetchUserByUsername,
     hashPassword,
     comparePasswords
-} from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { User } from 'kysely-codegen'
+} from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import { users } from '~~/server/db/schema'
+import { eq, sql } from 'drizzle-orm'
+import type { User } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read body params
-    const { username, password } = await readBody(event)
+    const { username, password, demoAuto } = await readBody(event)
 
     if (!username || !password)
         throw createError({
@@ -18,14 +19,30 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'Empty login fields.'
         })
 
+    // If DEMO mode and demoAuto flag is set, try to auto-login demo user regardless of password
+    const config = useRuntimeConfig()
+    if (
+        String(process.env.DEMO || '').toLowerCase() === 'true' &&
+        demoAuto === true &&
+        username === 'demo'
+    ) {
+        const demoUser = await fetchUserByUsername('demo')
+        if (demoUser) {
+            const { password: _drop, ...jwtUser } = demoUser
+            const accessToken = generateToken(jwtUser)
+            const refreshToken = generateToken(jwtUser, 60 * 60 * 24)
+            return {
+                token: { accessToken, refreshToken }
+            }
+        }
+        // fallthrough to normal validation if demo user does not exist
+    }
+
     // Validate credentials
-    const user: Selectable<User> = await validateLoginCredentials(
-        username,
-        password
-    )
+    const user: User = await validateLoginCredentials(username, password)
 
     //Remove password from the JWT object
-    const jwtUser: Omit<Selectable<User>, 'password'> = user
+    const { password: _, ...jwtUser } = user
 
     // Generate tokens
     const accessToken = generateToken(jwtUser)
@@ -42,10 +59,10 @@ export default defineEventHandler(async (event) => {
 const getUserCount = async function () {
     // Get amount of users in the platform
     const res = await db
-        .selectFrom('user')
-        .select(({ fn }) => [fn.count<number>('user.id').as('user_count')])
-        .where('deleted', '=', false)
-        .executeTakeFirst()
+        .select({ user_count: sql<number>`count(*)` })
+        .from(users)
+        .where(eq(users.deleted, false))
+        .then((r) => r[0])
 
     return res?.user_count || 0
 }
@@ -83,7 +100,7 @@ const validateLoginCredentials = async function (
  * We also create a user record with these credentials and store it
  */
 const firstLogin = async function () {
-    const user: Omit<Selectable<User>, 'id'> = {
+    const user: Omit<User, 'id'> = {
         first_name: 'Admin',
         last_name: 'Admin',
         username: 'admin',
@@ -96,12 +113,10 @@ const firstLogin = async function () {
 
     // Add user to persistent storage
     const res = await db
-        .insertInto('user')
+        .insert(users)
         .values(user)
-
-        //This is important since Postgresql doesnt support returningId in InsertResult
-        .returning('id')
-        .executeTakeFirst()
+        .returning({ id: users.id })
+        .then((r) => r[0])
 
     if (!res)
         throw createError({

@@ -1,9 +1,11 @@
 import fs from 'fs'
-import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { ensureAuth } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
 import { readFiles } from 'h3-formidable'
 import type { NuxtError } from 'nuxt/app'
 import { LLM } from '~/utils/LLM'
+import { globalSettings, categories } from '~~/server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
@@ -26,25 +28,23 @@ export default defineEventHandler(async (event) => {
     // This piece of code cannot be isolated into a function
     // otherwise nuxt will throw an error saying you used some code
     // outside a middleware, plugin or other specific place
-    const globalSettings = await db
-        .selectFrom('global_settings')
-        .selectAll()
-        .where('user', '=', user.id)
-        .executeTakeFirst()
+    const gSettings = await db
+        .select()
+        .from(globalSettings)
+        .where(eq(globalSettings.user, user.id))
+        .then((r) => r[0])
 
-    if (!globalSettings)
+    if (!gSettings)
         throw createError({
             statusMessage: 'No LLM settings are configured for this instance.',
             statusCode: 400
         })
 
     // Get categories to feed LLM with
-    const categories = await db
-        .selectFrom('category')
-        .selectAll()
-        .where('category.user', '=', user.id)
-        .where('category.deleted', '=', false)
-        .execute()
+    const cats = await db
+        .select()
+        .from(categories)
+        .where(and(eq(categories.user, user.id), eq(categories.deleted, false)))
 
     // Get first file value
     const value = Object.values(files)[0]
@@ -78,11 +78,8 @@ export default defineEventHandler(async (event) => {
         })
     }
 
-    const llmInstance = new LLM(globalSettings) //Instance LLM
-    const llmTransactions = await llmInstance.parseTransactions(
-        data,
-        categories
-    )
+    const llmInstance = new LLM(gSettings) //Instance LLM
+    const llmTransactions = await llmInstance.parseTransactions(data, cats)
 
     return { success: true, transactions: llmTransactions }
 })

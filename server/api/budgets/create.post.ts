@@ -1,7 +1,7 @@
-import { db } from '@/utils/dbEngine'
-import { ensureAuth } from '@/utils/authFunctions'
-import type { Budget } from 'kysely-codegen'
-import type { Selectable } from 'kysely'
+import { db } from '~~/server/db/client'
+import { ensureAuth } from '~~/server/utils/auth'
+import { budgets } from '~~/server/db/schema'
+import { validateCategory } from '../../utils/validateCategory'
 
 export default defineEventHandler(async (event) => {
     const { name, category: rawCategory, value, period } = await readBody(event)
@@ -21,21 +21,19 @@ export default defineEventHandler(async (event) => {
         category = rawCategory
     }
 
-    const budget: Omit<Selectable<Budget>, 'id'> = {
-        name,
-        category: category ?? null,
-        value,
-        period,
-        user: user.id,
-        order: 0,
-        deleted: false
-    }
-
     const opRes = await db
-        .insertInto('budget')
-        .values(budget)
-        .returning('id')
-        .executeTakeFirst()
+        .insert(budgets)
+        .values({
+            name,
+            category: category ?? null,
+            value,
+            period,
+            user: user.id,
+            order: 0,
+            deleted: false
+        })
+        .returning({ id: budgets.id })
+        .then((r) => r[0])
 
     if (!opRes)
         throw createError({

@@ -1,7 +1,8 @@
-import { ensureAuth, hashPassword } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
-import type { Selectable } from 'kysely'
-import type { User } from 'kysely-codegen'
+import { ensureAuth, hashPassword } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import { users } from '~~/server/db/schema'
+import { and, eq } from 'drizzle-orm'
+import type { User } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read params
@@ -30,11 +31,11 @@ export default defineEventHandler(async (event) => {
     if (operation === 'delete' && id) {
         // Mark user as deleted in the database
         const res = await db
-            .updateTable('user')
-            .set('deleted', true)
-            .where('id', '=', id)
-            .where('deleted', '=', false)
-            .execute()
+            .update(users)
+            .set({ deleted: true })
+            .where(and(eq(users.id, id), eq(users.deleted, false)))
+            .returning({ id: users.id })
+            .then((r) => r[0])
 
         if (!res)
             throw createError({
@@ -62,7 +63,7 @@ export default defineEventHandler(async (event) => {
                 })
 
             // Create user record
-            const user: Omit<Selectable<User>, 'id'> = {
+            const newUser: Omit<User, 'id'> = {
                 first_name: first_name,
                 last_name: last_name,
                 username: username,
@@ -73,30 +74,30 @@ export default defineEventHandler(async (event) => {
                 deleted: false
             }
 
-            // Add category to persistent storage
+            // Add user to persistent storage
             opRes = await db
-                .insertInto('user')
-                .values(user)
-                .returning('id')
-                .executeTakeFirst()
+                .insert(users)
+                .values(newUser)
+                .returning({ id: users.id })
+                .then((r) => r[0])
             break
         }
         case 'edit':
-            // Update category in the database
+            // Update user in the database
             opRes = await db
-                .updateTable('user')
-                .set('first_name', first_name)
-                .set('last_name', last_name)
-                .set('username', username)
-                .set('email', email)
-                .set('avatar', avatar)
-                .set('is_admin', is_admin == true ? true : false)
-                .$if(!!password, (eb) =>
-                    eb.set('password', hashPassword(password))
-                )
-                .where('id', '=', id)
-                .where('deleted', '=', false)
-                .execute()
+                .update(users)
+                .set({
+                    first_name,
+                    last_name,
+                    username,
+                    email,
+                    avatar,
+                    is_admin: is_admin == true ? true : false,
+                    ...(password ? { password: hashPassword(password) } : {})
+                })
+                .where(and(eq(users.id, id), eq(users.deleted, false)))
+                .returning({ id: users.id })
+                .then((r) => r[0])
             break
         default:
             throw createError({

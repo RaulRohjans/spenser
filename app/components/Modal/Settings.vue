@@ -2,9 +2,10 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { UserSettingsObject } from '~/../types/Data'
-    import type { SelectOption } from '~/../types/Options'
-    import type { FetchTableDataResult } from '~/../types/Table'
+    import type { UserSettingsObject } from '~~/types/Data'
+    import type { SelectOption } from '~~/types/Options'
+    import type { FetchTableDataResult } from '~~/types/Table'
+    import type { CurrencyRow } from '~~/types/ApiRows'
 
     const { t: $t } = useI18n()
     const { token, data: authData, refresh } = useAuth()
@@ -25,7 +26,9 @@
     type Schema = z.output<typeof schema>
 
     // Fetch currencies
-    const { data: currencies } = await useLazyAsyncData<FetchTableDataResult>(
+    const { data: currencies } = await useLazyAsyncData<
+        FetchTableDataResult<CurrencyRow>
+    >(
         'currencies',
         () =>
             $fetch('/api/currencies', {
@@ -85,7 +88,7 @@
         if (!open) emit('close')
     }
 
-    const toggleSettings = (open: boolean) => {
+    const toggleChangePassword = (open: boolean) => {
         isChangePasswordOpen.value = open
         isSettingsModelOpen.value = !open
     }
@@ -191,7 +194,7 @@
                 </UFormField>
 
                 <div class="flex flex-row justify-between">
-                    <UButton variant="soft" @click="toggleSettings(true)">
+                    <UButton variant="soft" @click="toggleChangePassword(true)">
                         {{ $t('Change Password') }}
                     </UButton>
 
@@ -206,9 +209,9 @@
     <UModal
         :open="isChangePasswordOpen"
         :title="$t('Change Password')"
-        @update:open="toggleSettings">
+        @update:open="toggleChangePassword">
         <template #body>
-            <ModalChangePassword />
+            <ModalChangePassword @close-modal="toggleChangePassword(false)" />
         </template>
     </UModal>
 </template>

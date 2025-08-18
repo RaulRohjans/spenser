@@ -1,4 +1,4 @@
-import type { TableFilters } from '~/../types/Table'
+import type { TableFilters } from '~~/types/Table'
 
 export type PaginatedTableOptions<T> = {
     key: string

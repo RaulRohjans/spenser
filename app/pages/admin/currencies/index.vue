@@ -1,7 +1,8 @@
 <script setup lang="ts">
     import type { NuxtError } from '#app'
     import type { TableColumn } from '@nuxt/ui'
-    import type { FetchTableDataResult, TableRow } from '~/../types/Table'
+    import type { FetchTableDataResult } from '~~/types/Table'
+    import type { CurrencyRow } from '~~/types/ApiRows'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
@@ -24,7 +25,7 @@
         return () => ({})
     })
 
-    const delCurrency = function (row: TableRow) {
+    const delCurrency = function (row: CurrencyRow) {
         Notifier.showChooser(
             $t('Delete Currency'),
             $t('Are you sure you want to delete this currency?'),
@@ -56,14 +57,14 @@
         )
     }
 
-    const { cell: actionCell } = useActionColumnCell<TableRow>({
+    const { cell: actionCell } = useActionColumnCell<CurrencyRow>({
         actions: ['delete'],
         callbacks: {
             onDelete: delCurrency
         }
     })
 
-    const columns: TableColumn<TableRow>[] = [
+    const columns: TableColumn<CurrencyRow>[] = [
         {
             accessorKey: 'id',
             sortDescFirst: true,
@@ -98,7 +99,7 @@
         status,
         reload,
         resetFilters
-    } = usePaginatedTable<FetchTableDataResult>({
+    } = usePaginatedTable<FetchTableDataResult<CurrencyRow>>({
         key: 'all-currencies',
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/currencies`, {

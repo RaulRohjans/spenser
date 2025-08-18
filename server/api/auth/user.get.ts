@@ -1,4 +1,4 @@
-import { ensureAuth } from '@/utils/authFunctions'
+import { ensureAuth } from '~~/server/utils/auth'
 
 export default defineEventHandler((event) => {
     return ensureAuth(event)

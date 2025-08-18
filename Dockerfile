@@ -29,9 +29,17 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/server ./server
+COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/tsconfig.runtime.json ./tsconfig.runtime.json
+COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
+
+# Ensure entrypoint is executable
+RUN chmod +x ./docker-entrypoint.sh
 
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Command to run the application
-CMD ["node", ".output/server/index.mjs"]
+# Command to run migrations, seed, then start the application
+ENTRYPOINT ["./docker-entrypoint.sh"]

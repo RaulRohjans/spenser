@@ -12,7 +12,7 @@
     import { PieChart, type PieSeriesOption } from 'echarts/charts'
     import { LabelLayout } from 'echarts/features'
     import { SVGRenderer } from 'echarts/renderers'
-    import type { ExpensesByCategoryData } from '~/../types/Chart'
+    import type { ExpensesByCategoryData } from '~~/types/Chart'
 
     export type ChartExpenseByCategory = {
         /**

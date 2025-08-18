@@ -1,5 +1,7 @@
-import { ensureAuth } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import { ensureAuth } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import { users } from '~~/server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     // Read body params
@@ -14,15 +16,13 @@ export default defineEventHandler(async (event) => {
 
     // Update user record
     const updateRes = await db
-        .updateTable('user')
-        .set('first_name', first_name)
-        .set('last_name', last_name)
-        .set('email', email)
-        .where('user.id', '=', user.id)
-        .where('deleted', '=', false)
-        .executeTakeFirst()
+        .update(users)
+        .set({ first_name, last_name, email })
+        .where(and(eq(users.id, user.id), eq(users.deleted, false)))
+        .returning({ id: users.id })
+        .then((r) => r[0])
 
-    if (updateRes.numUpdatedRows < 1)
+    if (!updateRes)
         throw createError({
             statusCode: 500,
             statusMessage: 'Could not update the user record on the database.'

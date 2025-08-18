@@ -1,6 +1,6 @@
 <script setup lang="ts">
     import Draggable from 'vuedraggable'
-    import type { BudgetDataObject } from '~/../types/Data'
+    import type { BudgetDataObject } from '~~/types/Data'
 
     const { t: $t } = useI18n()
     const router = useRouter()

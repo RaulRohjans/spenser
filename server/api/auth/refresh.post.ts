@@ -1,7 +1,8 @@
-import type { Selectable } from 'kysely'
-import type { User } from 'kysely-codegen'
-import { generateToken, validateJWT } from '@/utils/authFunctions'
-import { db } from '@/utils/dbEngine'
+import type { User } from '~~/server/db/schema'
+import { generateToken, validateJWT } from '~~/server/utils/auth'
+import { db } from '~~/server/db/client'
+import { users } from '~~/server/db/schema'
+import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     const { refreshToken } = await readBody<{ refreshToken: string }>(event)
@@ -23,20 +24,19 @@ export default defineEventHandler(async (event) => {
 
     // Fetch the latest user data from the database so refreshed tokens reflect changes
     const freshUser = await db
-        .selectFrom('user')
-        .select([
-            'id',
-            'first_name',
-            'last_name',
-            'email',
-            'username',
-            'avatar',
-            'is_admin',
-            'deleted'
-        ])
-        .where('id', '=', decoded.id)
-        .where('deleted', '=', false)
-        .executeTakeFirst()
+        .select({
+            id: users.id,
+            first_name: users.first_name,
+            last_name: users.last_name,
+            email: users.email,
+            username: users.username,
+            avatar: users.avatar,
+            is_admin: users.is_admin,
+            deleted: users.deleted
+        })
+        .from(users)
+        .where(and(eq(users.id, decoded.id), eq(users.deleted, false)))
+        .then((r) => r[0])
 
     if (!freshUser)
         throw createError({
@@ -45,7 +45,9 @@ export default defineEventHandler(async (event) => {
         })
 
     // Remove password from the JWT object
-    const jwtUser: Omit<Selectable<User>, 'password'> = freshUser
+    const { password: _pw, ...jwtUser } = freshUser as User & {
+        password?: string
+    }
 
     const accessToken = generateToken(jwtUser)
     const newRefreshToken = generateToken(jwtUser, 60 * 60 * 24)

@@ -1,7 +1,6 @@
-import type { Selectable } from 'kysely'
-import type { User } from 'kysely-codegen'
+import type { User } from '~~/server/db/schema'
 
-export interface JwtPayload extends Omit<Selectable<User>, 'password'> {
+export interface JwtPayload extends Omit<User, 'password'> {
     scope: Array<'test' | 'user'>
     exp: number
 }

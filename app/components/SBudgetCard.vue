@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { upperFirst } from 'scule'
     import { formatCurrencyValue, getHeroIconName } from '#imports'
-    import type { BudgetDataObject } from '~/../types/Data'
+    import type { BudgetDataObject } from '~~/types/Data'
 
     const { t: $t } = useI18n()
 

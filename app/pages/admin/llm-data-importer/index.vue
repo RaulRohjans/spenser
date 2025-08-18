@@ -1,8 +1,8 @@
 <script setup lang="ts">
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
-    import type { SelectOption } from '~/../types/Options'
-    import type { GlobalSettingsObject } from '~/../types/Data'
+    import type { SelectOption } from '~~/types/Options'
+    import type { GlobalSettingsObject } from '~~/types/Data'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
@@ -27,7 +27,7 @@
     const state = reactive({
         provider:
             globalSettings.data?.importer_provider ||
-            getProviderOptions.value[0].value,
+            getProviderOptions.value[0]?.value,
         gptModel: globalSettings.data?.gpt_model || 'gpt-4',
         gptToken: globalSettings.data?.gpt_token || '',
         ollamaModel: globalSettings.data?.ollama_model || '',
