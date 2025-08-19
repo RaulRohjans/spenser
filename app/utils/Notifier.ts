@@ -6,10 +6,17 @@ import type { EmitEventCallback } from '~~/types/Data'
 
 export class Notifier {
     private static buildAlertTitle(type: string) {
-        const { t: $t } = useI18n()
+        const { $i18n } = useNuxtApp()
+
+        // The reason this has to be used this way is because it expects to be used inside setup of a component
+        // and this is the hack to get around it and use it here
         const translate = (key: string) => {
-            if ($t && typeof $t === 'function') {
-                return $t(key)
+            if (
+                $i18n &&
+                typeof ($i18n as { t?: (k: string) => unknown }).t ===
+                    'function'
+            ) {
+                return ($i18n as { t: (k: string) => unknown }).t(key) as string
             }
             return key
         }
@@ -72,9 +79,9 @@ export class Notifier {
         // Render ModalChooser directly within existing Nuxt app context
         const vnode = h(ModalChooser, {
             ...props,
-            onConfirm: () => emitCallbacks.confirm!(nuxtApp.vueApp),
-            onCancel: () => emitCallbacks.cancel!(nuxtApp.vueApp),
-            onClose: () => emitCallbacks.close!(nuxtApp.vueApp)
+            onConfirm: () => emitCallbacks.confirm(nuxtApp.vueApp),
+            onCancel: () => emitCallbacks.cancel(nuxtApp.vueApp),
+            onClose: () => emitCallbacks.close(nuxtApp.vueApp)
         })
         vnode.appContext = nuxtApp.vueApp._context
         render(vnode, container)
@@ -91,6 +98,7 @@ export class Notifier {
             | 'neutral'
             | 'secondary' = 'info'
     ) {
+        // Use the app-level <UApp> provider with proper Vue context
         const nuxtApp = useNuxtApp()
         nuxtApp.vueApp.runWithContext(() => {
             const toast = useToast()
