@@ -2,22 +2,6 @@
 @import '@nuxt/ui';
 
 /*
- * This is a funny one.
- *
- * The UI package used, NuxtUI, has position relative on ALL
- * inputs and input groups, they hammered that on all the containers
- * and elements they could.
- *
- * This causes the fields to display over the user dropdown menu, so we
- * use this to hammer it back to static
- *
- * I'm starting to regret using this library...
-*/
-/*.makeit-static * {
-    position: static !important;
-}
-
-/*
  * Removed up and down buttons from all inputs with type number
 */
 input::-webkit-outer-spin-button,
@@ -64,4 +48,19 @@ input[type='number'] {
 .page-enter-from,
 .page-leave-to {
     @apply opacity-0;
+}
+
+/*
+ * Keep row-aligned inputs the same height when one shows an error help text.
+ * Apply the class below to the two-column row container to reserve space.
+ */
+.form-row-fixed-help > * {
+    align-self: flex-start;
+}
+.u-form-field {
+    display: flex;
+    flex-direction: column;
+}
+.u-form-field .u-form-field-help {
+    min-height: 1.25rem; /* reserve one line for error/help */
 }

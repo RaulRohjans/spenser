@@ -105,8 +105,7 @@
 
             <UFormField
                 :label="$t('GPT Token')"
-                name="gptToken"
-                class="makeit-static">
+                name="gptToken">
                 <UInput v-model="state.gptToken" type="password" />
             </UFormField>
         </template>

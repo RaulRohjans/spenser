@@ -58,7 +58,7 @@
             first_name: z.string().min(1, $t('Mandatory Field')),
             last_name: z.string().min(1, $t('Mandatory Field')),
             username: z.string().min(4, $t('Must be at least 4 characters')),
-            email: z.string().email({ error: $t('Invalid email') }),
+            email: z.string().email($t('Invalid Email')),
             password: z.string().optional(),
             is_admin: z.boolean()
         })
@@ -85,10 +85,10 @@
     type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
-        username: props.username,
-        first_name: props.firstName,
-        last_name: props.lastName,
-        email: props.email,
+        username: props.username ?? '',
+        first_name: props.firstName ?? '',
+        last_name: props.lastName ?? '',
+        email: props.email ?? '',
         avatar: props.avatar,
         password: undefined,
         is_admin: props.isAdmin || false
@@ -144,8 +144,8 @@
                 class="space-y-4 p-6"
                 @submit="onCreateUser">
                 <div
-                    class="flex flex-col sm:flex-row justify-center sm:justify-between items-center space-y-4 sm:space-x-4 sm:space-y-0 makeit-static">
-                    <UFormField :label="$t('First Name')" name="first_name">
+                    class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
+                    <UFormField :label="$t('First Name')" name="first_name" v-slot="{ error }">
                         <UInput v-model="state.first_name" class="w-full" />
                     </UFormField>
 
@@ -156,8 +156,7 @@
 
                 <UFormField
                     :label="$t('Username')"
-                    name="username"
-                    class="makeit-static">
+                    name="username">
                     <UInput v-model="state.username" class="w-full" />
                 </UFormField>
 
@@ -175,8 +174,7 @@
                 <UCheckbox
                     v-model="state.is_admin"
                     name="is_admin"
-                    :label="$t('Administrator')"
-                    class="makeit-static" />
+                    :label="$t('Administrator')" />
 
                 <UButton type="submit" class="mt-2 sm:mt-0">
                     {{ $t('Submit') }}

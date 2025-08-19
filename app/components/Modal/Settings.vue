@@ -17,9 +17,9 @@
     const isChangePasswordOpen = ref(false)
 
     const schema = z.object({
-        first_name: z.string(),
-        last_name: z.string(),
-        email: z.string(),
+        first_name: z.string().trim().min(1, $t('Mandatory Field')),
+        last_name: z.string().trim().min(1, $t('Mandatory Field')),
+        email: z.string().trim().email($t('Invalid Email')),
         currency: z.number()
     })
 
@@ -166,15 +166,11 @@
                 :state="state"
                 class="space-y-4"
                 @submit="onSaveSettings">
-                <UFormField
-                    :label="$t('First Name')"
-                    name="first_name">
+                <UFormField :label="$t('First Name')" name="first_name">
                     <UInput v-model="state.first_name" class="w-full" />
                 </UFormField>
 
-                <UFormField
-                    :label="$t('Last Name')"
-                    name="last_name">
+                <UFormField :label="$t('Last Name')" name="last_name">
                     <UInput v-model="state.last_name" class="w-full" />
                 </UFormField>
 
