@@ -5,6 +5,7 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
     import { buildDateTimeWithOffset } from '~~/app/utils/date'
+    import { toUserMessage } from '~/utils/errors'
 
     export type ModalTransactionProps = {
         /**
@@ -26,7 +27,6 @@
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<string | undefined> = ref()
 
     const schema = z.object({
         name: z.string().optional(),
@@ -106,12 +106,6 @@
     })
 
     const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
-        const parsed = schema.safeParse(event.data)
-        if (!parsed.success) {
-            error.value = $t('Invalid input')
-            return
-        }
-
         $fetch(`/api/transactions/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
@@ -136,18 +130,22 @@
                     'success'
                 )
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage))
+            .catch((e: NuxtError) => {
+                Notifier.showAlert(
+                    toUserMessage(e, $t('An unexpected error occurred while saving.')),
+                    'error'
+                )
+            })
     }
 
     const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
 </script>
 
 <template>
-    <UForm :state="state" class="space-y-4" @submit="onCreateTransaction">
+    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onCreateTransaction">
         <UFormField
             :label="$t('Transaction Name')"
-            name="name"
-            :error="!!error">
+            name="name">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
@@ -155,8 +153,7 @@
             <UFormField
                 :label="$t('Value')"
                 name="value"
-                class="w-full"
-                :error="!!error">
+                class="w-full">
                 <UInput
                     v-model="state.value"
                     type="number"
@@ -167,8 +164,7 @@
             <UFormField
                 :label="$t('Category')"
                 name="category"
-                class="w-full"
-                :error="!!error">
+                class="w-full">
                 <USelect
                     v-model="state.category"
                     :items="categorySelectOptions"
@@ -179,7 +175,7 @@
             </UFormField>
         </div>
 
-        <UFormField :label="$t('Date')" name="date" :error="error">
+        <UFormField :label="$t('Date')" name="date">
             <SDateTimePicker v-model="state.date" type="datetime" />
         </UFormField>
 

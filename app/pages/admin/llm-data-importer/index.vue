@@ -3,10 +3,10 @@
     import type { NuxtError } from '#app'
     import type { SelectOption } from '~~/types/Options'
     import type { GlobalSettingsObject } from '~~/types/Data'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<undefined | string> = ref()
     const providerSelectKey: Ref<number> = ref(0)
 
     const getProviderOptions = computed((): SelectOption[] => {
@@ -52,7 +52,16 @@
                     'success'
                 )
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage))
+            .catch((e: NuxtError) => {
+                logUnknownError(e)
+                Notifier.showAlert(
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while saving settings.')
+                    ),
+                    'error'
+                )
+            })
     }
 
     watch(
@@ -79,8 +88,7 @@
         <UFormField
             :label="$t('LLM Provider')"
             name="provider"
-            class="w-full"
-            :error="error">
+            class="w-full">
             <USelect
                 :key="providerSelectKey"
                 v-model="state.provider"
@@ -91,16 +99,14 @@
             <UFormField
                 :label="$t('GPT Model')"
                 name="gptModel"
-                class="w-full"
-                :error="!!error">
+                class="w-full">
                 <UInput v-model="state.gptModel" />
             </UFormField>
 
             <UFormField
                 :label="$t('GPT Token')"
                 name="gptToken"
-                class="makeit-static"
-                :error="!!error">
+                class="makeit-static">
                 <UInput v-model="state.gptToken" type="password" />
             </UFormField>
         </template>
@@ -109,16 +115,14 @@
             <UFormField
                 :label="$t('Ollama Model')"
                 name="ollamaModel"
-                class="w-full"
-                :error="!!error">
+                class="w-full">
                 <UInput v-model="state.ollamaModel" />
             </UFormField>
 
             <UFormField
                 :label="$t('Ollama URL')"
                 name="ollamaUrl"
-                class="w-full"
-                :error="!!error">
+                class="w-full">
                 <UInput v-model="state.ollamaUrl" />
             </UFormField>
         </template>

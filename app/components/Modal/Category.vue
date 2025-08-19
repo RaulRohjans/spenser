@@ -3,6 +3,7 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
     import type { FetchTableSingleDataResult } from '~~/types/Table'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     export type ModalCategoryProps = {
         /**
@@ -24,7 +25,6 @@
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<undefined | string> = ref()
 
     const schema = z.object({
         name: z.string(),
@@ -80,12 +80,6 @@
     })
 
     const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
-        const parsed = schema.safeParse(event.data)
-        if (!parsed.success) {
-            error.value = $t('Invalid input')
-            return
-        }
-
         $fetch(`/api/categories/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
@@ -107,7 +101,16 @@
                     'success'
                 )
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage))
+            .catch((e: NuxtError) => {
+                logUnknownError(e)
+                Notifier.showAlert(
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while saving.')
+                    ),
+                    'error'
+                )
+            })
     }
 
     const displayIcon = computed(() => {
@@ -123,11 +126,11 @@
         :state="state"
         class="space-y-4"
         @submit="onCreateCategory">
-        <UFormField :label="$t('Name')" name="name" :error="!!error">
+        <UFormField :label="$t('Name')" name="name">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
-        <UFormField :label="$t('Icon')" name="icon" :error="!!error">
+        <UFormField :label="$t('Icon')" name="icon">
             <div class="flex flex-row gap-1">
                 <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
                 <UInput
@@ -146,7 +149,7 @@
         </UFormField>
 
         <div class="flex flex-row justify-end">
-            <UButton type="submit" :error="error"> {{ $t('Submit') }} </UButton>
+            <UButton type="submit"> {{ $t('Submit') }} </UButton>
         </div>
     </UForm>
 </template>

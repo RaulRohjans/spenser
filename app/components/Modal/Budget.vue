@@ -5,6 +5,7 @@
     import type { FetchTableSingleDataResult } from '~~/types/Table'
     import type { SelectOption } from '~~/types/Options'
     import type { BudgetPeriodType } from '~~/types/budget-period'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     export type ModalBudgetProps = {
         /**
@@ -26,7 +27,6 @@
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<undefined | string> = ref()
 
     const periodOptions: Ref<SelectOption[]> = ref([
         {
@@ -119,12 +119,6 @@
     const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
 
     const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
-        const parsed = schema.safeParse(event.data)
-        if (!parsed.success) {
-            error.value = $t('Invalid input')
-            return
-        }
-
         $fetch(`/api/budgets/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
@@ -146,7 +140,16 @@
                     'success'
                 )
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage))
+            .catch((e: NuxtError) => {
+                logUnknownError(e)
+                Notifier.showAlert(
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while saving.')
+                    ),
+                    'error'
+                )
+            })
     }
 </script>
 
@@ -156,11 +159,11 @@
         :state="state"
         class="space-y-4"
         @submit="onCreateCategory">
-        <UFormField :label="$t('Name')" name="name" :error="!!error">
+        <UFormField :label="$t('Name')" name="name">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
-        <UFormField :label="$t('Category')" name="category" :error="!!error">
+        <UFormField :label="$t('Category')" name="category">
             <USelect
                 v-model="state.category"
                 :items="categorySelectOptions"
@@ -170,14 +173,14 @@
             </USelect>
         </UFormField>
 
-        <UFormField :label="$t('Period')" name="period" :error="!!error">
+        <UFormField :label="$t('Period')" name="period">
             <USelect
                 v-model="state.period"
                 :items="periodOptions"
                 class="hide-select-span w-full" />
         </UFormField>
 
-        <UFormField :label="$t('Value')" name="value" :error="error">
+        <UFormField :label="$t('Value')" name="value">
             <UInput
                 v-model="state.value"
                 type="number"

@@ -4,6 +4,7 @@
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { ModalUserProps } from '@/components/Modal/User.vue'
     import type { UserRow } from '~~/types/ApiRows'
+    import { toUserMessage } from '~/utils/errors'
 
     const { token, data: authData, signOut } = useAuth()
     const { t: $t } = useI18n()
@@ -75,7 +76,10 @@
                         )
                     })
                     .catch((e: NuxtError) =>
-                        Notifier.showAlert(e.statusMessage, 'error')
+                        Notifier.showAlert(
+                            toUserMessage(e, $t('An unexpected error occurred while deleting.')),
+                            'error'
+                        )
                     )
             }
         )

@@ -2,6 +2,7 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
+    import { toUserMessage } from '~/utils/errors'
 
     export type ModalUserProps = {
         /**
@@ -50,7 +51,6 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    const error: Ref<null | string> = ref(null)
 
     const schema = z
         .object({
@@ -58,7 +58,7 @@
             first_name: z.string().min(1, $t('Mandatory Field')),
             last_name: z.string().min(1, $t('Mandatory Field')),
             username: z.string().min(4, $t('Must be at least 4 characters')),
-            email: z.string().email($t('Invalid email')),
+            email: z.string().email({ error: $t('Invalid email') }),
             password: z.string().optional(),
             is_admin: z.boolean()
         })
@@ -126,7 +126,12 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage || null))
+            .catch((e: NuxtError) => {
+                Notifier.showAlert(
+                    toUserMessage(e, $t('An unexpected error occurred while saving.')),
+                    'error'
+                )
+            })
     }
 </script>
 

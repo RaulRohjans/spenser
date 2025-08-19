@@ -6,6 +6,7 @@
     import type { SelectOption } from '~~/types/Options'
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { CurrencyRow } from '~~/types/ApiRows'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { t: $t } = useI18n()
     const { token, data: authData, refresh } = useAuth()
@@ -13,7 +14,6 @@
     const emit = defineEmits(['close'])
 
     const isSettingsModelOpen = ref<boolean>(true)
-    const error: Ref<undefined | string> = ref()
     const isChangePasswordOpen = ref(false)
 
     const schema = z.object({
@@ -94,12 +94,6 @@
     }
 
     const onSaveSettings = async function (event: FormSubmitEvent<Schema>) {
-        const parsed = schema.safeParse(event.data)
-        if (!parsed.success) {
-            error.value = $t('Invalid input')
-            return
-        }
-
         try {
             // Save user profile related data
             await $fetch('/api/account/update', {
@@ -149,7 +143,14 @@
                 'success'
             )
         } catch (e) {
-            error.value = (e as NuxtError).statusMessage
+            logUnknownError(e)
+            Notifier.showAlert(
+                toUserMessage(
+                    e,
+                    $t('An unexpected error occurred while saving settings.')
+                ),
+                'error'
+            )
         }
     }
 </script>
@@ -167,26 +168,23 @@
                 @submit="onSaveSettings">
                 <UFormField
                     :label="$t('First Name')"
-                    name="first_name"
-                    :error="!!error">
+                    name="first_name">
                     <UInput v-model="state.first_name" class="w-full" />
                 </UFormField>
 
                 <UFormField
                     :label="$t('Last Name')"
-                    name="last_name"
-                    :error="!!error">
+                    name="last_name">
                     <UInput v-model="state.last_name" class="w-full" />
                 </UFormField>
 
-                <UFormField :label="$t('Email')" name="email" :error="!!error">
+                <UFormField :label="$t('Email')" name="email">
                     <UInput v-model="state.email" class="w-full" />
                 </UFormField>
 
                 <UFormField
                     :label="$t('Currency')"
-                    name="currency"
-                    :error="error">
+                    name="currency">
                     <USelect
                         v-model="state.currency"
                         class="w-full"
@@ -198,7 +196,7 @@
                         {{ $t('Change Password') }}
                     </UButton>
 
-                    <UButton type="submit" :error="error">
+                    <UButton type="submit">
                         {{ $t('Submit') }}
                     </UButton>
                 </div>
