@@ -65,10 +65,6 @@ Open the docker-compose.yml file and configure it to your liking.
 docker compose up -d
 ```
 
-#### Configure database:
-
-Configure your new database in PostgreSQL instance by importing the file "schema.sql"
-
 ## Contributing
 
 Contributions are welcome! Please submit a pull request with detailed information about your changes!
