@@ -102,14 +102,22 @@ export const parseNumberLocale = function (input: unknown) {
 
 export const formatCurrencyValue = function (value: number) {
     const settingsStore = useSettingsStore()
-    const formatted = formatNumberLocale(value, {
+
+    const isNegative = value < 0
+    const abs = Math.abs(value)
+    const formattedNumber = formatNumberLocale(abs, {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     })
 
-    if (settingsStore.currency.placement == 'after')
-        return `${formatted}${settingsStore.currency.symbol}`
-    else return `${settingsStore.currency.symbol}${formatted}`
+    const sign = isNegative ? '-' : ''
+    const symbol = settingsStore.currency.symbol
+
+    if (settingsStore.currency.placement === 'after') {
+        return `${sign}${formattedNumber}${symbol}`
+    } else {
+        return `${sign}${symbol}${formattedNumber}`
+    }
 }
 
 export const getLocaleFromRoute = function () {
