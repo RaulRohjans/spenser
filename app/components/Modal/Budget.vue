@@ -54,9 +54,25 @@
 
     const schema = z.object({
         id: z.number().optional(),
-        name: z.string().optional(),
+        name: z.string().min(2, $t('Mandatory Field')),
         category: z.number().optional().nullable(),
-        value: z.number().min(0.01, $t('The value has to be bigger than 0.')),
+        value: z.preprocess(
+            (v) => {
+                if (v === '' || v === null || typeof v === 'undefined')
+                    return undefined
+                const n = parseNumberLocale(v as unknown)
+                return Number.isNaN(n) ? undefined : n
+            },
+            z
+                .number({ error: $t('Mandatory Field') })
+                .min(1, $t('Mandatory Field'))
+                .refine(
+                    (x) =>
+                        Math.abs(x * 100 - Math.trunc(x * 100)) <
+                        Number.EPSILON,
+                    $t('Invalid number')
+                )
+        ),
         period: z.string({ error: $t('Mandatory Field') })
     })
 
@@ -65,31 +81,32 @@
         id: props.id,
         name: '',
         category: undefined as number | undefined,
-        value: 0,
+        value: undefined as number | undefined,
         period: undefined as BudgetPeriodType | undefined
     })
 
     // Fetch budget
     if (props.mode != 'create') {
-        const { data: budget } =
-            await useLazyAsyncData<FetchTableSingleDataResult<BudgetDataObject>>(
-                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
-                `budget-${props.mode}-${props.id}`,
-                () =>
-                    $fetch(`/api/budgets/${props.id}`, {
-                        method: 'GET',
-                        headers: buildRequestHeaders(token.value)
-                    }),
-                {
-                    default: () => {
-                        return {
-                            success: false,
-                            data: {}
-                        }
-                    },
-                    watch: [() => props.id, () => props.mode]
-                }
-            )
+        const { data: budget } = await useLazyAsyncData<
+            FetchTableSingleDataResult<BudgetDataObject>
+        >(
+            // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+            `budget-${props.mode}-${props.id}`,
+            () =>
+                $fetch(`/api/budgets/${props.id}`, {
+                    method: 'GET',
+                    headers: buildRequestHeaders(token.value)
+                }),
+            {
+                default: () => {
+                    return {
+                        success: false,
+                        data: {}
+                    }
+                },
+                watch: [() => props.id, () => props.mode]
+            }
+        )
 
         // A watch is needed here because for some reason, using a then is still
         // not enough to make sure the data is loaded after the request is made
