@@ -79,9 +79,9 @@ export class Notifier {
         // Render ModalChooser directly within existing Nuxt app context
         const vnode = h(ModalChooser, {
             ...props,
-            onConfirm: () => emitCallbacks.confirm(nuxtApp.vueApp),
-            onCancel: () => emitCallbacks.cancel(nuxtApp.vueApp),
-            onClose: () => emitCallbacks.close(nuxtApp.vueApp)
+            onConfirm: () => emitCallbacks.confirm!(nuxtApp.vueApp),
+            onCancel: () => emitCallbacks.cancel!(nuxtApp.vueApp),
+            onClose: () => emitCallbacks.close!(nuxtApp.vueApp)
         })
         vnode.appContext = nuxtApp.vueApp._context
         render(vnode, container)

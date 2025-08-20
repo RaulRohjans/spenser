@@ -80,7 +80,9 @@ export const parseNumberLocale = function (input: unknown) {
         const decimalPart = parts.find((p) => p.type === 'decimal')
         if (groupPart?.value) group = groupPart.value
         if (decimalPart?.value) decimal = decimalPart.value
-    } catch {}
+    } catch {
+        /* empty */
+    }
 
     // Remove spaces
     let normalized = input.trim()
