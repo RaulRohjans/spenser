@@ -54,12 +54,60 @@ export const buildRequestHeaders = function (token: string | null) {
     return { authorization: token } as HeadersInit
 }
 
+export const formatNumberLocale = function (
+    value: number,
+    options?: Intl.NumberFormatOptions
+) {
+    const locale = getLocaleFromRoute() || 'en'
+    try {
+        return new Intl.NumberFormat(locale, options).format(value)
+    } catch {
+        return new Intl.NumberFormat('en-US', options).format(value)
+    }
+}
+
+export const parseNumberLocale = function (input: unknown) {
+    if (typeof input === 'number') return input
+    if (typeof input !== 'string') return NaN
+
+    const locale = getLocaleFromRoute() || 'en'
+    const example = 1000.1
+    let group = ','
+    let decimal = '.'
+    try {
+        const parts = new Intl.NumberFormat(locale).formatToParts(example)
+        const groupPart = parts.find((p) => p.type === 'group')
+        const decimalPart = parts.find((p) => p.type === 'decimal')
+        if (groupPart?.value) group = groupPart.value
+        if (decimalPart?.value) decimal = decimalPart.value
+    } catch {}
+
+    // Remove spaces
+    let normalized = input.trim()
+    // Remove group separators
+    const groupRegex = new RegExp(`\\${group}`, 'g')
+    normalized = normalized.replace(groupRegex, '')
+    // Replace decimal with '.'
+    if (decimal !== '.') {
+        const decRegex = new RegExp(`\\${decimal}`, 'g')
+        normalized = normalized.replace(decRegex, '.')
+    }
+    // Also handle alternative decimal separator for robustness
+    normalized = normalized.replace(/,/g, '.')
+    const n = Number(normalized)
+    return Number.isNaN(n) ? NaN : n
+}
+
 export const formatCurrencyValue = function (value: number) {
     const settingsStore = useSettingsStore()
+    const formatted = formatNumberLocale(value, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    })
 
     if (settingsStore.currency.placement == 'after')
-        return `${value.toFixed(2)}${settingsStore.currency.symbol}`
-    else return `${settingsStore.currency.symbol}${value.toFixed(2)}`
+        return `${formatted}${settingsStore.currency.symbol}`
+    else return `${settingsStore.currency.symbol}${formatted}`
 }
 
 export const getLocaleFromRoute = function () {

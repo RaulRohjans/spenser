@@ -6,6 +6,7 @@
     import type { NuxtError } from '#app'
     import { buildDateTimeWithOffset } from '~~/app/utils/date'
     import { toUserMessage } from '~/utils/errors'
+    import { parseNumberLocale } from '~~/app/utils/helpers'
 
     export type ModalTransactionProps = {
         /**
@@ -30,10 +31,23 @@
 
     const schema = z.object({
         name: z.string().min(1, $t('Mandatory Field')),
-        value: z.coerce
-            .number()
-            .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON)
-            .min(1, $t('Mandatory Field')),
+        value: z.preprocess(
+            (v) => {
+                if (v === '' || v === null || typeof v === 'undefined')
+                    return undefined
+                const n = parseNumberLocale(v as unknown)
+                return Number.isNaN(n) ? undefined : n
+            },
+            z
+                .number({ error: $t('Mandatory Field') })
+                .min(1, $t('Mandatory Field'))
+                .refine(
+                    (x) =>
+                        Math.abs(x * 100 - Math.trunc(x * 100)) <
+                        Number.EPSILON,
+                    $t('Invalid number')
+                )
+        ),
         category: z
             .number({ error: $t('Mandatory Field') })
             .min(1, $t('Mandatory Field')),
