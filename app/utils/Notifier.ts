@@ -3,59 +3,21 @@ import { useToast } from '#imports'
 import ModalChooser from '~/components/Modal/Chooser.vue'
 import type { ModalChooserProps } from '~/components/Modal/Chooser.vue'
 import type { EmitEventCallback } from '~~/types/Data'
-import { UApp } from '#components'
 
 export class Notifier {
-    private static uiProviderMounted = false
-    private static uiProviderContainer: HTMLDivElement | null = null
-    private static toasterOptions: {
-        position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-    } = { position: 'top-right' }
-
-    private static ensureUiProvidersMounted() {
-        if (!import.meta.client) return
-        if (this.uiProviderMounted) return
-
-        const container = this.setupDomContainer()
-        const nuxtApp = useNuxtApp()
-        const vnode = h(
-            UApp,
-            { toaster: this.toasterOptions },
-            { default: () => null }
-        )
-        vnode.appContext = nuxtApp.vueApp._context
-        render(vnode, container)
-
-        this.uiProviderMounted = true
-        this.uiProviderContainer = container
-    }
-
-    private static updateUiProviders() {
-        if (!import.meta.client) return
-        if (!this.uiProviderContainer) return
-
-        const nuxtApp = useNuxtApp()
-        const vnode = h(
-            UApp,
-            { toaster: this.toasterOptions },
-            { default: () => null }
-        )
-        vnode.appContext = nuxtApp.vueApp._context
-        render(vnode, this.uiProviderContainer)
-    }
-
-    static configureToaster(options: {
-        position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
-    }) {
-        this.toasterOptions = { ...this.toasterOptions, ...options }
-        this.updateUiProviders()
-    }
-
     private static buildAlertTitle(type: string) {
         const { $i18n } = useNuxtApp()
+
+        // The reason this has to be used this way is because it expects to be used inside setup of a component
+        // and this is the hack to get around it and use it here
         const translate = (key: string) => {
-            if ($i18n && typeof $i18n.t === 'function')
-                return $i18n.t(key) as string
+            if (
+                $i18n &&
+                typeof ($i18n as { t?: (k: string) => unknown }).t ===
+                    'function'
+            ) {
+                return ($i18n as { t: (k: string) => unknown }).t(key) as string
+            }
             return key
         }
 
@@ -114,15 +76,12 @@ export class Notifier {
             message
         }
 
-        // Render vnode within existing Nuxt app context
-        const vnode = h(UApp, null, {
-            default: () =>
-                h(ModalChooser, {
-                    ...props,
-                    onConfirm: () => emitCallbacks.confirm(nuxtApp.vueApp),
-                    onCancel: () => emitCallbacks.cancel(nuxtApp.vueApp),
-                    onClose: () => emitCallbacks.close(nuxtApp.vueApp)
-                })
+        // Render ModalChooser directly within existing Nuxt app context
+        const vnode = h(ModalChooser, {
+            ...props,
+            onConfirm: () => emitCallbacks.confirm!(nuxtApp.vueApp),
+            onCancel: () => emitCallbacks.cancel!(nuxtApp.vueApp),
+            onClose: () => emitCallbacks.close!(nuxtApp.vueApp)
         })
         vnode.appContext = nuxtApp.vueApp._context
         render(vnode, container)
@@ -139,9 +98,7 @@ export class Notifier {
             | 'neutral'
             | 'secondary' = 'info'
     ) {
-        // Ensure UI providers exist once (fixes cases where toast container isn't in DOM yet)
-        this.ensureUiProvidersMounted()
-
+        // Use the app-level <UApp> provider with proper Vue context
         const nuxtApp = useNuxtApp()
         nuxtApp.vueApp.runWithContext(() => {
             const toast = useToast()

@@ -6,6 +6,7 @@
     import type { FetchTableDataResult, TableRow } from '~~/types/Table'
     import type { CategoryRow } from '~~/types/ApiRows'
     import { buildDateTimeWithOffset } from '~~/app/utils/date'
+    import { toUserMessage } from '~/utils/errors'
 
     export type ModalBudgetProps = {
         /**
@@ -160,7 +161,10 @@
                 model.value = false
             })
             .catch((e: NuxtError) =>
-                Notifier.showAlert(e.statusMessage, 'error')
+                Notifier.showAlert(
+                    toUserMessage(e, $t('An unexpected error occurred while importing.')),
+                    'error'
+                )
             )
     }
 

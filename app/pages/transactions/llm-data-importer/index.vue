@@ -3,6 +3,7 @@
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
     import type { LlmTransactionObject } from '~~/types/Data'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
@@ -105,7 +106,14 @@
                 toggleLoading(false)
 
                 // Display error message
-                Notifier.showAlert(e.statusMessage, 'error')
+                logUnknownError(e)
+                Notifier.showAlert(
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while processing the import.')
+                    ),
+                    'error'
+                )
             })
     }
 
