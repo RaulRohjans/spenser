@@ -20,7 +20,7 @@
         first_name: z.string().trim().min(1, $t('Mandatory Field')),
         last_name: z.string().trim().min(1, $t('Mandatory Field')),
         email: z.string().trim().email($t('Invalid Email')),
-        currency: z.number()
+        currency: z.number({ error: $t('Mandatory Field') })
     })
 
     type Schema = z.output<typeof schema>

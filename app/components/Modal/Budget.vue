@@ -6,6 +6,7 @@
     import type { SelectOption } from '~~/types/Options'
     import type { BudgetPeriodType } from '~~/types/budget-period'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
+    import type { BudgetDataObject } from '~~/types/Data'
 
     export type ModalBudgetProps = {
         /**
@@ -54,22 +55,24 @@
     const schema = z.object({
         id: z.number().optional(),
         name: z.string().optional(),
-        value: z.number().min(0.01, $t('The value has to be bigger than 0.'))
+        category: z.number().optional().nullable(),
+        value: z.number().min(0.01, $t('The value has to be bigger than 0.')),
+        period: z.string({ error: $t('Mandatory Field') })
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
         name: '',
-        category: 0,
+        category: undefined as number | undefined,
         value: 0,
-        period: periodOptions.value[0].value as BudgetPeriodType
+        period: undefined as BudgetPeriodType | undefined
     })
 
     // Fetch budget
     if (props.mode != 'create') {
         const { data: budget } =
-            await useLazyAsyncData<FetchTableSingleDataResult>(
+            await useLazyAsyncData<FetchTableSingleDataResult<BudgetDataObject>>(
                 // IMPORTANT! Key needs to be set like this so it doesnt cache old data
                 `budget-${props.mode}-${props.id}`,
                 () =>

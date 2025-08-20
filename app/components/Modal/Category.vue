@@ -27,7 +27,7 @@
     const { t: $t } = useI18n()
 
     const schema = z.object({
-        name: z.string(),
+        name: z.string().trim().min(1, $t('Mandatory Field')),
         icon: z.string().optional()
     })
 

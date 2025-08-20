@@ -128,7 +128,10 @@
             })
             .catch((e: NuxtError) => {
                 Notifier.showAlert(
-                    toUserMessage(e, $t('An unexpected error occurred while saving.')),
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while saving.')
+                    ),
                     'error'
                 )
             })
@@ -145,7 +148,7 @@
                 @submit="onCreateUser">
                 <div
                     class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
-                    <UFormField :label="$t('First Name')" name="first_name" v-slot="{ error }">
+                    <UFormField :label="$t('First Name')" name="first_name">
                         <UInput v-model="state.first_name" class="w-full" />
                     </UFormField>
 
@@ -154,9 +157,7 @@
                     </UFormField>
                 </div>
 
-                <UFormField
-                    :label="$t('Username')"
-                    name="username">
+                <UFormField :label="$t('Username')" name="username">
                     <UInput v-model="state.username" class="w-full" />
                 </UFormField>
 

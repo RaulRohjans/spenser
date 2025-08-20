@@ -29,20 +29,23 @@
     const { t: $t } = useI18n()
 
     const schema = z.object({
-        name: z.string().optional(),
+        name: z.string().min(1, $t('Mandatory Field')),
         value: z.coerce
             .number()
-            .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON),
-        category: z.number(),
+            .refine((x) => x * 100 - Math.trunc(x * 100) < Number.EPSILON)
+            .min(1, $t('Mandatory Field')),
+        category: z
+            .number({ error: $t('Mandatory Field') })
+            .min(1, $t('Mandatory Field')),
         date: z.date()
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
-        category: 0,
+        category: undefined as number | undefined,
         name: '',
-        value: 0,
+        value: undefined as number | undefined,
         date: new Date(Date.now())
     })
 
@@ -132,7 +135,10 @@
             })
             .catch((e: NuxtError) => {
                 Notifier.showAlert(
-                    toUserMessage(e, $t('An unexpected error occurred while saving.')),
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while saving.')
+                    ),
                     'error'
                 )
             })
@@ -142,18 +148,18 @@
 </script>
 
 <template>
-    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onCreateTransaction">
-        <UFormField
-            :label="$t('Transaction Name')"
-            name="name">
+    <UForm
+        :schema="schema"
+        :state="state"
+        class="space-y-4"
+        @submit="onCreateTransaction">
+        <UFormField :label="$t('Transaction Name')" name="name">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
-        <div class="flex flex-row justify-between items-center space-y-0 gap-8">
-            <UFormField
-                :label="$t('Value')"
-                name="value"
-                class="w-full">
+        <div
+            class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
+            <UFormField :label="$t('Value')" name="value" class="w-full">
                 <UInput
                     v-model="state.value"
                     type="number"
@@ -161,10 +167,7 @@
                     class="w-full" />
             </UFormField>
 
-            <UFormField
-                :label="$t('Category')"
-                name="category"
-                class="w-full">
+            <UFormField :label="$t('Category')" name="category" class="w-full">
                 <USelect
                     v-model="state.category"
                     :items="categorySelectOptions"

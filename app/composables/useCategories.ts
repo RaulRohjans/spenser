@@ -30,7 +30,9 @@ export function useCategories() {
         }))
     })
 
-    const getCategoryIcon = (categoryId: number) => {
+    const getCategoryIcon = (categoryId: number | undefined) => {
+        if (!categoryId) return
+
         const category = data.value.data.rows.find((c) => c.id === categoryId)
         return category?.icon ? getHeroIconName(category.icon) : undefined
     }

@@ -19,13 +19,14 @@
     ])
 
     const schema = z.object({
-        symbol: z.string().max(5, 'Currency code is too big')
+        symbol: z.string().trim().min(1, $t('Mandatory Field')).max(5, $t('Currency code is too big')),
+        placement: z.enum(['before', 'after'])
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
         symbol: '',
-        placement: placementOptions.value[0]!.value
+        placement: undefined as 'before' | 'after' | undefined
     })
 
     const onCreateCurrency = function (event: FormSubmitEvent<Schema>) {
