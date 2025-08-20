@@ -4,6 +4,7 @@
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { TableColumn } from '@nuxt/ui'
     import type { TransactionRow } from '~~/types/ApiRows'
+    import { toUserMessage } from '~/utils/errors'
 
     // Basic Setup
     const { token } = useAuth()
@@ -55,7 +56,10 @@
                         reload()
                     })
                     .catch((e: NuxtError) =>
-                        Notifier.showAlert(e.statusMessage, 'error')
+                        Notifier.showAlert(
+                            toUserMessage(e, $t('An unexpected error occurred while deleting.')),
+                            'error'
+                        )
                     )
             }
         )

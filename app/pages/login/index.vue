@@ -4,11 +4,11 @@
     import type { NuxtError } from '#app'
     import type { UserSettingsObject } from '~~/types/Data'
     import { useSettingsStore } from '~/stores/settings'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { signIn, token } = useAuth()
     const config = useRuntimeConfig()
     const { t: $t } = useI18n()
-    const error: Ref<undefined | string> = ref()
     const validationSchema = z.object({
         username: z.string().trim().min(1, $t('Invalid username')),
         password: z.string().trim().min(1, $t('Must be at least 8 characters'))
@@ -42,9 +42,16 @@
                     settingsStore.loadCurrency(userSettings.data)
                 //-------------------------
             })
-            .catch((e: NuxtError) =>
-                Notifier.showAlert(e.statusMessage, 'error')
-            )
+            .catch((e: NuxtError) => {
+                logUnknownError(e)
+                Notifier.showAlert(
+                    toUserMessage(
+                        e,
+                        $t('Invalid username or password')
+                    ),
+                    'error'
+                )
+            })
     }
 
     onMounted(async () => {
@@ -87,12 +94,11 @@
         @submit="onSubmit">
         <UFormField
             :label="$t('Username')"
-            name="username"
-            :error="error != null">
+            name="username">
             <UInput v-model="state.username" class="w-full" />
         </UFormField>
 
-        <UFormField :label="$t('Password')" name="password" :error="error">
+        <UFormField :label="$t('Password')" name="password">
             <UInput v-model="state.password" class="w-full" type="password" />
         </UFormField>
 

@@ -2,10 +2,10 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { token, refresh } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<undefined | string> = ref()
 
     const emit = defineEmits<{
         (event: 'close-modal'): void
@@ -56,7 +56,14 @@
                 )
             })
             .catch((e: NuxtError) => {
-                error.value = e.statusMessage
+                logUnknownError(e)
+                Notifier.showAlert(
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while saving.')
+                    ),
+                    'error'
+                )
             })
     }
 </script>
@@ -69,8 +76,7 @@
         @submit="onChangePasswordSubmit">
         <UFormField
             :label="$t('New Password')"
-            name="new_password"
-            :error="error != null">
+            name="new_password">
             <UInput
                 v-model="state.new_password"
                 class="w-full"
@@ -79,8 +85,7 @@
 
         <UFormField
             :label="$t('Repeat New Password')"
-            name="repeat_new_password"
-            :error="error">
+            name="repeat_new_password">
             <UInput
                 v-model="state.repeat_new_password"
                 class="w-full"

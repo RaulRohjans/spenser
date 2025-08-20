@@ -2,6 +2,7 @@
     import { z } from 'zod'
     import type { FormSubmitEvent } from '#ui/types'
     import type { NuxtError } from '#app'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const emit = defineEmits<{
         (event: 'submit'): void
@@ -11,20 +12,21 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    const error: Ref<undefined | string> = ref()
+    
     const placementOptions = ref([
         { label: 'Before', value: 'before' },
         { label: 'After', value: 'after' }
     ])
 
     const schema = z.object({
-        symbol: z.string().max(5, 'Currency code is too big')
+        symbol: z.string().trim().min(1, $t('Mandatory Field')).max(5, $t('Currency code is too big')),
+        placement: z.enum(['before', 'after'])
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
         symbol: '',
-        placement: placementOptions.value[0].value
+        placement: undefined as 'before' | 'after' | undefined
     })
 
     const onCreateCurrency = function (event: FormSubmitEvent<Schema>) {
@@ -54,7 +56,16 @@
                 // Close modal
                 model.value = false
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage))
+            .catch((e: NuxtError) => {
+                logUnknownError(e)
+                Notifier.showAlert(
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while saving.')
+                    ),
+                    'error'
+                )
+            })
     }
 </script>
 
@@ -69,16 +80,14 @@
                 <UFormField
                     :label="$t('Symbol')"
                     name="symbol"
-                    class="w-full"
-                    :error="!!error">
+                    class="w-full">
                     <UInput v-model="state.symbol" class="w-full" />
                 </UFormField>
 
                 <UFormField
                     :label="$t('Placement')"
                     name="placement"
-                    class="w-full"
-                    :error="error">
+                    class="w-full">
                     <USelect
                         v-model="state.placement"
                         :items="placementOptions"

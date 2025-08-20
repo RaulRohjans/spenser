@@ -5,6 +5,8 @@
     import type { FetchTableSingleDataResult } from '~~/types/Table'
     import type { SelectOption } from '~~/types/Options'
     import type { BudgetPeriodType } from '~~/types/budget-period'
+    import { toUserMessage, logUnknownError } from '~/utils/errors'
+    import type { BudgetDataObject } from '~~/types/Data'
 
     export type ModalBudgetProps = {
         /**
@@ -26,7 +28,6 @@
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
-    const error: Ref<undefined | string> = ref()
 
     const periodOptions: Ref<SelectOption[]> = ref([
         {
@@ -53,40 +54,59 @@
 
     const schema = z.object({
         id: z.number().optional(),
-        name: z.string().optional(),
-        value: z.number().min(0.01, $t('The value has to be bigger than 0.'))
+        name: z.string().min(2, $t('Mandatory Field')),
+        category: z.number().optional().nullable(),
+        value: z.preprocess(
+            (v) => {
+                if (v === '' || v === null || typeof v === 'undefined')
+                    return undefined
+                const n = parseNumberLocale(v as unknown)
+                return Number.isNaN(n) ? undefined : n
+            },
+            z
+                .number({ error: $t('Mandatory Field') })
+                .min(1, $t('Mandatory Field'))
+                .refine(
+                    (x) =>
+                        Math.abs(x * 100 - Math.trunc(x * 100)) <
+                        Number.EPSILON,
+                    $t('Invalid number')
+                )
+        ),
+        period: z.string({ error: $t('Mandatory Field') })
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
         name: '',
-        category: 0,
-        value: 0,
-        period: periodOptions.value[0].value as BudgetPeriodType
+        category: undefined as number | undefined,
+        value: undefined as number | undefined,
+        period: undefined as BudgetPeriodType | undefined
     })
 
     // Fetch budget
     if (props.mode != 'create') {
-        const { data: budget } =
-            await useLazyAsyncData<FetchTableSingleDataResult>(
-                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
-                `budget-${props.mode}-${props.id}`,
-                () =>
-                    $fetch(`/api/budgets/${props.id}`, {
-                        method: 'GET',
-                        headers: buildRequestHeaders(token.value)
-                    }),
-                {
-                    default: () => {
-                        return {
-                            success: false,
-                            data: {}
-                        }
-                    },
-                    watch: [() => props.id, () => props.mode]
-                }
-            )
+        const { data: budget } = await useLazyAsyncData<
+            FetchTableSingleDataResult<BudgetDataObject>
+        >(
+            // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+            `budget-${props.mode}-${props.id}`,
+            () =>
+                $fetch(`/api/budgets/${props.id}`, {
+                    method: 'GET',
+                    headers: buildRequestHeaders(token.value)
+                }),
+            {
+                default: () => {
+                    return {
+                        success: false,
+                        data: {}
+                    }
+                },
+                watch: [() => props.id, () => props.mode]
+            }
+        )
 
         // A watch is needed here because for some reason, using a then is still
         // not enough to make sure the data is loaded after the request is made
@@ -119,12 +139,6 @@
     const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
 
     const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
-        const parsed = schema.safeParse(event.data)
-        if (!parsed.success) {
-            error.value = $t('Invalid input')
-            return
-        }
-
         $fetch(`/api/budgets/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
@@ -146,7 +160,16 @@
                     'success'
                 )
             })
-            .catch((e: NuxtError) => (error.value = e.statusMessage))
+            .catch((e: NuxtError) => {
+                logUnknownError(e)
+                Notifier.showAlert(
+                    toUserMessage(
+                        e,
+                        $t('An unexpected error occurred while saving.')
+                    ),
+                    'error'
+                )
+            })
     }
 </script>
 
@@ -156,11 +179,11 @@
         :state="state"
         class="space-y-4"
         @submit="onCreateCategory">
-        <UFormField :label="$t('Name')" name="name" :error="!!error">
+        <UFormField :label="$t('Name')" name="name">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
-        <UFormField :label="$t('Category')" name="category" :error="!!error">
+        <UFormField :label="$t('Category')" name="category">
             <USelect
                 v-model="state.category"
                 :items="categorySelectOptions"
@@ -170,14 +193,14 @@
             </USelect>
         </UFormField>
 
-        <UFormField :label="$t('Period')" name="period" :error="!!error">
+        <UFormField :label="$t('Period')" name="period">
             <USelect
                 v-model="state.period"
                 :items="periodOptions"
                 class="hide-select-span w-full" />
         </UFormField>
 
-        <UFormField :label="$t('Value')" name="value" :error="error">
+        <UFormField :label="$t('Value')" name="value">
             <UInput
                 v-model="state.value"
                 type="number"
