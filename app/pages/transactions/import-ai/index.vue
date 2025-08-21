@@ -15,6 +15,7 @@
     const isSubmitting: Ref<boolean> = ref(false)
     const progress: Ref<number> = ref(0)
     const progressMsg: Ref<string> = ref('')
+    const fileInput: Ref<HTMLInputElement | null> = ref(null)
 
     const onDrop = (e: DragEvent) => {
         e.preventDefault()
@@ -140,8 +141,8 @@
                             <p class="mb-2">
                                 {{ $t('Drag and drop a single file here, or click to select') }}
                             </p>
-                            <input type="file" class="hidden" @change="onFileChange" />
-                            <UButton color="neutral" size="xs" @click="($event.target as HTMLElement).previousElementSibling?.dispatchEvent(new MouseEvent('click'))">
+                            <input ref="fileInput" type="file" class="hidden" @change="onFileChange" />
+                            <UButton color="neutral" size="xs" @click="fileInput?.click()">
                                 {{ $t('Choose File') }}
                             </UButton>
                             <div v-if="selectedFile" class="mt-3 text-sm opacity-80">
