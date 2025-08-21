@@ -13,8 +13,12 @@
     const selectedFile: Ref<File | null> = ref(null)
     const textInput: Ref<string> = ref('')
     const isSubmitting: Ref<boolean> = ref(false)
-    const progress: Ref<number> = ref(0)
-    const progressMsg: Ref<string> = ref('')
+    let progressHandle: {
+        update: (nextValue?: number, nextMessage?: string) => void
+        success: (finalMessage?: string, autoCloseMs?: number) => void
+        error: (finalMessage?: string, autoCloseMs?: number) => void
+        close: () => void
+    } | null = null
     const fileInput: Ref<HTMLInputElement | null> = ref(null)
 
     const onDrop = (e: DragEvent) => {
@@ -33,8 +37,10 @@
     const reset = () => {
         selectedFile.value = null
         textInput.value = ''
-        progress.value = 0
-        progressMsg.value = ''
+        if (progressHandle) {
+            progressHandle.close()
+            progressHandle = null
+        }
     }
 
     const submit = async () => {
@@ -49,24 +55,38 @@
 
         try {
             isSubmitting.value = true
-            progress.value = 15
-            progressMsg.value = $t('Uploading and preparing data...') as string
+            progressHandle = Notifier.showProgress(
+                $t('Uploading and preparing data...'),
+                15
+            )
 
-            let res: { success: boolean; transactions: Array<{ category: number | null; name: string; value: number; date: string }> }
+            let res: {
+                success: boolean
+                transactions: Array<{
+                    category: number | null
+                    name: string
+                    value: number
+                    date: string
+                }>
+            }
 
             if (hasFile) {
                 const fd = new FormData()
                 fd.append('0', selectedFile.value as File)
-                progress.value = 30
-                progressMsg.value = $t('Sending file to be parsed by AI...') as string
+                progressHandle.update(
+                    30,
+                    $t('Sending file to be parsed by AI...')
+                )
                 res = await $fetch('/api/ai-import/parse', {
                     method: 'POST',
                     headers: buildRequestHeaders(token.value),
                     body: fd
                 })
             } else {
-                progress.value = 30
-                progressMsg.value = $t('Sending text to be parsed by AI...') as string
+                progressHandle.update(
+                    30,
+                    $t('Sending text to be parsed by AI...')
+                )
                 res = await $fetch('/api/ai-import/parse', {
                     method: 'POST',
                     headers: buildRequestHeaders(token.value),
@@ -74,8 +94,7 @@
                 })
             }
 
-            progress.value = 80
-            progressMsg.value = $t('Processing AI response...') as string
+            progressHandle.update(80, $t('Processing AI response...'))
 
             if (!res.success || !Array.isArray(res.transactions))
                 throw new Error('Invalid AI response')
@@ -89,8 +108,7 @@
                 }))
             )
 
-            progress.value = 100
-            progressMsg.value = $t('Done! Redirecting...') as string
+            progressHandle.success($t('Done! Redirecting...'))
             await router.push('/transactions/import-ai/review')
             reset()
         } catch (e) {
@@ -98,12 +116,18 @@
             Notifier.showAlert(
                 toUserMessage(
                     err,
-                    $t('An unexpected error occurred while processing the import.')
+                    $t(
+                        'An unexpected error occurred while processing the import.'
+                    )
                 ),
                 'error'
             )
         } finally {
             isSubmitting.value = false
+            if (progressHandle) {
+                progressHandle.close()
+                progressHandle = null
+            }
         }
     }
 
@@ -113,7 +137,8 @@
 <template>
     <UCard>
         <div class="flex flex-col justify-center items-center w-full gap-4">
-            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+            <h2
+                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                 {{ $t('Import with AI') }}
             </h2>
 
@@ -125,9 +150,14 @@
                 }}
             </span>
 
-            <UForm :state="{}" class="p-6 flex flex-row justify-center items-center w-full" @submit="submit">
-                <div class="flex flex-col justify-center items-center w-full sm:w-[70%] gap-2">
-                    <UFormField class="w-full border border-gray-200 dark:border-gray-700 rounded p-4 sm:p-8 mb-4">
+            <UForm
+                :state="{}"
+                class="p-6 flex flex-row justify-center items-center w-full"
+                @submit="submit">
+                <div
+                    class="flex flex-col justify-center items-center w-full sm:w-[70%] gap-2">
+                    <UFormField
+                        class="w-full border border-gray-200 dark:border-gray-700 rounded p-4 sm:p-8 mb-4">
                         <div
                             class="w-full border-2 border-dashed rounded-md p-6 text-center transition"
                             :class="[
@@ -139,38 +169,57 @@
                             @dragleave.prevent="isDragging = false"
                             @drop="onDrop">
                             <p class="mb-2">
-                                {{ $t('Drag and drop a single file here, or click to select') }}
+                                {{
+                                    $t(
+                                        'Drag and drop a single file here, or click to select'
+                                    )
+                                }}
                             </p>
-                            <input ref="fileInput" type="file" class="hidden" @change="onFileChange" />
-                            <UButton color="neutral" size="xs" @click="fileInput?.click()">
+                            <input
+                                ref="fileInput"
+                                type="file"
+                                class="hidden"
+                                @change="onFileChange" />
+                            <UButton
+                                color="neutral"
+                                size="xs"
+                                @click="fileInput?.click()">
                                 {{ $t('Choose File') }}
                             </UButton>
-                            <div v-if="selectedFile" class="mt-3 text-sm opacity-80">
+                            <div
+                                v-if="selectedFile"
+                                class="mt-3 text-sm opacity-80">
                                 {{ selectedFile.name }}
                             </div>
                         </div>
 
-                        <div class="flex items-center align-center text-center w-full flex-row my-6">
-                            <div class="flex border-gray-200 dark:border-gray-800 w-full border-t border-solid" />
+                        <div
+                            class="flex items-center align-center text-center w-full flex-row my-6">
+                            <div
+                                class="flex border-gray-200 dark:border-gray-800 w-full border-t border-solid" />
                         </div>
 
-                        <UTextarea v-model="textInput" class="w-full" :rows="8" variant="outline" :placeholder="$t('Transactions to import...')" autoresize />
+                        <UTextarea
+                            v-model="textInput"
+                            class="w-full"
+                            :rows="8"
+                            variant="outline"
+                            :placeholder="$t('Transactions to import...')"
+                            autoresize />
                     </UFormField>
 
-                    <div class="flex flex-row justify-between w-full items-center">
-                        <UButton color="primary" type="submit" size="xs" :loading="isSubmitting">
+                    <div
+                        class="flex flex-row justify-between w-full items-center">
+                        <UButton
+                            color="primary"
+                            type="submit"
+                            size="xs"
+                            :loading="isSubmitting">
                             {{ $t('Import Data') }}
                         </UButton>
-
-                        <div class="flex flex-col items-end gap-1 w-1/2">
-                            <UProgress :value="progress" size="xs" />
-                            <span class="text-xs opacity-70">{{ progressMsg }}</span>
-                        </div>
                     </div>
                 </div>
             </UForm>
         </div>
     </UCard>
 </template>
-
-

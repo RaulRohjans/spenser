@@ -1,6 +1,8 @@
 import { h, render, type App } from 'vue'
 import ModalChooser from '~/components/Modal/Chooser.vue'
 import type { ModalChooserProps } from '~/components/Modal/Chooser.vue'
+import ModalProgress from '~/components/Modal/Progress.vue'
+import type { ModalProgressProps } from '~/components/Modal/Progress.vue'
 import type { EmitEventCallback } from '~~/types/Data'
 
 export class Notifier {
@@ -113,5 +115,67 @@ export class Notifier {
                 })
             }
         })
+    }
+
+    static showProgress(
+        message: string,
+        initialValue: number = 0
+    ): {
+        update: (nextValue?: number, nextMessage?: string) => void
+        success: (finalMessage?: string, autoCloseMs?: number) => void
+        error: (finalMessage?: string, autoCloseMs?: number) => void
+        close: () => void
+    } {
+        const container = this.setupDomContainer()
+        const nuxtApp = useNuxtApp()
+
+        let value = Math.max(0, Math.min(100, initialValue))
+        let text = message
+        let color: ModalProgressProps['color'] = 'primary'
+
+        const mount = () => {
+            nuxtApp.vueApp.runWithContext(() => {
+                const vnode = h(ModalProgress, {
+                    text,
+                    value,
+                    color
+                })
+                vnode.appContext = nuxtApp.vueApp._context
+                render(vnode, container)
+            })
+        }
+
+        const close = () => {
+            render(null, container)
+            document.body.removeChild(container)
+        }
+
+        const update = (nextValue?: number, nextMessage?: string) => {
+            if (typeof nextValue === 'number')
+                value = Math.max(0, Math.min(100, nextValue))
+            if (typeof nextMessage === 'string') text = nextMessage
+            color = 'primary'
+            mount()
+        }
+
+        const success = (finalMessage?: string, autoCloseMs: number = 800) => {
+            value = 100
+            color = 'success'
+            if (finalMessage) text = finalMessage
+            mount()
+            setTimeout(close, autoCloseMs)
+        }
+
+        const error = (finalMessage?: string, autoCloseMs: number = 1500) => {
+            color = 'error'
+            if (finalMessage) text = finalMessage
+            mount()
+            setTimeout(close, autoCloseMs)
+        }
+
+        // initial render
+        mount()
+
+        return { update, success, error, close }
     }
 }
