@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
+    import type { NuxtError } from 'nuxt/app'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { token, refresh } = useAuth()
@@ -74,9 +74,7 @@
         :state="state"
         class="space-y-4 p-6"
         @submit="onChangePasswordSubmit">
-        <UFormField
-            :label="$t('New Password')"
-            name="new_password">
+        <UFormField :label="$t('New Password')" name="new_password">
             <UInput
                 v-model="state.new_password"
                 class="w-full"

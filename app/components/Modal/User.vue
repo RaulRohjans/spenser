@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
+    import type { NuxtError } from 'nuxt/app'
     import { toUserMessage } from '~/utils/errors'
 
     export type ModalUserProps = {

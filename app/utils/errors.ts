@@ -1,14 +1,28 @@
 export const toUserMessage = (error: unknown, fallbackMessage?: string) => {
 	// Extract a friendly message and avoid leaking low-level fetch/config errors
+	type UnknownError = {
+		statusCode?: number
+		statusMessage?: string
+		data?: { message?: string }
+		response?: { status?: number }
+		cause?: { statusCode?: number }
+		message?: string
+	} | string | null | undefined
 	try {
-		const e = error as any
+		const e = error as UnknownError
 		const statusCode: number | undefined =
-			e?.statusCode ?? e?.response?.status ?? e?.cause?.statusCode
-		const statusMessage: string | undefined = e?.statusMessage
-		const dataMessage: string | undefined = e?.data?.message
-		const rawMessage: string | undefined = e?.message
+			(typeof e === 'object' && e?.statusCode) ||
+			(typeof e === 'object' && e?.response?.status) ||
+			(typeof e === 'object' && e?.cause?.statusCode) ||
+			undefined
+		const statusMessage: string | undefined =
+			typeof e === 'object' ? e?.statusMessage : undefined
+		const dataMessage: string | undefined =
+			typeof e === 'object' ? e?.data?.message : undefined
+		const rawMessage: string | undefined =
+			typeof e === 'object' ? e?.message : undefined
 		const stringError: string | undefined =
-			typeof e === 'string' ? (e as string) : undefined
+			typeof e === 'string' ? e : undefined
 
 		// Known noisy messages we should not surface to end users
 		const isNoisy = (msg: string | undefined) => {
@@ -40,7 +54,7 @@ export const toUserMessage = (error: unknown, fallbackMessage?: string) => {
 export const logUnknownError = (error: unknown) => {
 	// Lightweight client-side logging for debugging server should log separately
 	// Avoid throwing here just log to the console
-	// eslint-disable-next-line no-console
+	 
 	console.error(error)
 }
 

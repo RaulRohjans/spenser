@@ -1,12 +1,11 @@
 <script lang="ts" setup>
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
     import type { UserSettingsObject } from '~~/types/Data'
     import type { SelectOption } from '~~/types/Options'
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { CurrencyRow } from '~~/types/ApiRows'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
+    import type { FormSubmitEvent } from '@nuxt/ui'
 
     const { t: $t } = useI18n()
     const { token, data: authData, refresh } = useAuth()
@@ -178,9 +177,7 @@
                     <UInput v-model="state.email" class="w-full" />
                 </UFormField>
 
-                <UFormField
-                    :label="$t('Currency')"
-                    name="currency">
+                <UFormField :label="$t('Currency')" name="currency">
                     <USelect
                         v-model="state.currency"
                         class="w-full"

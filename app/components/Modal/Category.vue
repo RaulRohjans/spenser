@@ -1,9 +1,10 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
     import type { FetchTableSingleDataResult } from '~~/types/Table'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
+    import type { NuxtError } from 'nuxt/app'
+    import type { CategoryRow } from '~~/types/ApiRows'
+    import type { FormSubmitEvent } from '@nuxt/ui'
 
     export type ModalCategoryProps = {
         /**
@@ -40,25 +41,26 @@
 
     // Fetch Category
     if (props.mode != 'create') {
-        const { data: category } =
-            await useLazyAsyncData<FetchTableSingleDataResult>(
-                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
-                `category-${props.mode}-${props.id}`,
-                () =>
-                    $fetch(`/api/categories/${props.id}`, {
-                        method: 'GET',
-                        headers: buildRequestHeaders(token.value)
-                    }),
-                {
-                    default: () => {
-                        return {
-                            success: false,
-                            data: {}
-                        }
-                    },
-                    watch: [() => props.id, () => props.mode]
-                }
-            )
+        const { data: category } = await useLazyAsyncData<
+            FetchTableSingleDataResult<CategoryRow>
+        >(
+            // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+            `category-${props.mode}-${props.id}`,
+            () =>
+                $fetch(`/api/categories/${props.id}`, {
+                    method: 'GET',
+                    headers: buildRequestHeaders(token.value)
+                }),
+            {
+                default: () => {
+                    return {
+                        success: false,
+                        data: {}
+                    }
+                },
+                watch: [() => props.id, () => props.mode]
+            }
+        )
 
         // A watch is needed here because for some reason, using a then is still
         // not enough to make sure the data is loaded after the request is made

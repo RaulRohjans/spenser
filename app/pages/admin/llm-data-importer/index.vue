@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
+    import type { NuxtError } from 'nuxt/app'
     import type { SelectOption } from '~~/types/Options'
     import type { GlobalSettingsObject } from '~~/types/Data'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
@@ -57,7 +57,9 @@
                 Notifier.showAlert(
                     toUserMessage(
                         e,
-                        $t('An unexpected error occurred while saving settings.')
+                        $t(
+                            'An unexpected error occurred while saving settings.'
+                        )
                     ),
                     'error'
                 )
@@ -85,10 +87,7 @@
 
 <template>
     <UForm :state="state" class="space-y-4" @submit="onSave">
-        <UFormField
-            :label="$t('LLM Provider')"
-            name="provider"
-            class="w-full">
+        <UFormField :label="$t('LLM Provider')" name="provider" class="w-full">
             <USelect
                 :key="providerSelectKey"
                 v-model="state.provider"
@@ -96,16 +95,11 @@
         </UFormField>
 
         <template v-if="state.provider === 'gpt'">
-            <UFormField
-                :label="$t('GPT Model')"
-                name="gptModel"
-                class="w-full">
+            <UFormField :label="$t('GPT Model')" name="gptModel" class="w-full">
                 <UInput v-model="state.gptModel" />
             </UFormField>
 
-            <UFormField
-                :label="$t('GPT Token')"
-                name="gptToken">
+            <UFormField :label="$t('GPT Token')" name="gptToken">
                 <UInput v-model="state.gptToken" type="password" />
             </UFormField>
         </template>

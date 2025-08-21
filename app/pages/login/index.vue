@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
+    import type { NuxtError } from 'nuxt/app'
     import type { UserSettingsObject } from '~~/types/Data'
     import { useSettingsStore } from '~/stores/settings'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
@@ -45,10 +45,7 @@
             .catch((e: NuxtError) => {
                 logUnknownError(e)
                 Notifier.showAlert(
-                    toUserMessage(
-                        e,
-                        $t('Invalid username or password')
-                    ),
+                    toUserMessage(e, $t('Invalid username or password')),
                     'error'
                 )
             })
@@ -92,9 +89,7 @@
         :state="state"
         class="space-y-4"
         @submit="onSubmit">
-        <UFormField
-            :label="$t('Username')"
-            name="username">
+        <UFormField :label="$t('Username')" name="username">
             <UInput v-model="state.username" class="w-full" />
         </UFormField>
 

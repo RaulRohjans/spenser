@@ -1,12 +1,12 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
     import type { FetchTableSingleDataResult } from '~~/types/Table'
     import type { SelectOption } from '~~/types/Options'
     import type { BudgetPeriodType } from '~~/types/budget-period'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
     import type { BudgetDataObject } from '~~/types/Data'
+    import type { NuxtError } from 'nuxt/app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
 
     export type ModalBudgetProps = {
         /**
@@ -113,13 +113,13 @@
         watch(
             budget,
             (newVal) => {
-                if (!newVal?.data) return
+                if (!newVal) return
 
                 state.id = props.id
-                state.name = newVal.data.name
-                state.category = newVal.data.category
-                state.value = newVal.data.value
-                state.period = newVal.data.period
+                state.name = newVal.name
+                state.category = newVal.category
+                state.value = newVal.value
+                state.period = newVal.period
             },
             { immediate: true }
         )
