@@ -160,7 +160,15 @@
         </UFormField>
 
         <UFormField :label="$t('Description')" name="description">
-            <UTextarea v-model="state.description" :rows="4" :placeholder="$t('Optional description to help the AI understand this category')" />
+            <UTextarea
+                v-model="state.description"
+                :rows="4"
+                class="w-full"
+                :placeholder="
+                    $t(
+                        'Optional description to help the AI understand this category'
+                    )
+                " />
         </UFormField>
 
         <div class="flex flex-row justify-end">
