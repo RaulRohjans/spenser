@@ -71,7 +71,8 @@
         () => state.provider,
         (newVal) => {
             if (newVal === 'gpt') state.model = 'gpt-4o-mini'
-            else if (newVal === 'anthropic') state.model = 'claude-3-5-sonnet-latest'
+            else if (newVal === 'anthropic')
+                state.model = 'claude-3-5-sonnet-latest'
             else if (newVal === 'google') state.model = 'gemini-1.5-flash'
             else if (newVal === 'ollama') state.model = 'llama3'
         }
@@ -104,8 +105,14 @@
                 v-else-if="state.provider === 'anthropic'"
                 v-model="state.model"
                 :items="[
-                    { label: 'claude-3-5-sonnet-latest', value: 'claude-3-5-sonnet-latest' },
-                    { label: 'claude-3-opus-latest', value: 'claude-3-opus-latest' }
+                    {
+                        label: 'claude-3-5-sonnet-latest',
+                        value: 'claude-3-5-sonnet-latest'
+                    },
+                    {
+                        label: 'claude-3-opus-latest',
+                        value: 'claude-3-opus-latest'
+                    }
                 ]" />
             <USelect
                 v-else-if="state.provider === 'google'"
@@ -124,7 +131,10 @@
         </template>
 
         <template v-else>
-            <UFormField :label="$t('Ollama URL')" name="ollamaUrl" class="w-full">
+            <UFormField
+                :label="$t('Ollama URL')"
+                name="ollamaUrl"
+                class="w-full">
                 <UInput v-model="state.ollamaUrl" />
             </UFormField>
         </template>

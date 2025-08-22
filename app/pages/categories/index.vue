@@ -116,7 +116,8 @@
             header: $t('Description'),
             cell: ({ row }) => {
                 const desc = row.original.description || ''
-                const short = desc.length > 60 ? `${desc.slice(0, 60)}...` : desc
+                const short =
+                    desc.length > 60 ? `${desc.slice(0, 60)}...` : desc
                 return h('span', { title: desc }, short)
             },
             meta: { alias: $t('Description') }

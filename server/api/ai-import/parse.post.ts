@@ -32,7 +32,12 @@ export default defineEventHandler(async (event) => {
         .from(globalSettings)
         .then((r) => r[0])
 
-    if (!gSettings || !gSettings.token || !gSettings.importer_provider || !gSettings.model) {
+    if (
+        !gSettings ||
+        !gSettings.token ||
+        !gSettings.importer_provider ||
+        !gSettings.model
+    ) {
         throw createError({
             statusMessage: 'LLM is not configured.',
             statusCode: 400
@@ -41,7 +46,11 @@ export default defineEventHandler(async (event) => {
 
     // Load categories for the user
     const cats = await db
-        .select({ id: categories.id, name: categories.name, description: categories.description })
+        .select({
+            id: categories.id,
+            name: categories.name,
+            description: categories.description
+        })
         .from(categories)
         .where(and(eq(categories.user, user.id), eq(categories.deleted, false)))
 
@@ -53,7 +62,11 @@ export default defineEventHandler(async (event) => {
     if (contentType.includes('multipart/form-data')) {
         const { files } = await readFiles(event, { maxFiles: 1 })
         const first = files && Object.values(files)[0]?.[0]
-        if (!first) throw createError({ statusMessage: 'Please provide a valid file.', statusCode: 400 })
+        if (!first)
+            throw createError({
+                statusMessage: 'Please provide a valid file.',
+                statusCode: 400
+            })
 
         try {
             const buf = await fs.readFile(first.filepath)
@@ -87,18 +100,27 @@ export default defineEventHandler(async (event) => {
 
             rawText = await textFromBuffer()
         } catch (err: unknown) {
-            const message = (err as { message?: string } | undefined)?.message || 'Failed to read file'
+            const message =
+                (err as { message?: string } | undefined)?.message ||
+                'Failed to read file'
             throw createError({ statusMessage: message, statusCode: 400 })
         }
     } else {
         const body = await readBody<{ transactionText?: string }>(event)
         if (!body.transactionText) {
-            throw createError({ statusMessage: 'Please provide text.', statusCode: 400 })
+            throw createError({
+                statusMessage: 'Please provide text.',
+                statusCode: 400
+            })
         }
         rawText = body.transactionText
     }
 
-    if (!rawText || rawText.trim().length === 0) throw createError({ statusMessage: 'No content to parse.', statusCode: 400 })
+    if (!rawText || rawText.trim().length === 0)
+        throw createError({
+            statusMessage: 'No content to parse.',
+            statusCode: 400
+        })
 
     const providerName = gSettings.importer_provider
     let model
@@ -112,18 +134,28 @@ export default defineEventHandler(async (event) => {
         model = provider(name)
     } else if (providerName === 'google') {
         const name = gSettings.model || 'gemini-1.5-flash'
-        const provider = createGoogleGenerativeAI({ apiKey: gSettings.token || '' })
+        const provider = createGoogleGenerativeAI({
+            apiKey: gSettings.token || ''
+        })
         model = provider(name)
     } else if (providerName === 'ollama') {
         const name = gSettings.model || 'llama3'
-        const provider = createOllama({ baseURL: gSettings.ollama_url || 'http://localhost:11434' })
+        const provider = createOllama({
+            baseURL: gSettings.ollama_url || 'http://localhost:11434'
+        })
         model = provider(name)
     } else {
-        throw createError({ statusMessage: 'Unsupported provider.', statusCode: 400 })
+        throw createError({
+            statusMessage: 'Unsupported provider.',
+            statusCode: 400
+        })
     }
 
     const categoryGuidance = cats
-        .map((c) => `- ${c.id}: ${c.name}${c.description ? ` — ${c.description}` : ''}`)
+        .map(
+            (c) =>
+                `- ${c.id}: ${c.name}${c.description ? ` — ${c.description}` : ''}`
+        )
         .join('\n')
 
     const systemPrompt = `You are a finance assistant that extracts bank transactions from unstructured text. 
@@ -143,17 +175,17 @@ export default defineEventHandler(async (event) => {
 
         return { success: true, transactions: object.transactions }
     } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('[ai-import] Failed to generate structured transactions', {
-            provider: providerName,
-            model: gSettings.model,
-            error: err
-        })
+        console.error(
+            '[ai-import] Failed to generate structured transactions',
+            {
+                provider: providerName,
+                model: gSettings.model,
+                error: err
+            }
+        )
         throw createError({
             statusCode: 500,
             statusMessage: 'AI parsing failed. Please try again later.'
         })
     }
 })
-
-

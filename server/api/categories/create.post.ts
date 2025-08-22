@@ -35,7 +35,13 @@ export default defineEventHandler(async (event) => {
     // Insert new category
     const insertRes = await db
         .insert(categories)
-        .values({ name, icon: icon || null, description: description || null, user: user.id, deleted: false })
+        .values({
+            name,
+            icon: icon || null,
+            description: description || null,
+            user: user.id,
+            deleted: false
+        })
         .returning({ id: categories.id })
         .then((r) => r[0])
 
