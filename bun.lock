@@ -11,6 +11,7 @@
         "@langchain/community": "^0.3.0",
         "@langchain/core": "^0.3.0",
         "@langchain/openai": "^0.6.0",
+        "@openrouter/ai-sdk-provider": "^1.1.2",
         "@vuepic/vue-datepicker": "^11.0.2",
         "ai": "^5.0.21",
         "bcrypt": "^6.0.0",
@@ -475,6 +476,8 @@
     "@nuxtjs/eslint-config-typescript": ["@nuxtjs/eslint-config-typescript@12.1.0", "", { "dependencies": { "@nuxtjs/eslint-config": "^12.0.0", "@typescript-eslint/eslint-plugin": "^6.5.0", "@typescript-eslint/parser": "^6.5.0", "eslint-import-resolver-typescript": "^3.6.0", "eslint-plugin-import": "^2.28.1", "eslint-plugin-vue": "^9.17.0" }, "peerDependencies": { "eslint": "^8.48.0" } }, "sha512-l2fLouDYwdAvCZEEw7wGxOBj+i8TQcHFu3zMPTLqKuv1qu6WcZIr0uztkbaa8ND1uKZ9YPqKx6UlSOjM4Le69Q=="],
 
     "@nuxtjs/i18n": ["@nuxtjs/i18n@10.0.6", "", { "dependencies": { "@intlify/core": "^11.1.11", "@intlify/h3": "^0.7.1", "@intlify/shared": "^11.1.11", "@intlify/unplugin-vue-i18n": "^6.0.8", "@intlify/utils": "^0.13.0", "@miyaneee/rollup-plugin-json5": "^1.2.0", "@nuxt/kit": "^4.0.3", "@rollup/plugin-yaml": "^4.1.2", "@vue/compiler-sfc": "^3.5.18", "cookie-es": "^2.0.0", "defu": "^6.1.4", "devalue": "^5.1.1", "h3": "^1.15.3", "knitwork": "^1.2.0", "magic-string": "^0.30.17", "mlly": "^1.7.4", "nuxt-define": "^1.0.0", "oxc-parser": "^0.81.0", "oxc-transform": "^0.81.0", "oxc-walker": "^0.4.0", "pathe": "^2.0.3", "typescript": "^5.9.2", "ufo": "^1.6.1", "unplugin": "^2.3.5", "unplugin-vue-router": "^0.14.0", "unstorage": "^1.16.1", "vue-i18n": "^11.1.11", "vue-router": "^4.5.1" } }, "sha512-SQqJP6NDlmaoLzs7A74cx0Q3W4Vc+JSBlu3AN0q9+Q07Nvba5osab99GJEQ+PGnjaRwBFh35braUA2hRz9bdSA=="],
+
+    "@openrouter/ai-sdk-provider": ["@openrouter/ai-sdk-provider@1.1.2", "", { "peerDependencies": { "ai": "^5.0.0", "zod": "^3.24.1 || ^v4" } }, "sha512-cfiKVpNygGFaJojBHFvtTf7UiF458Xh9yPcTg4FXF7bGYN5V33Rxx9dXNE12fjv6lHeC5C7jwQHDrzUIFol1iQ=="],
 
     "@opentelemetry/api": ["@opentelemetry/api@1.9.0", "", {}, "sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg=="],
 

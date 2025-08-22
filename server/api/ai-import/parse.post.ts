@@ -4,6 +4,7 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { createAnthropic } from '@ai-sdk/anthropic'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOllama } from 'ollama-ai-provider-v2'
+import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { parseOfficeAsync } from 'officeparser'
 import { parse as parseYaml } from 'yaml'
 import fs from 'node:fs/promises'
@@ -142,6 +143,12 @@ export default defineEventHandler(async (event) => {
         const name = gSettings.model || 'llama3'
         const provider = createOllama({
             baseURL: gSettings.ollama_url || 'http://localhost:11434'
+        })
+        model = provider(name)
+    } else if (providerName === 'openrouter') {
+        const name = gSettings.model || 'anthropic/claude-3-5-sonnet-latest'
+        const provider = createOpenRouter({
+            apiKey: gSettings.token || ''
         })
         model = provider(name)
     } else {

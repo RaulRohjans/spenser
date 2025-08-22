@@ -93,35 +93,10 @@
         </UFormField>
 
         <UFormField :label="$t('Model')" name="model" class="w-full">
-            <USelect
-                v-if="state.provider === 'gpt'"
+            <UInput
                 v-model="state.model"
-                :items="[
-                    { label: 'gpt-4o', value: 'gpt-4o' },
-                    { label: 'gpt-4o-mini', value: 'gpt-4o-mini' },
-                    { label: 'o3-mini', value: 'o3-mini' }
-                ]" />
-            <USelect
-                v-else-if="state.provider === 'anthropic'"
-                v-model="state.model"
-                :items="[
-                    {
-                        label: 'claude-3-5-sonnet-latest',
-                        value: 'claude-3-5-sonnet-latest'
-                    },
-                    {
-                        label: 'claude-3-opus-latest',
-                        value: 'claude-3-opus-latest'
-                    }
-                ]" />
-            <USelect
-                v-else-if="state.provider === 'google'"
-                v-model="state.model"
-                :items="[
-                    { label: 'gemini-1.5-flash', value: 'gemini-1.5-flash' },
-                    { label: 'gemini-1.5-pro', value: 'gemini-1.5-pro' }
-                ]" />
-            <UInput v-else v-model="state.model" />
+                :placeholder="$t('Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest')"
+            />
         </UFormField>
 
         <template v-if="state.provider !== 'ollama'">

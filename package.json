@@ -52,6 +52,7 @@
         "@langchain/community": "^0.3.0",
         "@langchain/core": "^0.3.0",
         "@langchain/openai": "^0.6.0",
+        "@openrouter/ai-sdk-provider": "^1.1.2",
         "@vuepic/vue-datepicker": "^11.0.2",
         "ai": "^5.0.21",
         "bcrypt": "^6.0.0",
