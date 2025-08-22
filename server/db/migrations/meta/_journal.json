@@ -1,20 +1,27 @@
 {
-    "version": "7",
-    "dialect": "postgresql",
-    "entries": [
-        {
-            "idx": 0,
-            "version": "7",
-            "when": 1755452803264,
-            "tag": "0000_needy_harry_osborn",
-            "breakpoints": true
-        },
-        {
-            "idx": 1,
-            "version": "7",
-            "when": 1755458029732,
-            "tag": "0001_solid_lionheart",
-            "breakpoints": true
-        }
-    ]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1755452803264,
+      "tag": "0000_needy_harry_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1755458029732,
+      "tag": "0001_solid_lionheart",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1755896726676,
+      "tag": "0002_lame_sasquatch",
+      "breakpoints": true
+    }
+  ]
 }

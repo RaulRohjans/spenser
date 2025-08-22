@@ -113,13 +113,13 @@
         watch(
             budget,
             (newVal) => {
-                if (!newVal) return
+                if (!newVal?.data) return
 
                 state.id = props.id
-                state.name = newVal.name
-                state.category = newVal.category
-                state.value = newVal.value
-                state.period = newVal.period
+                state.name = newVal.data.name
+                state.category = newVal.data.category
+                state.value = newVal.data.value
+                state.period = newVal.data.period
             },
             { immediate: true }
         )

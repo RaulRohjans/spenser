@@ -35,7 +35,7 @@ export function resolveTzOffsetMinutes(
     if (typeof input === 'string') {
         // Matches YYYY-MM-DDTHH:mm:ss(.sss)?(+|-)HH:MM or Z
         const isoOffsetMatch = input.match(/([+-]\d{2}:?\d{2}|Z)$/)
-        if (isoOffsetMatch) {
+        if (isoOffsetMatch && isoOffsetMatch[1]) {
             const off = isoOffsetMatch[1]
             if (off === 'Z') return 0
             const [sign, hh, mm] =

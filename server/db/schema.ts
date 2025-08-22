@@ -56,7 +56,6 @@ export const userPreferences = pgTable('user_preferences', {
 
 export const globalSettings = pgTable('global_settings', {
     id: serial('id').primaryKey(),
-    user: integer('user').notNull(),
     importer_provider: varchar('importer_provider', { length: 50 }).notNull(),
     model: varchar('model', { length: 100 }),
     token: varchar('token', { length: 150 }),
