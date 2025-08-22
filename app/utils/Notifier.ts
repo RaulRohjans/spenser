@@ -4,8 +4,54 @@ import type { ModalChooserProps } from '~/components/Modal/Chooser.vue'
 import ModalProgress from '~/components/Modal/Progress.vue'
 import type { ModalProgressProps } from '~/components/Modal/Progress.vue'
 import type { EmitEventCallback } from '~~/types/Data'
+import { UApp } from '#components'
 
 export class Notifier {
+    private static uiProviderMounted = false
+    private static uiProviderContainer: HTMLDivElement | null = null
+    private static toasterOptions: {
+        position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+    } = { position: 'top-right' }
+
+    private static ensureUiProvidersMounted() {
+        if (!import.meta.client) return
+        if (this.uiProviderMounted) return
+
+        const container = this.setupDomContainer()
+        const nuxtApp = useNuxtApp()
+        const vnode = h(
+            UApp,
+            { toaster: this.toasterOptions },
+            { default: () => null }
+        )
+        vnode.appContext = nuxtApp.vueApp._context
+        render(vnode, container)
+
+        this.uiProviderMounted = true
+        this.uiProviderContainer = container
+    }
+
+    private static updateUiProviders() {
+        if (!import.meta.client) return
+        if (!this.uiProviderContainer) return
+
+        const nuxtApp = useNuxtApp()
+        const vnode = h(
+            UApp,
+            { toaster: this.toasterOptions },
+            { default: () => null }
+        )
+        vnode.appContext = nuxtApp.vueApp._context
+        render(vnode, this.uiProviderContainer)
+    }
+
+    static configureToaster(options: {
+        position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+    }) {
+        this.toasterOptions = { ...this.toasterOptions, ...options }
+        this.updateUiProviders()
+    }
+
     private static buildAlertTitle(type: string) {
         const { $i18n } = useNuxtApp()
 
@@ -99,7 +145,10 @@ export class Notifier {
             | 'neutral'
             | 'secondary' = 'info'
     ) {
-        // Use the app-level <UApp> provider with proper Vue context
+        // Ensure a single notifications outlet exists without duplicating providers
+        this.ensureUiProvidersMounted()
+
+        // Use the existing app context to dispatch the toast
         const nuxtApp = useNuxtApp()
         nuxtApp.vueApp.runWithContext(() => {
             const toast = useToast()
