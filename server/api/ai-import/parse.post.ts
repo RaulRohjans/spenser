@@ -4,6 +4,9 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { createAnthropic } from '@ai-sdk/anthropic'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOllama } from 'ollama-ai-provider-v2'
+import { parseOfficeAsync } from 'officeparser'
+import { parse as parseYaml } from 'yaml'
+import fs from 'node:fs/promises'
 import { generateObject } from 'ai'
 import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
@@ -27,7 +30,6 @@ export default defineEventHandler(async (event) => {
     const gSettings = await db
         .select()
         .from(globalSettings)
-        .where(eq(globalSettings.user, user.id))
         .then((r) => r[0])
 
     if (!gSettings) {
@@ -53,17 +55,37 @@ export default defineEventHandler(async (event) => {
         const first = files && Object.values(files)[0]?.[0]
         if (!first) throw createError({ statusMessage: 'Please provide a valid file.', statusCode: 400 })
 
-        const mimetype = first.mimetype?.toLowerCase() || ''
-        if (!mimetype.startsWith('text') && mimetype !== 'application/json') {
-            throw createError({
-                statusMessage: 'Invalid file type, please provide text based files only.',
-                statusCode: 400
-            })
-        }
-
         try {
-            const fs = await import('node:fs/promises')
-            rawText = await fs.readFile(first.filepath, 'utf8')
+            const buf = await fs.readFile(first.filepath)
+            const mimetype = (first.mimetype || '').toLowerCase()
+            const filename = (first.originalFilename || '').toLowerCase()
+
+            const textFromBuffer = async () => {
+                // Use officeparser for common office/pdf formats
+                if (
+                    filename.endsWith('.pdf') ||
+                    filename.endsWith('.docx') ||
+                    filename.endsWith('.pptx') ||
+                    filename.endsWith('.xlsx') ||
+                    filename.endsWith('.odt') ||
+                    filename.endsWith('.odp') ||
+                    filename.endsWith('.ods')
+                ) {
+                    const res = await parseOfficeAsync(buf)
+                    if (typeof res === 'string') return res
+                }
+                if (filename.endsWith('.json') || mimetype.includes('json')) {
+                    return buf.toString('utf8')
+                }
+                if (filename.endsWith('.yml') || filename.endsWith('.yaml')) {
+                    const doc = parseYaml(buf.toString('utf8'))
+                    return typeof doc === 'string' ? doc : JSON.stringify(doc)
+                }
+                // default to utf8 text
+                return buf.toString('utf8')
+            }
+
+            rawText = await textFromBuffer()
         } catch (err: unknown) {
             const message = (err as { message?: string } | undefined)?.message || 'Failed to read file'
             throw createError({ statusMessage: message, statusCode: 400 })
