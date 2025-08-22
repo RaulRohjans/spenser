@@ -11,8 +11,10 @@
 
     const getProviderOptions = computed((): SelectOption[] => {
         return [
-            { label: 'Ollama', value: 'ollama' },
-            { label: 'GPT', value: 'gpt' }
+            { label: 'OpenAI', value: 'gpt' },
+            { label: 'Anthropic', value: 'anthropic' },
+            { label: 'Google', value: 'google' },
+            { label: 'Ollama', value: 'ollama' }
         ]
     })
 
@@ -28,9 +30,8 @@
         provider:
             globalSettings.data?.importer_provider ||
             getProviderOptions.value[0]?.value,
-        gptModel: globalSettings.data?.gpt_model || 'gpt-4',
-        gptToken: globalSettings.data?.gpt_token || '',
-        ollamaModel: globalSettings.data?.ollama_model || '',
+        model: globalSettings.data?.model || 'gpt-4o-mini',
+        token: globalSettings.data?.token || '',
         ollamaUrl: globalSettings.data?.ollama_url || ''
     })
 
@@ -69,14 +70,10 @@
     watch(
         () => state.provider,
         (newVal) => {
-            if (newVal === 'gpt') {
-                state.ollamaModel = ''
-                state.ollamaUrl = ''
-                state.gptModel = 'gpt-4'
-            } else if (newVal === 'ollama') {
-                state.gptModel = ''
-                state.gptToken = ''
-            }
+            if (newVal === 'gpt') state.model = 'gpt-4o-mini'
+            else if (newVal === 'anthropic') state.model = 'claude-3-5-sonnet-latest'
+            else if (newVal === 'google') state.model = 'gemini-1.5-flash'
+            else if (newVal === 'ollama') state.model = 'llama3'
         }
     )
 
@@ -94,28 +91,40 @@
                 :items="getProviderOptions" />
         </UFormField>
 
-        <template v-if="state.provider === 'gpt'">
-            <UFormField :label="$t('GPT Model')" name="gptModel" class="w-full">
-                <UInput v-model="state.gptModel" />
-            </UFormField>
+        <UFormField :label="$t('Model')" name="model" class="w-full">
+            <USelect
+                v-if="state.provider === 'gpt'"
+                v-model="state.model"
+                :items="[
+                    { label: 'gpt-4o', value: 'gpt-4o' },
+                    { label: 'gpt-4o-mini', value: 'gpt-4o-mini' },
+                    { label: 'o3-mini', value: 'o3-mini' }
+                ]" />
+            <USelect
+                v-else-if="state.provider === 'anthropic'"
+                v-model="state.model"
+                :items="[
+                    { label: 'claude-3-5-sonnet-latest', value: 'claude-3-5-sonnet-latest' },
+                    { label: 'claude-3-opus-latest', value: 'claude-3-opus-latest' }
+                ]" />
+            <USelect
+                v-else-if="state.provider === 'google'"
+                v-model="state.model"
+                :items="[
+                    { label: 'gemini-1.5-flash', value: 'gemini-1.5-flash' },
+                    { label: 'gemini-1.5-pro', value: 'gemini-1.5-pro' }
+                ]" />
+            <UInput v-else v-model="state.model" />
+        </UFormField>
 
-            <UFormField :label="$t('GPT Token')" name="gptToken">
-                <UInput v-model="state.gptToken" type="password" />
+        <template v-if="state.provider !== 'ollama'">
+            <UFormField :label="$t('API Token')" name="token">
+                <UInput v-model="state.token" type="password" />
             </UFormField>
         </template>
 
-        <template v-else-if="state.provider === 'ollama'">
-            <UFormField
-                :label="$t('Ollama Model')"
-                name="ollamaModel"
-                class="w-full">
-                <UInput v-model="state.ollamaModel" />
-            </UFormField>
-
-            <UFormField
-                :label="$t('Ollama URL')"
-                name="ollamaUrl"
-                class="w-full">
+        <template v-else>
+            <UFormField :label="$t('Ollama URL')" name="ollamaUrl" class="w-full">
                 <UInput v-model="state.ollamaUrl" />
             </UFormField>
         </template>

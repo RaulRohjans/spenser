@@ -1,6 +1,9 @@
 import { readFiles } from 'h3-formidable'
 import { z } from 'zod'
 import { createOpenAI } from '@ai-sdk/openai'
+import { createAnthropic } from '@ai-sdk/anthropic'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { createOllama } from 'ollama-ai-provider-v2'
 import { generateObject } from 'ai'
 import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
@@ -27,17 +30,16 @@ export default defineEventHandler(async (event) => {
         .where(eq(globalSettings.user, user.id))
         .then((r) => r[0])
 
-    if (!gSettings || gSettings.importer_provider !== 'openai' || !gSettings.gpt_token) {
+    if (!gSettings) {
         throw createError({
-            statusMessage:
-                'LLM is not configured. Please set provider to openai and add an API key.',
+            statusMessage: 'LLM is not configured.',
             statusCode: 400
         })
     }
 
     // Load categories for the user
     const cats = await db
-        .select({ id: categories.id, name: categories.name })
+        .select({ id: categories.id, name: categories.name, description: categories.description })
         .from(categories)
         .where(and(eq(categories.user, user.id), eq(categories.deleted, false)))
 
@@ -76,12 +78,30 @@ export default defineEventHandler(async (event) => {
 
     if (!rawText || rawText.trim().length === 0) throw createError({ statusMessage: 'No content to parse.', statusCode: 400 })
 
-    const modelName = gSettings.gpt_model || 'gpt-4o-mini'
-    const provider = createOpenAI({ apiKey: gSettings.gpt_token })
-    const model = provider(modelName)
+    const providerName = gSettings.importer_provider
+    let model
+    if (providerName === 'gpt') {
+        const name = gSettings.model || 'gpt-4o-mini'
+        const provider = createOpenAI({ apiKey: gSettings.token || '' })
+        model = provider(name)
+    } else if (providerName === 'anthropic') {
+        const name = gSettings.model || 'claude-3-5-sonnet-latest'
+        const provider = createAnthropic({ apiKey: gSettings.token || '' })
+        model = provider(name)
+    } else if (providerName === 'google') {
+        const name = gSettings.model || 'gemini-1.5-flash'
+        const provider = createGoogleGenerativeAI({ apiKey: gSettings.token || '' })
+        model = provider(name)
+    } else if (providerName === 'ollama') {
+        const name = gSettings.model || 'llama3'
+        const provider = createOllama({ baseURL: gSettings.ollama_url || 'http://localhost:11434' })
+        model = provider(name)
+    } else {
+        throw createError({ statusMessage: 'Unsupported provider.', statusCode: 400 })
+    }
 
     const categoryGuidance = cats
-        .map((c) => `- ${c.id}: ${c.name}`)
+        .map((c) => `- ${c.id}: ${c.name}${c.description ? ` — ${c.description}` : ''}`)
         .join('\n')
 
     const systemPrompt = `You are a finance assistant that extracts bank transactions from unstructured text. 

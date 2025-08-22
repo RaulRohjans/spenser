@@ -29,14 +29,16 @@
 
     const schema = z.object({
         name: z.string().trim().min(1, $t('Mandatory Field')),
-        icon: z.string().optional()
+        icon: z.string().optional(),
+        description: z.string().max(500).optional()
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
         name: '',
-        icon: ''
+        icon: '',
+        description: ''
     })
 
     // Fetch Category
@@ -52,12 +54,15 @@
                     headers: buildRequestHeaders(token.value)
                 }),
             {
-                default: () => {
-                    return {
-                        success: false,
-                        data: {}
-                    }
-                },
+                default: (): FetchTableSingleDataResult<CategoryRow> => ({
+                    success: false,
+                    data: {
+                        id: 0,
+                        name: '',
+                        icon: null,
+                        description: ''
+                    } as unknown as CategoryRow
+                }),
                 watch: [() => props.id, () => props.mode]
             }
         )
@@ -70,8 +75,12 @@
                 if (!newVal?.data) return
 
                 state.id = props.id
-                state.name = newVal.data.name
-                state.icon = newVal.data.icon
+                const data = newVal.data as Partial<CategoryRow> & {
+                    description?: string | null
+                }
+                state.name = data.name || ''
+                state.icon = data.icon || ''
+                state.description = data.description || ''
             },
             { immediate: true }
         )
@@ -148,6 +157,10 @@
                         variant="ghost" />
                 </ULink>
             </div>
+        </UFormField>
+
+        <UFormField :label="$t('Description')" name="description">
+            <UTextarea v-model="state.description" :rows="4" :placeholder="$t('Optional description to help the AI understand this category')" />
         </UFormField>
 
         <div class="flex flex-row justify-end">

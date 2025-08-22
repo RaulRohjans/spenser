@@ -26,6 +26,7 @@ export const categories = pgTable('category', {
     user: integer('user').notNull(),
     name: varchar('name', { length: 50 }).notNull(),
     icon: varchar('icon', { length: 50 }),
+    description: varchar('description', { length: 500 }),
     deleted: boolean('deleted').notNull().default(false)
 })
 
@@ -57,9 +58,8 @@ export const globalSettings = pgTable('global_settings', {
     id: serial('id').primaryKey(),
     user: integer('user').notNull(),
     importer_provider: varchar('importer_provider', { length: 50 }).notNull(),
-    gpt_model: varchar('gpt_model', { length: 100 }),
-    gpt_token: varchar('gpt_token', { length: 150 }),
-    ollama_model: varchar('ollama_model', { length: 100 }),
+    model: varchar('model', { length: 100 }),
+    token: varchar('token', { length: 150 }),
     ollama_url: varchar('ollama_url', { length: 150 })
 })
 

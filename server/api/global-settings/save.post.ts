@@ -5,14 +5,14 @@ import { eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
     // Read params
-    const { provider, gptModel, gptToken, ollamaModel, ollamaUrl } =
+    const { provider, model, token, ollamaUrl } =
         await readBody(event)
     const user = ensureAuth(event)
 
     if (
         !provider ||
-        (provider === 'ollama' && !ollamaModel && !ollamaUrl) ||
-        (provider === 'gpt' && !gptToken)
+        ((provider === 'gpt' || provider === 'anthropic' || provider === 'google') && !token) ||
+        (provider === 'ollama' && (!model || !ollamaUrl))
     )
         throw createError({
             statusCode: 400,
@@ -33,9 +33,8 @@ export default defineEventHandler(async (event) => {
             .update(globalSettings)
             .set({
                 importer_provider: provider,
-                gpt_model: gptModel,
-                gpt_token: gptToken,
-                ollama_model: ollamaModel,
+                model,
+                token,
                 ollama_url: ollamaUrl
             })
             .where(eq(globalSettings.id, saved.id))
@@ -47,9 +46,8 @@ export default defineEventHandler(async (event) => {
             .values({
                 user: user.id,
                 importer_provider: provider,
-                gpt_model: gptModel,
-                gpt_token: gptToken,
-                ollama_model: ollamaModel,
+                model,
+                token,
                 ollama_url: ollamaUrl
             })
             .returning({ id: globalSettings.id })
