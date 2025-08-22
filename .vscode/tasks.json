@@ -2,13 +2,37 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run bun dev",
-      "type": "shell",
-      "command": "bun",
-      "args": ["dev"],
+      "label": "Nuxt: dev",
+      "type": "npm",
+      "script": "dev",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nuxt: dev (inspect 9229)",
+      "type": "npm",
+      "script": "dev",
       "group": "build",
       "problemMatcher": [],
-      "detail": "Runs bun dev for local development"
+      "options": {
+        "env": {
+          "NODE_OPTIONS": "--inspect=9229 --enable-source-maps"
+        }
+      }
+    },
+    {
+      "label": "Nuxt: build",
+      "type": "npm",
+      "script": "build",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Nuxt: preview",
+      "type": "npm",
+      "script": "preview",
+      "group": "build",
+      "problemMatcher": []
     }
   ]
 }
