@@ -32,7 +32,7 @@ export default defineEventHandler(async (event) => {
         .from(globalSettings)
         .then((r) => r[0])
 
-    if (!gSettings) {
+    if (!gSettings || !gSettings.token || !gSettings.importer_provider || !gSettings.model) {
         throw createError({
             statusMessage: 'LLM is not configured.',
             statusCode: 400
@@ -133,14 +133,27 @@ export default defineEventHandler(async (event) => {
 
     const userPrompt = `Unstructured content:\n\n${rawText}\n\nUser Categories (id: name):\n${categoryGuidance}`
 
-    const { object } = await generateObject({
-        model,
-        schema: responseSchema,
-        system: systemPrompt,
-        prompt: userPrompt
-    })
+    try {
+        const { object } = await generateObject({
+            model,
+            schema: responseSchema,
+            system: systemPrompt,
+            prompt: userPrompt
+        })
 
-    return { success: true, transactions: object.transactions }
+        return { success: true, transactions: object.transactions }
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('[ai-import] Failed to generate structured transactions', {
+            provider: providerName,
+            model: gSettings.model,
+            error: err
+        })
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'AI parsing failed. Please try again later.'
+        })
+    }
 })
 
 
