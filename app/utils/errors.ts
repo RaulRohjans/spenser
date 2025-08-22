@@ -40,6 +40,18 @@ export const toUserMessage = (error: unknown, fallbackMessage?: string) => {
             )
         }
 
+        // Access i18n translator safely outside component setup
+        const { $i18n } = useNuxtApp()
+        const translate = (key: string) => {
+            if (
+                $i18n &&
+                typeof ($i18n as { t?: (k: string) => unknown }).t ===
+                    'function'
+            )
+                return ($i18n as { t: (k: string) => unknown }).t(key) as string
+            return key
+        }
+
         // Prefer explicit 4xx status message from server when present
         if (
             statusCode &&
@@ -47,7 +59,7 @@ export const toUserMessage = (error: unknown, fallbackMessage?: string) => {
             statusCode < 500 &&
             statusMessage
         )
-            return statusMessage
+            return translate(statusMessage)
 
         const candidates = [statusMessage, dataMessage]
             .concat(isNoisy(rawMessage) ? [] : [rawMessage])
@@ -56,9 +68,20 @@ export const toUserMessage = (error: unknown, fallbackMessage?: string) => {
         const message = candidates.find(
             (m) => typeof m === 'string' && m.trim()
         )
-        return message || fallbackMessage || 'An unexpected error occurred.'
+        const chosen = message || fallbackMessage || 'An unexpected error occurred.'
+        return translate(chosen)
     } catch {
-        return fallbackMessage || 'An unexpected error occurred.'
+        const { $i18n } = useNuxtApp()
+        const translate = (key: string) => {
+            if (
+                $i18n &&
+                typeof ($i18n as { t?: (k: string) => unknown }).t ===
+                    'function'
+            )
+                return ($i18n as { t: (k: string) => unknown }).t(key) as string
+            return key
+        }
+        return translate(fallbackMessage || 'An unexpected error occurred.')
     }
 }
 

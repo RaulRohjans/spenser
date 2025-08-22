@@ -178,5 +178,100 @@ export default {
     'Create Budget': 'Create Budget',
     'Use Light Mode': 'Use Light Mode',
     'Use Dark Mode': 'Use Dark Mode',
-    Administration: 'Administration'
+    Administration: 'Administration',
+    Description: 'Description',
+    'Invalid Email': 'Invalid Email',
+    'Import with AI': 'Import with AI',
+    'Choose File': 'Choose File',
+    'Review & Confirm': 'Review & Confirm',
+    'Uploading and preparing data...': 'Uploading and preparing data...',
+    'Sending file to be parsed by AI...':
+        'Sending file to be parsed by AI...',
+    'Sending text to be parsed by AI...':
+        'Sending text to be parsed by AI...',
+    'Processing AI response...': 'Processing AI response...',
+    'Done! Redirecting...': 'Done! Redirecting...',
+    Model: 'Model',
+    'API Token': 'API Token',
+    'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest':
+        'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest',
+    'An unexpected error occurred while saving.':
+        'An unexpected error occurred while saving.',
+    'An unexpected error occurred while saving settings.':
+        'An unexpected error occurred while saving settings.',
+    'An unexpected error occurred while importing.':
+        'An unexpected error occurred while importing.',
+    'An unexpected error occurred while processing the import.':
+        'An unexpected error occurred while processing the import.',
+    'Invalid username or password': 'Invalid username or password',
+    'An error occurred when saving user settings.':
+        'An error occurred when saving user settings.',
+    // Server responses
+    'LLM is not configured.': 'LLM is not configured.',
+    'Please provide a valid file.': 'Please provide a valid file.',
+    'Please provide text.': 'Please provide text.',
+    'No content to parse.': 'No content to parse.',
+    'Unsupported provider.': 'Unsupported provider.',
+    'AI parsing failed. Please try again later.':
+        'AI parsing failed. Please try again later.',
+    'Category name is required.': 'Category name is required.',
+    'A category with that name already exists.':
+        'A category with that name already exists.',
+    'Failed to create category.': 'Failed to create category.',
+    'Could not load total user count.': 'Could not load total user count.',
+    'Could not load total transaction count.':
+        'Could not load total transaction count.',
+    'One or more mandatory fields are empty.':
+        'One or more mandatory fields are empty.',
+    'Could not perform the operation, an error occurred.':
+        'Could not perform the operation, an error occurred.',
+    'Could not load total currency count.':
+        'Could not load total currency count.',
+    'Could not load total category count.':
+        'Could not load total category count.',
+    'ID and name are required.': 'ID and name are required.',
+    'Failed to update category.': 'Failed to update category.',
+    'Empty login fields.': 'Empty login fields.',
+    'Invalid login credentials.': 'Invalid login credentials.',
+    'Could not remove user due to an unknown error.':
+        'Could not remove user due to an unknown error.',
+    'Password is invalid': 'Password is invalid',
+    'Invalid operation.': 'Invalid operation.',
+    'One or more mandatory fields are missing.':
+        'One or more mandatory fields are missing.',
+    'Failed to update transaction.': 'Failed to update transaction.',
+    'Missing transaction ID.': 'Missing transaction ID.',
+    'Could not find the transaction record to remove.':
+        'Could not find the transaction record to remove.',
+    'Failed to create transaction.': 'Failed to create transaction.',
+    'Transaction not found or access denied.':
+        'Transaction not found or access denied.',
+    'This action is blocked for the given user.':
+        'This action is blocked for the given user.',
+    'Could not find currency record to remove.':
+        'Could not find currency record to remove.',
+    'Invalid category ID.': 'Invalid category ID.',
+    'Failed to delete category.': 'Failed to delete category.',
+    'ID is required.': 'ID is required.',
+    'No positions to be persisted were found.':
+        'No positions to be persisted were found.',
+    'Invalid positions payload.': 'Invalid positions payload.',
+    'Could not persist order in the database.':
+        'Could not persist order in the database.',
+    'Could not perform the operation.': 'Could not perform the operation.',
+    'No id was provided.': 'No id was provided.',
+    'Could not find record to delete.': 'Could not find record to delete.',
+    'Invalid budget ID.': 'Invalid budget ID.',
+    'Budget not found or inaccessible.':
+        'Budget not found or inaccessible.',
+    'No refreshToken provided in the payload.':
+        'No refreshToken provided in the payload.',
+    'Invalid token provided.': 'Invalid token provided.',
+    'Could not update the user record on the database.':
+        'Could not update the user record on the database.',
+    'Invalid password.': 'Invalid password.',
+    'The user does not have permisson to access this resource.':
+        'The user does not have permisson to access this resource.',
+    'The given user does not have acces to this resource.':
+        'The given user does not have acces to this resource.'
 }
