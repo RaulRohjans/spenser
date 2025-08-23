@@ -1,5 +1,4 @@
 import type { H3Event } from 'h3'
-import { getCookie } from 'h3'
 import { extractToken, validateJWT } from '~~/server/utils/auth'
 
 const isProtectedApiRoute = (event: H3Event) => {
@@ -17,23 +16,15 @@ const isProtectedApiRoute = (event: H3Event) => {
 export default defineEventHandler((event) => {
     if (!isProtectedApiRoute(event)) return
 
-    try {
-        // Prefer Authorization header if present; otherwise fall back to cookie (sidebase/nuxt-auth)
-        const authHeaderValue = getRequestHeader(event, 'authorization')
-        let token: string | undefined
-        if (typeof authHeaderValue !== 'undefined') {
-            token = authHeaderValue.startsWith('Bearer ')
-                ? extractToken(authHeaderValue)
-                : authHeaderValue
-        } else {
-            token = getCookie(event, 'auth.refresh-token') || undefined
-        }
+    const authHeaderValue = getRequestHeader(event, 'authorization')
+    if (typeof authHeaderValue === 'undefined')
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Invalid Bearer-authorization header.'
+        })
 
-        if (!token)
-            throw createError({
-                statusCode: 403,
-                statusMessage: 'Invalid Bearer-authorization header.'
-            })
+    try {
+        const token = extractToken(authHeaderValue)
 
         // Validate token signature and expiration and keep claims for downstream
         const claims = validateJWT(token)
