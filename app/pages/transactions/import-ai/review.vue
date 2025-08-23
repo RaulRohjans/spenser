@@ -242,6 +242,6 @@
             :columns="tableColumns"
             sticky
             :loading="categoryLoading"
-            class="w-full" />
+            class="w-full h-[87vh]" />
     </UContainer>
 </template>
