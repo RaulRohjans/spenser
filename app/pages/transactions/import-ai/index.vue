@@ -20,18 +20,31 @@
         close: () => void
     } | null = null
     const fileInput: Ref<HTMLInputElement | null> = ref(null)
+    const fileDisabled = computed(() => textInput.value.trim().length > 0)
+    const textDisabled = computed(() => !!selectedFile.value)
 
     const onDrop = (e: DragEvent) => {
         e.preventDefault()
         isDragging.value = false
+        if (fileDisabled.value) return
+        
         const file = e.dataTransfer?.files?.[0]
         if (file) selectedFile.value = file
     }
 
     const onFileChange = (e: Event) => {
         const input = e.target as HTMLInputElement
+        if (fileDisabled.value) {
+            if (input) input.value = ''
+            return
+        }
         const file = input.files?.[0]
         if (file) selectedFile.value = file
+    }
+
+    const clearSelectedFile = () => {
+        selectedFile.value = null
+        if (fileInput.value) fileInput.value.value = ''
     }
 
     const reset = () => {
@@ -163,7 +176,8 @@
                             :class="[
                                 isDragging
                                     ? 'border-primary-500 bg-primary-500/5'
-                                    : 'border-gray-300 dark:border-gray-700'
+                                    : 'border-gray-300 dark:border-gray-700',
+                                fileDisabled ? 'opacity-60 pointer-events-none' : ''
                             ]"
                             @dragover.prevent="isDragging = true"
                             @dragleave.prevent="isDragging = false"
@@ -180,12 +194,23 @@
                                 type="file"
                                 class="hidden"
                                 accept=".docx,.pptx,.xlsx,.odt,.odp,.ods,.json,.yml,.yaml,.txt,.csv"
+                                :disabled="fileDisabled"
                                 @change="onFileChange" />
                             <UButton
                                 color="primary"
                                 size="xs"
+                                :disabled="fileDisabled"
                                 @click="fileInput?.click()">
                                 {{ $t('Choose File') }}
+                            </UButton>
+                            <UButton
+                                v-if="selectedFile"
+                                color="neutral"
+                                variant="ghost"
+                                size="xs"
+                                class="ml-2"
+                                @click="clearSelectedFile">
+                                {{ $t('Clear') }}
                             </UButton>
                             <div
                                 v-if="selectedFile"
@@ -206,6 +231,7 @@
                             :rows="8"
                             variant="outline"
                             :placeholder="$t('Transactions to import...')"
+                            :disabled="textDisabled"
                             autoresize />
                     </UFormField>
 
