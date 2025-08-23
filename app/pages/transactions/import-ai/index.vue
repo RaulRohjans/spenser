@@ -27,7 +27,7 @@
         e.preventDefault()
         isDragging.value = false
         if (fileDisabled.value) return
-        
+
         const file = e.dataTransfer?.files?.[0]
         if (file) selectedFile.value = file
     }
@@ -177,7 +177,9 @@
                                 isDragging
                                     ? 'border-primary-500 bg-primary-500/5'
                                     : 'border-gray-300 dark:border-gray-700',
-                                fileDisabled ? 'opacity-60 pointer-events-none' : ''
+                                fileDisabled
+                                    ? 'opacity-60 pointer-events-none'
+                                    : ''
                             ]"
                             @dragover.prevent="isDragging = true"
                             @dragleave.prevent="isDragging = false"

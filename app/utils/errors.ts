@@ -68,7 +68,8 @@ export const toUserMessage = (error: unknown, fallbackMessage?: string) => {
         const message = candidates.find(
             (m) => typeof m === 'string' && m.trim()
         )
-        const chosen = message || fallbackMessage || 'An unexpected error occurred.'
+        const chosen =
+            message || fallbackMessage || 'An unexpected error occurred.'
         return translate(chosen)
     } catch {
         const { $i18n } = useNuxtApp()

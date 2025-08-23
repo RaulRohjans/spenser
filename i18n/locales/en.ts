@@ -185,10 +185,8 @@ export default {
     'Choose File': 'Choose File',
     'Review & Confirm': 'Review & Confirm',
     'Uploading and preparing data...': 'Uploading and preparing data...',
-    'Sending file to be parsed by AI...':
-        'Sending file to be parsed by AI...',
-    'Sending text to be parsed by AI...':
-        'Sending text to be parsed by AI...',
+    'Sending file to be parsed by AI...': 'Sending file to be parsed by AI...',
+    'Sending text to be parsed by AI...': 'Sending text to be parsed by AI...',
     'Processing AI response...': 'Processing AI response...',
     'Done! Redirecting...': 'Done! Redirecting...',
     Model: 'Model',
@@ -262,8 +260,7 @@ export default {
     'No id was provided.': 'No id was provided.',
     'Could not find record to delete.': 'Could not find record to delete.',
     'Invalid budget ID.': 'Invalid budget ID.',
-    'Budget not found or inaccessible.':
-        'Budget not found or inaccessible.',
+    'Budget not found or inaccessible.': 'Budget not found or inaccessible.',
     'No refreshToken provided in the payload.':
         'No refreshToken provided in the payload.',
     'Invalid token provided.': 'Invalid token provided.',

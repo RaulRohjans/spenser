@@ -23,8 +23,11 @@
 
     const rows = ref<ParsedTransactionItem[]>([...store.items])
     const isExpense = ref<boolean[]>(rows.value.map((r) => Number(r.value) < 0))
-    rows.value = rows.value.map((r) => ({ ...r, value: Math.abs(Number(r.value)) }))
-    
+    rows.value = rows.value.map((r) => ({
+        ...r,
+        value: Math.abs(Number(r.value))
+    }))
+
     const delRow = (row: ParsedTransactionItem) => {
         const idx = rows.value.indexOf(row)
         if (idx > -1) {

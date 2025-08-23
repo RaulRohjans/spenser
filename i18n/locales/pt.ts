@@ -203,7 +203,8 @@ export default {
         'Ocorreu um erro inesperado ao importar.',
     'An unexpected error occurred while processing the import.':
         'Ocorreu um erro inesperado ao processar a importação.',
-    'Invalid username or password': 'Nome de utilizador ou palavra-passe inválidos',
+    'Invalid username or password':
+        'Nome de utilizador ou palavra-passe inválidos',
     'An error occurred when saving user settings.':
         'Ocorreu um erro ao guardar as definições do utilizador.',
     // Server responses
@@ -218,7 +219,8 @@ export default {
     'A category with that name already exists.':
         'Já existe uma categoria com esse nome.',
     'Failed to create category.': 'Falha ao criar categoria.',
-    'Could not load total user count.': 'Não foi possível carregar o total de utilizadores.',
+    'Could not load total user count.':
+        'Não foi possível carregar o total de utilizadores.',
     'Could not load total transaction count.':
         'Não foi possível carregar o total de transações.',
     'One or more mandatory fields are empty.':
@@ -260,7 +262,8 @@ export default {
         'Não foi possível persistir a ordem na base de dados.',
     'Could not perform the operation.': 'Não foi possível realizar a operação.',
     'No id was provided.': 'Nenhum id foi fornecido.',
-    'Could not find record to delete.': 'Não foi possível encontrar o registo para eliminar.',
+    'Could not find record to delete.':
+        'Não foi possível encontrar o registo para eliminar.',
     'Invalid budget ID.': 'ID de orçamento inválido.',
     'Budget not found or inaccessible.':
         'Orçamento não encontrado ou inacessível.',
