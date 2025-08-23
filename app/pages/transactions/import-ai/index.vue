@@ -182,7 +182,7 @@
                                 accept=".pdf,.docx,.pptx,.xlsx,.odt,.odp,.ods,.json,.yml,.yaml,.txt,.csv"
                                 @change="onFileChange" />
                             <UButton
-                                color="neutral"
+                                color="primary"
                                 size="xs"
                                 @click="fileInput?.click()">
                                 {{ $t('Choose File') }}
@@ -214,7 +214,6 @@
                         <UButton
                             color="primary"
                             type="submit"
-                            size="xs"
                             :loading="isSubmitting">
                             {{ $t('Import Data') }}
                         </UButton>
