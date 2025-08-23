@@ -19,7 +19,9 @@
                 // Suppress the next auto login once, so user can log into a different account
                 try {
                     sessionStorage.setItem('demoAutoSuppressOnce', '1')
-                } catch {}
+                } catch {
+                    /* empty */
+                }
                 signOut({ callbackUrl: '/login' })
             }
         )

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-    import { UIcon } from '#components'
+    import { h, resolveComponent } from 'vue'
     import type { FetchTableDataResult } from '~~/types/Table'
-    import type { NuxtError } from '#app'
+    import type { NuxtError } from 'nuxt/app'
     import type { TableColumn } from '@nuxt/ui'
     import type { CategoryRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
@@ -56,7 +56,12 @@
                     })
                     .catch((e: NuxtError) =>
                         Notifier.showAlert(
-                            toUserMessage(e, $t('An unexpected error occurred while deleting.')),
+                            toUserMessage(
+                                e,
+                                $t(
+                                    'An unexpected error occurred while deleting.'
+                                )
+                            ),
                             'error'
                         )
                     )
@@ -94,7 +99,7 @@
 
                 const iconComponent = icon
                     ? [
-                          h(UIcon, {
+                          h(resolveComponent('UIcon'), {
                               name: getHeroIconName(icon),
                               class: 'h-5 w-5',
                               dynamic: true
@@ -105,6 +110,17 @@
                 return h('div', undefined, iconComponent)
             },
             meta: { alias: $t('Icon'), searchable: false }
+        },
+        {
+            accessorKey: 'description',
+            header: $t('Description'),
+            cell: ({ row }) => {
+                const desc = row.original.description || ''
+                const short =
+                    desc.length > 60 ? `${desc.slice(0, 60)}...` : desc
+                return h('span', { title: desc }, short)
+            },
+            meta: { alias: $t('Description') }
         },
         {
             id: 'actions',

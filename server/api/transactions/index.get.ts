@@ -1,6 +1,5 @@
 import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
-import type { TableRow } from '~~/types/Table'
 import { categories, transactions } from '~~/server/db/schema'
 import { and, asc, desc, eq, sql } from 'drizzle-orm'
 

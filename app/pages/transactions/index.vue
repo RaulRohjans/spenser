@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import { UIcon } from '#components'
-    import type { NuxtError } from '#app'
+    import type { NuxtError } from 'nuxt/app'
+    import { h, resolveComponent } from 'vue'
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { TableColumn } from '@nuxt/ui'
     import type { TransactionRow } from '~~/types/ApiRows'
@@ -57,7 +57,12 @@
                     })
                     .catch((e: NuxtError) =>
                         Notifier.showAlert(
-                            toUserMessage(e, $t('An unexpected error occurred while deleting.')),
+                            toUserMessage(
+                                e,
+                                $t(
+                                    'An unexpected error occurred while deleting.'
+                                )
+                            ),
                             'error'
                         )
                     )
@@ -116,7 +121,7 @@
                         undefined,
                         icon
                             ? [
-                                  h(UIcon, {
+                                  h(resolveComponent('UIcon'), {
                                       name: getHeroIconName(icon),
                                       class: 'h-5 w-5',
                                       dynamic: true
@@ -182,7 +187,7 @@
                         undefined,
                         icon
                             ? [
-                                  h(UIcon, {
+                                  h(resolveComponent('UIcon'), {
                                       name: getHeroIconName(icon),
                                       class: 'h-5 w-5',
                                       dynamic: true
@@ -316,12 +321,8 @@
                                 icon="i-heroicons-arrow-down-on-square-stack"
                                 color="primary"
                                 size="md"
-                                @click="
-                                    router.push(
-                                        `/transactions/llm-data-importer`
-                                    )
-                                ">
-                                {{ $t('LLM Data Import') }}
+                                @click="router.push(`/transactions/import-ai`)">
+                                {{ $t('Import with AI') }}
                             </UButton>
 
                             <UButton

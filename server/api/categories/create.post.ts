@@ -4,7 +4,7 @@ import { categories } from '~~/server/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-    const { name, icon } = await readBody(event)
+    const { name, icon, description } = await readBody(event)
     const user = ensureAuth(event)
 
     if (!name)
@@ -35,7 +35,13 @@ export default defineEventHandler(async (event) => {
     // Insert new category
     const insertRes = await db
         .insert(categories)
-        .values({ name, icon: icon || null, user: user.id, deleted: false })
+        .values({
+            name,
+            icon: icon || null,
+            description: description || null,
+            user: user.id,
+            deleted: false
+        })
         .returning({ id: categories.id })
         .then((r) => r[0])
 

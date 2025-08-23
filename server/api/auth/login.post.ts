@@ -20,7 +20,6 @@ export default defineEventHandler(async (event) => {
         })
 
     // If DEMO mode and demoAuto flag is set, try to auto-login demo user regardless of password
-    const config = useRuntimeConfig()
     if (
         String(process.env.DEMO || '').toLowerCase() === 'true' &&
         demoAuto === true &&

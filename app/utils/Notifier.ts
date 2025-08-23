@@ -1,10 +1,57 @@
 import { h, render, type App } from 'vue'
-import { useToast } from '#imports'
 import ModalChooser from '~/components/Modal/Chooser.vue'
 import type { ModalChooserProps } from '~/components/Modal/Chooser.vue'
+import ModalProgress from '~/components/Modal/Progress.vue'
+import type { ModalProgressProps } from '~/components/Modal/Progress.vue'
 import type { EmitEventCallback } from '~~/types/Data'
+import { UApp } from '#components'
 
 export class Notifier {
+    private static uiProviderMounted = false
+    private static uiProviderContainer: HTMLDivElement | null = null
+    private static toasterOptions: {
+        position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+    } = { position: 'top-right' }
+
+    private static ensureUiProvidersMounted() {
+        if (!import.meta.client) return
+        if (this.uiProviderMounted) return
+
+        const container = this.setupDomContainer()
+        const nuxtApp = useNuxtApp()
+        const vnode = h(
+            UApp,
+            { toaster: this.toasterOptions },
+            { default: () => null }
+        )
+        vnode.appContext = nuxtApp.vueApp._context
+        render(vnode, container)
+
+        this.uiProviderMounted = true
+        this.uiProviderContainer = container
+    }
+
+    private static updateUiProviders() {
+        if (!import.meta.client) return
+        if (!this.uiProviderContainer) return
+
+        const nuxtApp = useNuxtApp()
+        const vnode = h(
+            UApp,
+            { toaster: this.toasterOptions },
+            { default: () => null }
+        )
+        vnode.appContext = nuxtApp.vueApp._context
+        render(vnode, this.uiProviderContainer)
+    }
+
+    static configureToaster(options: {
+        position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
+    }) {
+        this.toasterOptions = { ...this.toasterOptions, ...options }
+        this.updateUiProviders()
+    }
+
     private static buildAlertTitle(type: string) {
         const { $i18n } = useNuxtApp()
 
@@ -98,7 +145,10 @@ export class Notifier {
             | 'neutral'
             | 'secondary' = 'info'
     ) {
-        // Use the app-level <UApp> provider with proper Vue context
+        // Ensure a single notifications outlet exists without duplicating providers
+        this.ensureUiProvidersMounted()
+
+        // Use the existing app context to dispatch the toast
         const nuxtApp = useNuxtApp()
         nuxtApp.vueApp.runWithContext(() => {
             const toast = useToast()
@@ -114,5 +164,67 @@ export class Notifier {
                 })
             }
         })
+    }
+
+    static showProgress(
+        message: string,
+        initialValue: number = 0
+    ): {
+        update: (nextValue?: number, nextMessage?: string) => void
+        success: (finalMessage?: string, autoCloseMs?: number) => void
+        error: (finalMessage?: string, autoCloseMs?: number) => void
+        close: () => void
+    } {
+        const container = this.setupDomContainer()
+        const nuxtApp = useNuxtApp()
+
+        let value = Math.max(0, Math.min(100, initialValue))
+        let text = message
+        let color: ModalProgressProps['color'] = 'primary'
+
+        const mount = () => {
+            nuxtApp.vueApp.runWithContext(() => {
+                const vnode = h(ModalProgress, {
+                    text,
+                    value,
+                    color
+                })
+                vnode.appContext = nuxtApp.vueApp._context
+                render(vnode, container)
+            })
+        }
+
+        const close = () => {
+            render(null, container)
+            document.body.removeChild(container)
+        }
+
+        const update = (nextValue?: number, nextMessage?: string) => {
+            if (typeof nextValue === 'number')
+                value = Math.max(0, Math.min(100, nextValue))
+            if (typeof nextMessage === 'string') text = nextMessage
+            color = 'primary'
+            mount()
+        }
+
+        const success = (finalMessage?: string, autoCloseMs: number = 800) => {
+            value = 100
+            color = 'success'
+            if (finalMessage) text = finalMessage
+            mount()
+            setTimeout(close, autoCloseMs)
+        }
+
+        const error = (finalMessage?: string, autoCloseMs: number = 1500) => {
+            color = 'error'
+            if (finalMessage) text = finalMessage
+            mount()
+            setTimeout(close, autoCloseMs)
+        }
+
+        // initial render
+        mount()
+
+        return { update, success, error, close }
     }
 }

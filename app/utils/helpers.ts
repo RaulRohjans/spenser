@@ -1,4 +1,4 @@
-import type { RouteLocationNormalizedLoaded } from '#vue-router'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
 
 export const capitalFirstWordLetters = function (message: string) {
     const words = message.split(' ')
@@ -113,11 +113,9 @@ export const formatCurrencyValue = function (value: number) {
     const sign = isNegative ? '-' : ''
     const symbol = settingsStore.currency.symbol
 
-    if (settingsStore.currency.placement === 'after') {
+    if (settingsStore.currency.placement === 'after')
         return `${sign}${formattedNumber}${symbol}`
-    } else {
-        return `${sign}${symbol}${formattedNumber}`
-    }
+    else return `${sign}${symbol}${formattedNumber}`
 }
 
 export const getLocaleFromRoute = function () {

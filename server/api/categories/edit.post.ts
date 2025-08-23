@@ -4,7 +4,7 @@ import { categories } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-    const { id, name, icon } = await readBody(event)
+    const { id, name, icon, description } = await readBody(event)
     const user = ensureAuth(event)
 
     if (!id || !name)
@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
 
     const updateRes = await db
         .update(categories)
-        .set({ name, icon: icon ?? null })
+        .set({ name, icon: icon ?? null, description: description ?? null })
         .where(
             and(
                 eq(categories.id, id),

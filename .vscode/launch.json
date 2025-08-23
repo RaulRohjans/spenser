@@ -1,13 +1,31 @@
 {
+  "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch: Run Bun Dev Task",
+      "name": "Debug Nuxt (Server)",
       "type": "node",
       "request": "launch",
-      "preLaunchTask": "Run bun dev"
+      "program": "${workspaceFolder}/node_modules/nuxt/bin/nuxt.mjs",
+      "args": ["dev"],
+      "cwd": "${workspaceFolder}",
+      "runtimeArgs": ["--nolazy"],
+      "env": {
+        "NODE_OPTIONS": "--enable-source-maps"
+      },
+      "autoAttachChildProcesses": true,
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
     },
     {
-      "name": "Launch: Debug Frontend (Chrome)",
+      "name": "Attach to Nuxt (9229)",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "restart": true,
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "name": "Debug Frontend (Chrome)",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:3000",
@@ -17,10 +35,10 @@
   ],
   "compounds": [
     {
-      "name": "Debug Bun + Chrome (Fullstack)",
+      "name": "Debug Fullstack",
       "configurations": [
-        "Launch: Run Bun Dev Task",
-        "Launch: Debug Frontend (Chrome)"
+        "Debug Nuxt (Server)",
+        "Debug Frontend (Chrome)"
       ]
     }
   ]

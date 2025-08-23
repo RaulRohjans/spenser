@@ -1,9 +1,10 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
     import type { FetchTableSingleDataResult } from '~~/types/Table'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
+    import type { NuxtError } from 'nuxt/app'
+    import type { CategoryRow } from '~~/types/ApiRows'
+    import type { FormSubmitEvent } from '@nuxt/ui'
 
     export type ModalCategoryProps = {
         /**
@@ -28,37 +29,43 @@
 
     const schema = z.object({
         name: z.string().trim().min(1, $t('Mandatory Field')),
-        icon: z.string().optional()
+        icon: z.string().optional(),
+        description: z.string().max(500).optional()
     })
 
     type Schema = z.output<typeof schema>
     const state = reactive({
         id: props.id,
         name: '',
-        icon: ''
+        icon: '',
+        description: ''
     })
 
     // Fetch Category
     if (props.mode != 'create') {
-        const { data: category } =
-            await useLazyAsyncData<FetchTableSingleDataResult>(
-                // IMPORTANT! Key needs to be set like this so it doesnt cache old data
-                `category-${props.mode}-${props.id}`,
-                () =>
-                    $fetch(`/api/categories/${props.id}`, {
-                        method: 'GET',
-                        headers: buildRequestHeaders(token.value)
-                    }),
-                {
-                    default: () => {
-                        return {
-                            success: false,
-                            data: {}
-                        }
-                    },
-                    watch: [() => props.id, () => props.mode]
-                }
-            )
+        const { data: category } = await useLazyAsyncData<
+            FetchTableSingleDataResult<CategoryRow>
+        >(
+            // IMPORTANT! Key needs to be set like this so it doesnt cache old data
+            `category-${props.mode}-${props.id}`,
+            () =>
+                $fetch(`/api/categories/${props.id}`, {
+                    method: 'GET',
+                    headers: buildRequestHeaders(token.value)
+                }),
+            {
+                default: (): FetchTableSingleDataResult<CategoryRow> => ({
+                    success: false,
+                    data: {
+                        id: 0,
+                        name: '',
+                        icon: null,
+                        description: ''
+                    } as unknown as CategoryRow
+                }),
+                watch: [() => props.id, () => props.mode]
+            }
+        )
 
         // A watch is needed here because for some reason, using a then is still
         // not enough to make sure the data is loaded after the request is made
@@ -68,8 +75,12 @@
                 if (!newVal?.data) return
 
                 state.id = props.id
-                state.name = newVal.data.name
-                state.icon = newVal.data.icon
+                const data = newVal.data as Partial<CategoryRow> & {
+                    description?: string | null
+                }
+                state.name = data.name || ''
+                state.icon = data.icon || ''
+                state.description = data.description || ''
             },
             { immediate: true }
         )
@@ -146,6 +157,18 @@
                         variant="ghost" />
                 </ULink>
             </div>
+        </UFormField>
+
+        <UFormField :label="$t('Description')" name="description">
+            <UTextarea
+                v-model="state.description"
+                :rows="4"
+                class="w-full"
+                :placeholder="
+                    $t(
+                        'Optional description to help the AI understand this category'
+                    )
+                " />
         </UFormField>
 
         <div class="flex flex-row justify-end">

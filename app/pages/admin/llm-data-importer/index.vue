@@ -1,6 +1,6 @@
 <script setup lang="ts">
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
+    import type { NuxtError } from 'nuxt/app'
     import type { SelectOption } from '~~/types/Options'
     import type { GlobalSettingsObject } from '~~/types/Data'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
@@ -11,8 +11,11 @@
 
     const getProviderOptions = computed((): SelectOption[] => {
         return [
+            { label: 'OpenAI', value: 'gpt' },
+            { label: 'Anthropic', value: 'anthropic' },
+            { label: 'Google', value: 'google' },
             { label: 'Ollama', value: 'ollama' },
-            { label: 'GPT', value: 'gpt' }
+            { label: 'Open Router', value: 'openrouter' }
         ]
     })
 
@@ -28,9 +31,8 @@
         provider:
             globalSettings.data?.importer_provider ||
             getProviderOptions.value[0]?.value,
-        gptModel: globalSettings.data?.gpt_model || 'gpt-4',
-        gptToken: globalSettings.data?.gpt_token || '',
-        ollamaModel: globalSettings.data?.ollama_model || '',
+        model: globalSettings.data?.model || 'gpt-4o-mini',
+        token: globalSettings.data?.token || '',
         ollamaUrl: globalSettings.data?.ollama_url || ''
     })
 
@@ -57,7 +59,9 @@
                 Notifier.showAlert(
                     toUserMessage(
                         e,
-                        $t('An unexpected error occurred while saving settings.')
+                        $t(
+                            'An unexpected error occurred while saving settings.'
+                        )
                     ),
                     'error'
                 )
@@ -67,14 +71,11 @@
     watch(
         () => state.provider,
         (newVal) => {
-            if (newVal === 'gpt') {
-                state.ollamaModel = ''
-                state.ollamaUrl = ''
-                state.gptModel = 'gpt-4'
-            } else if (newVal === 'ollama') {
-                state.gptModel = ''
-                state.gptToken = ''
-            }
+            if (newVal === 'gpt') state.model = 'gpt-4o-mini'
+            else if (newVal === 'anthropic')
+                state.model = 'claude-3-5-sonnet-latest'
+            else if (newVal === 'google') state.model = 'gemini-1.5-flash'
+            else if (newVal === 'ollama') state.model = 'llama3'
         }
     )
 
@@ -85,39 +86,30 @@
 
 <template>
     <UForm :state="state" class="space-y-4" @submit="onSave">
-        <UFormField
-            :label="$t('LLM Provider')"
-            name="provider"
-            class="w-full">
+        <UFormField :label="$t('LLM Provider')" name="provider" class="w-full">
             <USelect
                 :key="providerSelectKey"
                 v-model="state.provider"
                 :items="getProviderOptions" />
         </UFormField>
 
-        <template v-if="state.provider === 'gpt'">
-            <UFormField
-                :label="$t('GPT Model')"
-                name="gptModel"
-                class="w-full">
-                <UInput v-model="state.gptModel" />
-            </UFormField>
+        <UFormField :label="$t('Model')" name="model" class="w-full">
+            <UInput
+                v-model="state.model"
+                :placeholder="
+                    $t(
+                        'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest'
+                    )
+                " />
+        </UFormField>
 
-            <UFormField
-                :label="$t('GPT Token')"
-                name="gptToken">
-                <UInput v-model="state.gptToken" type="password" />
+        <template v-if="state.provider !== 'ollama'">
+            <UFormField :label="$t('API Token')" name="token">
+                <UInput v-model="state.token" type="password" />
             </UFormField>
         </template>
 
-        <template v-else-if="state.provider === 'ollama'">
-            <UFormField
-                :label="$t('Ollama Model')"
-                name="ollamaModel"
-                class="w-full">
-                <UInput v-model="state.ollamaModel" />
-            </UFormField>
-
+        <template v-else>
             <UFormField
                 :label="$t('Ollama URL')"
                 name="ollamaUrl"

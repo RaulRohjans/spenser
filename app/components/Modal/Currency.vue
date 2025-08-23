@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
+    import type { NuxtError } from 'nuxt/app'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const emit = defineEmits<{
@@ -12,14 +12,18 @@
     const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
-    
+
     const placementOptions = ref([
         { label: 'Before', value: 'before' },
         { label: 'After', value: 'after' }
     ])
 
     const schema = z.object({
-        symbol: z.string().trim().min(1, $t('Mandatory Field')).max(5, $t('Currency code is too big')),
+        symbol: z
+            .string()
+            .trim()
+            .min(1, $t('Mandatory Field'))
+            .max(5, $t('Currency code is too big')),
         placement: z.enum(['before', 'after'])
     })
 
@@ -77,10 +81,7 @@
                 :state="state"
                 class="space-y-4 px-6"
                 @submit="onCreateCurrency">
-                <UFormField
-                    :label="$t('Symbol')"
-                    name="symbol"
-                    class="w-full">
+                <UFormField :label="$t('Symbol')" name="symbol" class="w-full">
                     <UInput v-model="state.symbol" class="w-full" />
                 </UFormField>
 

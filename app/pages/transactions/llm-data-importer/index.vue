@@ -1,9 +1,9 @@
 <script setup lang="ts">
     import { z } from 'zod'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
     import type { LlmTransactionObject } from '~~/types/Data'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
+    import type { NuxtError } from 'nuxt/app'
 
     const { token } = useAuth()
     const { t: $t } = useI18n()
@@ -110,7 +110,9 @@
                 Notifier.showAlert(
                     toUserMessage(
                         e,
-                        $t('An unexpected error occurred while processing the import.')
+                        $t(
+                            'An unexpected error occurred while processing the import.'
+                        )
                     ),
                     'error'
                 )

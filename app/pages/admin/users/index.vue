@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { NuxtError } from '#app'
+    import type { NuxtError } from 'nuxt/app'
     import type { TableColumn } from '@nuxt/ui'
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { ModalUserProps } from '@/components/Modal/User.vue'
@@ -66,7 +66,9 @@
                                     'demoAutoSuppressOnce',
                                     '1'
                                 )
-                            } catch {}
+                            } catch {
+                                /* empty */
+                            }
                             signOut({ callbackUrl: '/login' })
                         } else reload()
 
@@ -77,7 +79,12 @@
                     })
                     .catch((e: NuxtError) =>
                         Notifier.showAlert(
-                            toUserMessage(e, $t('An unexpected error occurred while deleting.')),
+                            toUserMessage(
+                                e,
+                                $t(
+                                    'An unexpected error occurred while deleting.'
+                                )
+                            ),
                             'error'
                         )
                     )

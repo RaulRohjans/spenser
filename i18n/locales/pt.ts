@@ -178,5 +178,103 @@ export default {
     'Create Budget': 'Criar Budget',
     'Use Light Mode': 'Usar Modo Claro',
     'Use Dark Mode': 'Usar Modo Escuro',
-    Administration: 'Administração'
+    Administration: 'Administração',
+    Description: 'Descrição',
+    'Invalid Email': 'Email inválido',
+    'Import with AI': 'Importar com IA',
+    'Choose File': 'Escolher Ficheiro',
+    'Review & Confirm': 'Rever e Confirmar',
+    'Uploading and preparing data...': 'A carregar e a preparar dados...',
+    'Sending file to be parsed by AI...':
+        'A enviar ficheiro para ser processado pela IA...',
+    'Sending text to be parsed by AI...':
+        'A enviar texto para ser processado pela IA...',
+    'Processing AI response...': 'A processar resposta da IA...',
+    'Done! Redirecting...': 'Concluído! A redirecionar...',
+    Model: 'Modelo',
+    'API Token': 'Token da API',
+    'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest':
+        'Introduza o identificador do modelo, p.ex., gpt-4o-mini ou anthropic/claude-3-5-sonnet-latest',
+    'An unexpected error occurred while saving.':
+        'Ocorreu um erro inesperado ao guardar.',
+    'An unexpected error occurred while saving settings.':
+        'Ocorreu um erro inesperado ao guardar as definições.',
+    'An unexpected error occurred while importing.':
+        'Ocorreu um erro inesperado ao importar.',
+    'An unexpected error occurred while processing the import.':
+        'Ocorreu um erro inesperado ao processar a importação.',
+    'Invalid username or password':
+        'Nome de utilizador ou palavra-passe inválidos',
+    'An error occurred when saving user settings.':
+        'Ocorreu um erro ao guardar as definições do utilizador.',
+    // Server responses
+    'LLM is not configured.': 'O LLM não está configurado.',
+    'Please provide a valid file.': 'Por favor, forneça um ficheiro válido.',
+    'Please provide text.': 'Por favor, forneça texto.',
+    'No content to parse.': 'Sem conteúdo para analisar.',
+    'Unsupported provider.': 'Fornecedor não suportado.',
+    'AI parsing failed. Please try again later.':
+        'Falha ao processar com IA. Por favor, tente mais tarde.',
+    'Category name is required.': 'O nome da categoria é obrigatório.',
+    'A category with that name already exists.':
+        'Já existe uma categoria com esse nome.',
+    'Failed to create category.': 'Falha ao criar categoria.',
+    'Could not load total user count.':
+        'Não foi possível carregar o total de utilizadores.',
+    'Could not load total transaction count.':
+        'Não foi possível carregar o total de transações.',
+    'One or more mandatory fields are empty.':
+        'Um ou mais campos obrigatórios estão vazios.',
+    'Could not perform the operation, an error occurred.':
+        'Não foi possível realizar a operação, ocorreu um erro.',
+    'Could not load total currency count.':
+        'Não foi possível carregar o total de moedas.',
+    'Could not load total category count.':
+        'Não foi possível carregar o total de categorias.',
+    'ID and name are required.': 'ID e nome são obrigatórios.',
+    'Failed to update category.': 'Falha ao atualizar categoria.',
+    'Empty login fields.': 'Campos de login vazios.',
+    'Invalid login credentials.': 'Credenciais de login inválidas.',
+    'Could not remove user due to an unknown error.':
+        'Não foi possível remover o utilizador devido a um erro desconhecido.',
+    'Password is invalid': 'Palavra-passe inválida',
+    'Invalid operation.': 'Operação inválida.',
+    'One or more mandatory fields are missing.':
+        'Um ou mais campos obrigatórios estão em falta.',
+    'Failed to update transaction.': 'Falha ao atualizar transação.',
+    'Missing transaction ID.': 'ID de transação em falta.',
+    'Could not find the transaction record to remove.':
+        'Não foi possível encontrar o registo da transação a remover.',
+    'Failed to create transaction.': 'Falha ao criar transação.',
+    'Transaction not found or access denied.':
+        'Transação não encontrada ou acesso negado.',
+    'This action is blocked for the given user.':
+        'Esta ação está bloqueada para o utilizador.',
+    'Could not find currency record to remove.':
+        'Não foi possível encontrar o registo da moeda a remover.',
+    'Invalid category ID.': 'ID de categoria inválido.',
+    'Failed to delete category.': 'Falha ao eliminar categoria.',
+    'ID is required.': 'ID é obrigatório.',
+    'No positions to be persisted were found.':
+        'Não foram encontradas posições para persistir.',
+    'Invalid positions payload.': 'Payload de posições inválido.',
+    'Could not persist order in the database.':
+        'Não foi possível persistir a ordem na base de dados.',
+    'Could not perform the operation.': 'Não foi possível realizar a operação.',
+    'No id was provided.': 'Nenhum id foi fornecido.',
+    'Could not find record to delete.':
+        'Não foi possível encontrar o registo para eliminar.',
+    'Invalid budget ID.': 'ID de orçamento inválido.',
+    'Budget not found or inaccessible.':
+        'Orçamento não encontrado ou inacessível.',
+    'No refreshToken provided in the payload.':
+        'Nenhum refreshToken fornecido no payload.',
+    'Invalid token provided.': 'Token fornecido inválido.',
+    'Could not update the user record on the database.':
+        'Não foi possível atualizar o registo do utilizador na base de dados.',
+    'Invalid password.': 'Palavra-passe inválida.',
+    'The user does not have permisson to access this resource.':
+        'O utilizador não tem permissão para aceder a este recurso.',
+    'The given user does not have acces to this resource.':
+        'O utilizador indicado não tem acesso a este recurso.'
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-    import type { NuxtError } from '#app'
+    import type { NuxtError } from 'nuxt/app'
     import type { TableColumn } from '@nuxt/ui'
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { CurrencyRow } from '~~/types/ApiRows'
@@ -53,7 +53,12 @@
                     })
                     .catch((e: NuxtError) =>
                         Notifier.showAlert(
-                            toUserMessage(e, $t('An unexpected error occurred while deleting.')),
+                            toUserMessage(
+                                e,
+                                $t(
+                                    'An unexpected error occurred while deleting.'
+                                )
+                            ),
                             'error'
                         )
                     )

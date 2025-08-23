@@ -2,8 +2,8 @@
     import { z } from 'zod'
     import type { FetchTableSingleDataResult } from '~~/types/Table'
     import type { TransactionRow } from '~~/types/ApiRows'
-    import type { FormSubmitEvent } from '#ui/types'
-    import type { NuxtError } from '#app'
+    import type { FormSubmitEvent } from '@nuxt/ui'
+    import type { NuxtError } from 'nuxt/app'
     import { buildDateTimeWithOffset } from '~~/app/utils/date'
     import { toUserMessage } from '~/utils/errors'
     import { parseNumberLocale } from '~~/app/utils/helpers'
@@ -40,7 +40,7 @@
             },
             z
                 .number({ error: $t('Mandatory Field') })
-                .min(1, $t('Mandatory Field'))
+                .min(1, $t('Must be greater than 0'))
                 .refine(
                     (x) =>
                         Math.abs(x * 100 - Math.trunc(x * 100)) <
@@ -48,6 +48,7 @@
                     $t('Invalid number')
                 )
         ),
+        isExpense: z.boolean().default(false),
         category: z
             .number({ error: $t('Mandatory Field') })
             .min(1, $t('Mandatory Field')),
@@ -60,6 +61,7 @@
         category: undefined as number | undefined,
         name: '',
         value: undefined as number | undefined,
+        isExpense: false,
         date: new Date(Date.now())
     })
 
@@ -104,7 +106,9 @@
                 state.id = props.id
                 state.name = newVal.data.name || ''
                 state.category = newVal.data.category
-                state.value = Number(newVal.data.value)
+                const originalValue = Number(newVal.data.value)
+                state.value = Math.abs(originalValue)
+                state.isExpense = originalValue < 0
                 state.date = new Date(newVal.data.date)
             },
             { immediate: true }
@@ -122,12 +126,18 @@
         return props.mode === 'edit' ? 'edit' : 'create'
     })
 
-    const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
+    const onSubmitTransaction = function (event: FormSubmitEvent<Schema>) {
+        const signedValue =
+            Math.abs(event.data.value) * (event.data.isExpense ? -1 : 1)
+
         $fetch(`/api/transactions/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: {
-                ...event.data,
+                id: props.id,
+                name: event.data.name,
+                value: signedValue,
+                category: event.data.category,
                 datetime: buildDateTimeWithOffset(event.data.date)
             } // Use data from event instead of parsed bc it contains the ID
         })
@@ -166,7 +176,7 @@
         :schema="schema"
         :state="state"
         class="space-y-4"
-        @submit="onCreateTransaction">
+        @submit="onSubmitTransaction">
         <UFormField :label="$t('Transaction Name')" name="name">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
@@ -174,11 +184,17 @@
         <div
             class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
             <UFormField :label="$t('Value')" name="value" class="w-full">
-                <UInput
-                    v-model="state.value"
-                    type="number"
-                    step="any"
-                    class="w-full" />
+                <div class="flex items-center gap-3">
+                    <UInput
+                        v-model="state.value"
+                        type="number"
+                        step="any"
+                        min="0.01"
+                        class="w-28" />
+                    <UCheckbox
+                        v-model="state.isExpense"
+                        :label="$t('Expense')" />
+                </div>
             </UFormField>
 
             <UFormField :label="$t('Category')" name="category" class="w-full">
