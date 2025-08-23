@@ -14,7 +14,8 @@
             { label: 'OpenAI', value: 'gpt' },
             { label: 'Anthropic', value: 'anthropic' },
             { label: 'Google', value: 'google' },
-            { label: 'Ollama', value: 'ollama' }
+            { label: 'Ollama', value: 'ollama' },
+            { label: 'Open Router', value: 'openrouter' }
         ]
     })
 
@@ -95,8 +96,11 @@
         <UFormField :label="$t('Model')" name="model" class="w-full">
             <UInput
                 v-model="state.model"
-                :placeholder="$t('Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest')"
-            />
+                :placeholder="
+                    $t(
+                        'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest'
+                    )
+                " />
         </UFormField>
 
         <template v-if="state.provider !== 'ollama'">
