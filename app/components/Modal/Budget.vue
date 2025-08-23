@@ -26,7 +26,6 @@
         (event: 'successful-submit'): void
     }>()
 
-    const { token } = useAuth()
     const { t: $t } = useI18n()
 
     const periodOptions: Ref<SelectOption[]> = ref([
@@ -94,8 +93,7 @@
             `budget-${props.mode}-${props.id}`,
             () =>
                 $fetch(`/api/budgets/${props.id}`, {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value)
+                    method: 'GET'
                 }),
             {
                 default: () => {
@@ -141,7 +139,6 @@
     const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
         $fetch(`/api/budgets/${operation.value}`, {
             method: 'POST',
-            headers: buildRequestHeaders(token.value),
             body: event.data
         })
             .then((data) => {

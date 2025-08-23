@@ -6,7 +6,7 @@
     import type { UserRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
 
-    const { token, data: authData, signOut } = useAuth()
+    const { data: authData, signOut } = useAuth()
     const { t: $t } = useI18n()
 
     // Table loading
@@ -48,7 +48,6 @@
             () => {
                 $fetch(`/api/users/delete`, {
                     method: 'POST',
-                    headers: buildRequestHeaders(token.value),
                     body: { id: row.id }
                 })
                     .then((data) => {
@@ -160,7 +159,6 @@
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/users`, {
                 method: 'GET',
-                headers: buildRequestHeaders(token.value),
                 query: {
                     q: filters?.searchQuery,
                     qColumn: filters?.searchColumn,

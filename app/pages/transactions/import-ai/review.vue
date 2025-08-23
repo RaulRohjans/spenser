@@ -10,11 +10,9 @@
         type ParsedTransactionItem
     } from '~/stores/aiImport'
     import { buildDateTimeWithOffset } from '~/utils/date'
-    import { buildRequestHeaders } from '~/utils/helpers'
     import { toUserMessage } from '~/utils/errors'
     import { useActionColumnCell } from '~/composables/useActionColumnCell'
-
-    const { token } = useAuth()
+    
     const { t: $t } = useI18n()
     const router = useRouter()
     const store = useAiImportStore()
@@ -141,8 +139,7 @@
             'aiImportCategoryData',
             () =>
                 $fetch('/api/categories', {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value)
+                    method: 'GET'
                 }),
             {
                 default: () => ({
@@ -192,7 +189,6 @@
         try {
             const res = await $fetch('/api/transactions/import', {
                 method: 'POST',
-                headers: buildRequestHeaders(token.value),
                 body: {
                     transactions: toFinalPayload(),
                     datetime: {

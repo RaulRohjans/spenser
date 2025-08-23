@@ -2,9 +2,8 @@
     import type { NuxtError } from 'nuxt/app'
     import { useAiImportStore } from '~/stores/aiImport'
     import { toUserMessage } from '~/utils/errors'
-    import { buildRequestHeaders } from '~/utils/helpers'
 
-    const { token } = useAuth()
+    
     const { t: $t } = useI18n()
     const router = useRouter()
     const store = useAiImportStore()
@@ -92,7 +91,6 @@
                 )
                 res = await $fetch('/api/ai-import/parse', {
                     method: 'POST',
-                    headers: buildRequestHeaders(token.value),
                     body: fd
                 })
             } else {
@@ -102,7 +100,6 @@
                 )
                 res = await $fetch('/api/ai-import/parse', {
                     method: 'POST',
-                    headers: buildRequestHeaders(token.value),
                     body: { transactionText: textInput.value }
                 })
             }

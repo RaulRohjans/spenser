@@ -5,7 +5,6 @@
     import type { CurrencyRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
 
-    const { token } = useAuth()
     const { t: $t } = useI18n()
 
     // Table loading
@@ -33,7 +32,6 @@
             () => {
                 $fetch(`/api/currencies/delete`, {
                     method: 'POST',
-                    headers: buildRequestHeaders(token.value),
                     body: { id: row.id }
                 })
                     .then((data) => {
@@ -113,7 +111,6 @@
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/currencies`, {
                 method: 'GET',
-                headers: buildRequestHeaders(token.value),
                 query: {
                     q: filters?.searchQuery,
                     qColumn: filters?.searchColumn,

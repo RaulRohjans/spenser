@@ -31,8 +31,7 @@
         'currencies',
         () =>
             $fetch('/api/currencies', {
-                method: 'GET',
-                headers: buildRequestHeaders(token.value)
+                method: 'GET'
             }),
         {
             default: () => {
@@ -65,8 +64,7 @@
         data: UserSettingsObject | undefined
     }>('settings', () =>
         $fetch('/api/settings', {
-            method: 'GET',
-            headers: buildRequestHeaders(token.value)
+            method: 'GET'
         })
     )
 
@@ -97,7 +95,6 @@
             // Save user profile related data
             await $fetch('/api/account/update', {
                 method: 'POST',
-                headers: buildRequestHeaders(token.value),
                 body: {
                     first_name: event.data.first_name,
                     last_name: event.data.last_name,
@@ -108,7 +105,6 @@
             // Save user preferences
             const prefRes = await $fetch(`/api/settings`, {
                 method: 'POST',
-                headers: buildRequestHeaders(token.value),
                 body: { currency: event.data.currency }
             })
 

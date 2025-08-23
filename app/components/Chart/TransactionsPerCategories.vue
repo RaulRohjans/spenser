@@ -58,7 +58,6 @@
     })
 
     const colorMode = useColorMode()
-    const { token } = useAuth()
     const { t: $t } = useI18n()
     const dateRange: Ref<Date[]> = ref([])
 
@@ -77,7 +76,6 @@
         () =>
             $fetch('/api/charts/transactionsPerCategory', {
                 method: 'GET',
-                headers: buildRequestHeaders(token.value),
                 query: {
                     startDate:
                         dateRange.value.length > 0

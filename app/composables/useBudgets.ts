@@ -4,7 +4,6 @@ import type { BudgetDataObject } from '~~/types/Data'
 type BudgetOrAdd = BudgetDataObject & { __isAddButton?: boolean }
 
 export function useBudgets() {
-    const { token } = useAuth()
     const { t: $t } = useI18n()
 
     const budgetDraggableList = ref<BudgetOrAdd[] | undefined>()
@@ -17,8 +16,7 @@ export function useBudgets() {
             success: boolean
             data: BudgetDataObject[]
         }>('/api/budgets', {
-            method: 'GET',
-            headers: buildRequestHeaders(token.value)
+            method: 'GET'
         })
         return data
     }
@@ -49,7 +47,6 @@ export function useBudgets() {
                 try {
                     const res = await $fetch('/api/budgets/delete', {
                         method: 'POST',
-                        headers: buildRequestHeaders(token.value),
                         body: { id: budget.id }
                     })
 
@@ -94,7 +91,6 @@ export function useBudgets() {
         try {
             const res = await $fetch('/api/budgets/order', {
                 method: 'POST',
-                headers: buildRequestHeaders(token.value),
                 body: { positions: budgetPos }
             })
 

@@ -4,7 +4,7 @@
     import type { NuxtError } from 'nuxt/app'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
 
-    const { token, refresh } = useAuth()
+    const { refresh } = useAuth()
     const { t: $t } = useI18n()
 
     const emit = defineEmits<{
@@ -37,7 +37,6 @@
     const onChangePasswordSubmit = function (event: FormSubmitEvent<Schema>) {
         $fetch('/api/account/changePassword', {
             method: 'POST',
-            headers: buildRequestHeaders(token.value),
             body: { password: event.data.new_password }
         })
             .then(async (data) => {

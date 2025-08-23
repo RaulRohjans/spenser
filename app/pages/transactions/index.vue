@@ -7,7 +7,6 @@
     import { toUserMessage } from '~/utils/errors'
 
     // Basic Setup
-    const { token } = useAuth()
     const { t: $t } = useI18n()
     const router = useRouter()
 
@@ -37,7 +36,6 @@
                 //User accepted
                 $fetch(`/api/transactions/delete`, {
                     method: 'POST',
-                    headers: buildRequestHeaders(token.value),
                     body: { id: row.id }
                 })
                     .then((data) => {
@@ -221,7 +219,6 @@
         fetcher: ({ page, limit, sort, order, filters }) =>
             $fetch(`/api/transactions`, {
                 method: 'GET',
-                headers: buildRequestHeaders(token.value),
                 query: {
                     q: filters?.searchQuery,
                     qColumn: filters?.searchColumn,
