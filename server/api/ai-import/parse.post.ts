@@ -5,8 +5,7 @@ import { createAnthropic } from '@ai-sdk/anthropic'
 import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOllama } from 'ollama-ai-provider-v2'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
-import { parseOfficeAsync } from 'officeparser'
-import { parse as parseYaml } from 'yaml'
+import { extractTextFromFileBuffer } from '~~/server/utils/fileParsers'
 import fs from 'node:fs/promises'
 import { generateObject } from 'ai'
 import { ensureAuth } from '~~/server/utils/auth'
@@ -74,29 +73,24 @@ export default defineEventHandler(async (event) => {
             const mimetype = (first.mimetype || '').toLowerCase()
             const filename = (first.originalFilename || '').toLowerCase()
 
-            const textFromBuffer = async () => {
-                // Use officeparser for common office/pdf formats
-                if (
-                    filename.endsWith('.pdf') ||
-                    filename.endsWith('.docx') ||
-                    filename.endsWith('.pptx') ||
-                    filename.endsWith('.xlsx') ||
-                    filename.endsWith('.odt') ||
-                    filename.endsWith('.odp') ||
-                    filename.endsWith('.ods')
-                ) {
-                    const res = await parseOfficeAsync(buf)
-                    if (typeof res === 'string') return res
+            const textFromBuffer = async (): Promise<string> => {
+                try {
+                    return await extractTextFromFileBuffer(
+                        filename,
+                        mimetype,
+                        buf
+                    )
+                } catch (fileErr) {
+                    console.error('[ai-import] File parsing error', {
+                        filename,
+                        mimetype,
+                        error: fileErr
+                    })
+                    throw createError({
+                        statusCode: 400,
+                        statusMessage: 'Unsupported or unreadable file.'
+                    })
                 }
-                if (filename.endsWith('.json') || mimetype.includes('json')) {
-                    return buf.toString('utf8')
-                }
-                if (filename.endsWith('.yml') || filename.endsWith('.yaml')) {
-                    const doc = parseYaml(buf.toString('utf8'))
-                    return typeof doc === 'string' ? doc : JSON.stringify(doc)
-                }
-                // default to utf8 text
-                return buf.toString('utf8')
             }
 
             rawText = await textFromBuffer()
@@ -165,10 +159,12 @@ export default defineEventHandler(async (event) => {
         )
         .join('\n')
 
-    const systemPrompt = `You are a finance assistant that extracts bank transactions from unstructured text. 
-        Return a strict JSON object following the provided schema. 
-        Map each transaction to a category id from the list when it is a clear match by meaning or name; otherwise set category to null. 
-        Dates should be ISO-like or parseable (YYYY-MM-DD or full ISO with time). Amounts: positive for income, negative for expense.`
+    const systemPrompt = `You are a precise finance extraction assistant. 
+        Return ONLY valid JSON strictly matching the schema. 
+        - Every transaction MUST include all fields. 
+        - If category is unknown or not a confident match, set it to null (never leave it empty). 
+        - Never include comments, trailing commas, ellipses, or extra text before/after the JSON. 
+        - Dates must be ISO-like (YYYY-MM-DD or full ISO). Amounts: positive income, negative expense.`
 
     const userPrompt = `Unstructured content:\n\n${rawText}\n\nUser Categories (id: name):\n${categoryGuidance}`
 
@@ -177,19 +173,20 @@ export default defineEventHandler(async (event) => {
             model,
             schema: responseSchema,
             system: systemPrompt,
-            prompt: userPrompt
+            prompt: userPrompt,
+            // Reduce randomness and allow more output
+            temperature: 0.2,
+            maxOutputTokens: 8192
         })
-
         return { success: true, transactions: object.transactions }
     } catch (err) {
-        console.error(
-            '[ai-import] Failed to generate structured transactions',
-            {
-                provider: providerName,
-                model: gSettings.model,
-                error: err
-            }
-        )
+        console.error('[ai-import] generation failed', {
+            provider: providerName,
+            model: gSettings.model,
+            // @ts-expect-error best-effort
+            text: err?.text,
+            error: err
+        })
         throw createError({
             statusCode: 500,
             statusMessage: 'AI parsing failed. Please try again later.'

@@ -179,7 +179,7 @@
                                 ref="fileInput"
                                 type="file"
                                 class="hidden"
-                                accept=".pdf,.docx,.pptx,.xlsx,.odt,.odp,.ods,.json,.yml,.yaml,.txt,.csv"
+                                accept=".docx,.pptx,.xlsx,.odt,.odp,.ods,.json,.yml,.yaml,.txt,.csv"
                                 @change="onFileChange" />
                             <UButton
                                 color="primary"
