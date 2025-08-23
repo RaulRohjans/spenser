@@ -40,7 +40,7 @@
             },
             z
                 .number({ error: $t('Mandatory Field') })
-                .min(1, $t('Mandatory Field'))
+                .min(1, $t('Must be greater than 0'))
                 .refine(
                     (x) =>
                         Math.abs(x * 100 - Math.trunc(x * 100)) <
@@ -48,6 +48,7 @@
                     $t('Invalid number')
                 )
         ),
+        isExpense: z.boolean().default(false),
         category: z
             .number({ error: $t('Mandatory Field') })
             .min(1, $t('Mandatory Field')),
@@ -60,6 +61,7 @@
         category: undefined as number | undefined,
         name: '',
         value: undefined as number | undefined,
+        isExpense: false,
         date: new Date(Date.now())
     })
 
@@ -104,7 +106,9 @@
                 state.id = props.id
                 state.name = newVal.data.name || ''
                 state.category = newVal.data.category
-                state.value = Number(newVal.data.value)
+                const originalValue = Number(newVal.data.value)
+                state.value = Math.abs(originalValue)
+                state.isExpense = originalValue < 0
                 state.date = new Date(newVal.data.date)
             },
             { immediate: true }
@@ -123,11 +127,15 @@
     })
 
     const onCreateTransaction = function (event: FormSubmitEvent<Schema>) {
+        const signedValue = Math.abs(event.data.value) * (event.data.isExpense ? -1 : 1)
+
         $fetch(`/api/transactions/${operation.value}`, {
             method: 'POST',
             headers: buildRequestHeaders(token.value),
             body: {
-                ...event.data,
+                name: event.data.name,
+                value: signedValue,
+                category: event.data.category,
                 datetime: buildDateTimeWithOffset(event.data.date)
             } // Use data from event instead of parsed bc it contains the ID
         })

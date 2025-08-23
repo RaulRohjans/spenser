@@ -22,6 +22,9 @@
     if (!store.items.length) await router.replace('/transactions/import-ai')
 
     const rows = ref<ParsedTransactionItem[]>([...store.items])
+    const isExpense = ref<boolean[]>(rows.value.map((r) => Number(r.value) < 0))
+    rows.value = rows.value.map((r) => ({ ...r, value: Math.abs(Number(r.value)) }))
+    
     const delRow = (row: ParsedTransactionItem) => {
         const idx = rows.value.indexOf(row)
         if (idx > -1) {
@@ -49,6 +52,7 @@
                     'onUpdate:modelValue': (v: string) =>
                         (rows.value[idx]!.name = v),
                     size: 'xs',
+                    class: 'w-full',
                     color: hasValidationError(row.original)
                         ? 'error'
                         : undefined
@@ -61,16 +65,26 @@
             header: () => $t('Value'),
             cell: ({ row }) => {
                 const idx = rows.value.indexOf(row.original)
-                return h(resolveComponent('UInput'), {
-                    modelValue: rows.value[idx]?.value,
-                    'onUpdate:modelValue': (v: string | number) =>
-                        (rows.value[idx]!.value = Number(v)),
-                    type: 'number',
-                    size: 'xs',
-                    color: hasValidationError(row.original)
-                        ? 'error'
-                        : undefined
-                })
+                return h('div', { class: 'flex items-center gap-2' }, [
+                    h(resolveComponent('UInput'), {
+                        modelValue: rows.value[idx]?.value,
+                        'onUpdate:modelValue': (v: string | number) =>
+                            (rows.value[idx]!.value = Number(v)),
+                        type: 'number',
+                        step: 'any',
+                        size: 'xs',
+                        class: 'w-28',
+                        color: hasValidationError(row.original)
+                            ? 'error'
+                            : undefined
+                    }),
+                    h(resolveComponent('UCheckbox'), {
+                        modelValue: isExpense.value[idx],
+                        'onUpdate:modelValue': (v: boolean) =>
+                            (isExpense.value[idx] = v),
+                        label: $t('Expense')
+                    })
+                ])
             },
             meta: { alias: $t('Value') }
         },
@@ -85,7 +99,8 @@
                     modelValue: rows.value[idx]?.category,
                     'onUpdate:modelValue': (v: number | null) =>
                         (rows.value[idx]!.category = v),
-                    class: 'hide-select-span',
+                    class: 'hide-select-span w-full',
+                    size: 'xs',
                     color: hasValidationError(row.original)
                         ? 'error'
                         : undefined
@@ -144,17 +159,17 @@
     const hasValidationError = (row: ParsedTransactionItem) => {
         return (
             !row.name ||
-            isNaN(Number(row.value)) ||
+            Number(row.value) <= 0 ||
             !row.date ||
             row.category === null
         )
     }
 
     const toFinalPayload = (): LlmTransactionObject[] =>
-        rows.value.map((r) => ({
+        rows.value.map((r, idx) => ({
             category: Number(r.category),
             name: r.name,
-            value: Number(r.value),
+            value: Math.abs(Number(r.value)) * (isExpense.value[idx] ? -1 : 1),
             date: r.date
         }))
 
