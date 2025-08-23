@@ -27,32 +27,26 @@ export const validateJWT = function (
     }) as JwtPayload | undefined
 }
 
+/**
+ * Ensures the request is authenticated. Token has already been validated by middleware.
+ * This function returns the user or lazily decodes the token from context and returns the user claims.
+ */
 export const ensureAuth = (event: H3Event) => {
-    const authHeaderValue = getRequestHeader(event, 'authorization')
-
-    if (typeof authHeaderValue === 'undefined')
-        throw createError({
-            statusCode: 403,
-            statusMessage: 'Invalid Bearer-authorization header.'
-        })
-
-    try {
-        const user = validateJWT(extractToken(authHeaderValue))
-
-        if (!user)
-            throw createError({
-                statusCode: 403,
-                statusMessage: 'Could not fetch user from the JWT token.'
-            })
-
-        return user
-    } catch (error) {
-        console.log('Error fetching user record\n', error)
+    if (!event.context.auth?.isAuthenticated || !event.context.auth.token)
         throw createError({
             statusCode: 403,
             statusMessage: 'Invalid token, user must be logged in.'
         })
-    }
+
+    // Prefer user claims from middleware; fallback to decode if missing
+    const payload = event.context.auth.user || validateJWT(event.context.auth.token)
+    if (!payload)
+        throw createError({
+            statusCode: 403,
+            statusMessage: 'Could not fetch user from the JWT token.'
+        })
+
+    return payload
 }
 
 export const extractToken = (authHeaderValue: string): string => {
