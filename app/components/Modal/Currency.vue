@@ -9,7 +9,6 @@
         (event: 'successful-submit'): void
     }>()
 
-    const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
 
@@ -38,7 +37,6 @@
 
         $fetch(`/api/currencies/insert`, {
             method: 'POST',
-            headers: buildRequestHeaders(token.value),
             body: event.data
         })
             .then((data) => {

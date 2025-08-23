@@ -49,7 +49,6 @@
 
     const timeframe: Ref<'month' | 'year' | 'alltime'> = ref('year')
     const colorMode = useColorMode()
-    const { token } = useAuth()
     const { t: $t } = useI18n()
 
     const getTheme = computed(() => {
@@ -67,7 +66,6 @@
         () =>
             $fetch('/api/charts/spendingOverTime', {
                 method: 'GET',
-                headers: buildRequestHeaders(token.value),
                 query: {
                     timeframe: timeframe.value
                 }

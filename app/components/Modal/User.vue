@@ -48,7 +48,6 @@
         (event: 'successful-submit'): void
     }>()
 
-    const { token } = useAuth()
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
 
@@ -104,7 +103,6 @@
 
         $fetch(`/api/users/${operation.value}`, {
             method: 'POST',
-            headers: buildRequestHeaders(token.value),
             body: event.data
         })
             .then((data) => {

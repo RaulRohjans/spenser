@@ -6,7 +6,7 @@
     import { useSettingsStore } from '~/stores/settings'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
 
-    const { signIn, token } = useAuth()
+    const { signIn } = useAuth()
     const config = useRuntimeConfig()
     const { t: $t } = useI18n()
     const validationSchema = z.object({
@@ -33,8 +33,7 @@
                     data: UserSettingsObject | undefined
                     success: boolean
                 } = await $fetch('/api/settings', {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value)
+                    method: 'GET'
                 })
 
                 // Load user settings

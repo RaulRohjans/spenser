@@ -5,7 +5,6 @@
     import type { GlobalSettingsObject } from '~~/types/Data'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
 
-    const { token } = useAuth()
     const { t: $t } = useI18n()
     const providerSelectKey: Ref<number> = ref(0)
 
@@ -23,8 +22,7 @@
         success: boolean
         data: GlobalSettingsObject | null
     }>('/api/global-settings', {
-        method: 'GET',
-        headers: buildRequestHeaders(token.value)
+        method: 'GET'
     })
 
     const state = reactive({
@@ -39,7 +37,6 @@
     const onSave = function (event: FormSubmitEvent<typeof state>) {
         $fetch(`/api/global-settings/save`, {
             method: 'POST',
-            headers: buildRequestHeaders(token.value),
             body: event.data
         })
             .then((data) => {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import type { AvgExpenseValueData } from '~~/types/Chart'
 
-    const { token } = useAuth()
     const { t: $t } = useI18n()
 
     // Fetch data
@@ -12,8 +11,7 @@
         'avgExpenseValue',
         () =>
             $fetch('/api/charts/avgExpenseValue', {
-                method: 'GET',
-                headers: buildRequestHeaders(token.value)
+                method: 'GET'
             }),
         {
             default: () => {

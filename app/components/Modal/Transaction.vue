@@ -25,8 +25,7 @@
     const emit = defineEmits<{
         (event: 'successful-submit'): void
     }>()
-
-    const { token } = useAuth()
+    
     const { t: $t } = useI18n()
 
     const schema = z.object({
@@ -74,8 +73,7 @@
             `transaction-${props.mode}-${props.id}`,
             () =>
                 $fetch(`/api/transactions/${props.id}`, {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value)
+                    method: 'GET'
                 }),
             {
                 default: () => ({
@@ -132,7 +130,6 @@
 
         $fetch(`/api/transactions/${operation.value}`, {
             method: 'POST',
-            headers: buildRequestHeaders(token.value),
             body: {
                 id: props.id,
                 name: event.data.name,

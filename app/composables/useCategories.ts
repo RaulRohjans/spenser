@@ -2,7 +2,6 @@ import type { CategoryRow } from '~~/types/ApiRows'
 import type { FetchTableDataResult } from '~~/types/Table'
 
 export function useCategories() {
-    const { token } = useAuth()
 
     const { data, status, error } = useLazyAsyncData<
         FetchTableDataResult<CategoryRow>
@@ -10,8 +9,7 @@ export function useCategories() {
         'categoryData',
         () =>
             $fetch('/api/categories', {
-                method: 'GET',
-                headers: buildRequestHeaders(token.value)
+                method: 'GET'
             }),
         {
             default: () => ({

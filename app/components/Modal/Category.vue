@@ -24,7 +24,6 @@
         (event: 'successful-submit'): void
     }>()
 
-    const { token } = useAuth()
     const { t: $t } = useI18n()
 
     const schema = z.object({
@@ -50,8 +49,7 @@
             `category-${props.mode}-${props.id}`,
             () =>
                 $fetch(`/api/categories/${props.id}`, {
-                    method: 'GET',
-                    headers: buildRequestHeaders(token.value)
+                    method: 'GET'
                 }),
             {
                 default: (): FetchTableSingleDataResult<CategoryRow> => ({
@@ -93,7 +91,6 @@
     const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
         $fetch(`/api/categories/${operation.value}`, {
             method: 'POST',
-            headers: buildRequestHeaders(token.value),
             body: event.data
         })
             .then((data) => {

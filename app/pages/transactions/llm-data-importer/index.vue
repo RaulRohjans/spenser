@@ -5,7 +5,6 @@
     import { toUserMessage, logUnknownError } from '~/utils/errors'
     import type { NuxtError } from 'nuxt/app'
 
-    const { token } = useAuth()
     const { t: $t } = useI18n()
     const filesRef: Ref<HTMLInputElement | null> = ref(null)
     const modalTransactions: Ref<LlmTransactionObject[] | null> = ref(null)
@@ -73,7 +72,6 @@
 
         $fetch(url, {
             method: 'POST',
-            headers: buildRequestHeaders(token.value),
             body: formData
         })
             .then((data) => {
