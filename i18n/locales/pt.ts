@@ -277,4 +277,28 @@ export default {
         'O utilizador não tem permissão para aceder a este recurso.',
     'The given user does not have acces to this resource.':
         'O utilizador indicado não tem acesso a este recurso.'
+    ,
+    // Avatar & UI
+    'Image must be square': 'A imagem deve ser quadrada',
+    'Select image': 'Selecionar imagem',
+    'Delete image': 'Eliminar imagem',
+    // Avatar endpoint errors
+    'Invalid user id.': 'ID de utilizador inválido.',
+    'Forbidden.': 'Proibido.',
+    'Invalid form data.': 'Dados de formulário inválidos.',
+    'No avatar payload provided.': 'Nenhum conteúdo de avatar fornecido.',
+    'Unsupported file type.': 'Tipo de ficheiro não suportado.',
+    'File too large.': 'Ficheiro demasiado grande.'
+    ,
+    // Additional validation/UI strings
+    'Must be greater than 0': 'Deve ser maior que 0',
+    'Invalid number': 'Número inválido',
+    Expense: 'Despesa',
+    'Upload a file or write the transaction data to be parsed by AI.':
+        'Faça upload de um ficheiro ou escreva os dados da transação para serem analisados pela IA.',
+    'Drag and drop a single file here, or click to select':
+        'Arraste e largue um único ficheiro aqui, ou clique para selecionar',
+    'Optional description to help the AI understand this category':
+        'Descrição opcional para ajudar a IA a compreender esta categoria',
+    'Currency code is too big': 'Código de moeda é demasiado grande'
 }

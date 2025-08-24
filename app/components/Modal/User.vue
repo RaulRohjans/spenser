@@ -51,6 +51,17 @@
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
 
+    const selectedAvatarFile = ref<File | null>(null)
+    const avatarInputRef = ref<HTMLInputElement | null>(null)
+
+    const avatarPreviewUrl = computed(() => {
+        if (selectedAvatarFile.value)
+            return URL.createObjectURL(selectedAvatarFile.value)
+        return state.avatar
+            ? `/avatars/${state.avatar}`
+            : '/icons/default-avatar.svg'
+    })
+
     const schema = z
         .object({
             id: z.number().optional(),
@@ -98,6 +109,13 @@
         return 'edit'
     })
 
+    const triggerAvatarSelect = () => avatarInputRef.value?.click()
+
+    const onFileChange = (e: Event) => {
+        const input = e.target as HTMLInputElement
+        selectedAvatarFile.value = (input.files && input.files[0]) || null
+    }
+
     const onCreateUser = function (event: FormSubmitEvent<Schema>) {
         emit('submit')
 
@@ -105,23 +123,35 @@
             method: 'POST',
             body: event.data
         })
-            .then((data) => {
+            .then(async (data: any) => {
                 if (!data.success)
                     return Notifier.showAlert(
                         $t('An error occurred when performing the action.'),
                         'error'
                     )
 
-                // Emit success
+                // Handle avatar
+                if (selectedAvatarFile.value) {
+                    const fd = new FormData()
+                    fd.append('file', selectedAvatarFile.value)
+                    const targetId = (data?.id ?? data?.userId ?? state.id) as number | undefined
+                    if (targetId) await $fetch(`/api/user/avatar/${targetId}`, { method: 'POST', body: fd })
+                } else if (operation.value === 'edit' && !state.avatar) {
+                    const fd = new FormData()
+                    fd.append('clear', '1')
+                    const targetId = (data?.id ?? data?.userId ?? state.id) as number | undefined
+                    if (targetId) await $fetch(`/api/user/avatar/${targetId}`, { method: 'POST', body: fd })
+                }
+
                 emit('successful-submit')
 
-                // Display success message
                 Notifier.showAlert(
                     $t('Operation completed successfully!'),
                     'success'
                 )
 
-                // Close modal
+                // Reset and Close modal
+                selectedAvatarFile.value = null
                 model.value = false
             })
             .catch((e: NuxtError) => {
@@ -142,8 +172,38 @@
             <UForm
                 :schema="schema"
                 :state="state"
-                class="space-y-4 p-6"
+                class="space-y-4"
                 @submit="onCreateUser">
+                <div
+                    class="rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4 flex flex-col items-center justify-center text-center">
+                    <UAvatar :src="avatarPreviewUrl" class="w-20 h-20 mb-3" />
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        {{ $t('Image must be square') }}
+                    </div>
+                    <div class="flex gap-2">
+                        <UButton size="sm" @click="triggerAvatarSelect">
+                            {{ $t('Select image') }}
+                        </UButton>
+                        <UButton
+                            size="sm"
+                            variant="soft"
+                            color="error"
+                            @click="
+                                () => {
+                                    selectedAvatarFile = null
+                                    state.avatar = undefined
+                                }
+                            ">
+                            {{ $t('Delete image') }}
+                        </UButton>
+                    </div>
+                    <input
+                        ref="avatarInputRef"
+                        class="hidden"
+                        type="file"
+                        accept="image/*"
+                        @change="onFileChange" />
+                </div>
                 <div
                     class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
                     <UFormField :label="$t('First Name')" name="first_name">
