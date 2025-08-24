@@ -77,10 +77,12 @@
     })
 
     const selectedAvatarFile = ref<File | null>(null)
+    const shouldClearAvatar = ref<boolean>(false)
     const avatarInputRef = ref<HTMLInputElement | null>(null)
     const avatarPreviewUrl = computed(() => {
         if (selectedAvatarFile.value)
             return URL.createObjectURL(selectedAvatarFile.value)
+        if (shouldClearAvatar.value) return '/icons/default-avatar.svg'
         const fileName = (
             authData.value as unknown as JwtPayload | null | undefined
         )?.avatar
@@ -149,7 +151,7 @@
                     method: 'POST',
                     body: fd
                 })
-            } else if (selectedAvatarFile.value === null) {
+            } else if (shouldClearAvatar.value) {
                 const fd = new FormData()
                 fd.append('clear', '1')
                 await $fetch(`/api/user/avatar/${authData.value?.id}`, {
@@ -163,6 +165,7 @@
 
             // Reset selection
             selectedAvatarFile.value = null
+            shouldClearAvatar.value = false
 
             emit('close')
             Notifier.showAlert(
@@ -215,11 +218,7 @@
                             size="sm"
                             variant="soft"
                             color="error"
-                            @click="
-                                () => {
-                                    selectedAvatarFile = null
-                                }
-                            ">
+                            @click="() => { selectedAvatarFile = null; shouldClearAvatar = true }">
                             {{ $t('Delete image') }}
                         </UButton>
                     </div>
