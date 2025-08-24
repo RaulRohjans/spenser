@@ -68,8 +68,8 @@ export default defineNuxtPlugin((nuxtApp) => {
             newHeaders.set('x-auth-retried', '1')
 
             // Use the same method/body/query, $fetch will pick from options
-            await ($fetch as any)(url, {
-                ...(options as any),
+            await ($fetch as (input: string, init?: RequestInit) => Promise<unknown>)(url, {
+                ...(options as RequestInit),
                 headers: newHeaders
             })
         }
@@ -78,7 +78,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     // Replace app-level and global $fetch so both $fetch and useFetch use our instance
     nuxtApp.$fetch = wrappedFetch as typeof $fetch
     try {
-        ;(globalThis as any).$fetch = wrappedFetch
+        ;(globalThis as { $fetch?: unknown }).$fetch = wrappedFetch
     } catch {
         /* empty */
     }

@@ -1,96 +1,96 @@
 <script setup lang="ts">
-    import Draggable from 'vuedraggable'
-    import type { BudgetDataObject } from '~~/types/Data'
+import type { BudgetDataObject } from '~~/types/Data'
 
-    const { t: $t } = useI18n()
-    const router = useRouter()
+const { t: $t } = useI18n()
+const router = useRouter()
+const store = useBudgetsStore()
 
-    const {
-        budgetDraggableList,
-        loadData,
-        deleteItem,
-        saveOrder,
-        saveOrderImmediately
-    } = useBudgets()
+onMounted(() => store.fetchBudgets())
 
-    onBeforeMount(() => loadData())
+onBeforeRouteLeave(() => {
+    // Persist order if needed (handled by reorder handler)
+})
 
-    onBeforeRouteLeave(() => {
-        if (!budgetDraggableList.value) return
+function _handleEdit(budget: BudgetDataObject) {
+    router.push(`/budgets/edit/${budget.id}`)
+}
 
-        // Force the saving of the current order in case
-        // the user navigates before debounce logic is applied
-        saveOrderImmediately(budgetDraggableList.value)
-    })
+function handleDelete(budget: BudgetDataObject) {
+    Notifier.showChooser(
+        $t('Delete Budget'),
+        $t('Are you sure you want to delete this budget?'),
+        async () => {
+            const res = await $fetch('/api/budgets/delete', {
+                method: 'POST',
+                body: { id: budget.id }
+            })
+            if (res.success) store.fetchBudgets()
+        }
+    )
+}
 
-    if (import.meta.client) {
-        window.addEventListener('beforeunload', () => {
-            if (!budgetDraggableList.value) return
+const showEditor = ref(false)
+const editing: Ref<BudgetDataObject | null> = ref(null)
 
-            // Same here, force saving the current changed when the
-            // user closes the tab right after dragging
-            saveOrderImmediately(budgetDraggableList.value)
-        })
+function openCreate() {
+    editing.value = null
+    showEditor.value = true
+}
+function openEdit(b: BudgetDataObject) {
+    editing.value = b
+    showEditor.value = true
+}
+
+async function persistOrder(list: BudgetDataObject[]) {
+    const filtered = list.filter((b) => b.id !== -1)
+    const positions: Record<number, number> = {}
+    for (let i = 0; i < filtered.length; i++) positions[filtered[i]!.id] = i + 1
+    await $fetch('/api/budgets/order', { method: 'POST', body: { positions } })
+}
+
+// Local list with the "+" card at the end for draggable v-model
+const tempList = computed<BudgetDataObject[]>({
+    get() {
+        return [...store.ordered, { id: -1 } as unknown as BudgetDataObject]
+    },
+    set(_next: BudgetDataObject[]) {
+        // ignore; Draggable uses this only to emit reorder which we handle
     }
+})
 
-    const drag: Ref<boolean> = ref(false)
-
-    function handleEdit(budget: BudgetDataObject) {
-        router.push(`/budgets/edit/${budget.id}`)
-    }
-
-    function onOrderChange() {
-        if (budgetDraggableList.value) saveOrder(budgetDraggableList.value)
-    }
-
-    useHead({
-        title: `Spenser | ${$t('Budgets')}`
-    })
+useHead({
+    title: `Spenser | ${$t('Budgets')}`
+})
 </script>
 
 <template>
     <main>
-        <div class="flex flex-col justify-center items-center">
-            <Draggable
-                v-if="budgetDraggableList"
-                v-model="budgetDraggableList"
-                class="flex flex-col sm:flex-row justify-center sm:justify-start sm:flex-wrap items-center sm:max-w-[80%] gap-6"
-                group="budgets"
-                item-key="id"
-                draggable=".drag-me:not(.dont-drag-me)"
-                :animation="200"
-                ghost-class="ghost"
-                chosen-class="chosen"
-                @change="onOrderChange"
-                @start="drag = true"
-                @end="drag = false">
-                <template #item="{ element }">
-                    <template v-if="element.id !== -1">
-                        <SBudgetCard
-                            :budget="element"
-                            @edit="handleEdit"
-                            @delete="deleteItem" />
-                    </template>
+        <div class="flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <SDateTimePicker
+                        :model-value="{ date: new Date(store.selectedDate.date as Date | string), tzOffsetMinutes: store.selectedDate.tzOffsetMinutes }"
+                        @update:model-value="(v) => { store.setSelectedDate(v); store.fetchBudgets() }" />
+                </div>
+                <UButton icon="i-heroicons-plus" @click="openCreate">{{ $t('Add Budget') }}</UButton>
+            </div>
 
-                    <template v-else>
-                        <a
-                            class="dont-drag-me cursor-pointer transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300"
-                            @click="router.push(`/budgets/create`)">
-                            <UCard class="shadow-xl p-12">
-                                <UButton
-                                    icon="i-heroicons-squares-plus"
-                                    size="xl"
-                                    color="primary"
-                                    square
-                                    variant="link" />
-                            </UCard>
-                        </a>
-                    </template>
-                </template>
-            </Draggable>
+            <div v-if="store.loading" class="flex justify-center py-12">
+                <SLoader />
+            </div>
+            <div v-else>
+                <BudgetBoard
+                    v-model="tempList"
+                    @reorder="persistOrder"
+                    @edit="openEdit"
+                    @delete="handleDelete"
+                    @create="openCreate" />
+            </div>
         </div>
 
-        <!-- Slot for popup forms to CRUD over budgets -->
-        <NuxtPage @successful-submit="loadData" />
+        <BudgetEditorModal
+            v-model="showEditor"
+            :budget="editing"
+            @saved="store.fetchBudgets()" />
     </main>
 </template>
