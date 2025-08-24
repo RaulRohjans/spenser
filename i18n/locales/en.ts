@@ -271,4 +271,28 @@ export default {
         'The user does not have permisson to access this resource.',
     'The given user does not have acces to this resource.':
         'The given user does not have acces to this resource.'
+    ,
+    // Avatar & UI
+    'Image must be square': 'Image must be square',
+    'Select image': 'Select image',
+    'Delete image': 'Delete image',
+    // Avatar endpoint errors
+    'Invalid user id.': 'Invalid user id.',
+    'Forbidden.': 'Forbidden.',
+    'Invalid form data.': 'Invalid form data.',
+    'No avatar payload provided.': 'No avatar payload provided.',
+    'Unsupported file type.': 'Unsupported file type.',
+    'File too large.': 'File too large.'
+    ,
+    // Additional validation/UI strings
+    'Must be greater than 0': 'Must be greater than 0',
+    'Invalid number': 'Invalid number',
+    Expense: 'Expense',
+    'Upload a file or write the transaction data to be parsed by AI.':
+        'Upload a file or write the transaction data to be parsed by AI.',
+    'Drag and drop a single file here, or click to select':
+        'Drag and drop a single file here, or click to select',
+    'Optional description to help the AI understand this category':
+        'Optional description to help the AI understand this category',
+    'Currency code is too big': 'Currency code is too big'
 }
