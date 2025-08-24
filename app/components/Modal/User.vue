@@ -54,6 +54,14 @@
     const selectedAvatarFile = ref<File | null>(null)
     const avatarInputRef = ref<HTMLInputElement | null>(null)
 
+    const avatarPreviewUrl = computed(() => {
+        if (selectedAvatarFile.value)
+            return URL.createObjectURL(selectedAvatarFile.value)
+        return state.avatar
+            ? `/avatars/${state.avatar}`
+            : '/icons/default-avatar.svg'
+    })
+
     const schema = z
         .object({
             id: z.number().optional(),
@@ -101,6 +109,13 @@
         return 'edit'
     })
 
+    const triggerAvatarSelect = () => avatarInputRef.value?.click()
+
+    const onFileChange = (e: Event) => {
+        const input = e.target as HTMLInputElement
+        selectedAvatarFile.value = (input.files && input.files[0]) || null
+    }
+
     const onCreateUser = function (event: FormSubmitEvent<Schema>) {
         emit('submit')
 
@@ -108,7 +123,7 @@
             method: 'POST',
             body: event.data
         })
-            .then((data) => {
+            .then(async (data: any) => {
                 if (!data.success)
                     return Notifier.showAlert(
                         $t('An error occurred when performing the action.'),
@@ -119,23 +134,13 @@
                 if (selectedAvatarFile.value) {
                     const fd = new FormData()
                     fd.append('file', selectedAvatarFile.value)
-                    $fetch(
-                        `/api/user/avatar/${state.id ?? data.userId ?? ''}`,
-                        {
-                            method: 'POST',
-                            body: fd
-                        }
-                    ).catch(() => undefined)
+                    const targetId = (data?.id ?? data?.userId ?? state.id) as number | undefined
+                    if (targetId) await $fetch(`/api/user/avatar/${targetId}`, { method: 'POST', body: fd })
                 } else if (operation.value === 'edit' && !state.avatar) {
                     const fd = new FormData()
                     fd.append('clear', '1')
-                    $fetch(
-                        `/api/user/avatar/${state.id ?? data.userId ?? ''}`,
-                        {
-                            method: 'POST',
-                            body: fd
-                        }
-                    ).catch(() => undefined)
+                    const targetId = (data?.id ?? data?.userId ?? state.id) as number | undefined
+                    if (targetId) await $fetch(`/api/user/avatar/${targetId}`, { method: 'POST', body: fd })
                 }
 
                 emit('successful-submit')
@@ -171,20 +176,12 @@
                 @submit="onCreateUser">
                 <div
                     class="rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4 flex flex-col items-center justify-center text-center">
-                    <UAvatar
-                        :src="
-                            state.avatar
-                                ? `/avatars/${state.avatar}`
-                                : '/icons/default-avatar.svg'
-                        "
-                        class="w-20 h-20 mb-3" />
+                    <UAvatar :src="avatarPreviewUrl" class="w-20 h-20 mb-3" />
                     <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">
                         {{ $t('Image must be square') }}
                     </div>
                     <div class="flex gap-2">
-                        <UButton
-                            size="sm"
-                            @click="() => avatarInputRef?.click()">
+                        <UButton size="sm" @click="triggerAvatarSelect">
                             {{ $t('Select image') }}
                         </UButton>
                         <UButton
@@ -205,12 +202,7 @@
                         class="hidden"
                         type="file"
                         accept="image/*"
-                        @change="
-                            (e: any) => {
-                                selectedAvatarFile =
-                                    e.target?.files?.[0] || null
-                            }
-                        " />
+                        @change="onFileChange" />
                 </div>
                 <div
                     class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
