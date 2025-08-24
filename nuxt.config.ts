@@ -80,6 +80,9 @@ export default defineNuxtConfig({
         jwtExpiration: process.env.JWT_EXPIRATION || '900',
         passwordSaltRounds: process.env.PASSWORD_SALT_ROUNDS || '10',
 
+        // Avatar upload size (in MB). Default 5MB if not provided
+        avatarMaxMb: process.env.AVATAR_MAX_MB || '5',
+
         dbName: process.env.DB_NAME,
         dbHost: process.env.DB_HOST,
         dbUser: process.env.DB_USER,

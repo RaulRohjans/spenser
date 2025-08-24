@@ -43,7 +43,7 @@ export default defineEventHandler(async (event) => {
                 statusMessage: 'Could not remove user due to an unknown error.'
             })
 
-        return { success: true }
+        return { success: true, userId: res.id }
     }
 
     if (!username || !first_name || !last_name || !email /*|| !avatar*/)
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'One or more mandatory fields are empty.'
         })
 
-    let opRes
+    let opRes: { id: number }
     switch (operation) {
         case 'duplicate':
         case 'insert': {
@@ -113,6 +113,7 @@ export default defineEventHandler(async (event) => {
         })
 
     return {
-        success: true
+        success: true,
+        userId: opRes.id
     }
 })

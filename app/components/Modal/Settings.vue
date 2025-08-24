@@ -6,9 +6,10 @@
     import type { CurrencyRow } from '~~/types/ApiRows'
     import { toUserMessage, logUnknownError } from '~/utils/errors'
     import type { FormSubmitEvent } from '@nuxt/ui'
+    import type { JwtPayload } from '~~/types/Jwt'
 
     const { t: $t } = useI18n()
-    const { token, data: authData, refresh } = useAuth()
+    const { data: authData, refresh } = useAuth()
 
     const emit = defineEmits(['close'])
 
@@ -75,6 +76,17 @@
         currency: userSettings.value?.data?.currency as number | undefined
     })
 
+    const selectedAvatarFile = ref<File | null>(null)
+    const avatarInputRef = ref<HTMLInputElement | null>(null)
+    const avatarPreviewUrl = computed(() => {
+        if (selectedAvatarFile.value)
+            return URL.createObjectURL(selectedAvatarFile.value)
+        const fileName = (
+            authData.value as unknown as JwtPayload | null | undefined
+        )?.avatar
+        return fileName ? `/avatars/${fileName}` : '/icons/default-avatar.svg'
+    })
+
     watch(userSettings, () => {
         state.currency = userSettings.value?.data?.currency as
             | number
@@ -129,8 +141,28 @@
                 } as UserSettingsObject)
             }
 
-            // Force refresh of auth token/session so authData reflects latest user profile
+            // Upload or clear avatar
+            if (selectedAvatarFile.value) {
+                const fd = new FormData()
+                fd.append('file', selectedAvatarFile.value)
+                await $fetch(`/api/user/avatar/${authData.value?.id}`, {
+                    method: 'POST',
+                    body: fd
+                })
+            } else if (selectedAvatarFile.value === null) {
+                const fd = new FormData()
+                fd.append('clear', '1')
+                await $fetch(`/api/user/avatar/${authData.value?.id}`, {
+                    method: 'POST',
+                    body: fd
+                })
+            }
+
+            // Force refresh so navbar/avatar reflects latest
             await refresh()
+
+            // Reset selection
+            selectedAvatarFile.value = null
 
             emit('close')
             Notifier.showAlert(
@@ -148,6 +180,14 @@
             )
         }
     }
+
+    const onAvatarFileChange = (e: Event) => {
+        const input = e.target as HTMLInputElement
+        const file = input.files && input.files[0] ? input.files[0] : null
+        selectedAvatarFile.value = file
+    }
+
+    const triggerAvatarSelect = () => avatarInputRef.value?.click()
 </script>
 
 <template>
@@ -161,6 +201,36 @@
                 :state="state"
                 class="space-y-4"
                 @submit="onSaveSettings">
+                <div
+                    class="rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4 flex flex-col items-center justify-center text-center">
+                    <UAvatar :src="avatarPreviewUrl" class="w-20 h-20 mb-3" />
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        {{ $t('Image must be square') }}
+                    </div>
+                    <div class="flex gap-2">
+                        <UButton size="sm" @click="triggerAvatarSelect">
+                            {{ $t('Select image') }}
+                        </UButton>
+                        <UButton
+                            size="sm"
+                            variant="soft"
+                            color="error"
+                            @click="
+                                () => {
+                                    selectedAvatarFile = null
+                                }
+                            ">
+                            {{ $t('Delete image') }}
+                        </UButton>
+                    </div>
+                    <input
+                        ref="avatarInputRef"
+                        class="hidden"
+                        type="file"
+                        accept="image/*"
+                        @change="onAvatarFileChange" />
+                </div>
+
                 <UFormField :label="$t('First Name')" name="first_name">
                     <UInput v-model="state.first_name" class="w-full" />
                 </UFormField>

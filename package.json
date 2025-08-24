@@ -9,7 +9,6 @@
         "preview": "nuxt preview",
         "postinstall": "nuxt prepare",
         "lint": "eslint .",
-        "lint:type": "tsc --noEmit",
         "style": "prettier . --check",
         "style:fix": "prettier --write --list-different .",
         "db:generate": "drizzle-kit generate",

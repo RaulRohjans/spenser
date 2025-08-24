@@ -1,11 +1,11 @@
 <script setup lang="ts">
     import type { DropdownMenuItem } from '@nuxt/ui'
+    import type { JwtPayload } from '~~/types/Jwt'
 
     const { t: $t } = useI18n()
     const colorMode = useColorMode()
-    const { signOut } = useAuth()
+    const { signOut, data: authData } = useAuth()
     const router = useRouter()
-    const { data: authData } = useAuth()
 
     const isDark = computed(() => {
         return colorMode.value === 'dark'
@@ -42,12 +42,18 @@
         const icon = isDark.value ? 'i-heroicons-sun' : 'i-heroicons-moon'
         const userlabel = `${authData.value?.first_name} ${authData.value?.last_name}`
 
+        const avatarFileName =
+            (authData.value as JwtPayload | null)?.avatar || null
+        const avatarSrc = avatarFileName
+            ? `/avatars/${avatarFileName}`
+            : '/icons/default-avatar.svg'
+
         // Add header
         menu.push([
             {
                 label: userlabel,
                 avatar: {
-                    src: 'https://github.com/benjamincanac.png'
+                    src: avatarSrc
                 },
                 type: 'label'
             }
@@ -98,7 +104,12 @@
             content: 'w-48'
         }">
         <UButton variant="link">
-            <UAvatar src="https://github.com/benjamincanac.png" />
+            <UAvatar
+                :src="
+                    (authData as JwtPayload | null)?.avatar
+                        ? `/avatars/${(authData as JwtPayload).avatar}`
+                        : '/icons/default-avatar.svg'
+                " />
         </UButton>
     </UDropdownMenu>
 </template>

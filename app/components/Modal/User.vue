@@ -51,6 +51,9 @@
     const { t: $t } = useI18n()
     const model = defineModel<boolean>()
 
+    const selectedAvatarFile = ref<File | null>(null)
+    const avatarInputRef = ref<HTMLInputElement | null>(null)
+
     const schema = z
         .object({
             id: z.number().optional(),
@@ -112,16 +115,38 @@
                         'error'
                     )
 
-                // Emit success
+                // Handle avatar
+                if (selectedAvatarFile.value) {
+                    const fd = new FormData()
+                    fd.append('file', selectedAvatarFile.value)
+                    $fetch(
+                        `/api/user/avatar/${state.id ?? data.userId ?? ''}`,
+                        {
+                            method: 'POST',
+                            body: fd
+                        }
+                    ).catch(() => undefined)
+                } else if (operation.value === 'edit' && !state.avatar) {
+                    const fd = new FormData()
+                    fd.append('clear', '1')
+                    $fetch(
+                        `/api/user/avatar/${state.id ?? data.userId ?? ''}`,
+                        {
+                            method: 'POST',
+                            body: fd
+                        }
+                    ).catch(() => undefined)
+                }
+
                 emit('successful-submit')
 
-                // Display success message
                 Notifier.showAlert(
                     $t('Operation completed successfully!'),
                     'success'
                 )
 
-                // Close modal
+                // Reset and Close modal
+                selectedAvatarFile.value = null
                 model.value = false
             })
             .catch((e: NuxtError) => {
@@ -142,8 +167,51 @@
             <UForm
                 :schema="schema"
                 :state="state"
-                class="space-y-4 p-6"
+                class="space-y-4"
                 @submit="onCreateUser">
+                <div
+                    class="rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/30 p-4 flex flex-col items-center justify-center text-center">
+                    <UAvatar
+                        :src="
+                            state.avatar
+                                ? `/avatars/${state.avatar}`
+                                : '/icons/default-avatar.svg'
+                        "
+                        class="w-20 h-20 mb-3" />
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        {{ $t('Image must be square') }}
+                    </div>
+                    <div class="flex gap-2">
+                        <UButton
+                            size="sm"
+                            @click="() => avatarInputRef?.click()">
+                            {{ $t('Select image') }}
+                        </UButton>
+                        <UButton
+                            size="sm"
+                            variant="soft"
+                            color="error"
+                            @click="
+                                () => {
+                                    selectedAvatarFile = null
+                                    state.avatar = undefined
+                                }
+                            ">
+                            {{ $t('Delete image') }}
+                        </UButton>
+                    </div>
+                    <input
+                        ref="avatarInputRef"
+                        class="hidden"
+                        type="file"
+                        accept="image/*"
+                        @change="
+                            (e: any) => {
+                                selectedAvatarFile =
+                                    e.target?.files?.[0] || null
+                            }
+                        " />
+                </div>
                 <div
                     class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
                     <UFormField :label="$t('First Name')" name="first_name">
