@@ -41,7 +41,7 @@
 
 <template>
     <UCard
-        class="drag-me w-[320px] max-w-full shadow-md transition-transform duration-200 hover:-translate-y-0.5 will-change-transform">
+        class="drag-me w-full max-w-[400px] shadow-md transition-transform duration-200 hover:-translate-y-0.5 will-change-transform">
         <div class="flex items-center gap-3 mb-2">
             <UIcon
                 v-if="budget.category_icon"
