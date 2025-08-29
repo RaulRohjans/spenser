@@ -62,16 +62,22 @@
         :title="$t(props.budget ? 'Edit Budget' : 'Create Budget')">
         <template #body>
             <UForm :state="form" class="space-y-4" @submit="save">
-                <UFormField :label="$t('Title')">
-                    <UInput v-model="form.name" placeholder="Groceries" />
-                </UFormField>
-                <UFormField :label="$t('Amount')">
-                    <UInput
-                        v-model.number="form.value"
-                        type="number"
-                        min="0"
-                        step="0.01" />
-                </UFormField>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <UFormField :label="$t('Title')" class="w-full">
+                        <UInput
+                            v-model="form.name"
+                            class="w-full"
+                            placeholder="Groceries" />
+                    </UFormField>
+                    <UFormField :label="$t('Amount')" class="w-full">
+                        <UInput
+                            v-model.number="form.value"
+                            class="w-full"
+                            type="number"
+                            min="0"
+                            step="0.01" />
+                    </UFormField>
+                </div>
                 <UFormField :label="$t('Category (optional)')">
                     <USelect
                         v-model="form.category"
