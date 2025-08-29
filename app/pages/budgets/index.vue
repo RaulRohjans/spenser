@@ -54,16 +54,6 @@
         })
     }
 
-    // Local list with the "+" card at the end for draggable v-model
-    const tempList = computed<BudgetDataObject[]>({
-        get() {
-            return [...store.ordered, { id: -1 } as unknown as BudgetDataObject]
-        },
-        set(_next: BudgetDataObject[]) {
-            // ignore; Draggable uses this only to emit reorder which we handle
-        }
-    })
-
     // Bridge date picker (Date) <-> store DateTimeWithOffset
     const dateModel = ref<Date | null>(
         store.selectedDate?.date
@@ -85,27 +75,38 @@
 
 <template>
     <main>
-        <div class="flex flex-col gap-4">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <SDateTimePicker v-model="dateModel" @update:model-value="onDateChange" />
-                </div>
-                <UButton icon="i-heroicons-plus" @click="openCreate">{{
-                    $t('Add Budget')
-                }}</UButton>
-            </div>
+        <div class="flex flex-row items-center justify-center">
+            <UCard class="w-full shadow-xl">
+                <template #header>
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                            {{ $t('Budgets') }}
+                        </h2>
+                        <div class="flex items-center gap-3">
+                            <SDateTimePicker
+                                v-model="dateModel"
+                                class="sm:!w-56"
+                                type="date"
+                                @update:model-value="onDateChange" />
+                            <UButton icon="i-heroicons-plus" color="primary" @click="openCreate">
+                                {{ $t('Add Budget') }}
+                            </UButton>
+                        </div>
+                    </div>
+                </template>
 
-            <div v-if="store.loading" class="flex justify-center py-12">
-                <SLoader />
-            </div>
-            <div v-else>
-                <BudgetBoard
-                    v-model="tempList"
-                    @reorder="persistOrder"
-                    @edit="openEdit"
-                    @delete="handleDelete"
-                    @create="openCreate" />
-            </div>
+                <div v-if="store.loading" class="flex justify-center py-12">
+                    <SLoader />
+                </div>
+                <div v-else class="py-2">
+                    <BudgetBoard
+                        v-model="store.ordered"
+                        @reorder="persistOrder"
+                        @edit="openEdit"
+                        @delete="handleDelete"
+                        @create="openCreate" />
+                </div>
+            </UCard>
         </div>
 
         <BudgetEditorModal

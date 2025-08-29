@@ -57,19 +57,28 @@
 </script>
 
 <template>
-    <UModal v-model:open="model" :title="$t('Create Budget')">
+    <UModal
+        v-model:open="model"
+        :title="$t(props.budget ? 'Edit Budget' : 'Create Budget')">
         <template #body>
             <UForm :state="form" class="space-y-4" @submit="save">
                 <UFormField :label="$t('Title')">
                     <UInput v-model="form.name" placeholder="Groceries" />
                 </UFormField>
                 <UFormField :label="$t('Amount')">
-                    <UInput v-model.number="form.value" type="number" min="0" step="0.01" />
+                    <UInput
+                        v-model.number="form.value"
+                        type="number"
+                        min="0"
+                        step="0.01" />
                 </UFormField>
                 <UFormField :label="$t('Category (optional)')">
                     <USelect
                         v-model="form.category"
-                        :items="[{ label: $t('All categories'), value: null }, ...categorySelectOptions]"
+                        :items="[
+                            { label: $t('All categories'), value: null },
+                            ...categorySelectOptions
+                        ]"
                         :loading="categoryStatus === 'pending'"
                         class="w-full" />
                 </UFormField>
@@ -80,8 +89,15 @@
                         class="w-full" />
                 </UFormField>
                 <div class="flex justify-end gap-2">
-                    <UButton type="button" variant="ghost" @click="model = false">{{ $t('Cancel') }}</UButton>
-                    <UButton type="submit" color="primary">{{ $t('Save') }}</UButton>
+                    <UButton
+                        type="button"
+                        variant="ghost"
+                        @click="model = false"
+                        >{{ $t('Cancel') }}</UButton
+                    >
+                    <UButton type="submit" color="primary">{{
+                        $t('Save')
+                    }}</UButton>
                 </div>
             </UForm>
         </template>

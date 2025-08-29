@@ -27,6 +27,7 @@ function onOrderChange() {
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
         group="budgets"
         item-key="id"
+        :component-data="{ name: 'flip-list', type: 'transition-group' }"
         draggable=".drag-me:not(.dont-drag-me)"
         :animation="300"
         ghost-class="ghost"
@@ -35,24 +36,10 @@ function onOrderChange() {
         @start="drag = true"
         @end="drag = false">
         <template #item="{ element }">
-            <template v-if="element.id !== -1">
-                <BudgetCard
-                    :budget="element"
-                    @edit="(b) => emit('edit', b)"
-                    @delete="(b) => emit('delete', b)" />
-            </template>
-            <template v-else>
-                <UCard
-                    class="dont-drag-me w-[320px] max-w-full flex items-center justify-center cursor-pointer hover:shadow-lg transition"
-                    @click="emit('create')">
-                    <UButton
-                        icon="i-heroicons-squares-plus"
-                        size="xl"
-                        color="primary"
-                        square
-                        variant="link" />
-                </UCard>
-            </template>
+            <BudgetCard
+                :budget="element"
+                @edit="(b) => emit('edit', b)"
+                @delete="(b) => emit('delete', b)" />
         </template>
     </Draggable>
 </template>
@@ -60,6 +47,7 @@ function onOrderChange() {
 <style scoped>
 .ghost { opacity: 0.6; }
 .chosen { transform: scale(1.03); box-shadow: 0 10px 25px rgba(0,0,0,.15); }
+.flip-list-move { transition: transform 250ms ease; }
 </style>
 
 
