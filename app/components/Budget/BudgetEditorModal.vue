@@ -1,4 +1,6 @@
 <script setup lang="ts">
+    import { z } from 'zod'
+    import type { FormSubmitEvent } from '@nuxt/ui'
     import type { BudgetDataObject } from '~~/types/Data'
     const { t: $t } = useI18n()
 
@@ -36,18 +38,23 @@
 
     const { status: categoryStatus, categorySelectOptions } = useCategories()
 
-    async function save() {
-        const body = {
-            id: form.id,
-            name: form.name,
-            value: form.value,
-            category: form.category,
-            period: form.period
-        }
-        const url = form.id ? '/api/budgets/edit' : '/api/budgets/create'
+    // Validation schema for UForm
+    const schema = z.object({
+        id: z.number().optional(),
+        name: z.string().trim().min(1, $t('Mandatory Field')),
+        value: z.number().gt(0, $t('Must be greater than 0')),
+        category: z.number().nullable().optional(),
+        period: z.string().min(1, $t('Mandatory Field'))
+    })
+
+    type Schema = z.output<typeof schema>
+
+    async function onSubmit(event: FormSubmitEvent<Schema>) {
+        const data = event.data
+        const url = data.id ? '/api/budgets/edit' : '/api/budgets/create'
         const res = await $fetch<{ success: boolean }>(url, {
             method: 'POST',
-            body
+            body: data
         })
         if (res.success) {
             emit('saved')
@@ -61,24 +68,23 @@
         v-model:open="model"
         :title="$t(props.budget ? 'Edit Budget' : 'Create Budget')">
         <template #body>
-            <UForm :state="form" class="space-y-4" @submit="save">
+            <UForm :schema="schema" :state="form" class="space-y-4" @submit="onSubmit">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <UFormField :label="$t('Title')" class="w-full">
+                    <UFormField :label="$t('Title')" name="name" class="w-full">
                         <UInput
                             v-model="form.name"
                             class="w-full"
                             placeholder="Groceries" />
                     </UFormField>
-                    <UFormField :label="$t('Amount')" class="w-full">
+                    <UFormField :label="$t('Amount')" name="value" class="w-full">
                         <UInput
                             v-model.number="form.value"
                             class="w-full"
                             type="number"
-                            min="0"
                             step="0.01" />
                     </UFormField>
                 </div>
-                <UFormField :label="$t('Category (optional)')">
+                <UFormField :label="$t('Category (optional)')" name="category">
                     <USelect
                         v-model="form.category"
                         :items="[
@@ -88,7 +94,7 @@
                         :loading="categoryStatus === 'pending'"
                         class="w-full" />
                 </UFormField>
-                <UFormField :label="$t('Period')">
+                <UFormField :label="$t('Period')" name="period">
                     <USelect
                         v-model="form.period"
                         :items="periods"
