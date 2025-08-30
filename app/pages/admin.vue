@@ -52,7 +52,7 @@
                 <!-- Sidebar -->
                 <aside class="lg:w-44 flex-shrink-0">
                     <div class="sticky top-[--header-height]">
-                        <nav class="space-y-3">
+                        <nav class="flex flex-row flex-wrap justify-evenly gap-3 lg:flex-col lg:justify-start lg:gap-0 lg:space-y-3">
                             <template v-for="option in adminOptions" :key="`${option.name}${option.href}`">
                                 <ULink
                                     class="flex flex-row justify-start items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
