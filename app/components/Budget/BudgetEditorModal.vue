@@ -38,6 +38,24 @@
 
     const { status: categoryStatus, categorySelectOptions } = useCategories()
 
+    const selectedCategoryItem = computed<
+        { label: string; value: number; icon: string } | { label: string; value: null; icon: string } | undefined
+    >(() => {
+        return [
+            { label: $t('All categories'), value: null, icon: 'i-heroicons-squares-2x2' },
+            ...categorySelectOptions.value
+        ].find((opt) => opt.value === form.category) as
+            | { label: string; value: number; icon: string }
+            | { label: string; value: null; icon: string }
+            | undefined
+    })
+
+    const onUpdateSelectedCategory = (
+        opt?: { label: string; value: number | null; icon?: string }
+    ) => {
+        form.category = opt?.value ?? null
+    }
+
     // Validation schema for UForm
     const schema = z.object({
         id: z.number().optional(),
@@ -85,13 +103,20 @@
                     </UFormField>
                 </div>
                 <UFormField :label="$t('Category (optional)')" name="category">
-                    <USelect
-                        v-model="form.category"
+                    <USelectMenu
+                        :model-value="selectedCategoryItem"
+                        @update:model-value="onUpdateSelectedCategory"
                         :items="[
-                            { label: $t('All categories'), value: null },
+                            { label: $t('All categories'), value: null, icon: 'i-heroicons-squares-2x2' },
                             ...categorySelectOptions
                         ]"
                         :loading="categoryStatus === 'pending'"
+                        option-attribute="label"
+                        value-attribute="value"
+                        :icon="selectedCategoryItem?.icon"
+                        searchable
+                        :search-input="{ placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
+                        clear-search-on-close
                         class="w-full" />
                 </UFormField>
                 <UFormField :label="$t('Period')" name="period">

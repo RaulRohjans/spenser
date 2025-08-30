@@ -94,14 +94,19 @@
             header: () => $t('Category'),
             cell: ({ row }) => {
                 const idx = rows.value.indexOf(row.original)
-                return h(resolveComponent('USelect'), {
+                return h(resolveComponent('USelectMenu'), {
                     items: categoryOptions.value,
                     loading: categoryLoading.value,
-                    modelValue: rows.value[idx]?.category,
-                    'onUpdate:modelValue': (v: number | null) =>
-                        (rows.value[idx]!.category = v),
-                    class: 'hide-select-span w-full',
+                    modelValue: categoryOptions.value.find(o => o.value === rows.value[idx]?.category),
+                    'onUpdate:modelValue': (o: { label: string; value: number } | null) =>
+                        (rows.value[idx]!.category = o?.value ?? null),
+                    class: 'w-full',
                     size: 'xs',
+                    searchable: true,
+                    searchInput: { placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' },
+                    clearSearchOnClose: true,
+                    optionAttribute: 'label',
+                    valueAttribute: 'value',
                     color: hasValidationError(row.original)
                         ? 'error'
                         : undefined

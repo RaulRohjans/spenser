@@ -114,11 +114,7 @@
     }
 
     // Fetch categories
-    const {
-        status: categoryStatus,
-        categorySelectOptions,
-        getCategoryIcon
-    } = useCategories()
+    const { status: categoryStatus, categorySelectOptions } = useCategories()
 
     const operation = computed(() => {
         return props.mode === 'edit' ? 'edit' : 'create'
@@ -165,7 +161,18 @@
             })
     }
 
-    const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
+    const selectedCategoryItem = computed(() => {
+        return categorySelectOptions.value.find(
+            (opt) => opt.value === state.category
+        )
+    })
+    const onUpdateSelectedCategory = (opt?: {
+        label: string
+        value: number
+        icon?: string
+    }) => {
+        state.category = opt?.value
+    }
 </script>
 
 <template>
@@ -195,13 +202,19 @@
             </UFormField>
 
             <UFormField :label="$t('Category')" name="category" class="w-full">
-                <USelect
-                    v-model="state.category"
+                <USelectMenu
+                    :model-value="selectedCategoryItem"
+                    @update:model-value="onUpdateSelectedCategory"
                     :items="categorySelectOptions"
                     :loading="categoryStatus === 'pending'"
-                    :icon="categoryDisplayIcon"
-                    class="hide-select-span w-full">
-                </USelect>
+                    option-attribute="label"
+                    value-attribute="value"
+                    :icon="selectedCategoryItem?.icon"
+                    searchable
+                    :search-input="{ placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
+                    clear-search-on-close
+                    class="w-full">
+                </USelectMenu>
             </UFormField>
         </div>
 

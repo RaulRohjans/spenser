@@ -90,14 +90,18 @@
                                 @update:model-value="onDateChange" />
 
                             <!-- Category filter -->
-                            <USelect
+                            <USelectMenu
                                 :items="[{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value]"
                                 class="min-w-40"
                                 :placeholder="$t('Category')"
-                                :model-value="store.filterCategoryId"
+                                :model-value="[{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value].find(o => o.value === store.filterCategoryId)"
                                 option-attribute="label"
                                 value-attribute="value"
-                                @update:model-value="(v:any) => store.setFilterCategory(v)" />
+                                :icon="([{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value].find(o => o.value === store.filterCategoryId) as any)?.icon"
+                                searchable
+                                :search-input="{ placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
+                                clear-search-on-close
+                                @update:model-value="(o:any) => store.setFilterCategory(o?.value ?? null)" />
 
                             <!-- Period filter -->
                             <USelect
