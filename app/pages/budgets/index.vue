@@ -82,12 +82,46 @@
                         <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                             {{ $t('Budgets') }}
                         </h2>
-                        <div class="flex items-center gap-3">
+                        <div class="flex flex-wrap items-center justify-end gap-3">
                             <SDateTimePicker
                                 v-model="dateModel"
                                 class="sm:!w-56"
                                 type="date"
                                 @update:model-value="onDateChange" />
+
+                            <!-- Category filter -->
+                            <USelect
+                                :items="[{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value]"
+                                class="min-w-40"
+                                :placeholder="$t('Category')"
+                                :model-value="store.filterCategoryId"
+                                option-attribute="label"
+                                value-attribute="value"
+                                @update:model-value="(v:any) => store.setFilterCategory(v)" />
+
+                            <!-- Period filter -->
+                            <USelect
+                                :items="[
+                                    { label: $t('All periods'), value: null },
+                                    { label: $t('Daily'), value: 'daily' },
+                                    { label: $t('Weekly'), value: 'weekly' },
+                                    { label: $t('Monthly'), value: 'monthly' },
+                                    { label: $t('Half-yearly'), value: 'semi-annual' },
+                                    { label: $t('Yearly'), value: 'yearly' }
+                                ]"
+                                class="min-w-36"
+                                :placeholder="$t('Period')"
+                                :model-value="store.filterPeriod"
+                                option-attribute="label"
+                                value-attribute="value"
+                                @update:model-value="(v:any) => store.setFilterPeriod(v)" />
+
+                            <!-- Overbudget only -->
+                            <UCheckbox
+                                :model-value="store.filterOverOnly"
+                                :label="$t('Over budget only')"
+                                @update:model-value="(v:any) => store.setFilterOverOnly(Boolean(v))" />
+
                             <UButton icon="i-heroicons-plus" color="primary" @click="openCreate">
                                 {{ $t('Add Budget') }}
                             </UButton>
@@ -100,7 +134,7 @@
                 </div>
                 <div v-else class="py-2">
                     <BudgetBoard
-                        v-model="store.ordered"
+                        v-model="store.filtered"
                         @reorder="persistOrder"
                         @edit="openEdit"
                         @delete="handleDelete"
