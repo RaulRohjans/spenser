@@ -162,22 +162,25 @@
     useHead({
         title: `Spenser | ${$t('Categories')}`
     })
+
+    const tableRows = computed(() => tableData.value?.data?.rows ?? [])
+    const isEmptyState = computed(() =>
+        status.value === 'success' && (tableRows.value?.length ?? 0) === 0
+    )
 </script>
 
 <template>
     <main>
-        <div class="flex flex-row items-center justify-center">
-            <UCard class="w-full shadow-xl">
+        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
+            <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
-                    <h2
-                        class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                         {{ $t('Categories') }}
                     </h2>
                 </template>
 
                 <!-- Filters header -->
-                <div
-                    class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
+                <div class="flex-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
                     <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
                         <SSearchWithColumnFilter
                             v-model:column="filters.searchColumn"
@@ -205,14 +208,24 @@
                     </UButton>
                 </div>
 
-                <!-- Table -->
-                <UTable
-                    ref="table"
-                    :data="tableData?.data?.rows ?? []"
-                    :columns="columns"
-                    sticky
-                    :loading="status === 'pending'"
-                    class="w-full" />
+                <!-- Table / Empty state -->
+                <div class="flex-1 overflow-hidden">
+                    <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
+                        <div>
+                            <div class="text-4xl mb-3">🗂️</div>
+                            <p class="text-lg">{{ $t('Your categories will appear here once you add them.') }}</p>
+                        </div>
+                    </div>
+                    <div v-else class="h-full overflow-auto">
+                        <UTable
+                            ref="table"
+                            :data="tableRows"
+                            :columns="columns"
+                            sticky
+                            :loading="status === 'pending'"
+                            class="w-full" />
+                    </div>
+                </div>
 
                 <!-- Number of rows & Pagination -->
                 <template #footer>

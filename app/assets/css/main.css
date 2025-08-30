@@ -1,6 +1,11 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
+:root {
+    /* Fallback so SSR has a value before JS sets the real navbar height */
+    --header-height: 64px;
+}
+
 /*
  * Removed up and down buttons from all inputs with type number
 */

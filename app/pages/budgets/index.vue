@@ -75,8 +75,8 @@
 
 <template>
     <main>
-        <div class="flex flex-row items-center justify-center">
-            <UCard class="w-full shadow-xl">
+        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
+            <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <div class="flex items-center justify-between">
                         <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
@@ -133,16 +133,22 @@
                     </div>
                 </template>
 
-                <div v-if="store.loading" class="flex justify-center py-12">
-                    <SLoader />
-                </div>
-                <div v-else class="py-2">
-                    <BudgetBoard
-                        v-model="store.filtered"
-                        @reorder="persistOrder"
-                        @edit="openEdit"
-                        @delete="handleDelete"
-                        @create="openCreate" />
+                <div class="flex-1 overflow-hidden">
+                    <div v-if="store.loading" class="h-full flex items-center justify-center py-12"><SLoader /></div>
+                    <div v-else-if="(store.filtered?.length ?? 0) === 0" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
+                        <div>
+                            <div class="text-4xl mb-3">📊</div>
+                            <p class="text-lg">{{ $t('Your budgets will be displayed here once you create them.') }}</p>
+                        </div>
+                    </div>
+                    <div v-else class="h-full overflow-auto py-2">
+                        <BudgetBoard
+                            v-model="store.filtered"
+                            @reorder="persistOrder"
+                            @edit="openEdit"
+                            @delete="handleDelete"
+                            @create="openCreate" />
+                    </div>
                 </div>
             </UCard>
         </div>

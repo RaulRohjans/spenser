@@ -38,51 +38,40 @@
 </script>
 
 <template>
-    <div
-        class="flex flex-col lg:flex-row justify-start lg:justify-center items-center lg:items-start border border-gray-200 dark:border-gray-700 relative rounded-t-md p-4 border-b-0 not-prose bg-white dark:bg-gray-900 min-h-[calc(100vh-500px)]">
-        <aside
-            class="block max-h-[calc(100vh-var(--header-height))] sticky top-[--header-height] px-4 -mx-4 w-full lg:w-60 py-0">
-            <div class="flex flex-col gap-4">
-                <div class="sticky">
-                    <h2
-                        class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Admin') }}
+    <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
+        <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
+            <template #header>
+                <div class="flex items-center justify-between">
+                    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                        {{ $t('Administration') }}
                     </h2>
                 </div>
+            </template>
 
-                <div
-                    class="flex items-center align-center text-center w-full flex-row my-3">
-                    <div
-                        class="flex border-gray-200 dark:border-gray-800 w-full border-t border-solid" />
-                </div>
+            <div class="flex flex-col lg:flex-row gap-6 flex-1 overflow-hidden">
+                <!-- Sidebar -->
+                <aside class="lg:w-44 flex-shrink-0">
+                    <div class="sticky top-[--header-height]">
+                        <nav class="space-y-3">
+                            <template v-for="option in adminOptions" :key="`${option.name}${option.href}`">
+                                <ULink
+                                    class="flex flex-row justify-start items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+                                    :to="localePath(option.href)">
+                                    <UButton :icon="option.icon" :color="option.selected ? 'primary' : 'neutral'" size="xs" />
+                                    <span :class="getTextOptionClasses(option.selected)">{{ option.name }}</span>
+                                </ULink>
+                            </template>
+                        </nav>
+                    </div>
+                </aside>
 
-                <div
-                    class="space-y-3 mb-3 lg:mb-6 -mx-1 lg:mx-0 flex flex-row lg:flex-col justify-evenly items-start lg:justify-start">
-                    <template
-                        v-for="option in adminOptions"
-                        :key="`${option.name}${option.href}`">
-                        <ULink
-                            class="flex flex-row justify-start items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                            :to="localePath(option.href)">
-                            <UButton
-                                :icon="option.icon"
-                                :color="option.selected ? 'primary' : 'neutral'"
-                                size="xs" />
-
-                            <span
-                                :class="getTextOptionClasses(option.selected)">
-                                {{ option.name }}
-                            </span>
-                        </ULink>
-                    </template>
-                </div>
+                <!-- Content -->
+                <section class="flex-1 min-w-0 overflow-hidden">
+                    <div class="h-full overflow-auto md:px-4">
+                        <NuxtPage />
+                    </div>
+                </section>
             </div>
-        </aside>
-
-        <!------------------------------>
-
-        <div class="w-full md:px-8">
-            <NuxtPage />
-        </div>
+        </UCard>
     </div>
 </template>

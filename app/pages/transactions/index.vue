@@ -260,12 +260,17 @@
     useHead({
         title: `Spenser | ${$t('Transactions')}`
     })
+
+    const tableRows = computed(() => tableData.value?.data?.rows ?? [])
+    const isEmptyState = computed(() =>
+        status.value === 'success' && (tableRows.value?.length ?? 0) === 0
+    )
 </script>
 
 <template>
     <main>
-        <div class="flex flex-row items-center justify-center">
-            <UCard class="w-full shadow-xl">
+        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
+            <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <h2
                         class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
@@ -274,7 +279,7 @@
                 </template>
 
                 <!-- Filters header -->
-                <div class="flex flex-col gap-2">
+                <div class="flex-0 flex flex-col gap-2">
                     <div
                         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                         <div
@@ -333,14 +338,24 @@
                     </div>
                 </div>
 
-                <!-- Table -->
-                <UTable
-                    ref="table"
-                    :data="tableData?.data?.rows ?? []"
-                    :columns="visibleColumns"
-                    sticky
-                    :loading="status === 'pending'"
-                    class="w-full" />
+                <!-- Table / Empty state -->
+                <div class="flex-1 overflow-hidden">
+                    <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
+                        <div>
+                            <div class="text-4xl mb-3">🧾</div>
+                            <p class="text-lg">{{ $t('The income and spending that you track will show up here.') }}</p>
+                        </div>
+                    </div>
+                    <div v-else class="h-full overflow-auto">
+                        <UTable
+                            ref="table"
+                            :data="tableRows"
+                            :columns="visibleColumns"
+                            sticky
+                            :loading="status === 'pending'"
+                            class="w-full" />
+                    </div>
+                </div>
 
                 <!-- Number of rows & Pagination -->
                 <template #footer>
