@@ -1,14 +1,24 @@
 import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
-import { sql, and, eq } from 'drizzle-orm'
+import { sql, and, eq, gte, lt } from 'drizzle-orm'
 import { budgets, categories, transactions } from '~~/server/db/schema'
 import type { BudgetDataObject } from '~~/types/Data'
+import { coerceDateAndOffset } from '~~/server/utils/date'
+import type { BudgetPeriod } from '~~/server/utils/budgetWindow'
+import { getPeriodWindow } from '~~/server/utils/budgetWindow'
 
 export default defineEventHandler(async (event) => {
     const user = ensureAuth(event)
 
-    // Build query to fetch budgets
-    const query = await db
+    // Read optional reference date and tz offset (default to now/client offset)
+    const { date: qDate, tzOffsetMinutes: qTz } = getQuery(event)
+    const { date: referenceDate, tz_offset_minutes } = coerceDateAndOffset(
+        qDate ?? new Date(),
+        qTz ? Number(qTz) : undefined
+    )
+
+    // Load budgets (no expenses yet)
+    const budgetRows = await db
         .select({
             id: budgets.id,
             user: budgets.user,
@@ -20,15 +30,10 @@ export default defineEventHandler(async (event) => {
             deleted: budgets.deleted,
             category_name: categories.name,
             category_icon: categories.icon,
-            category_deleted: categories.deleted,
-            expenses: sql<number>`sum(case when ${transactions.value} < 0 then ${transactions.value} * -1 when ${transactions.value} >= 0 then 0 end)`
+            category_deleted: categories.deleted
         })
         .from(budgets)
         .leftJoin(categories, eq(categories.id, budgets.category))
-        .leftJoin(
-            transactions,
-            sql`(${transactions.user} = ${budgets.user}) and (${transactions.deleted} = false) and (case when ${budgets.category} is not null then ${budgets.category} = ${transactions.category} else true end)`
-        )
         .where(
             and(
                 eq(budgets.user, user.id),
@@ -36,11 +41,62 @@ export default defineEventHandler(async (event) => {
                 sql`(case when ${budgets.category} is not null then ${categories.user} = ${user.id} else true end)`
             )
         )
-        .groupBy(budgets.id, categories.id)
         .orderBy(budgets.order)
+
+    // Group budgets by period string to compute time windows and expenses efficiently
+    type PeriodKey = string
+    const byPeriod = new Map<PeriodKey, BudgetDataObject[]>()
+    for (const b of budgetRows as BudgetDataObject[]) {
+        const key = String(b.period)
+        if (!byPeriod.has(key)) byPeriod.set(key, [])
+        byPeriod.get(key)!.push(b)
+    }
+
+    const results: BudgetDataObject[] = []
+    for (const [periodStr, budgetsOfPeriod] of byPeriod.entries()) {
+        const { startUtc, endUtc } = getPeriodWindow(
+            periodStr as BudgetPeriod,
+            referenceDate,
+            tz_offset_minutes
+        )
+
+        // Sum expenses grouped by category for this window
+        const categorySums = await db
+            .select({
+                category: transactions.category,
+                expenses: sql<number>`sum(case when ${transactions.value} < 0 then ${transactions.value} * -1 when ${transactions.value} >= 0 then 0 end)`
+            })
+            .from(transactions)
+            .where(
+                and(
+                    eq(transactions.user, user.id),
+                    eq(transactions.deleted, false),
+                    gte(transactions.date, startUtc),
+                    lt(transactions.date, endUtc)
+                )
+            )
+            .groupBy(transactions.category)
+
+        const categoryToSpent = new Map<number, number>()
+        let totalSpent = 0
+        for (const row of categorySums) {
+            const catId = Number(row.category)
+            const amount = Number(row.expenses || 0)
+            categoryToSpent.set(catId, amount)
+            totalSpent += amount
+        }
+
+        for (const b of budgetsOfPeriod) {
+            const spent = b.category != null ? categoryToSpent.get(b.category) || 0 : totalSpent
+            results.push({ ...b, expenses: spent } as BudgetDataObject)
+        }
+    }
+
+    // Preserve overall order as originally loaded
+    results.sort((a, b) => a.order - b.order)
 
     return {
         success: true,
-        data: query as BudgetDataObject[]
+        data: results
     }
 })

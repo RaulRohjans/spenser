@@ -123,8 +123,8 @@
             method: 'POST',
             body: event.data
         })
-            .then(async (data: any) => {
-                if (!data.success)
+            .then(async (data: { success?: boolean; id?: number; userId?: number } | undefined) => {
+                if (!data?.success)
                     return Notifier.showAlert(
                         $t('An error occurred when performing the action.'),
                         'error'
@@ -134,12 +134,12 @@
                 if (selectedAvatarFile.value) {
                     const fd = new FormData()
                     fd.append('file', selectedAvatarFile.value)
-                    const targetId = (data?.id ?? data?.userId ?? state.id) as number | undefined
+                    const targetId = (data && (data.id ?? data.userId)) || state.id
                     if (targetId) await $fetch(`/api/user/avatar/${targetId}`, { method: 'POST', body: fd })
                 } else if (operation.value === 'edit' && !state.avatar) {
                     const fd = new FormData()
                     fd.append('clear', '1')
-                    const targetId = (data?.id ?? data?.userId ?? state.id) as number | undefined
+                    const targetId = (data && (data.id ?? data.userId)) || state.id
                     if (targetId) await $fetch(`/api/user/avatar/${targetId}`, { method: 'POST', body: fd })
                 }
 

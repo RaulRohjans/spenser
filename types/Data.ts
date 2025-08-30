@@ -16,12 +16,12 @@ export interface BudgetDataObject {
     category: number | null
     name: string | null
     value: number | string
-    period: 'daily' | 'monthly' | 'quarterly' | 'semi-annual' | 'yearly'
+    period: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'semi-annual' | 'yearly'
     order: number
     category_name: string | null
     category_icon: string | null
     category_deleted: boolean
-    expenses: number
+    expenses?: number | null
 }
 
 export interface LlmTransactionObject {
