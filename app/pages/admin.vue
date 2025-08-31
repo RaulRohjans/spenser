@@ -59,9 +59,7 @@
                 <div class="flex items-center">
                     <!-- left spacer equal to sidebar width on lg and gap on small -->
                     <div class="hidden lg:block lg:w-[13.5rem]" aria-hidden="true"></div>
-                    <div id="admin-footer" class="flex-1">
-                        <!-- teleported SPaginationFooter will render here -->
-                    </div>
+                    <div id="admin-footer" class="flex-1"></div>
                 </div>
             </template>
 

@@ -206,6 +206,7 @@
 
 <template>
     <main>
+        <ClientOnly>
         <Teleport to="#admin-header-actions">
             <div class="flex flex-row items-center gap-2">
                 <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
@@ -224,6 +225,7 @@
                 </UButton>
             </div>
         </Teleport>
+        </ClientOnly>
         <div class="w-full flex flex-col gap-2">
             <div class="flex-1 overflow-hidden">
                 <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
@@ -262,11 +264,13 @@
             v-model="isModalOpen"
             v-bind="userLoaderObj"
             @successful-submit="reload" />
+        <ClientOnly>
         <Teleport to="#admin-footer">
             <SPaginationFooter
                 v-model:page="page"
                 v-model:items-per-page="itemsPerPage"
                 :total="tableData?.data?.totalRecordCount ?? 0" />
         </Teleport>
+        </ClientOnly>
     </main>
 </template>
