@@ -183,14 +183,14 @@
                         <p class="text-lg">{{ $t('Currencies you configure will appear here.') }}</p>
                     </div>
                 </div>
-                <div v-else class="h-full overflow-auto">
+                <div v-else class="h-full">
                     <UTable
                         ref="table"
                         :data="tableRows"
                         :columns="columns"
                         sticky
                         :loading="status === 'pending'"
-                        class="w-full" />
+                        class="w-full h-[69vh]" />
                 </div>
             </div>
 

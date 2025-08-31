@@ -172,7 +172,7 @@
 <template>
     <main>
         <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
-            <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
+            <UCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                         {{ $t('Categories') }}
@@ -212,14 +212,14 @@
                             <p class="text-lg">{{ $t('Your categories will appear here once you add them.') }}</p>
                         </div>
                     </div>
-                    <div v-else class="h-full overflow-auto">
+                    <div v-else class="h-full">
                         <UTable
                             ref="table"
                             :data="tableRows"
                             :columns="columns"
                             sticky
                             :loading="status === 'pending'"
-                            class="w-full" />
+                            class="w-full h-[72vh]" />
                     </div>
                 </div>
 

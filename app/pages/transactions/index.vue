@@ -262,15 +262,16 @@
     })
 
     const tableRows = computed(() => tableData.value?.data?.rows ?? [])
-    const isEmptyState = computed(() =>
-        status.value === 'success' && (tableRows.value?.length ?? 0) === 0
+    const isEmptyState = computed(
+        () => status.value === 'success' && (tableRows.value?.length ?? 0) === 0
     )
 </script>
 
 <template>
     <main>
         <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
-            <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
+            <UCard
+                class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <h2
                         class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
@@ -338,20 +339,28 @@
 
                 <!-- Table / Empty state -->
                 <div class="flex-1 overflow-hidden">
-                    <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
+                    <div
+                        v-if="isEmptyState"
+                        class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
                         <div>
                             <div class="text-4xl mb-3">🧾</div>
-                            <p class="text-lg">{{ $t('The income and spending that you track will show up here.') }}</p>
+                            <p class="text-lg">
+                                {{
+                                    $t(
+                                        'The income and spending that you track will show up here.'
+                                    )
+                                }}
+                            </p>
                         </div>
                     </div>
-                    <div v-else class="h-full overflow-auto">
+                    <div v-else class="h-full">
                         <UTable
                             ref="table"
                             :data="tableRows"
                             :columns="visibleColumns"
                             sticky
                             :loading="status === 'pending'"
-                            class="w-full" />
+                            class="w-full h-[69vh]" />
                     </div>
                 </div>
 
