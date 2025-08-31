@@ -22,7 +22,7 @@
 </script>
 
 <template>
-    <div class="flex items-center">
+    <div class="flex items-center gap-0.5">
         <div
             class="overflow-hidden transition-all duration-300 ease-out"
             :class="open ? props.widthClass : 'w-0'">
