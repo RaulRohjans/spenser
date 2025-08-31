@@ -242,12 +242,6 @@
                         class="w-full table-vh" />
                 </div>
             </div>
-
-            <!-- Footer -->
-            <SPaginationFooter
-                v-model:page="page"
-                v-model:items-per-page="itemsPerPage"
-                :total="tableData?.data?.totalRecordCount ?? 0" />
         </div>
 
         <!-- Sidebars -->
@@ -268,5 +262,11 @@
             v-model="isModalOpen"
             v-bind="userLoaderObj"
             @successful-submit="reload" />
+        <Teleport to="#admin-footer">
+            <SPaginationFooter
+                v-model:page="page"
+                v-model:items-per-page="itemsPerPage"
+                :total="tableData?.data?.totalRecordCount ?? 0" />
+        </Teleport>
     </main>
 </template>

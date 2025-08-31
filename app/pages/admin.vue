@@ -55,6 +55,15 @@
                     <div id="admin-header-actions" class="flex items-center gap-2"></div>
                 </div>
             </template>
+            <template #footer>
+                <div class="flex items-center">
+                    <!-- left spacer equal to sidebar width on lg and gap on small -->
+                    <div class="hidden lg:block lg:w-[13.5rem]" aria-hidden="true"></div>
+                    <div id="admin-footer" class="flex-1">
+                        <!-- teleported SPaginationFooter will render here -->
+                    </div>
+                </div>
+            </template>
 
             <div class="flex flex-col lg:flex-row gap-6 flex-1 overflow-hidden">
                 <!-- Sidebar -->
@@ -75,7 +84,7 @@
 
                 <!-- Content -->
                 <section class="flex-1 min-w-0 overflow-hidden">
-                    <div class="h-full overflow-auto md:px-4">
+                    <div class="h-full overflow-auto">
                         <NuxtPage />
                     </div>
                 </section>
