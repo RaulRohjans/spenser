@@ -7,6 +7,7 @@
     import { toUserMessage } from '~/utils/errors'
     import SFilterSidebar from '@/components/Sidebar/SFilterSidebar.vue'
     import SColumnsSidebar from '@/components/Sidebar/SColumnsSidebar.vue'
+    import SFilterSection from '@/components/Sidebar/SFilterSection.vue'
 
     // Basic Setup
     const { t: $t } = useI18n()
@@ -371,23 +372,26 @@
             @apply="applyFilters"
             @reset="clearFilters">
             <template #default="{ draft }">
-                <div class="flex flex-col gap-4">
-                    <UInput
-                        v-model="draft.searchQuery"
-                        trailing-icon="i-heroicons-magnifying-glass-20-solid"
-                        :placeholder="$t('Search...')" />
+                <div class="flex flex-col gap-2">
+                    <SFilterSection :title="$t('Search...')">
+                        <UInput
+                            v-model="draft.searchQuery"
+                            trailing-icon="i-heroicons-magnifying-glass-20-solid"
+                            :placeholder="$t('Search...')" />
+                    </SFilterSection>
 
-                    <div>
-                        <div class="text-sm font-medium mb-2">{{ $t('Date') }}</div>
+                    <SFilterSection :title="$t('Date')">
                         <SDateTimePicker
                             v-model="draft.dateRange"
                             class="sm:!w-full"
                             type="date"
                             range
                             @clear="() => (draft.dateRange = [])" />
-                    </div>
+                    </SFilterSection>
 
-                    <UCheckbox v-model="draft.groupCategory" :label="$t('Group by category')" />
+                    <SFilterSection :title="$t('Group by category')">
+                        <UCheckbox v-model="draft.groupCategory" :label="$t('Group by category')" class="px-0.5" />
+                    </SFilterSection>
                 </div>
             </template>
         </SFilterSidebar>

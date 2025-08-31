@@ -7,6 +7,7 @@
     import { toUserMessage } from '~/utils/errors'
     import SFilterSidebar from '@/components/Sidebar/SFilterSidebar.vue'
     import SColumnsSidebar from '@/components/Sidebar/SColumnsSidebar.vue'
+    import SFilterSection from '@/components/Sidebar/SFilterSection.vue'
 
     const { data: authData, signOut } = useAuth()
     const { t: $t } = useI18n()
@@ -267,10 +268,12 @@
             @apply="applyFilters"
             @reset="clearFilters">
             <template #default="{ draft }">
-                <UInput
-                    v-model="draft.searchQuery"
-                    trailing-icon="i-heroicons-magnifying-glass-20-solid"
-                    :placeholder="$t('Search...')" />
+                <SFilterSection :title="$t('Search...')">
+                    <UInput
+                        v-model="draft.searchQuery"
+                        trailing-icon="i-heroicons-magnifying-glass-20-solid"
+                        :placeholder="$t('Search...')" />
+                </SFilterSection>
             </template>
         </SFilterSidebar>
 
