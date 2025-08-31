@@ -7,6 +7,7 @@ export interface BudgetState {
     filterCategoryId: number | null
     filterPeriod: BudgetDataObject['period'] | null
     filterOverOnly: boolean
+    filterQuery: string
 }
 
 export const useBudgetsStore = defineStore('budgetsStore', {
@@ -19,7 +20,8 @@ export const useBudgetsStore = defineStore('budgetsStore', {
         },
         filterCategoryId: null,
         filterPeriod: null,
-        filterOverOnly: false
+        filterOverOnly: false,
+        filterQuery: ''
     }),
     getters: {
         ordered: (state) => [...state.items].sort((a, b) => a.order - b.order),
@@ -30,10 +32,13 @@ export const useBudgetsStore = defineStore('budgetsStore', {
             const byPeriod = state.filterPeriod == null
                 ? byCategory
                 : byCategory.filter((b) => b.period === state.filterPeriod)
-            const final = state.filterOverOnly
-                ? byPeriod.filter((b) => Number(b.expenses || 0) > Number(b.value || 0))
+            const byName = state.filterQuery
+                ? byPeriod.filter((b) => String(b.name || '').toLowerCase().includes(state.filterQuery.toLowerCase()))
                 : byPeriod
-            return final
+            const finalList = state.filterOverOnly
+                ? byName.filter((b) => Number(b.expenses || 0) > Number(b.value || 0))
+                : byName
+            return finalList
         }
     },
     actions: {
@@ -43,6 +48,7 @@ export const useBudgetsStore = defineStore('budgetsStore', {
         setFilterCategory(id: number | null) { this.filterCategoryId = id },
         setFilterPeriod(p: BudgetDataObject['period'] | null) { this.filterPeriod = p },
         setFilterOverOnly(v: boolean) { this.filterOverOnly = v },
+        setFilterQuery(q: string) { this.filterQuery = q },
         async fetchBudgets() {
             this.loading = true
             try {
