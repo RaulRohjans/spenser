@@ -17,12 +17,19 @@
             selected: isRouteActive(route, '/admin/currencies')
         },
         {
-            name: $t('LLM Data Importer'),
+            name: $t('AI Settings'),
             icon: 'i-heroicons-circle-stack',
-            href: '/admin/llm-data-importer',
-            selected: isRouteActive(route, '/admin/llm-data-importer')
+            href: '/admin/ai-settings',
+            selected: isRouteActive(route, '/admin/ai-settings')
         }
     ])
+
+    const currentSectionLabel = computed(() => {
+        if (route.path.startsWith('/admin/users')) return $t('Users')
+        if (route.path.startsWith('/admin/currencies')) return $t('Currencies')
+        if (route.path.startsWith('/admin/ai-settings')) return $t('AI Settings')
+        return ''
+    })
 
     const getTextOptionClasses = function (selected: boolean) {
         const classes: string[] = ['text-sm/6']
@@ -43,8 +50,9 @@
             <template #header>
                 <div class="flex items-center justify-between">
                     <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Administration') }}
+                        {{ $t('Administration') }}<span v-if="currentSectionLabel"> - {{ currentSectionLabel }}</span>
                     </h2>
+                    <div id="admin-header-actions" class="flex items-center gap-2"></div>
                 </div>
             </template>
 

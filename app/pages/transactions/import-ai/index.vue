@@ -141,7 +141,7 @@
         }
     }
 
-    useHead({ title: `Spenser | ${$t('LLM Data Importer')}` })
+    useHead({ title: `Spenser | ${$t('AI Importer')}` })
 </script>
 
 <template>
