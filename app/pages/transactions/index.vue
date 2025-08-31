@@ -5,9 +5,6 @@
     import type { TableColumn } from '@nuxt/ui'
     import type { TransactionRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
-    import SFilterSidebar from '@/components/Sidebar/SFilterSidebar.vue'
-    import SColumnsSidebar from '@/components/Sidebar/SColumnsSidebar.vue'
-    import SFilterSection from '@/components/Sidebar/SFilterSection.vue'
 
     // Basic Setup
     const { t: $t } = useI18n()
@@ -365,7 +362,7 @@
         </div>
 
         <!-- Sidebars -->
-        <SFilterSidebar
+        <SidebarFilters
             v-model="showFilters"
             :applied-filters="filters"
             :default-filters="defaultFilters"
@@ -373,30 +370,30 @@
             @reset="clearFilters">
             <template #default="{ draft }">
                 <div class="flex flex-col gap-2">
-                    <SFilterSection :title="$t('Search...')">
+                    <SidebarSection :title="$t('Search...')">
                         <UInput
                             v-model="draft.searchQuery"
                             trailing-icon="i-heroicons-magnifying-glass-20-solid"
                             :placeholder="$t('Search...')" />
-                    </SFilterSection>
+                    </SidebarSection>
 
-                    <SFilterSection :title="$t('Date')">
+                    <SidebarSection :title="$t('Date')">
                         <SDateTimePicker
                             v-model="draft.dateRange"
                             class="sm:!w-full"
                             type="date"
                             range
                             @clear="() => (draft.dateRange = [])" />
-                    </SFilterSection>
+                    </SidebarSection>
 
-                    <SFilterSection :title="$t('Group by category')">
+                    <SidebarSection :title="$t('Group by category')">
                         <UCheckbox v-model="draft.groupCategory" :label="$t('Group by category')" class="px-0.5" />
-                    </SFilterSection>
+                    </SidebarSection>
                 </div>
             </template>
-        </SFilterSidebar>
+        </SidebarFilters>
 
-        <SColumnsSidebar v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-model="showColumns" :table-api="table?.tableApi" />
 
         <!-- Slot for popup forms to CRUD over transactions -->
         <NuxtPage @successful-submit="reload" />

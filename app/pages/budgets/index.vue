@@ -2,7 +2,6 @@
     import type { BudgetDataObject } from '~~/types/Data'
     import type { ModelValue } from '@vuepic/vue-datepicker'
     import { buildDateTimeWithOffset } from '~/utils/date'
-    import SFilterSidebar from '@/components/Sidebar/SFilterSidebar.vue'
 
     const { t: $t } = useI18n()
     const router = useRouter()
@@ -140,7 +139,7 @@
         </div>
 
         <!-- Sidebar: Filters for budgets -->
-        <SFilterSidebar
+        <SidebarFilters
             v-model="showFilters"
             :applied-filters="{ categoryId: store.filterCategoryId, period: store.filterPeriod, overOnly: store.filterOverOnly, date: dateModel }"
             :default-filters="{ categoryId: null, period: null, overOnly: false, date: dateModel }"
@@ -149,11 +148,11 @@
             @reset="resetBudgetFilters">
             <template #default="{ draft }">
                 <div class="flex flex-col gap-2">
-                    <SFilterSection :title="$t('Date')">
+                    <SidebarSection :title="$t('Date')">
                         <SDateTimePicker v-model="draft.date" type="date" />
-                    </SFilterSection>
+                    </SidebarSection>
 
-                    <SFilterSection :title="$t('Category')">
+                    <SidebarSection :title="$t('Category')">
                         <div class="max-h-56 overflow-auto rounded-md p-2 space-y-2">
                             <URadio
                                 name="category"
@@ -172,9 +171,9 @@
                                 </URadio>
                             </div>
                         </div>
-                    </SFilterSection>
+                    </SidebarSection>
 
-                    <SFilterSection :title="$t('Period')">
+                    <SidebarSection :title="$t('Period')">
                         <div class="max-h-56 overflow-auto rounded-md p-2 space-y-2">
                             <URadio name="period" :model-value="draft.period" :value="null" @update:model-value="(v: any) => (draft.period = v)">{{ $t('All periods') }}</URadio>
                             <URadio name="period" :model-value="draft.period" value="daily" @update:model-value="(v: any) => (draft.period = v)">{{ $t('Daily') }}</URadio>
@@ -183,14 +182,14 @@
                             <URadio name="period" :model-value="draft.period" value="semi-annual" @update:model-value="(v: any) => (draft.period = v)">Half-yearly</URadio>
                             <URadio name="period" :model-value="draft.period" value="yearly" @update:model-value="(v: any) => (draft.period = v)">{{ $t('Yearly') }}</URadio>
                         </div>
-                    </SFilterSection>
+                    </SidebarSection>
 
-                    <SFilterSection :title="$t('Over budget only')">
+                    <SidebarSection :title="$t('Over budget only')">
                         <UCheckbox :model-value="draft.overOnly" :label="$t('Over budget only')" @update:model-value="(v: any) => (draft.overOnly = Boolean(v))" />
-                    </SFilterSection>
+                    </SidebarSection>
                 </div>
             </template>
-        </SFilterSidebar>
+        </SidebarFilters>
 
         <BudgetEditorModal
             v-model="showEditor"

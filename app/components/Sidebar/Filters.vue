@@ -1,6 +1,4 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
-    import SSidebar from '@/components/Sidebar/SSidebar.vue'
-
     const props = defineProps<{
         title?: string
         modelValue: boolean
@@ -48,13 +46,13 @@
 </script>
 
 <template>
-    <SSidebar
+    <SidebarBase
         v-model="isOpen"
         :title="props.title ?? $t('Filters')"
         @apply="onApply"
         @reset="onReset">
         <slot :draft="draft" />
-    </SSidebar>
+    </SidebarBase>
 </template>
 
 

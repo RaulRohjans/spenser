@@ -5,9 +5,6 @@
     import type { TableColumn } from '@nuxt/ui'
     import type { CategoryRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
-    import SFilterSidebar from '@/components/Sidebar/SFilterSidebar.vue'
-    import SColumnsSidebar from '@/components/Sidebar/SColumnsSidebar.vue'
-    import SFilterSection from '@/components/Sidebar/SFilterSection.vue'
 
     const { t: $t } = useI18n()
     const router = useRouter()
@@ -236,23 +233,23 @@
         </div>
 
         <!-- Sidebars -->
-        <SFilterSidebar
+        <SidebarFilters
             v-model="showFilters"
             :applied-filters="filters"
             :default-filters="defaultFilters"
             @apply="applyFilters"
             @reset="clearFilters">
             <template #default="{ draft }">
-                <SFilterSection :title="$t('Search...')">
+                <SidebarSection :title="$t('Search...')">
                     <UInput
                         v-model="draft.searchQuery"
                         trailing-icon="i-heroicons-magnifying-glass-20-solid"
                         :placeholder="$t('Search...')" />
-                </SFilterSection>
+                </SidebarSection>
             </template>
-        </SFilterSidebar>
+        </SidebarFilters>
 
-        <SColumnsSidebar v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-model="showColumns" :table-api="table?.tableApi" />
 
         <!-- Slot for popup forms to CRUD over categories -->
         <NuxtPage @successful-submit="reload" />

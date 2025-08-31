@@ -1,10 +1,10 @@
 <script setup lang="ts">
-    export interface SSidebarProps {
+    export interface SidebarBaseProps {
         title: string
         widthClass?: string
     }
 
-    const props = withDefaults(defineProps<SSidebarProps>(), {
+    const props = withDefaults(defineProps<SidebarBaseProps>(), {
         widthClass: 'w-full sm:w-[420px]'
     })
 

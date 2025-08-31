@@ -1,6 +1,5 @@
 <script setup lang="ts" generic="T">
     import type { Table } from '@tanstack/vue-table'
-    import SSidebar from '@/components/Sidebar/SSidebar.vue'
 
     const props = defineProps<{
         modelValue: boolean
@@ -60,7 +59,7 @@
 </script>
 
 <template>
-    <SSidebar
+    <SidebarBase
         v-model="isOpen"
         :title="props.title ?? $t('Columns')"
         @apply="onApply"
@@ -78,7 +77,7 @@
                 </UCheckbox>
             </div>
         </div>
-    </SSidebar>
+    </SidebarBase>
 </template>
 
 
