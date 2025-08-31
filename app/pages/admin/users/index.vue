@@ -223,6 +223,7 @@
                     {{ $t('Create User') }}
                 </UButton>
                 <div class="flex flex-row items-center gap-2">
+                    <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
                     <UTooltip :text="$t('Filters')">
                         <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="openFilters" />
                     </UTooltip>
@@ -265,12 +266,6 @@
             @apply="applyFilters"
             @reset="clearFilters">
             <template #default="{ draft }">
-                <SidebarSection :title="$t('Search...')">
-                    <UInput
-                        v-model="draft.searchQuery"
-                        trailing-icon="i-heroicons-magnifying-glass-20-solid"
-                        :placeholder="$t('Search...')" />
-                </SidebarSection>
             </template>
         </SidebarFilters>
 

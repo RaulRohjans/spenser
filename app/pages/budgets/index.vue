@@ -111,6 +111,9 @@
                                 {{ $t('Add Budget') }}
                             </UButton>
 
+                            <!-- No search for budgets store yet; keeping UX consistent without binding -->
+                            <ToolbarSearch :placeholder="$t('Search...')" width-class="w-64" />
+                            
                             <UTooltip :text="$t('Filters')">
                                 <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="showFilters = true" />
                             </UTooltip>
