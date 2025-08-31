@@ -65,7 +65,7 @@
         :title="props.title ?? $t('Columns')"
         @apply="onApply"
         @reset="onReset">
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-4">
             <div
                 v-for="col in draftState"
                 :key="col.id"

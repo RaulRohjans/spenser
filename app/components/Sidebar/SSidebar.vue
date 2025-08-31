@@ -34,7 +34,7 @@
                         @click="isOpen = false" />
                 </div>
 
-                <div class="flex-1 overflow-y-auto px-6 py-3">
+                <div class="flex-1 overflow-y-auto px-6 pt-6 pb-3">
                     <slot />
                 </div>
 
