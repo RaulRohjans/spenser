@@ -245,7 +245,7 @@
                         :columns="columns"
                         sticky
                         :loading="status === 'pending'"
-                        class="w-full h-[69vh]" />
+                        class="w-full table-vh" />
                 </div>
             </div>
 

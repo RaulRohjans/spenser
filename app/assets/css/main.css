@@ -4,6 +4,9 @@
 :root {
     /* Fallback so SSR has a value before JS sets the real navbar height */
     --header-height: 64px;
+    /* Default table heights for cards that need footer pinned */
+    --table-vh: 69vh; /* transactions, admin users/currencies */
+    --table-vh-alt: 72vh; /* categories (slightly taller filters) */
 }
 
 /*
@@ -68,4 +71,46 @@ input[type='number'] {
 }
 .u-form-field .u-form-field-help {
     min-height: 1.25rem; /* reserve one line for error/help */
+}
+
+/*
+ * Responsive table heights based on viewport height
+ * Ensures the table scrolls and card footer stays visible on short screens
+ */
+.table-vh {
+    height: var(--table-vh);
+}
+.table-vh-alt {
+    height: var(--table-vh-alt);
+}
+
+@media (max-height: 1000px) {
+    :root {
+        --table-vh: 62vh;
+        --table-vh-alt: 65vh;
+    }
+}
+@media (max-height: 900px) {
+    :root {
+        --table-vh: 58vh;
+        --table-vh-alt: 60vh;
+    }
+}
+@media (max-height: 800px) {
+    :root {
+        --table-vh: 52vh;
+        --table-vh-alt: 55vh;
+    }
+}
+@media (max-height: 700px) {
+    :root {
+        --table-vh: 46vh;
+        --table-vh-alt: 48vh;
+    }
+}
+@media (max-height: 600px) {
+    :root {
+        --table-vh: 40vh;
+        --table-vh-alt: 42vh;
+    }
 }
