@@ -64,12 +64,12 @@
         :title="props.title ?? $t('Columns')"
         @apply="onApply"
         @reset="onReset">
-        <div class="flex flex-col gap-4">
+        <div class="flex flex-col gap-3">
             <div
                 v-for="col in draftState"
                 :key="col.id"
-                class="flex items-center w-full"
-                :class="col.canHide ? 'cursor-pointer' : 'cursor-default opacity-60'"
+                class="flex items-center w-full transition-colors py-1.5 px-2 rounded-md"
+                :class="col.canHide ? 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800' : 'cursor-default opacity-60'"
                 role="button"
                 tabindex="0"
                 @click="col.canHide && (col.visible = !col.visible)"
