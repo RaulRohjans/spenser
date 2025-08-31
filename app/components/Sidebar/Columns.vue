@@ -68,13 +68,18 @@
             <div
                 v-for="col in draftState"
                 :key="col.id"
-                class="flex items-center justify-between">
+                class="flex items-center w-full"
+                :class="col.canHide ? 'cursor-pointer' : 'cursor-default opacity-60'"
+                role="button"
+                tabindex="0"
+                @click="col.canHide && (col.visible = !col.visible)"
+                @keydown.enter.prevent="col.canHide && (col.visible = !col.visible)"
+                @keydown.space.prevent="col.canHide && (col.visible = !col.visible)">
                 <UCheckbox
                     :model-value="col.visible"
                     :disabled="!col.canHide"
-                    @update:model-value="(v:any) => (col.visible = Boolean(v))">
-                    {{ col.label }}
-                </UCheckbox>
+                    :label="col.label"
+                    class="pointer-events-none" />
             </div>
         </div>
     </SidebarBase>
