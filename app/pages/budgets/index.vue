@@ -107,15 +107,17 @@
                             {{ $t('Budgets') }}
                         </h2>
                         <div class="flex flex-wrap items-center justify-end gap-3">
-                            <UButton icon="i-heroicons-plus" color="primary" @click="openCreate">
-                                {{ $t('Add Budget') }}
-                            </UButton>
-
-                            <ToolbarSearch :placeholder="$t('Search...')" width-class="w-64" v-model="store.$state.filterQuery" />
-                            
-                            <UTooltip :text="$t('Filters')">
-                                <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="showFilters = true" />
-                            </UTooltip>
+                            <div class="flex flex-row items-center gap-2 mr-auto sm:mr-0">
+                                <ToolbarSearch :placeholder="$t('Search...')" width-class="w-64" v-model="store.$state.filterQuery" />
+                                <UTooltip :text="$t('Filters')">
+                                    <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="showFilters = true" />
+                                </UTooltip>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <UButton icon="i-heroicons-plus" color="primary" @click="openCreate">
+                                    {{ $t('Create') }}
+                                </UButton>
+                            </div>
                         </div>
                     </div>
                 </template>

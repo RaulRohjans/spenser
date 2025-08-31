@@ -179,30 +179,33 @@
         <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
             <UCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
-                    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Categories') }}
-                    </h2>
-                </template>
-
-                <!-- Actions header -->
-                <div class="flex-0 flex flex-row items-center justify-between gap-2">
-                    <UButton
-                        icon="i-heroicons-plus"
-                        color="primary"
-                        size="md"
-                        @click="router.push(`/categories/create`)">
-                        {{ $t('Create Category') }}
-                    </UButton>
-                    <div class="flex flex-row items-center gap-2">
-                        <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
-                        <UTooltip :text="$t('Filters')">
-                            <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="openFilters" />
-                        </UTooltip>
-                        <UTooltip :text="$t('Columns')">
-                            <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
-                        </UTooltip>
+                    <div class="flex items-center justify-between">
+                        <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                            {{ $t('Categories') }}
+                        </h2>
+                        <div class="flex flex-wrap items-center justify-end gap-3">
+                            <div class="flex flex-row items-center gap-2">
+                                <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                                <UTooltip :text="$t('Filters')">
+                                    <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="openFilters" />
+                                </UTooltip>
+                                <UTooltip :text="$t('Columns')">
+                                    <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
+                                </UTooltip>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <UButton
+                                    icon="i-heroicons-plus"
+                                    color="primary"
+                                    size="md"
+                                    @click="router.push(`/categories/create`)"
+                                >
+                                    {{ $t('Create') }}
+                                </UButton>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </template>
 
                 <!-- Table / Empty state -->
                 <div class="flex-1 overflow-hidden">

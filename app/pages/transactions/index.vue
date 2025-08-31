@@ -280,50 +280,52 @@
             <UCard
                 class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
-                    <h2
-                        class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Transactions') }}
-                    </h2>
+                    <div class="flex items-center justify-between">
+                        <h2
+                            class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                            {{ $t('Transactions') }}
+                        </h2>
+                        <div class="flex flex-wrap items-center justify-end gap-3">
+                            <div class="flex flex-row items-center gap-2">
+                                <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                                <UTooltip :text="$t('Filters')">
+                                    <UButton
+                                        icon="i-heroicons-funnel"
+                                        color="neutral"
+                                        variant="ghost"
+                                        :aria-label="$t('Filters')"
+                                        @click="openFilters" />
+                                </UTooltip>
+                                <UTooltip :text="$t('Columns')">
+                                    <UButton
+                                        icon="i-heroicons-view-columns"
+                                        color="neutral"
+                                        variant="ghost"
+                                        :aria-label="$t('Columns')"
+                                        @click="showColumns = true" />
+                                </UTooltip>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <UButton
+                                    icon="i-heroicons-arrow-down-on-square-stack"
+                                    color="primary"
+                                    size="md"
+                                    @click="router.push(`/transactions/import-ai`)"
+                                >
+                                    {{ $t('Import') }}
+                                </UButton>
+                                <UButton
+                                    icon="i-heroicons-plus"
+                                    color="primary"
+                                    size="md"
+                                    @click="router.push(`/transactions/create`)"
+                                >
+                                    {{ $t('Create') }}
+                                </UButton>
+                            </div>
+                        </div>
+                    </div>
                 </template>
-
-                <!-- Actions header -->
-                <div class="flex-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div class="flex flex-row gap-2">
-                        <UButton
-                            icon="i-heroicons-arrow-down-on-square-stack"
-                            color="primary"
-                            size="md"
-                            @click="router.push(`/transactions/import-ai`)">
-                            {{ $t('Import with AI') }}
-                        </UButton>
-                        <UButton
-                            icon="i-heroicons-plus"
-                            color="primary"
-                            size="md"
-                            @click="router.push(`/transactions/create`)">
-                            {{ $t('Create Transaction') }}
-                        </UButton>
-                    </div>
-                    <div class="flex flex-row items-center gap-2">
-                        <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
-                        <UTooltip :text="$t('Filters')">
-                            <UButton
-                                icon="i-heroicons-funnel"
-                                color="neutral"
-                                variant="ghost"
-                                :aria-label="$t('Filters')"
-                                @click="openFilters" />
-                        </UTooltip>
-                        <UTooltip :text="$t('Columns')">
-                            <UButton
-                                icon="i-heroicons-view-columns"
-                                color="neutral"
-                                variant="ghost"
-                                :aria-label="$t('Columns')"
-                                @click="showColumns = true" />
-                        </UTooltip>
-                    </div>
-                </div>
 
                 <!-- Table / Empty state -->
                 <div class="flex-1 overflow-hidden">
