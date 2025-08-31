@@ -151,33 +151,25 @@
 
 <template>
     <main>
-        <div class="w-full flex flex-col gap-2">
-            <!-- Header -->
-            <h2
-                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-8">
-                {{ $t('Currencies') }}
-            </h2>
-
-            <!-- Body -->
-            <div class="flex-0 flex flex-row items-center justify-between gap-2">
+        <Teleport to="#admin-header-actions">
+            <div class="flex flex-row items-center gap-2">
+                <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                <UTooltip :text="$t('Filters')">
+                    <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="openFilters" />
+                </UTooltip>
+                <UTooltip :text="$t('Columns')">
+                    <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
+                </UTooltip>
                 <UButton
                     icon="i-heroicons-plus"
                     color="primary"
                     size="md"
                     @click="toggleModal">
-                    {{ $t('Create Currency') }}
+                    {{ $t('Create') }}
                 </UButton>
-                <div class="flex flex-row items-center gap-2">
-                    <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
-                    <UTooltip :text="$t('Filters')">
-                        <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="openFilters" />
-                    </UTooltip>
-                    <UTooltip :text="$t('Columns')">
-                        <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
-                    </UTooltip>
-                </div>
             </div>
-
+        </Teleport>
+        <div class="w-full flex flex-col gap-2">
             <div class="flex-1 overflow-hidden">
                 <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
                     <div>

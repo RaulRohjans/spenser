@@ -58,7 +58,7 @@
 
             <div class="flex flex-col lg:flex-row gap-6 flex-1 overflow-hidden">
                 <!-- Sidebar -->
-                <aside class="lg:w-44 flex-shrink-0">
+                <aside class="lg:w-44 flex-shrink-0 lg:py-4 lg:px-2">
                     <div class="sticky top-[--header-height]">
                         <nav class="flex flex-row flex-wrap justify-evenly gap-3 lg:flex-col lg:justify-start lg:gap-0 lg:space-y-3">
                             <template v-for="option in adminOptions" :key="`${option.name}${option.href}`">
