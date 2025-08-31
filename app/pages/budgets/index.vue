@@ -2,6 +2,8 @@
     import type { BudgetDataObject } from '~~/types/Data'
     import type { ModelValue } from '@vuepic/vue-datepicker'
     import { buildDateTimeWithOffset } from '~/utils/date'
+    import SFilterSidebar from '@/components/Sidebar/SFilterSidebar.vue'
+    import SColumnsSidebar from '@/components/Sidebar/SColumnsSidebar.vue'
 
     const { t: $t } = useI18n()
     const router = useRouter()
@@ -71,6 +73,30 @@
     useHead({
         title: `Spenser | ${$t('Budgets')}`
     })
+
+    // Sidebar state
+    const showFilters = ref(false)
+
+    type BudgetFilterDraft = {
+        categoryId: number | null
+        period: BudgetDataObject['period'] | null
+        overOnly: boolean
+        date: Date | null
+    }
+
+    function applyBudgetFilters(draft: BudgetFilterDraft) {
+        store.setFilterCategory(draft.categoryId ?? null)
+        store.setFilterPeriod(draft.period ?? null)
+        store.setFilterOverOnly(Boolean(draft.overOnly))
+        onDateChange(draft.date)
+    }
+
+    function resetBudgetFilters() {
+        store.setFilterCategory(null)
+        store.setFilterPeriod(null)
+        store.setFilterOverOnly(false)
+        onDateChange(dateModel.value)
+    }
 </script>
 
 <template>
@@ -83,52 +109,13 @@
                             {{ $t('Budgets') }}
                         </h2>
                         <div class="flex flex-wrap items-center justify-end gap-3">
-                            <SDateTimePicker
-                                v-model="dateModel"
-                                class="sm:!w-56"
-                                type="date"
-                                @update:model-value="onDateChange" />
-
-                            <!-- Category filter -->
-                            <USelectMenu
-                                :items="[{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value]"
-                                class="min-w-40"
-                                :placeholder="$t('Category')"
-                                :model-value="[{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value].find(o => o.value === store.filterCategoryId)"
-                                option-attribute="label"
-                                value-attribute="value"
-                                :icon="([{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value].find(o => o.value === store.filterCategoryId) as any)?.icon"
-                                searchable
-                                :search-input="{ placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
-                                clear-search-on-close
-                                @update:model-value="(o:any) => store.setFilterCategory(o?.value ?? null)" />
-
-                            <!-- Period filter -->
-                            <USelect
-                                :items="[
-                                    { label: $t('All periods'), value: null },
-                                    { label: $t('Daily'), value: 'daily' },
-                                    { label: $t('Weekly'), value: 'weekly' },
-                                    { label: $t('Monthly'), value: 'monthly' },
-                                    { label: $t('Half-yearly'), value: 'semi-annual' },
-                                    { label: $t('Yearly'), value: 'yearly' }
-                                ]"
-                                class="min-w-36"
-                                :placeholder="$t('Period')"
-                                :model-value="store.filterPeriod"
-                                option-attribute="label"
-                                value-attribute="value"
-                                @update:model-value="(v:any) => store.setFilterPeriod(v)" />
-
-                            <!-- Overbudget only -->
-                            <UCheckbox
-                                :model-value="store.filterOverOnly"
-                                :label="$t('Over budget only')"
-                                @update:model-value="(v:any) => store.setFilterOverOnly(Boolean(v))" />
-
                             <UButton icon="i-heroicons-plus" color="primary" @click="openCreate">
                                 {{ $t('Add Budget') }}
                             </UButton>
+
+                            <UTooltip :text="$t('Filters')">
+                                <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="showFilters = true" />
+                            </UTooltip>
                         </div>
                     </div>
                 </template>
@@ -152,6 +139,60 @@
                 </div>
             </UCard>
         </div>
+
+        <!-- Sidebar: Filters for budgets -->
+        <SFilterSidebar
+            v-model="showFilters"
+            :applied-filters="{ categoryId: store.filterCategoryId, period: store.filterPeriod, overOnly: store.filterOverOnly, date: dateModel }"
+            :default-filters="{ categoryId: null, period: null, overOnly: false, date: dateModel }"
+            :title="$t('Filters')"
+            @apply="(d: unknown) => applyBudgetFilters(d as BudgetFilterDraft)"
+            @reset="resetBudgetFilters">
+            <template #default="{ draft }">
+                <div class="flex flex-col gap-4">
+                    <div>
+                        <div class="text-sm font-medium mb-2">{{ $t('Date') }}</div>
+                        <SDateTimePicker v-model="draft.date" type="date" />
+                    </div>
+
+                    <div>
+                        <div class="text-sm font-medium mb-2">{{ $t('Category') }}</div>
+                        <div class="max-h-56 overflow-auto border rounded-md p-2 space-y-2">
+                            <URadio
+                                name="category"
+                                :model-value="draft.categoryId"
+                                :value="null"
+                                @update:model-value="(v: number | null) => (draft.categoryId = v)">
+                                {{ $t('All categories') }}
+                            </URadio>
+                            <div v-for="opt in useCategories().categorySelectOptions.value" :key="opt.value">
+                                <URadio
+                                    name="category"
+                                    :model-value="draft.categoryId"
+                                    :value="opt.value"
+                                    @update:model-value="(v: number | null) => (draft.categoryId = v)">
+                                    {{ opt.label }}
+                                </URadio>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="text-sm font-medium mb-2">{{ $t('Period') }}</div>
+                        <div class="max-h-56 overflow-auto border rounded-md p-2 space-y-2">
+                            <URadio name="period" :model-value="draft.period" :value="null" @update:model-value="(v: any) => (draft.period = v)">{{ $t('All periods') }}</URadio>
+                            <URadio name="period" :model-value="draft.period" value="daily" @update:model-value="(v: any) => (draft.period = v)">{{ $t('Daily') }}</URadio>
+                            <URadio name="period" :model-value="draft.period" value="weekly" @update:model-value="(v: any) => (draft.period = v)">Weekly</URadio>
+                            <URadio name="period" :model-value="draft.period" value="monthly" @update:model-value="(v: any) => (draft.period = v)">{{ $t('Monthly') }}</URadio>
+                            <URadio name="period" :model-value="draft.period" value="semi-annual" @update:model-value="(v: any) => (draft.period = v)">Half-yearly</URadio>
+                            <URadio name="period" :model-value="draft.period" value="yearly" @update:model-value="(v: any) => (draft.period = v)">{{ $t('Yearly') }}</URadio>
+                        </div>
+                    </div>
+
+                    <UCheckbox :model-value="draft.overOnly" :label="$t('Over budget only')" @update:model-value="(v: any) => (draft.overOnly = Boolean(v))" />
+                </div>
+            </template>
+        </SFilterSidebar>
 
         <BudgetEditorModal
             v-model="showEditor"

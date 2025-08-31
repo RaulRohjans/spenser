@@ -1,10 +1,12 @@
 <script setup lang="ts">
     import type { NuxtError } from 'nuxt/app'
     import { h, resolveComponent } from 'vue'
-    import type { FetchTableDataResult } from '~~/types/Table'
+    import type { FetchTableDataResult, TableFilters } from '~~/types/Table'
     import type { TableColumn } from '@nuxt/ui'
     import type { TransactionRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
+    import SFilterSidebar from '@/components/Sidebar/SFilterSidebar.vue'
+    import SColumnsSidebar from '@/components/Sidebar/SColumnsSidebar.vue'
 
     // Basic Setup
     const { t: $t } = useI18n()
@@ -212,8 +214,7 @@
         filters,
         data: tableData,
         status,
-        reload,
-        resetFilters
+        reload
     } = usePaginatedTable<FetchTableDataResult<TransactionRow>>({
         key: 'all-transactions',
         fetcher: ({ page, limit, sort, order, filters }) =>
@@ -238,14 +239,33 @@
         watch: [] // optional: other filters to watch
     })
 
-    // When any of the filter change make the page 1
-    watch(
-        filters,
-        () => {
-            page.value = 1
-        },
-        { deep: true }
-    )
+    // Local UI state for sidebars
+    const showFilters = ref(false)
+    const showColumns = ref(false)
+
+    const defaultFilters = {
+        searchQuery: '',
+        dateRange: [] as Date[],
+        groupCategory: false
+    }
+    const draftFilters = reactive({ ...defaultFilters })
+
+    function openFilters() {
+        Object.assign(draftFilters, filters)
+        showFilters.value = true
+    }
+
+    function applyFilters(next: TableFilters) {
+        Object.assign(filters, next)
+        page.value = 1
+        reload()
+    }
+
+    function clearFilters(_: TableFilters) {
+        Object.assign(filters, defaultFilters)
+        page.value = 1
+        reload()
+    }
     useHead({
         title: `Spenser | ${$t('Transactions')}`
     })
@@ -268,61 +288,41 @@
                     </h2>
                 </template>
 
-                <!-- Filters header -->
-                <div class="flex-0 flex flex-col gap-2">
-                    <div
-                        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-                        <div
-                            class="flex flex-col lg:flex-row lg:items-center gap-2">
-                            <UInput
-                                v-model="filters.searchQuery"
-                                trailing-icon="i-heroicons-magnifying-glass-20-solid"
-                                :placeholder="$t('Search...')" />
-
-                            <SDateTimePicker
-                                v-model="filters.dateRange"
-                                class="sm:!w-56"
-                                type="date"
-                                range
-                                @clear="() => (filters.dateRange = [])" />
-                        </div>
-
-                        <div
-                            class="flex flex-row justify-between items-center sm:justify-end sm:flex-col sm:items-end md:flex-row md:items-center gap-3 lg:gap-6">
-                            <UCheckbox
-                                v-model="filters.groupCategory"
-                                :label="$t('Group by category')" />
-                        </div>
+                <!-- Actions header -->
+                <div class="flex-0 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div class="flex flex-row gap-2">
+                        <UButton
+                            icon="i-heroicons-arrow-down-on-square-stack"
+                            color="primary"
+                            size="md"
+                            @click="router.push(`/transactions/import-ai`)">
+                            {{ $t('Import with AI') }}
+                        </UButton>
+                        <UButton
+                            icon="i-heroicons-plus"
+                            color="primary"
+                            size="md"
+                            @click="router.push(`/transactions/create`)">
+                            {{ $t('Create Transaction') }}
+                        </UButton>
                     </div>
-
-                    <div
-                        class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
-                        <SColumnToggleMenu
-                            :table-api="table?.tableApi"
-                            :disabled-columns="
-                                filters.groupCategory
-                                    ? ['name', 'date', 'actions']
-                                    : []
-                            "
-                            @reset="resetFilters" />
-
-                        <div class="flex flex-col sm:flex-row gap-2">
+                    <div class="flex flex-row items-center gap-2">
+                        <UTooltip :text="$t('Filters')">
                             <UButton
-                                icon="i-heroicons-arrow-down-on-square-stack"
-                                color="primary"
-                                size="md"
-                                @click="router.push(`/transactions/import-ai`)">
-                                {{ $t('Import with AI') }}
-                            </UButton>
-
+                                icon="i-heroicons-funnel"
+                                color="neutral"
+                                variant="ghost"
+                                :aria-label="$t('Filters')"
+                                @click="openFilters" />
+                        </UTooltip>
+                        <UTooltip :text="$t('Columns')">
                             <UButton
-                                icon="i-heroicons-plus"
-                                color="primary"
-                                size="md"
-                                @click="router.push(`/transactions/create`)">
-                                {{ $t('Create Transaction') }}
-                            </UButton>
-                        </div>
+                                icon="i-heroicons-view-columns"
+                                color="neutral"
+                                variant="ghost"
+                                :aria-label="$t('Columns')"
+                                @click="showColumns = true" />
+                        </UTooltip>
                     </div>
                 </div>
 
@@ -362,6 +362,37 @@
                 </template>
             </UCard>
         </div>
+
+        <!-- Sidebars -->
+        <SFilterSidebar
+            v-model="showFilters"
+            :applied-filters="filters"
+            :default-filters="defaultFilters"
+            @apply="applyFilters"
+            @reset="clearFilters">
+            <template #default="{ draft }">
+                <div class="flex flex-col gap-4">
+                    <UInput
+                        v-model="draft.searchQuery"
+                        trailing-icon="i-heroicons-magnifying-glass-20-solid"
+                        :placeholder="$t('Search...')" />
+
+                    <div>
+                        <div class="text-sm font-medium mb-2">{{ $t('Date') }}</div>
+                        <SDateTimePicker
+                            v-model="draft.dateRange"
+                            class="sm:!w-full"
+                            type="date"
+                            range
+                            @clear="() => (draft.dateRange = [])" />
+                    </div>
+
+                    <UCheckbox v-model="draft.groupCategory" :label="$t('Group by category')" />
+                </div>
+            </template>
+        </SFilterSidebar>
+
+        <SColumnsSidebar v-model="showColumns" :table-api="table?.tableApi" />
 
         <!-- Slot for popup forms to CRUD over transactions -->
         <NuxtPage @successful-submit="reload" />

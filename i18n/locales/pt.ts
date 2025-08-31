@@ -106,6 +106,7 @@ export default {
     'Rows per page': 'Registos por página',
     Columns: 'Colunas',
     Reset: 'Reiniciar',
+    Apply: 'Aplicar',
     'Loading...': 'A carregar...',
     Showing: 'A mostrar',
     to: 'até',

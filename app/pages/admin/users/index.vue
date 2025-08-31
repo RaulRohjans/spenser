@@ -1,10 +1,12 @@
 <script setup lang="ts">
     import type { NuxtError } from 'nuxt/app'
     import type { TableColumn } from '@nuxt/ui'
-    import type { FetchTableDataResult } from '~~/types/Table'
+    import type { FetchTableDataResult, TableFilters } from '~~/types/Table'
     import type { ModalUserProps } from '@/components/Modal/User.vue'
     import type { UserRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
+    import SFilterSidebar from '@/components/Sidebar/SFilterSidebar.vue'
+    import SColumnsSidebar from '@/components/Sidebar/SColumnsSidebar.vue'
 
     const { data: authData, signOut } = useAuth()
     const { t: $t } = useI18n()
@@ -152,8 +154,7 @@
         filters,
         data: tableData,
         status,
-        reload,
-        resetFilters
+        reload
     } = usePaginatedTable<FetchTableDataResult<UserRow>>({
         key: 'all-users',
         fetcher: ({ page, limit, sort, order, filters }) =>
@@ -172,6 +173,15 @@
         },
         watch: []
     })
+    
+    // Sidebars state
+    const showFilters = ref(false)
+    const showColumns = ref(false)
+    const defaultFilters = { searchQuery: '' }
+    const draftFilters = reactive({ ...defaultFilters })
+    function openFilters() { Object.assign(draftFilters, filters); showFilters.value = true }
+    function applyFilters(next: TableFilters) { Object.assign(filters, next); page.value = 1; reload() }
+    function clearFilters(_: TableFilters) { Object.assign(filters, defaultFilters); page.value = 1; reload() }
 
     const userLoaderObj: Ref<ModalUserProps | null> = ref(null)
     const isModalOpen: Ref<boolean> = ref(false)
@@ -206,20 +216,7 @@
             </h2>
 
             <!-- Body -->
-            <div class="flex-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-                <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
-                    <UInput
-                        v-model="filters.searchQuery"
-                        trailing-icon="i-heroicons-magnifying-glass-20-solid"
-                        :placeholder="$t('Search...')" />
-
-                    <div class="flex flex-col md:flex-row sm:justify-start gap-2">
-                        <SColumnToggleMenu
-                            :table-api="table?.tableApi"
-                            @reset="resetFilters" />
-                    </div>
-                </div>
-
+            <div class="flex-0 flex flex-row items-center justify-between gap-2">
                 <UButton
                     icon="i-heroicons-plus"
                     color="primary"
@@ -227,6 +224,14 @@
                     @click="toggleModal">
                     {{ $t('Create User') }}
                 </UButton>
+                <div class="flex flex-row items-center gap-2">
+                    <UTooltip :text="$t('Filters')">
+                        <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="openFilters" />
+                    </UTooltip>
+                    <UTooltip :text="$t('Columns')">
+                        <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
+                    </UTooltip>
+                </div>
             </div>
 
             <div class="flex-1 overflow-hidden">
@@ -253,6 +258,23 @@
                 v-model:items-per-page="itemsPerPage"
                 :total="tableData?.data?.totalRecordCount ?? 0" />
         </div>
+
+        <!-- Sidebars -->
+        <SFilterSidebar
+            v-model="showFilters"
+            :applied-filters="filters"
+            :default-filters="defaultFilters"
+            @apply="applyFilters"
+            @reset="clearFilters">
+            <template #default="{ draft }">
+                <UInput
+                    v-model="draft.searchQuery"
+                    trailing-icon="i-heroicons-magnifying-glass-20-solid"
+                    :placeholder="$t('Search...')" />
+            </template>
+        </SFilterSidebar>
+
+        <SColumnsSidebar v-model="showColumns" :table-api="table?.tableApi" />
 
         <ModalUser
             :key="reloadModal"
