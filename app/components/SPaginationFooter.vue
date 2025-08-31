@@ -8,12 +8,11 @@
 
     const { t } = useI18n()
 
-    const pageFrom = computed(() => (page.value - 1) * itemsPerPage.value + 1)
-    const pageTo = computed(() =>
-        props.total == 0
-            ? 1
-            : Math.min(page.value * itemsPerPage.value, props.total)
+    const pageFrom = computed(() =>
+        props.total === 0 ? 0 : (page.value - 1) * itemsPerPage.value + 1
     )
+
+    const pageSizeOptions: number[] = [5, 10, 20, 50, 100, 150, 200]
 </script>
 
 <template>
@@ -22,7 +21,16 @@
             {{ t('Showing') }}
             <span class="font-medium">{{ pageFrom }}</span>
             {{ t('to') }}
-            <span class="font-medium">{{ pageTo }}</span>
+            <USelect
+                :model-value="itemsPerPage"
+                :items="pageSizeOptions"
+                size="xs"
+                aria-label="Rows per page"
+                class="inline-block align-middle w-16 mx-1"
+                @update:model-value="(v:number) => {
+                    itemsPerPage = Number(v)
+                    page = 1
+                }" />
             {{ t('of') }}
             <span class="font-medium">{{ props.total }}</span>
             {{ t('results') }}

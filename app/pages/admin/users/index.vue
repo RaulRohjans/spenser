@@ -216,9 +216,6 @@
                         :table-api="table?.tableApi" />
 
                     <div class="flex flex-col md:flex-row sm:justify-start gap-2">
-                        <div class="flex flex-row justify-center sm:justify-start">
-                            <SRowsPerPageSelector v-model="itemsPerPage" />
-                        </div>
                         <SColumnToggleMenu
                             :table-api="table?.tableApi"
                             @reset="resetFilters" />

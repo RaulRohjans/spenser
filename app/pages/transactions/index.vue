@@ -299,8 +299,6 @@
 
                         <div
                             class="flex flex-row justify-between items-center sm:justify-end sm:flex-col sm:items-end md:flex-row md:items-center gap-3 lg:gap-6">
-                            <SRowsPerPageSelector v-model="itemsPerPage" />
-
                             <UCheckbox
                                 v-model="filters.groupCategory"
                                 :label="$t('Group by category')" />
