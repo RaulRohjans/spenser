@@ -221,7 +221,6 @@
                 method: 'GET',
                 query: {
                     q: filters?.searchQuery,
-                    qColumn: filters?.searchColumn,
                     page,
                     limit,
                     sort,
@@ -233,7 +232,6 @@
             }),
         defaultFilters: {
             searchQuery: '',
-            searchColumn: 'name',
             dateRange: [],
             groupCategory: false
         },
@@ -248,15 +246,6 @@
         },
         { deep: true }
     )
-
-    // Ensure search column matches available columns when toggling grouping
-    watch(
-        () => filters.groupCategory,
-        (isGrouped) => {
-            filters.searchColumn = isGrouped ? 'category_name' : 'name'
-        }
-    )
-
     useHead({
         title: `Spenser | ${$t('Transactions')}`
     })
@@ -285,10 +274,10 @@
                         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                         <div
                             class="flex flex-col lg:flex-row lg:items-center gap-2">
-                            <SSearchWithColumnFilter
-                                v-model:column="filters.searchColumn"
-                                v-model:search="filters.searchQuery"
-                                :table-api="table?.tableApi" />
+                            <UInput
+                                v-model="filters.searchQuery"
+                                trailing-icon="i-heroicons-magnifying-glass-20-solid"
+                                :placeholder="$t('Search...')" />
 
                             <SDateTimePicker
                                 v-model="filters.dateRange"

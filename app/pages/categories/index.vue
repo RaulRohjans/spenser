@@ -145,7 +145,6 @@
                 method: 'GET',
                 query: {
                     q: filters?.searchQuery,
-                    qColumn: filters?.searchColumn,
                     page,
                     limit,
                     sort,
@@ -153,8 +152,7 @@
                 }
             }),
         defaultFilters: {
-            searchQuery: '',
-            searchColumn: 'name'
+            searchQuery: ''
         },
         watch: [] // optional: other filters to watch
     })
@@ -182,10 +180,10 @@
                 <!-- Filters header -->
                 <div class="flex-0 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
                     <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
-                        <SSearchWithColumnFilter
-                            v-model:column="filters.searchColumn"
-                            v-model:search="filters.searchQuery"
-                            :table-api="table?.tableApi" />
+                        <UInput
+                            v-model="filters.searchQuery"
+                            trailing-icon="i-heroicons-magnifying-glass-20-solid"
+                            :placeholder="$t('Search...')" />
 
                         <div
                             class="flex flex-col md:flex-row sm:justify-start gap-2">

@@ -54,6 +54,28 @@ export function makeSearchCondition(tableDotColumn: string, search?: string) {
     return sql`${col}::text ILIKE ${'%' + search + '%'}`
 }
 
+export function makeMultiColumnSearch(
+    tableDotColumns: string[],
+    search?: string
+) {
+    if (!search) return null
+    const like = '%' + search + '%'
+
+    const cols = tableDotColumns
+        .map((c) => getColumnRef(c))
+        .filter((c): c is SQL => Boolean(c))
+
+    if (cols.length === 0) return null
+
+    let expr: SQL | null = null
+    for (const col of cols) {
+        const cond = sql`${col}::text ILIKE ${like}`
+        expr = expr ? sql`${expr} OR ${cond}` : cond
+    }
+
+    return expr
+}
+
 export function makeOrderBy(sort?: string, order?: 'asc' | 'desc') {
     if (!sort) return null
 
