@@ -17,7 +17,22 @@ export default defineEventHandler(async (event) => {
         qTz ? Number(qTz) : undefined
     )
 
-    // Load budgets (no expenses yet)
+    // Read filter query params
+    const {
+        categoryId: qCategory,
+        period: qPeriod,
+        overOnly: qOverOnly,
+        search: qSearch
+    } = getQuery(event) as {
+        categoryId?: string
+        period?: string
+        overOnly?: string
+        search?: string
+    }
+
+    console.log(qCategory, qPeriod, qOverOnly, qSearch)
+
+    // Load budgets (no expenses yet) with server-side filters
     const budgetRows = await db
         .select({
             id: budgets.id,
@@ -38,7 +53,17 @@ export default defineEventHandler(async (event) => {
             and(
                 eq(budgets.user, user.id),
                 eq(budgets.deleted, false),
-                sql`(case when ${budgets.category} is not null then ${categories.user} = ${user.id} else true end)`
+                // Only show categories that belong to the user when set
+                sql`(case when ${budgets.category} is not null then ${categories.user} = ${user.id} else true end)`,
+                qCategory != null && qCategory !== ''
+                    ? eq(budgets.category, Number(qCategory))
+                    : sql`1=1`,
+                qPeriod != null && qPeriod !== ''
+                    ? eq(budgets.period, String(qPeriod))
+                    : sql`1=1`,
+                qSearch != null && qSearch !== ''
+                    ? sql`${budgets.name} ILIKE ${`%${qSearch}%`}`
+                    : sql`1=1`
             )
         )
         .orderBy(budgets.order)
@@ -88,6 +113,9 @@ export default defineEventHandler(async (event) => {
 
         for (const b of budgetsOfPeriod) {
             const spent = b.category != null ? categoryToSpent.get(b.category) || 0 : totalSpent
+            // Apply overOnly filter server-side when requested
+            if (qOverOnly === 'true' && !(spent > Number(b.value || 0))) continue
+            if (qOverOnly === 'false' && !(spent <= Number(b.value || 0))) continue
             results.push({ ...b, expenses: spent } as BudgetDataObject)
         }
     }

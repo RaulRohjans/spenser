@@ -1,5 +1,6 @@
 <script setup lang="ts">
     import type { BudgetDataObject } from '~~/types/Data'
+    import type { BudgetPeriodType } from '~~/types/budget-period'
     import type { ModelValue } from '@vuepic/vue-datepicker'
     import { buildDateTimeWithOffset } from '~/utils/date'
 
@@ -12,10 +13,6 @@
     onBeforeRouteLeave(() => {
         // Persist order if needed (handled by reorder handler)
     })
-
-    function _handleEdit(budget: BudgetDataObject) {
-        router.push(`/budgets/edit/${budget.id}`)
-    }
 
     function handleDelete(budget: BudgetDataObject) {
         Notifier.showChooser(
@@ -77,22 +74,22 @@
 
     type BudgetFilterDraft = {
         categoryId: number | null
-        period: BudgetDataObject['period'] | null
-        overOnly: boolean
+        period: BudgetPeriodType | null
+        overOnly: boolean | null
         date: Date | null
     }
 
     function applyBudgetFilters(draft: BudgetFilterDraft) {
         store.setFilterCategory(draft.categoryId ?? null)
         store.setFilterPeriod(draft.period ?? null)
-        store.setFilterOverOnly(Boolean(draft.overOnly))
+        store.setFilterOverOnly(draft.overOnly ?? null)
         onDateChange(draft.date)
     }
 
     function resetBudgetFilters() {
         store.setFilterCategory(null)
         store.setFilterPeriod(null)
-        store.setFilterOverOnly(false)
+        store.setFilterOverOnly(null)
         onDateChange(dateModel.value)
     }
 </script>
@@ -146,7 +143,7 @@
         <SidebarFilters
             v-model="showFilters"
             :applied-filters="{ categoryId: store.filterCategoryId, period: store.filterPeriod, overOnly: store.filterOverOnly, date: dateModel }"
-            :default-filters="{ categoryId: null, period: null, overOnly: false, date: dateModel }"
+            :default-filters="{ categoryId: null, period: null, overOnly: null, date: dateModel }"
             :title="$t('Filters')"
             @apply="(d: unknown) => applyBudgetFilters(d as BudgetFilterDraft)"
             @reset="resetBudgetFilters">
@@ -157,39 +154,35 @@
                     </SidebarSection>
 
                     <SidebarSection :title="$t('Category')">
-                        <div class="max-h-56 overflow-auto rounded-md p-2 space-y-2">
-                            <URadio
-                                name="category"
-                                :model-value="draft.categoryId"
-                                :value="null"
-                                @update:model-value="(v: number | null) => (draft.categoryId = v)">
-                                {{ $t('All categories') }}
-                            </URadio>
-                            <div v-for="opt in useCategories().categorySelectOptions.value" :key="opt.value">
-                                <URadio
-                                    name="category"
-                                    :model-value="draft.categoryId"
-                                    :value="opt.value"
-                                    @update:model-value="(v: number | null) => (draft.categoryId = v)">
-                                    {{ opt.label }}
-                                </URadio>
-                            </div>
-                        </div>
+                        <SidebarOptionList
+                            :options="[{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value]"
+                            :model-value="draft.categoryId"
+                            @update:model-value="(v: number | (number | null)[] | null) => (draft.categoryId = Array.isArray(v) ? (v[0] ?? null) : v)" />
                     </SidebarSection>
 
                     <SidebarSection :title="$t('Period')">
-                        <div class="max-h-56 overflow-auto rounded-md p-2 space-y-2">
-                            <URadio name="period" :model-value="draft.period" :value="null" @update:model-value="(v: any) => (draft.period = v)">{{ $t('All periods') }}</URadio>
-                            <URadio name="period" :model-value="draft.period" value="daily" @update:model-value="(v: any) => (draft.period = v)">{{ $t('Daily') }}</URadio>
-                            <URadio name="period" :model-value="draft.period" value="weekly" @update:model-value="(v: any) => (draft.period = v)">Weekly</URadio>
-                            <URadio name="period" :model-value="draft.period" value="monthly" @update:model-value="(v: any) => (draft.period = v)">{{ $t('Monthly') }}</URadio>
-                            <URadio name="period" :model-value="draft.period" value="semi-annual" @update:model-value="(v: any) => (draft.period = v)">Half-yearly</URadio>
-                            <URadio name="period" :model-value="draft.period" value="yearly" @update:model-value="(v: any) => (draft.period = v)">{{ $t('Yearly') }}</URadio>
-                        </div>
+                        <SidebarOptionList
+                            :options="[
+                                { label: $t('All periods'), value: null },
+                                { label: $t('Daily'), value: 'daily' },
+                                { label: $t('Weekly'), value: 'weekly' },
+                                { label: $t('Monthly'), value: 'monthly' },
+                                { label: 'Half-yearly', value: 'semi-annual' },
+                                { label: $t('Yearly'), value: 'yearly' }
+                            ] as { label: string; value: BudgetPeriodType | null }[]"
+                            :model-value="draft.period"
+                            @update:model-value="(v: BudgetPeriodType | (BudgetPeriodType | null)[] | null) => (draft.period = Array.isArray(v) ? (v[0] ?? null) : v)" />
                     </SidebarSection>
 
                     <SidebarSection :title="$t('Over budget only')">
-                        <UCheckbox :model-value="draft.overOnly" :label="$t('Over budget only')" @update:model-value="(v: any) => (draft.overOnly = Boolean(v))" />
+                        <SidebarOptionList
+                            :options="[
+                                { label: $t('All'), value: null },
+                                { label: $t('Over budget only'), value: true },
+                                { label: $t('Not over budget only'), value: false }
+                            ] as { label: string; value: boolean | null }[]"
+                            :model-value="draft.overOnly"
+                            @update:model-value="(v: boolean | (boolean | null)[] | null) => (draft.overOnly = Array.isArray(v) ? (v[0] ?? null) : v)" />
                     </SidebarSection>
                 </div>
             </template>
