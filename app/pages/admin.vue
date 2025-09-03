@@ -49,9 +49,14 @@
         <UCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
             <template #header>
                 <div class="flex items-center justify-between">
-                    <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Administration') }}<span v-if="currentSectionLabel"> - {{ currentSectionLabel }}</span>
-                    </h2>
+                    <div class="flex items-center gap-2">
+                        <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                            {{ $t('Administration') }}<span v-if="currentSectionLabel"> - {{ currentSectionLabel }}</span>
+                        </h2>
+                        <UTooltip :text="$t('Configure platform settings and manage data for your account.')">
+                            <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
+                        </UTooltip>
+                    </div>
                     <div id="admin-header-actions" class="flex items-center gap-2"></div>
                 </div>
             </template>

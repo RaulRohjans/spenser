@@ -150,9 +150,14 @@
             <UCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                            {{ $t('Import with AI') }}
-                        </h2>
+                        <div class="flex items-center gap-2">                            
+                            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                                {{ $t('Import with AI') }}
+                            </h2>
+                            <UTooltip :text="$t('Upload a statement or paste text and let AI extract transactions for review.')">
+                                <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
+                            </UTooltip>
+                        </div>
                     </div>
                 </template>
                 <div class="flex-1 flex items-center justify-center">

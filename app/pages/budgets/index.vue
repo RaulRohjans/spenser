@@ -100,9 +100,14 @@
             <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <div class="flex items-center justify-between">
-                        <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                            {{ $t('Budgets') }}
-                        </h2>
+                        <div class="flex items-center gap-2">                            
+                            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                                {{ $t('Budgets') }}
+                            </h2>
+                            <UTooltip :text="$t('Create and track budgets by period and category.')">
+                                <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
+                            </UTooltip>
+                        </div>
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <div class="flex flex-row items-center gap-2 mr-auto sm:mr-0">
                                 <ToolbarSearch :placeholder="$t('Search...')" width-class="w-64" v-model="store.$state.filterQuery" />
