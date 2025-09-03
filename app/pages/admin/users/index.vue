@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import type { NuxtError } from 'nuxt/app'
     import type { TableColumn } from '@nuxt/ui'
-    import type { FetchTableDataResult, TableFilters } from '~~/types/Table'
+    import type { FetchTableDataResult } from '~~/types/Table'
     import type { ModalUserProps } from '@/components/Modal/User.vue'
     import type { UserRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
@@ -172,14 +172,7 @@
         watch: []
     })
     
-    // Sidebars state
-    const showFilters = ref(false)
     const showColumns = ref(false)
-    const defaultFilters = { searchQuery: '' }
-    const draftFilters = reactive({ ...defaultFilters })
-    function openFilters() { Object.assign(draftFilters, filters); showFilters.value = true }
-    function applyFilters(next: TableFilters) { Object.assign(filters, next); page.value = 1; reload() }
-    function clearFilters(_: TableFilters) { Object.assign(filters, defaultFilters); page.value = 1; reload() }
 
     const userLoaderObj: Ref<ModalUserProps | null> = ref(null)
     const isModalOpen: Ref<boolean> = ref(false)
@@ -210,9 +203,6 @@
         <Teleport to="#admin-header-actions">
             <div class="flex flex-row items-center gap-2">
                 <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
-                <UTooltip :text="$t('Filters')">
-                    <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="openFilters" />
-                </UTooltip>
                 <UTooltip :text="$t('Columns')">
                     <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
                 </UTooltip>
@@ -247,16 +237,6 @@
         </div>
 
         <!-- Sidebars -->
-        <SidebarFilters
-            v-model="showFilters"
-            :applied-filters="filters"
-            :default-filters="defaultFilters"
-            @apply="applyFilters"
-            @reset="clearFilters">
-            <template #default="{ draft }">
-            </template>
-        </SidebarFilters>
-
         <SidebarColumns v-model="showColumns" :table-api="table?.tableApi" />
 
         <ModalUser
