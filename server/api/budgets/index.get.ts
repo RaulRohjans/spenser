@@ -1,6 +1,6 @@
 import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
-import { sql, and, eq, gte, lt } from 'drizzle-orm'
+import { sql, and, eq, gte, lt, inArray } from 'drizzle-orm'
 import { budgets, categories, transactions } from '~~/server/db/schema'
 import type { BudgetDataObject } from '~~/types/Data'
 import { coerceDateAndOffset } from '~~/server/utils/date'
@@ -19,18 +19,25 @@ export default defineEventHandler(async (event) => {
 
     // Read filter query params
     const {
-        categoryId: qCategory,
+        categoryIds: qCategoryIds,
         period: qPeriod,
         overOnly: qOverOnly,
         search: qSearch
     } = getQuery(event) as {
-        categoryId?: string
+        categoryIds?: string | string[]
         period?: string
         overOnly?: string
         search?: string
     }
 
-    console.log(qCategory, qPeriod, qOverOnly, qSearch)
+    // Parse multi-select categories
+    const categoryIdList: number[] = Array.isArray(qCategoryIds)
+        ? (qCategoryIds as unknown[])
+              .map((v) => Number(v))
+              .filter((n) => Number.isFinite(n))
+        : qCategoryIds != null
+          ? [Number(qCategoryIds)].filter((n) => Number.isFinite(n))
+          : []
 
     // Load budgets (no expenses yet) with server-side filters
     const budgetRows = await db
@@ -55,9 +62,7 @@ export default defineEventHandler(async (event) => {
                 eq(budgets.deleted, false),
                 // Only show categories that belong to the user when set
                 sql`(case when ${budgets.category} is not null then ${categories.user} = ${user.id} else true end)`,
-                qCategory != null && qCategory !== ''
-                    ? eq(budgets.category, Number(qCategory))
-                    : sql`1=1`,
+                ...(categoryIdList.length ? [inArray(budgets.category, categoryIdList)] : []),
                 qPeriod != null && qPeriod !== ''
                     ? eq(budgets.period, String(qPeriod))
                     : sql`1=1`,

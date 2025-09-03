@@ -4,7 +4,7 @@ export interface BudgetState {
     items: BudgetDataObject[]
     loading: boolean
     selectedDate: DateTimeWithOffset
-    filterCategoryId: number | null
+    filterCategoryIds: number[]
     filterPeriod: BudgetDataObject['period'] | null
     filterOverOnly: boolean | null
     filterQuery: string
@@ -18,7 +18,7 @@ export const useBudgetsStore = defineStore('budgetsStore', {
             date: new Date(),
             tzOffsetMinutes: -new Date().getTimezoneOffset()
         },
-        filterCategoryId: null,
+        filterCategoryIds: [],
         filterPeriod: null,
         filterOverOnly: null,
         filterQuery: ''
@@ -31,7 +31,7 @@ export const useBudgetsStore = defineStore('budgetsStore', {
         setSelectedDate(payload: DateTimeWithOffset) {
             this.selectedDate = payload
         },
-        setFilterCategory(id: number | null) { this.filterCategoryId = id },
+        setFilterCategories(ids: number[]) { this.filterCategoryIds = ids },
         setFilterPeriod(p: BudgetDataObject['period'] | null) { this.filterPeriod = p },
         setFilterOverOnly(v: boolean | null) { this.filterOverOnly = v },
         setFilterQuery(q: string) { this.filterQuery = q },
@@ -44,7 +44,7 @@ export const useBudgetsStore = defineStore('budgetsStore', {
                     date instanceof Date ? date.toISOString() : date
                 ))
                 params.set('tzOffsetMinutes', String(tzOffsetMinutes))
-                if (this.filterCategoryId != null) params.set('categoryId', String(this.filterCategoryId))
+                if (this.filterCategoryIds.length) this.filterCategoryIds.forEach((id) => params.append('categoryIds', String(id)))
                 if (this.filterPeriod != null) params.set('period', String(this.filterPeriod))
                 if (this.filterOverOnly !== null) params.set('overOnly', String(this.filterOverOnly))
                 if (this.filterQuery) params.set('search', this.filterQuery)

@@ -73,21 +73,21 @@
     const showFilters = ref(false)
 
     type BudgetFilterDraft = {
-        categoryId: number | null
+        categoryIds: number[] | null
         period: BudgetPeriodType | null
         overOnly: boolean | null
         date: Date | null
     }
 
     function applyBudgetFilters(draft: BudgetFilterDraft) {
-        store.setFilterCategory(draft.categoryId ?? null)
+        store.setFilterCategories(draft.categoryIds ?? [])
         store.setFilterPeriod(draft.period ?? null)
         store.setFilterOverOnly(draft.overOnly ?? null)
         onDateChange(draft.date)
     }
 
     function resetBudgetFilters() {
-        store.setFilterCategory(null)
+        store.setFilterCategories([])
         store.setFilterPeriod(null)
         store.setFilterOverOnly(null)
         onDateChange(dateModel.value)
@@ -142,8 +142,8 @@
         <!-- Sidebar: Filters for budgets -->
         <SidebarFilters
             v-model="showFilters"
-            :applied-filters="{ categoryId: store.filterCategoryId, period: store.filterPeriod, overOnly: store.filterOverOnly, date: dateModel }"
-            :default-filters="{ categoryId: null, period: null, overOnly: null, date: dateModel }"
+            :applied-filters="{ categoryIds: store.filterCategoryIds, period: store.filterPeriod, overOnly: store.filterOverOnly, date: dateModel }"
+            :default-filters="{ categoryIds: [], period: null, overOnly: null, date: dateModel }"
             :title="$t('Filters')"
             @apply="(d: unknown) => applyBudgetFilters(d as BudgetFilterDraft)"
             @reset="resetBudgetFilters">
@@ -155,9 +155,10 @@
 
                     <SidebarSection :title="$t('Category')">
                         <SidebarOptionList
-                            :options="[{ label: $t('All categories'), value: null }, ...useCategories().categorySelectOptions.value]"
-                            :model-value="draft.categoryId"
-                            @update:model-value="(v: number | (number | null)[] | null) => (draft.categoryId = Array.isArray(v) ? (v[0] ?? null) : v)" />
+                            :options="useCategories().categorySelectOptions.value as { label: string; value: number }[]"
+                            :model-value="(draft.categoryIds ?? []) as (string | number | boolean | null)[]"
+                            :multiple="true"
+                            @update:model-value="(v: string | number | boolean | (string | number | boolean | null)[] | null) => (draft.categoryIds = Array.isArray(v) ? (v as number[]) : [])" />
                     </SidebarSection>
 
                     <SidebarSection :title="$t('Period')">

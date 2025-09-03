@@ -1,7 +1,7 @@
 import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { categories, transactions } from '~~/server/db/schema'
-import { and, asc, desc, eq, sql } from 'drizzle-orm'
+import { and, asc, desc, eq, sql, inArray } from 'drizzle-orm'
 import { makeMultiColumnSearch } from '~~/server/db/utils'
 
 export default defineEventHandler(async (event) => {
@@ -14,7 +14,8 @@ export default defineEventHandler(async (event) => {
 		order,
 		startDate,
 		endDate,
-		groupCategory
+		groupCategory,
+		categoryIds
 	} = getQuery(event)
 	const user = ensureAuth(event)
 
@@ -55,6 +56,15 @@ export default defineEventHandler(async (event) => {
 	const orderDir = (order as 'asc' | 'desc') || 'asc'
 
 	const isGrouped = String(groupCategory || '').toLowerCase() === 'true'
+
+	// Parse categoryIds (string | string[] | undefined) into number[]
+	const categoryIdList: number[] = Array.isArray(categoryIds)
+		? (categoryIds as unknown[])
+			.map((v) => Number(v))
+			.filter((n) => Number.isFinite(n))
+		: categoryIds != null
+			? [Number(categoryIds)].filter((n) => Number.isFinite(n))
+			: []
 
 	const sortColumn =
 		sortKey === 'category_name'
@@ -110,7 +120,8 @@ export default defineEventHandler(async (event) => {
 					baseWhere,
 					...(rangeStart ? [rangeStart] : []),
 					...(rangeEnd ? [rangeEnd] : []),
-					...(mainSearch ? [mainSearch] : [])
+					...(mainSearch ? [mainSearch] : []),
+					...(categoryIdList.length ? [inArray(transactions.category, categoryIdList)] : [])
 				)
 			)
 			.$dynamic()
@@ -135,7 +146,8 @@ export default defineEventHandler(async (event) => {
 				and(
 					baseWhere,
 					...(rangeStart ? [rangeStart] : []),
-					...(rangeEnd ? [rangeEnd] : [])
+					...(rangeEnd ? [rangeEnd] : []),
+					...(categoryIdList.length ? [inArray(transactions.category, categoryIdList)] : [])
 				)
 			)
 			.groupBy(
@@ -181,7 +193,8 @@ export default defineEventHandler(async (event) => {
 					baseWhere,
 					...(rangeStart ? [rangeStart] : []),
 					...(rangeEnd ? [rangeEnd] : []),
-					...(mainSearch ? [mainSearch] : [])
+					...(mainSearch ? [mainSearch] : []),
+					...(categoryIdList.length ? [inArray(transactions.category, categoryIdList)] : [])
 				)
 			)
 			.$dynamic()
@@ -194,7 +207,8 @@ export default defineEventHandler(async (event) => {
 				and(
 					baseWhere,
 					...(rangeStart ? [rangeStart] : []),
-					...(rangeEnd ? [rangeEnd] : [])
+					...(rangeEnd ? [rangeEnd] : []),
+					...(categoryIdList.length ? [inArray(transactions.category, categoryIdList)] : [])
 				)
 			)
 			.groupBy(categories.id)

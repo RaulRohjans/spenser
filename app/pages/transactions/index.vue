@@ -10,6 +10,9 @@
     const { t: $t } = useI18n()
     const router = useRouter()
 
+    // Load categories for sidebar filters
+    const { categorySelectOptions } = useCategories()
+
     // Table loading
     const table = useTemplateRef('table')
 
@@ -226,13 +229,15 @@
                     order,
                     startDate: filters?.dateRange?.[0]?.getTime() ?? '',
                     endDate: filters?.dateRange?.[1]?.getTime() ?? '',
-                    groupCategory: filters?.groupCategory ?? false
+                    groupCategory: filters?.groupCategory ?? false,
+                    categoryIds: (filters?.categoryIds || []).map((id) => String(id))
                 }
             }),
         defaultFilters: {
             searchQuery: '',
             dateRange: [],
-            groupCategory: false
+            groupCategory: false,
+            categoryIds: []
         },
         watch: [] // optional: other filters to watch
     })
@@ -244,7 +249,8 @@
     const defaultFilters = {
         searchQuery: '',
         dateRange: [] as Date[],
-        groupCategory: false
+        groupCategory: false,
+        categoryIds: [] as number[]
     }
     const draftFilters = reactive({ ...defaultFilters })
 
@@ -382,8 +388,22 @@
                             @clear="() => (draft.dateRange = [])" />
                     </SidebarSection>
 
-                    <SidebarSection :title="$t('Group by category')">
-                        <UCheckbox v-model="draft.groupCategory" :label="$t('Group by category')" class="px-0.5" />
+                    <SidebarSection :title="$t('Category')">
+                        <SidebarOptionList
+                            :options="categorySelectOptions as { label: string; value: number }[]"
+                            :model-value="(draft.categoryIds ?? []) as unknown as (string | number | boolean | null)[]"
+                            :multiple="true"
+                            @update:model-value="(v: string | number | boolean | (string | number | boolean | null)[] | null) => (draft.categoryIds = Array.isArray(v) ? (v as number[]) : [])" />
+                    </SidebarSection>
+
+                    <SidebarSection :title="$t('Group by')">
+                        <SidebarOptionList
+                            :options="[
+                                { label: $t('No grouping'), value: false },
+                                { label: $t('By category'), value: true }
+                            ] as { label: string; value: boolean }[]"
+                            :model-value="Boolean(draft.groupCategory)"
+                            @update:model-value="(v: string | number | boolean | (string | number | boolean | null)[] | null) => (draft.groupCategory = Array.isArray(v) ? Boolean(v[0]) : Boolean(v))" />
                     </SidebarSection>
                 </div>
             </template>
