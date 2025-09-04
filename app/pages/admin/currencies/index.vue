@@ -162,21 +162,21 @@
 <template>
     <main>
         <ClientOnly>
-        <Teleport to="#admin-header-actions">
-            <div class="flex flex-row items-center gap-2">
-                <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
-                <UTooltip :text="$t('Columns')">
-                    <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
-                </UTooltip>
-                <UButton
-                    icon="i-heroicons-plus"
-                    color="primary"
-                    size="md"
-                    @click="toggleModal">
-                    {{ $t('Create') }}
-                </UButton>
-            </div>
-        </Teleport>
+            <Teleport to="#admin-header-actions">
+                <div class="flex flex-row items-center gap-2">
+                    <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                    <UTooltip v-if="table?.tableApi" :text="$t('Columns')">
+                        <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
+                    </UTooltip>
+                    <UButton
+                        icon="i-heroicons-plus"
+                        color="primary"
+                        size="md"
+                        @click="toggleModal">
+                        {{ $t('Create') }}
+                    </UButton>
+                </div>
+            </Teleport>
         </ClientOnly>
 
         <div class="w-full flex flex-col gap-2">

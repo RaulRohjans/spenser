@@ -359,14 +359,16 @@
                                         :aria-label="$t('Filters')"
                                         @click="openFilters" />
                                 </UTooltip>
-                                <UTooltip :text="$t('Columns')">
-                                    <UButton
-                                        icon="i-heroicons-view-columns"
-                                        color="neutral"
-                                        variant="ghost"
-                                        :aria-label="$t('Columns')"
-                                        @click="showColumns = true" />
-                                </UTooltip>
+                                <ClientOnly>
+                                    <UTooltip v-if="table?.tableApi" :text="$t('Columns')">
+                                        <UButton
+                                            icon="i-heroicons-view-columns"
+                                            color="neutral"
+                                            variant="ghost"
+                                            :aria-label="$t('Columns')"
+                                            @click="showColumns = true" />
+                                    </UTooltip>
+                                </ClientOnly>
                             </div>
                             <div class="flex flex-row gap-2">
                                 <UButton
