@@ -198,9 +198,19 @@
 
     // Persist users filters (search) separately
     const { load: loadUserFilters } = useFilterSession('admin:users', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
+
+    // Persist rows-per-page for admin users
+    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
+    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
+    const { load: loadPerPage } = useFilterSession('perPage:admin:users', perPageState, { storage: 'session', debounceMs: 0 })
+
     onMounted(() => {
         const loaded = loadUserFilters()
         if (loaded) reload()
+        const loadedPerPage = loadPerPage()
+        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
+            itemsPerPage.value = perPageState.itemsPerPage
+        }
     })
 </script>
 

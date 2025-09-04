@@ -169,9 +169,19 @@
 
     // Persist categories filters (search) separately
     const { load: loadCatFilters } = useFilterSession('categories', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
+
+    // Persist rows-per-page for categories
+    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
+    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
+    const { load: loadPerPage } = useFilterSession('perPage:categories', perPageState, { storage: 'session', debounceMs: 0 })
+
     onMounted(() => {
         const loaded = loadCatFilters()
         if (loaded) reload()
+        const loadedPerPage = loadPerPage()
+        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
+            itemsPerPage.value = perPageState.itemsPerPage
+        }
     })
 </script>
 
@@ -230,10 +240,10 @@
                 </div>
 
                 <!-- Number of rows & Pagination -->
-                    <SPaginationFooter
-                        v-model:page="page"
-                        v-model:items-per-page="itemsPerPage"
-                        :total="tableData?.data?.totalRecordCount ?? 0" />
+                <SPaginationFooter
+                    v-model:page="page"
+                    v-model:items-per-page="itemsPerPage"
+                    :total="tableData?.data?.totalRecordCount ?? 0" />
             </UCard>
         </div>
 

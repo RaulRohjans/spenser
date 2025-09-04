@@ -6,6 +6,12 @@
     --header-height: 64px;
 }
 
+/* Ensure VueDatePicker popover sits above drawers/sidebars and captures clicks */
+.dp__menu {
+    z-index: 2147483647 !important; /* max out to avoid stacking issues */
+    pointer-events: auto; /* make sure clicks are captured by the calendar */
+}
+
 /*
  * Removed up and down buttons from all inputs with type number
 */
