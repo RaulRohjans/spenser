@@ -6,6 +6,7 @@
         modelValue: TValue | TValue[] | null
         multiple?: boolean
         maxHeightClass?: string
+        query?: string
     }>()
 
     const emit = defineEmits<{
@@ -21,6 +22,12 @@
         if (props.multiple) return Array.isArray(internal.value) && internal.value.includes(val)
         return internal.value === val
     }
+
+    const filteredOptions = computed(() => {
+        const q = (props.query || '').toString().toLowerCase().trim()
+        if (!q) return props.options
+        return props.options.filter((o) => o.label.toLowerCase().includes(q))
+    })
 
     function toggle(val: TValue) {
         if (props.multiple) {
@@ -38,7 +45,7 @@
 <template>
     <div :class="['max-h-56 overflow-auto rounded-md', props.maxHeightClass]">
         <div
-            v-for="opt in props.options"
+            v-for="opt in filteredOptions"
             :key="String(opt.value)"
             class="flex items-center w-full transition-colors py-1.5 px-2 rounded-md"
             :class="isSelected(opt.value) ? 'cursor-pointer bg-gray-50 dark:bg-gray-800' : 'cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800'"

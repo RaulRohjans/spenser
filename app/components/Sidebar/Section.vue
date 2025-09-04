@@ -11,21 +11,29 @@
 </script>
 
 <template>
-    <UCollapsible v-model:open="isOpen" class="w-full">
-        <UButton
-            color="neutral"
-            variant="ghost"
-            class="w-full justify-start gap-2 px-3"
-            :icon="isOpen ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'">
-            {{ props.title }}
-        </UButton>
-
-        <template #content>
-            <div class="pt-3 pb-4 px-3">
-                <slot />
+    <div class="w-full">
+        <div class="flex items-center justify-between px-3">
+            <UButton
+                color="neutral"
+                variant="ghost"
+                class="justify-start gap-2"
+                :icon="isOpen ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
+                @click="isOpen = !isOpen">
+                {{ props.title }}
+            </UButton>
+            <div class="flex items-center gap-2" @click.stop @mousedown.stop>
+                <slot name="header-extra" />
             </div>
-        </template>
-    </UCollapsible>
+        </div>
+
+        <UCollapsible v-model:open="isOpen" class="w-full">
+            <template #content>
+                <div class="pt-3 pb-4 px-3">
+                    <slot />
+                </div>
+            </template>
+        </UCollapsible>
+    </div>
 
     <div class="border-t border-gray-200 dark:border-gray-800 my-3"></div>
 </template>

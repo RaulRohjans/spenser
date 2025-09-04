@@ -237,7 +237,8 @@
             searchQuery: '',
             dateRange: [],
             groupCategory: false,
-            categoryIds: []
+            categoryIds: [],
+            categorySearch: ''
         },
         watch: [] // optional: other filters to watch
     })
@@ -394,10 +395,18 @@
                     </SidebarSection>
 
                     <SidebarSection :title="$t('Category')">
+                        <template #header-extra>
+                            <ToolbarSearch
+                                v-model="draft.categorySearch"
+                                :placeholder="$t('Search...')"
+                                width-class="w-48"
+                                @update:model-value="() => {}" />
+                        </template>
                         <SidebarOptionList
                             :options="categorySelectOptions as { label: string; value: number }[]"
                             :model-value="(draft.categoryIds ?? []) as unknown as (string | number | boolean | null)[]"
                             :multiple="true"
+                            :query="draft.categorySearch || ''"
                             @update:model-value="(v: string | number | boolean | (string | number | boolean | null)[] | null) => (draft.categoryIds = Array.isArray(v) ? (v as number[]) : [])" />
                     </SidebarSection>
 

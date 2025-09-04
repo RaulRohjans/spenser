@@ -45,4 +45,5 @@ export interface TableFilters {
     groupCategory?: boolean
     dateRange?: Date[]
     categoryIds?: number[]
+    categorySearch?: string
 }

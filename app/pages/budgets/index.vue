@@ -77,6 +77,7 @@
         period: BudgetPeriodType | null
         overOnly: boolean | null
         date: Date | null
+        categorySearch?: string
     }
 
     function applyBudgetFilters(draft: BudgetFilterDraft) {
@@ -147,8 +148,8 @@
         <!-- Sidebar: Filters for budgets -->
         <SidebarFilters
             v-model="showFilters"
-            :applied-filters="{ categoryIds: store.filterCategoryIds, period: store.filterPeriod, overOnly: store.filterOverOnly, date: dateModel }"
-            :default-filters="{ categoryIds: [], period: null, overOnly: null, date: dateModel }"
+            :applied-filters="{ categoryIds: store.filterCategoryIds, period: store.filterPeriod, overOnly: store.filterOverOnly, date: dateModel, categorySearch: '' }"
+            :default-filters="{ categoryIds: [], period: null, overOnly: null, date: dateModel, categorySearch: '' }"
             :title="$t('Filters')"
             @apply="(d: unknown) => applyBudgetFilters(d as BudgetFilterDraft)"
             @reset="resetBudgetFilters">
@@ -159,10 +160,17 @@
                     </SidebarSection>
 
                     <SidebarSection :title="$t('Category')">
+                        <template #header-extra>
+                            <ToolbarSearch
+                                v-model="draft.categorySearch"
+                                :placeholder="$t('Search...')"
+                                width-class="w-48" />
+                        </template>
                         <SidebarOptionList
                             :options="useCategories().categorySelectOptions.value as { label: string; value: number }[]"
                             :model-value="(draft.categoryIds ?? []) as (string | number | boolean | null)[]"
                             :multiple="true"
+                            :query="draft.categorySearch || ''"
                             @update:model-value="(v: string | number | boolean | (string | number | boolean | null)[] | null) => (draft.categoryIds = Array.isArray(v) ? (v as number[]) : [])" />
                     </SidebarSection>
 
