@@ -155,7 +155,7 @@
                 <div class="flex-1 overflow-hidden">
                     <div v-if="store.loading" class="h-full flex items-center justify-center py-12"><SLoader /></div>
                     <div v-else-if="(store.filtered?.length ?? 0) === 0" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
-                        <div>
+                        <div class="mt-14">
                             <div class="text-4xl mb-3">{{ hasActiveFilters ? '🔎' : '📊' }}</div>
                             <p class="text-lg">{{ hasActiveFilters ? $t('No results with filters') : $t('Your budgets will be displayed here once you create them.') }}</p>
                         </div>

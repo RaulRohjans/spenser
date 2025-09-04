@@ -237,8 +237,10 @@
             <div class="flex-1 overflow-hidden">
                 <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
                     <div class="tx-table-h">
-                        <div class="text-4xl mb-3">👥</div>
-                        <p class="text-lg">{{ $t('Users you add will appear here.') }}</p>
+                        <div class="mt-14">
+                            <div class="text-4xl mb-3">👥</div>
+                            <p class="text-lg">{{ $t('Users you add will appear here.') }}</p>
+                        </div>
                     </div>
                 </div>
                 <div v-else class="h-full">
