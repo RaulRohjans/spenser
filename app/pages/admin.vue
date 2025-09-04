@@ -60,14 +60,7 @@
                     <div id="admin-header-actions" class="flex items-center gap-2"></div>
                 </div>
             </template>
-            <template #footer>
-                <div class="flex items-center">
-                    <!-- left spacer equal to sidebar width on lg and gap on small -->
-                    <div class="hidden lg:block lg:w-[13.5rem]" aria-hidden="true"></div>
-                    <div id="admin-footer" class="flex-1"></div>
-                </div>
-            </template>
-
+            
             <div class="flex flex-col lg:flex-row gap-6 flex-1 overflow-hidden">
                 <!-- Sidebar -->
                 <aside class="lg:w-44 flex-shrink-0 lg:py-4 lg:px-2">
@@ -91,6 +84,12 @@
                         <NuxtPage />
                     </div>
                 </section>
+            </div>
+
+            <div class="flex items-center">
+                <!-- left spacer equal to sidebar width on lg and gap on small -->
+                <div class="hidden lg:block lg:w-[13.5rem]" aria-hidden="true"></div>
+                <div id="admin-footer" class="flex-1"></div>
             </div>
         </UCard>
     </div>

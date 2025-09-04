@@ -226,7 +226,7 @@
         <div class="w-full flex flex-col gap-2">
             <div class="flex-1 overflow-hidden">
                 <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
-                    <div>
+                    <div class="tx-table-h">
                         <div class="text-4xl mb-3">👥</div>
                         <p class="text-lg">{{ $t('Users you add will appear here.') }}</p>
                     </div>
@@ -238,7 +238,7 @@
                         :columns="columns"
                         sticky
                         :loading="status === 'pending'"
-                        class="w-full table-vh" />
+                        class="w-full tx-table-h" />
                 </div>
             </div>
         </div>
@@ -251,13 +251,14 @@
             v-model="isModalOpen"
             v-bind="userLoaderObj"
             @successful-submit="reload" />
+        
         <ClientOnly>
-        <Teleport to="#admin-footer">
-            <SPaginationFooter
-                v-model:page="page"
-                v-model:items-per-page="itemsPerPage"
-                :total="tableData?.data?.totalRecordCount ?? 0" />
-        </Teleport>
+            <Teleport to="#admin-footer">
+                <SPaginationFooter
+                    v-model:page="page"
+                    v-model:items-per-page="itemsPerPage"
+                    :total="tableData?.data?.totalRecordCount ?? 0" />
+            </Teleport>
         </ClientOnly>
     </main>
 </template>

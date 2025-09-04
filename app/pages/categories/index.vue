@@ -213,7 +213,7 @@
                 <!-- Table / Empty state -->
                 <div class="flex-1 overflow-hidden">
                     <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
-                        <div>
+                        <div class="tx-table-h">
                             <div class="text-4xl mb-3">{{ isFiltered ? '🔎' : '🗂️' }}</div>
                             <p class="text-lg">{{ isFiltered ? $t('No results with filters') : $t('Your categories will appear here once you add them.') }}</p>
                         </div>
@@ -225,17 +225,15 @@
                             :columns="columns"
                             sticky
                             :loading="status === 'pending'"
-                            class="w-full table-vh-alt" />
+                            class="w-full tx-table-h" />
                     </div>
                 </div>
 
                 <!-- Number of rows & Pagination -->
-                <template #footer>
                     <SPaginationFooter
                         v-model:page="page"
                         v-model:items-per-page="itemsPerPage"
                         :total="tableData?.data?.totalRecordCount ?? 0" />
-                </template>
             </UCard>
         </div>
 
