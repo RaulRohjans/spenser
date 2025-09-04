@@ -24,7 +24,7 @@ function onOrderChange() {
 <template>
     <Draggable
         v-model="list"
-        class="grid grid-cols-[repeat(auto-fill,minmax(360px,1fr))] max-[831px]:grid-cols-1 gap-3 sm:gap-4 lg:gap-4 xl:gap-5 justify-items-stretch"
+        class="grid grid-cols-[repeat(auto-fit,minmax(360px,400px))] max-[831px]:grid-cols-1 gap-3 sm:gap-4 lg:gap-4 xl:gap-5 justify-center justify-items-stretch px-1 lg:px-0"
         group="budgets"
         item-key="id"
         :component-data="{ name: 'flip-list', type: 'transition-group' }"

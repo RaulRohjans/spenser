@@ -84,11 +84,26 @@
     }
 
     watch(selectedLocale, (newVal) => setLocale(newVal))
+
+    // Keep a CSS var with the current header height for layout sizing
+    const setHeaderHeightVar = function () {
+        const heightPx = `${navbarRef.value?.clientHeight || 64}px`
+        if (import.meta.client) document.documentElement.style.setProperty('--header-height', heightPx)
+    }
+
+    onMounted(() => {
+        setHeaderHeightVar()
+        if (import.meta.client) window.addEventListener('resize', setHeaderHeightVar)
+    })
+
+    onBeforeUnmount(() => {
+        if (import.meta.client) window.removeEventListener('resize', setHeaderHeightVar)
+    })
 </script>
 
 <template>
     <nav ref="navbarRef" class="bg-white drop-shadow-md dark:bg-gray-800">
-        <div class="mx-auto max-w-7xl px-2 lg:px-8">
+        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
             <div class="relative flex h-16 items-center justify-between">
                 <!-- Mobile Nav Header -->
                 <div

@@ -42,7 +42,8 @@ export interface FetchTableSingleDataResult<T> {
 
 export interface TableFilters {
     searchQuery?: string
-    searchColumn?: string
     groupCategory?: boolean
     dateRange?: Date[]
+    categoryIds?: number[]
+    categorySearch?: string
 }

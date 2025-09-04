@@ -16,7 +16,7 @@
     <div class="dark:bg-gray-800">
         <SNavbar />
 
-        <main class="min-h-screen p-4">
+        <main class="min-h-[calc(95vh-var(--header-height))] p-2 lg:p-3">
             <NuxtPage />
             <ModalSettings v-if="showSettingsModal" @close="closeModal" />
         </main>

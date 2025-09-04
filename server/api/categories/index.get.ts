@@ -2,13 +2,12 @@ import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { categories } from '~~/server/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
-import { makeOrderBy, makeSearchCondition } from '~~/server/db/utils'
+import { makeOrderBy, makeMultiColumnSearch } from '~~/server/db/utils'
 
 export default defineEventHandler(async (event) => {
     // Read body params
     const {
         q: search,
-        qColumn: searchColumn,
         page,
         limit,
         sort,
@@ -23,8 +22,8 @@ export default defineEventHandler(async (event) => {
         eq(categories.user, user.id),
         eq(categories.deleted, false)
     )
-    const searchSql = makeSearchCondition(
-        searchColumn?.toString() || 'category.name',
+    const searchSql = makeMultiColumnSearch(
+        ['category.name', 'category.icon', 'category.description', 'category.id'],
         search?.toString()
     )
     const orderBy = makeOrderBy(

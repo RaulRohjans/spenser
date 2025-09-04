@@ -5,7 +5,9 @@ export default {
     Account: 'Account',
     Users: 'Users',
     Currencies: 'Currencies',
-    'LLM Data Importer': 'LLM Data Importer',
+    'LLM Data Importer': 'AI Importer',
+    'AI Importer': 'AI Importer',
+    'AI Settings': 'AI Settings',
     Settings: 'Settings',
     Admin: 'Admin',
     Name: 'Name',
@@ -18,6 +20,8 @@ export default {
     'Transaction deleted successfully!': 'Transaction deleted successfully!',
     Transactions: 'Transactions',
     'LLM Data Import': 'LLM Data Import',
+    Create: 'Create',
+    Import: 'Import',
     'Create Transaction': 'Create Transaction',
     'Group by category': 'Group by category',
     'Delete Transaction': 'Delete Transaction',
@@ -51,7 +55,7 @@ export default {
     'Delete User': 'Delete User',
     'Are you sure you want to delete this user?':
         'Are you sure you want to delete this user?',
-    'LLM Settings': 'LLM Settings',
+    'LLM Settings': 'AI Settings',
     'LLM Provider': 'LLM Provider',
     'GPT Model': 'GPT Model',
     'GPT Token': 'GPT Token',
@@ -106,6 +110,9 @@ export default {
     'Rows per page': 'Rows per page',
     Columns: 'Columns',
     Reset: 'Reset',
+    Apply: 'Apply',
+    Filters: 'Filters',
+    'Search...': 'Search...',
     'Loading...': 'Loading...',
     Showing: 'Showing',
     to: 'to',
@@ -169,6 +176,7 @@ export default {
     Logout: 'Logout',
     'Are you sure you want to logout?': 'Are you sure you want to logout?',
     'No data to display': 'No data to display',
+    "No results with filters": "We couldn't find anything with those filters 😅",
     'Edit Transaction': 'Edit Transaction',
     'Duplicate Transaction': 'Duplicate Transaction',
     'Edit Category': 'Edit Category',
@@ -272,11 +280,9 @@ export default {
     'The given user does not have acces to this resource.':
         'The given user does not have acces to this resource.'
     ,
-    // Avatar & UI
     'Image must be square': 'Image must be square',
     'Select image': 'Select image',
     'Delete image': 'Delete image',
-    // Avatar endpoint errors
     'Invalid user id.': 'Invalid user id.',
     'Forbidden.': 'Forbidden.',
     'Invalid form data.': 'Invalid form data.',
@@ -284,7 +290,6 @@ export default {
     'Unsupported file type.': 'Unsupported file type.',
     'File too large.': 'File too large.'
     ,
-    // Additional validation/UI strings
     'Must be greater than 0': 'Must be greater than 0',
     'Invalid number': 'Invalid number',
     Expense: 'Expense',
@@ -294,5 +299,35 @@ export default {
         'Drag and drop a single file here, or click to select',
     'Optional description to help the AI understand this category':
         'Optional description to help the AI understand this category',
-    'Currency code is too big': 'Currency code is too big'
+    'Currency code is too big': 'Currency code is too big',
+    'Date Range': 'Date Range',
+    'Group by': 'Group by',
+    'No grouping': 'No grouping',
+    'By category': 'By category',
+    'All periods': 'All periods',
+    Weekly: 'Weekly',
+    All: 'All',
+    'Over budget only': 'Over budget only',
+    'Not over budget only': 'Not over budget only',
+    'Date of Values': 'Date of Values',
+    'Per budget': 'Per budget',
+    'View and manage your transactions. Search, filter, and group by category.':
+        'View and manage your transactions. Search, filter, and group by category.',
+    'The income and spending that you track will show up here.':
+        'The income and spending that you track will show up here.',
+    'Create and track budgets by period and category.':
+        'Create and track budgets by period and category.',
+    'Your budgets will be displayed here once you create them.':
+        'Your budgets will be displayed here once you create them.',
+    'Manage categories used to organize transactions.':
+        'Manage categories used to organize transactions.',
+    'Your categories will appear here once you add them.':
+        'Your categories will appear here once you add them.',
+    'Users you add will appear here.': 'Users you add will appear here.',
+    'Currencies you configure will appear here.':
+        'Currencies you configure will appear here.',
+    'Configure platform settings and manage data for your account.':
+        'Configure platform settings and manage data for your account.',
+    'Upload a statement or paste text and let AI extract transactions for review.':
+        'Upload a statement or paste text and let AI extract transactions for review.'
 }

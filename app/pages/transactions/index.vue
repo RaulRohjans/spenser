@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import type { NuxtError } from 'nuxt/app'
     import { h, resolveComponent } from 'vue'
-    import type { FetchTableDataResult } from '~~/types/Table'
+    import type { FetchTableDataResult, TableFilters } from '~~/types/Table'
     import type { TableColumn } from '@nuxt/ui'
     import type { TransactionRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
@@ -9,6 +9,9 @@
     // Basic Setup
     const { t: $t } = useI18n()
     const router = useRouter()
+
+    // Load categories for sidebar filters
+    const { categorySelectOptions } = useCategories()
 
     // Table loading
     const table = useTemplateRef('table')
@@ -212,8 +215,7 @@
         filters,
         data: tableData,
         status,
-        reload,
-        resetFilters
+        reload
     } = usePaginatedTable<FetchTableDataResult<TransactionRow>>({
         key: 'all-transactions',
         fetcher: ({ page, limit, sort, order, filters }) =>
@@ -221,136 +223,259 @@
                 method: 'GET',
                 query: {
                     q: filters?.searchQuery,
-                    qColumn: filters?.searchColumn,
                     page,
                     limit,
                     sort,
                     order,
                     startDate: filters?.dateRange?.[0]?.getTime() ?? '',
                     endDate: filters?.dateRange?.[1]?.getTime() ?? '',
-                    groupCategory: filters?.groupCategory ?? false
+                    groupCategory: filters?.groupCategory ?? false,
+                    categoryIds: (filters?.categoryIds || []).map((id) => String(id))
                 }
             }),
         defaultFilters: {
             searchQuery: '',
-            searchColumn: 'name',
             dateRange: [],
-            groupCategory: false
+            groupCategory: false,
+            categoryIds: [],
+            categorySearch: ''
         },
         watch: [] // optional: other filters to watch
     })
 
-    // When any of the filter change make the page 1
+    // Local UI state for sidebars
+    const showFilters = ref(false)
+    const showColumns = ref(false)
+
+    const defaultFilters = {
+        searchQuery: '',
+        dateRange: [] as Date[],
+        groupCategory: false,
+        categoryIds: [] as number[]
+    }
+    const draftFilters = reactive({ ...defaultFilters })
+
+    // Persist only global toolbar filters
+    const persistedFilters = reactive({
+        searchQuery: '' as string,
+        dateRange: [] as Date[],
+        groupCategory: false as boolean,
+        categoryIds: [] as number[]
+    })
     watch(
-        filters,
-        () => {
-            page.value = 1
+        () => ({
+            searchQuery: filters?.searchQuery,
+            dateRange: filters?.dateRange,
+            groupCategory: filters?.groupCategory,
+            categoryIds: filters?.categoryIds
+        }),
+        (s) => {
+            persistedFilters.searchQuery = s.searchQuery || ''
+            persistedFilters.dateRange = (s.dateRange as Date[]) || []
+            persistedFilters.groupCategory = Boolean(s.groupCategory)
+            persistedFilters.categoryIds = (s.categoryIds as number[]) || []
         },
-        { deep: true }
+        { deep: true, immediate: true }
     )
 
-    // Ensure search column matches available columns when toggling grouping
-    watch(
-        () => filters.groupCategory,
-        (isGrouped) => {
-            filters.searchColumn = isGrouped ? 'category_name' : 'name'
+    // Persist rows-per-page
+    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
+    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
+
+    const { load: loadFilters } = useFilterSession('transactions', persistedFilters, { storage: 'session', debounceMs: 150 })
+    const { load: loadPerPage } = useFilterSession('perPage:transactions', perPageState, { storage: 'session', debounceMs: 0 })
+    const mounted = ref(false)
+    onMounted(() => {
+        const loaded = loadFilters()
+        if (loaded) {
+            Object.assign(filters, persistedFilters)
+            reload()
         }
-    )
+        const loadedPerPage = loadPerPage()
+        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
+            itemsPerPage.value = perPageState.itemsPerPage
+        }
+        mounted.value = true
+    })
 
+    function openFilters() {
+        Object.assign(draftFilters, filters)
+        showFilters.value = true
+    }
+
+    function applyFilters(next: TableFilters) {
+        Object.assign(filters, next)
+        page.value = 1
+        reload()
+    }
+
+    function clearFilters(_: TableFilters) {
+        Object.assign(filters, defaultFilters)
+        page.value = 1
+        reload()
+    }
     useHead({
         title: `Spenser | ${$t('Transactions')}`
+    })
+
+    const tableRows = computed(() => tableData.value?.data?.rows ?? [])
+    const isEmptyState = computed(
+        () => status.value === 'success' && (tableRows.value?.length ?? 0) === 0
+    )
+    const isFiltered = computed(() => {
+        return Boolean(
+            (filters.searchQuery && filters.searchQuery.trim() !== '') ||
+            (filters.dateRange && filters.dateRange.length > 0) ||
+            (filters.groupCategory === true) ||
+            ((filters.categoryIds?.length ?? 0) > 0)
+        )
     })
 </script>
 
 <template>
     <main>
-        <div class="flex flex-row items-center justify-center">
-            <UCard class="w-full shadow-xl">
+        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
+            <UCard
+                class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
-                    <h2
-                        class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                        {{ $t('Transactions') }}
-                    </h2>
-                </template>
-
-                <!-- Filters header -->
-                <div class="flex flex-col gap-2">
-                    <div
-                        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
-                        <div
-                            class="flex flex-col lg:flex-row lg:items-center gap-2">
-                            <SSearchWithColumnFilter
-                                v-model:column="filters.searchColumn"
-                                v-model:search="filters.searchQuery"
-                                :table-api="table?.tableApi" />
-
-                            <SDateTimePicker
-                                v-model="filters.dateRange"
-                                class="sm:!w-56"
-                                type="date"
-                                range
-                                @clear="() => (filters.dateRange = [])" />
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <h2
+                                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                                {{ $t('Transactions') }}
+                            </h2>
+                            <UTooltip :text="$t('View and manage your transactions. Search, filter, and group by category.')">
+                                <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
+                            </UTooltip>
                         </div>
-
-                        <div
-                            class="flex flex-row justify-between items-center sm:justify-end sm:flex-col sm:items-end md:flex-row md:items-center gap-3 lg:gap-6">
-                            <SRowsPerPageSelector v-model="itemsPerPage" />
-
-                            <UCheckbox
-                                v-model="filters.groupCategory"
-                                :label="$t('Group by category')" />
+                        <div class="flex flex-wrap items-center justify-end gap-3">
+                            <div class="flex flex-row items-center gap-2">
+                                <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                                <UTooltip :text="$t('Filters')">
+                                    <UButton
+                                        icon="i-heroicons-funnel"
+                                        color="neutral"
+                                        variant="ghost"
+                                        :aria-label="$t('Filters')"
+                                        @click="openFilters" />
+                                </UTooltip>
+                                <ClientOnly>
+                                    <UTooltip v-if="table?.tableApi" :text="$t('Columns')">
+                                        <UButton
+                                            icon="i-heroicons-view-columns"
+                                            color="neutral"
+                                            variant="ghost"
+                                            :aria-label="$t('Columns')"
+                                            @click="showColumns = true" />
+                                    </UTooltip>
+                                </ClientOnly>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <UButton
+                                    icon="i-heroicons-arrow-down-on-square-stack"
+                                    color="primary"
+                                    size="md"
+                                    @click="router.push(`/transactions/import-ai`)"
+                                >
+                                    {{ $t('Import') }}
+                                </UButton>
+                                <UButton
+                                    icon="i-heroicons-plus"
+                                    color="primary"
+                                    size="md"
+                                    @click="router.push(`/transactions/create`)"
+                                >
+                                    {{ $t('Create') }}
+                                </UButton>
+                            </div>
                         </div>
                     </div>
+                </template>
 
+                <!-- Table / Empty state -->
+                <div class="flex-1 overflow-hidden">
                     <div
-                        class="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-0">
-                        <SColumnToggleMenu
-                            :table-api="table?.tableApi"
-                            :disabled-columns="
-                                filters.groupCategory
-                                    ? ['name', 'date', 'actions']
-                                    : []
-                            "
-                            @reset="resetFilters" />
-
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <UButton
-                                icon="i-heroicons-arrow-down-on-square-stack"
-                                color="primary"
-                                size="md"
-                                @click="router.push(`/transactions/import-ai`)">
-                                {{ $t('Import with AI') }}
-                            </UButton>
-
-                            <UButton
-                                icon="i-heroicons-plus"
-                                color="primary"
-                                size="md"
-                                @click="router.push(`/transactions/create`)">
-                                {{ $t('Create Transaction') }}
-                            </UButton>
+                        v-if="isEmptyState"
+                        class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
+                        <div class="tx-table-h">
+                            <div class="mt-14">
+                                <div class="text-4xl mb-3">{{ isFiltered ? '🔎' : '🧾' }}</div>
+                                <p class="text-lg">
+                                    {{ isFiltered
+                                        ? $t('No results with filters')
+                                        : $t('The income and spending that you track will show up here.')
+                                    }}
+                                </p>
+                            </div>
                         </div>
+                    </div>
+                    <div v-else class="h-full">
+                        <UTable
+                            ref="table"
+                            :data="tableRows"
+                            :columns="visibleColumns"
+                            sticky
+                            :loading="status === 'pending'"
+                            class="w-full tx-table-h" />
                     </div>
                 </div>
 
-                <!-- Table -->
-                <UTable
-                    ref="table"
-                    :data="tableData?.data?.rows ?? []"
-                    :columns="visibleColumns"
-                    sticky
-                    :loading="status === 'pending'"
-                    class="w-full" />
-
                 <!-- Number of rows & Pagination -->
-                <template #footer>
-                    <SPaginationFooter
-                        v-model:page="page"
-                        v-model:items-per-page="itemsPerPage"
-                        :total="tableData?.data?.totalRecordCount ?? 0" />
-                </template>
+                <SPaginationFooter
+                    v-model:page="page"
+                    v-model:items-per-page="itemsPerPage"
+                    :total="tableData?.data?.totalRecordCount ?? 0" />
             </UCard>
         </div>
+
+        <!-- Sidebars -->
+        <SidebarFilters v-if="mounted"
+            v-model="showFilters"
+            :applied-filters="filters"
+            :default-filters="defaultFilters"
+            @apply="applyFilters"
+            @reset="clearFilters">
+            <template #default="{ draft }">
+                <div class="flex flex-col gap-2">
+                    <SidebarSection :title="$t('Date Range')">
+                        <SDateTimePicker
+                            v-model="draft.dateRange"
+                            class="sm:!w-full"
+                            type="date"
+                            range
+                            @clear="() => (draft.dateRange = [])" />
+                    </SidebarSection>
+
+                    <SidebarSection :title="$t('Category')">
+                        <template #header-extra>
+                            <ToolbarSearch
+                                v-model="draft.categorySearch"
+                                :placeholder="$t('Search...')"
+                                width-class="w-48"
+                                @update:model-value="() => {}" />
+                        </template>
+                        <SidebarOptionList
+                            :options="categorySelectOptions as { label: string; value: number }[]"
+                            :model-value="(draft.categoryIds ?? []) as unknown as (string | number | boolean | null)[]"
+                            :multiple="true"
+                            :query="draft.categorySearch || ''"
+                            @update:model-value="(v: string | number | boolean | (string | number | boolean | null)[] | null) => (draft.categoryIds = Array.isArray(v) ? (v as number[]) : [])" />
+                    </SidebarSection>
+
+                    <SidebarSection :title="$t('Group by')">
+                        <SidebarOptionList
+                            :options="[
+                                { label: $t('No grouping'), value: false },
+                                { label: $t('By category'), value: true }
+                            ] as { label: string; value: boolean }[]"
+                            :model-value="Boolean(draft.groupCategory)"
+                            @update:model-value="(v: string | number | boolean | (string | number | boolean | null)[] | null) => (draft.groupCategory = Array.isArray(v) ? Boolean(v[0]) : Boolean(v))" />
+                    </SidebarSection>
+                </div>
+            </template>
+        </SidebarFilters>
+
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" storage-key="transactions" />
 
         <!-- Slot for popup forms to CRUD over transactions -->
         <NuxtPage @successful-submit="reload" />

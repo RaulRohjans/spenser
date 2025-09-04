@@ -4,9 +4,10 @@ export interface BudgetState {
     items: BudgetDataObject[]
     loading: boolean
     selectedDate: DateTimeWithOffset
-    filterCategoryId: number | null
+    filterCategoryIds: number[]
     filterPeriod: BudgetDataObject['period'] | null
-    filterOverOnly: boolean
+    filterOverOnly: boolean | null
+    filterQuery: string
 }
 
 export const useBudgetsStore = defineStore('budgetsStore', {
@@ -17,32 +18,23 @@ export const useBudgetsStore = defineStore('budgetsStore', {
             date: new Date(),
             tzOffsetMinutes: -new Date().getTimezoneOffset()
         },
-        filterCategoryId: null,
+        filterCategoryIds: [],
         filterPeriod: null,
-        filterOverOnly: false
+        filterOverOnly: null,
+        filterQuery: ''
     }),
     getters: {
         ordered: (state) => [...state.items].sort((a, b) => a.order - b.order),
-        filtered: (state): BudgetDataObject[] => {
-            const byCategory = state.filterCategoryId
-                ? state.items.filter((b) => b.category === state.filterCategoryId)
-                : state.items
-            const byPeriod = state.filterPeriod == null
-                ? byCategory
-                : byCategory.filter((b) => b.period === state.filterPeriod)
-            const final = state.filterOverOnly
-                ? byPeriod.filter((b) => Number(b.expenses || 0) > Number(b.value || 0))
-                : byPeriod
-            return final
-        }
+        filtered: (state): BudgetDataObject[] => state.items
     },
     actions: {
         setSelectedDate(payload: DateTimeWithOffset) {
             this.selectedDate = payload
         },
-        setFilterCategory(id: number | null) { this.filterCategoryId = id },
+        setFilterCategories(ids: number[]) { this.filterCategoryIds = ids },
         setFilterPeriod(p: BudgetDataObject['period'] | null) { this.filterPeriod = p },
-        setFilterOverOnly(v: boolean) { this.filterOverOnly = v },
+        setFilterOverOnly(v: boolean | null) { this.filterOverOnly = v },
+        setFilterQuery(q: string) { this.filterQuery = q },
         async fetchBudgets() {
             this.loading = true
             try {
@@ -52,6 +44,10 @@ export const useBudgetsStore = defineStore('budgetsStore', {
                     date instanceof Date ? date.toISOString() : date
                 ))
                 params.set('tzOffsetMinutes', String(tzOffsetMinutes))
+                if (this.filterCategoryIds.length) this.filterCategoryIds.forEach((id) => params.append('categoryIds', String(id)))
+                if (this.filterPeriod != null) params.set('period', String(this.filterPeriod))
+                if (this.filterOverOnly !== null) params.set('overOnly', String(this.filterOverOnly))
+                if (this.filterQuery) params.set('search', this.filterQuery)
                 const res = await $fetch<{
                     success: boolean
                     data: BudgetDataObject[]

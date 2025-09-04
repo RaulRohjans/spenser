@@ -117,6 +117,7 @@
             :enable-time-picker="hasTimePicker"
             :dark="isDark"
             :range="props.range"
+            :teleport="true"
             clearable
             auto-apply
             @cleared="() => emit('clear')" />

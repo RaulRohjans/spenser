@@ -104,8 +104,7 @@
         filters,
         data: tableData,
         status,
-        reload,
-        resetFilters
+        reload
     } = usePaginatedTable<FetchTableDataResult<CurrencyRow>>({
         key: 'all-currencies',
         fetcher: ({ page, limit, sort, order, filters }) =>
@@ -113,7 +112,6 @@
                 method: 'GET',
                 query: {
                     q: filters?.searchQuery,
-                    qColumn: filters?.searchColumn,
                     page,
                     limit,
                     sort,
@@ -121,11 +119,12 @@
                 }
             }),
         defaultFilters: {
-            searchQuery: '',
-            searchColumn: 'symbol'
+            searchQuery: ''
         },
         watch: []
     })
+    
+    const showColumns = ref(false)
 
     const isModalOpen: Ref<boolean> = ref(false)
 
@@ -136,67 +135,84 @@
     useHead({
         title: `Spenser | ${$t('Currency Settings')}`
     })
+
+    const tableRows = computed(() => tableData.value?.data?.rows ?? [])
+    const isEmptyState = computed(() =>
+        status.value === 'success' && (tableRows.value?.length ?? 0) === 0
+    )
+
+    // Persist currencies filters (search) separately
+    const { load: loadCurrencyFilters } = useFilterSession('admin:currencies', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
+
+    // Persist rows-per-page for admin currencies
+    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
+    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
+    const { load: loadPerPage } = useFilterSession('perPage:admin:currencies', perPageState, { storage: 'session', debounceMs: 0 })
+
+    onMounted(() => {
+        const loaded = loadCurrencyFilters()
+        if (loaded) reload()
+        const loadedPerPage = loadPerPage()
+        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
+            itemsPerPage.value = perPageState.itemsPerPage
+        }
+    })
 </script>
 
 <template>
     <main>
-        <div class="flex flex-row items-center justify-center">
-            <div class="w-full flex flex-col gap-2">
-                <!-- Header -->
-                <h2
-                    class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-8">
-                    {{ $t('Currencies') }}
-                </h2>
+        <ClientOnly>
+            <Teleport to="#admin-header-actions">
+                <div class="flex flex-row items-center gap-2">
+                    <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                    <UTooltip v-if="table?.tableApi" :text="$t('Columns')">
+                        <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
+                    </UTooltip>
+                    <UButton
+                        icon="i-heroicons-plus"
+                        color="primary"
+                        size="md"
+                        @click="toggleModal">
+                        {{ $t('Create') }}
+                    </UButton>
+                </div>
+            </Teleport>
+        </ClientOnly>
 
-                <!-- Body -->
-                <div class="flex flex-col h-[calc(100vh-240px)] overflow-auto">
-                    <div
-                        class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-                        <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
-                            <SSearchWithColumnFilter
-                                v-model:column="filters.searchColumn"
-                                v-model:search="filters.searchQuery"
-                                :table-api="table?.tableApi" />
-
-                            <div
-                                class="flex flex-col md:flex-row sm:justify-start gap-2">
-                                <div
-                                    class="flex flex-row justify-center sm:justify-start">
-                                    <SRowsPerPageSelector
-                                        v-model="itemsPerPage" />
-                                </div>
-                                <SColumnToggleMenu
-                                    :table-api="table?.tableApi"
-                                    @reset="resetFilters" />
-                            </div>
+        <div class="w-full flex flex-col gap-2">
+            <div class="flex-1 overflow-hidden">
+                <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
+                    <div class="tx-table-h">
+                        <div class="mt-14">
+                            <div class="text-4xl mb-3">💱</div>
+                            <p class="text-lg">{{ $t('Currencies you configure will appear here.') }}</p>
                         </div>
-
-                        <UButton
-                            icon="i-heroicons-plus"
-                            color="primary"
-                            size="md"
-                            @click="toggleModal">
-                            {{ $t('Create Currency') }}
-                        </UButton>
                     </div>
-
+                </div>
+                <div v-else class="h-full">
                     <UTable
                         ref="table"
-                        :data="tableData?.data?.rows ?? []"
+                        :data="tableRows"
                         :columns="columns"
                         sticky
                         :loading="status === 'pending'"
-                        class="w-full" />
+                        class="w-full tx-table-h" />
                 </div>
+            </div>
+        </div>
 
-                <!-- Footer -->
+        <!-- Sidebars -->
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" storage-key="admin:currencies" />
+
+        <ModalCurrency v-model="isModalOpen" @successful-submit="reload" />
+        
+        <ClientOnly>
+            <Teleport to="#admin-footer">
                 <SPaginationFooter
                     v-model:page="page"
                     v-model:items-per-page="itemsPerPage"
                     :total="tableData?.data?.totalRecordCount ?? 0" />
-            </div>
-        </div>
-
-        <ModalCurrency v-model="isModalOpen" @successful-submit="reload" />
+            </Teleport>
+        </ClientOnly>
     </main>
 </template>

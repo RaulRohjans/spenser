@@ -1,6 +1,6 @@
 import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
-import { sql, and, eq, gte, lt } from 'drizzle-orm'
+import { sql, and, eq, gte, lt, inArray } from 'drizzle-orm'
 import { budgets, categories, transactions } from '~~/server/db/schema'
 import type { BudgetDataObject } from '~~/types/Data'
 import { coerceDateAndOffset } from '~~/server/utils/date'
@@ -17,7 +17,29 @@ export default defineEventHandler(async (event) => {
         qTz ? Number(qTz) : undefined
     )
 
-    // Load budgets (no expenses yet)
+    // Read filter query params
+    const {
+        categoryIds: qCategoryIds,
+        period: qPeriod,
+        overOnly: qOverOnly,
+        search: qSearch
+    } = getQuery(event) as {
+        categoryIds?: string | string[]
+        period?: string
+        overOnly?: string
+        search?: string
+    }
+
+    // Parse multi-select categories
+    const categoryIdList: number[] = Array.isArray(qCategoryIds)
+        ? (qCategoryIds as unknown[])
+              .map((v) => Number(v))
+              .filter((n) => Number.isFinite(n))
+        : qCategoryIds != null
+          ? [Number(qCategoryIds)].filter((n) => Number.isFinite(n))
+          : []
+
+    // Load budgets (no expenses yet) with server-side filters
     const budgetRows = await db
         .select({
             id: budgets.id,
@@ -38,7 +60,15 @@ export default defineEventHandler(async (event) => {
             and(
                 eq(budgets.user, user.id),
                 eq(budgets.deleted, false),
-                sql`(case when ${budgets.category} is not null then ${categories.user} = ${user.id} else true end)`
+                // Only show categories that belong to the user when set
+                sql`(case when ${budgets.category} is not null then ${categories.user} = ${user.id} else true end)`,
+                ...(categoryIdList.length ? [inArray(budgets.category, categoryIdList)] : []),
+                qPeriod != null && qPeriod !== ''
+                    ? eq(budgets.period, String(qPeriod))
+                    : sql`1=1`,
+                qSearch != null && qSearch !== ''
+                    ? sql`${budgets.name} ILIKE ${`%${qSearch}%`}`
+                    : sql`1=1`
             )
         )
         .orderBy(budgets.order)
@@ -88,6 +118,9 @@ export default defineEventHandler(async (event) => {
 
         for (const b of budgetsOfPeriod) {
             const spent = b.category != null ? categoryToSpent.get(b.category) || 0 : totalSpent
+            // Apply overOnly filter server-side when requested
+            if (qOverOnly === 'true' && !(spent > Number(b.value || 0))) continue
+            if (qOverOnly === 'false' && !(spent <= Number(b.value || 0))) continue
             results.push({ ...b, expenses: spent } as BudgetDataObject)
         }
     }

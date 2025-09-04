@@ -8,9 +8,9 @@
 </script>
 
 <template>
-    <NuxtLayout>
-        <UApp :toaster="toaster">
+    <UApp :toaster="toaster">
+        <NuxtLayout>
             <NuxtPage :transition="pageTransition" />
-        </UApp>
-    </NuxtLayout>
+        </NuxtLayout>
+    </UApp>    
 </template>

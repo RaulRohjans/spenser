@@ -2,13 +2,12 @@ import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { currencies } from '~~/server/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
-import { makeOrderBy, makeSearchCondition } from '~~/server/db/utils'
+import { makeOrderBy, makeMultiColumnSearch } from '~~/server/db/utils'
 
 export default defineEventHandler(async (event) => {
     // Read body params
     const {
         q: search,
-        qColumn: searchColumn,
         page,
         limit,
         sort,
@@ -21,8 +20,8 @@ export default defineEventHandler(async (event) => {
     const parsedLimit: number = parseInt(limit?.toString() || '') || 100
     const parsedPage: number = parseInt(page?.toString() || '') || 1
     const whereBase = eq(currencies.deleted, false)
-    const searchSql = makeSearchCondition(
-        searchColumn?.toString() || 'currency.symbol',
+    const searchSql = makeMultiColumnSearch(
+        ['currency.symbol', 'currency.placement', 'currency.id'],
         search?.toString()
     )
     const orderBy = makeOrderBy(

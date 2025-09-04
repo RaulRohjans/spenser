@@ -152,8 +152,7 @@
         filters,
         data: tableData,
         status,
-        reload,
-        resetFilters
+        reload
     } = usePaginatedTable<FetchTableDataResult<UserRow>>({
         key: 'all-users',
         fetcher: ({ page, limit, sort, order, filters }) =>
@@ -161,7 +160,6 @@
                 method: 'GET',
                 query: {
                     q: filters?.searchQuery,
-                    qColumn: filters?.searchColumn,
                     page,
                     limit,
                     sort,
@@ -169,11 +167,12 @@
                 }
             }),
         defaultFilters: {
-            searchQuery: '',
-            searchColumn: 'username'
+            searchQuery: ''
         },
         watch: []
     })
+    
+    const showColumns = ref(false)
 
     const userLoaderObj: Ref<ModalUserProps | null> = ref(null)
     const isModalOpen: Ref<boolean> = ref(false)
@@ -191,71 +190,87 @@
     useHead({
         title: `Spenser | ${$t('Users Management')}`
     })
+
+    const tableRows = computed(() => tableData.value?.data?.rows ?? [])
+    const isEmptyState = computed(() =>
+        status.value === 'success' && (tableRows.value?.length ?? 0) === 0
+    )
+
+    // Persist users filters (search) separately
+    const { load: loadUserFilters } = useFilterSession('admin:users', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
+
+    // Persist rows-per-page for admin users
+    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
+    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
+    const { load: loadPerPage } = useFilterSession('perPage:admin:users', perPageState, { storage: 'session', debounceMs: 0 })
+
+    onMounted(() => {
+        const loaded = loadUserFilters()
+        if (loaded) reload()
+        const loadedPerPage = loadPerPage()
+        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
+            itemsPerPage.value = perPageState.itemsPerPage
+        }
+    })
 </script>
 
 <template>
     <main>
-        <div class="flex flex-row items-center justify-center">
-            <div class="w-full flex flex-col gap-2">
-                <!-- Header -->
-                <h2
-                    class="font-semibold text-xl text-gray-900 dark:text-white leading-tight mb-8">
-                    {{ $t('Users') }}
-                </h2>
-
-                <!-- Body -->
-                <div class="flex flex-col h-[calc(100vh-240px)] overflow-auto">
-                    <div
-                        class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
-                        <div class="flex flex-col lg:flex-row gap-2 lg:gap-4">
-                            <SSearchWithColumnFilter
-                                v-model:column="filters.searchColumn"
-                                v-model:search="filters.searchQuery"
-                                :table-api="table?.tableApi" />
-
-                            <div
-                                class="flex flex-col md:flex-row sm:justify-start gap-2">
-                                <div
-                                    class="flex flex-row justify-center sm:justify-start">
-                                    <SRowsPerPageSelector
-                                        v-model="itemsPerPage" />
-                                </div>
-                                <SColumnToggleMenu
-                                    :table-api="table?.tableApi"
-                                    @reset="resetFilters" />
-                            </div>
+        <ClientOnly>
+            <Teleport to="#admin-header-actions">
+                <div class="flex flex-row items-center gap-2">
+                    <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                    <UTooltip v-if="table?.tableApi" :text="$t('Columns')">
+                        <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
+                    </UTooltip>
+                    <UButton
+                        icon="i-heroicons-plus"
+                        color="primary"
+                        size="md"
+                        @click="toggleModal">
+                        {{ $t('Create') }}
+                    </UButton>
+                </div>
+            </Teleport>
+        </ClientOnly>
+        <div class="w-full flex flex-col gap-2">
+            <div class="flex-1 overflow-hidden">
+                <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
+                    <div class="tx-table-h">
+                        <div class="mt-14">
+                            <div class="text-4xl mb-3">👥</div>
+                            <p class="text-lg">{{ $t('Users you add will appear here.') }}</p>
                         </div>
-
-                        <UButton
-                            icon="i-heroicons-plus"
-                            color="primary"
-                            size="md"
-                            @click="toggleModal">
-                            {{ $t('Create User') }}
-                        </UButton>
                     </div>
-
+                </div>
+                <div v-else class="h-full">
                     <UTable
                         ref="table"
-                        :data="tableData?.data?.rows ?? []"
+                        :data="tableRows"
                         :columns="columns"
                         sticky
                         :loading="status === 'pending'"
-                        class="w-full" />
+                        class="w-full tx-table-h" />
                 </div>
-
-                <!-- Footer -->
-                <SPaginationFooter
-                    v-model:page="page"
-                    v-model:items-per-page="itemsPerPage"
-                    :total="tableData?.data?.totalRecordCount ?? 0" />
             </div>
         </div>
+
+        <!-- Sidebars -->
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" storage-key="admin:users" />
 
         <ModalUser
             :key="reloadModal"
             v-model="isModalOpen"
             v-bind="userLoaderObj"
             @successful-submit="reload" />
+        
+        <ClientOnly>
+            <Teleport to="#admin-footer">
+                <SPaginationFooter
+                    v-model:page="page"
+                    v-model:items-per-page="itemsPerPage"
+                    :total="tableData?.data?.totalRecordCount ?? 0" />
+            </Teleport>
+        </ClientOnly>
     </main>
 </template>

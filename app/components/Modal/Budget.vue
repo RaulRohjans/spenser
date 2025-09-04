@@ -96,12 +96,21 @@
                     method: 'GET'
                 }),
             {
-                default: () => {
-                    return {
-                        success: false,
-                        data: {}
-                    }
-                },
+                default: () => ({
+                    success: false,
+                    data: {
+                        id: 0,
+                        user: 0,
+                        category: null,
+                        name: '',
+                        value: 0,
+                        period: 'monthly',
+                        order: 0,
+                        category_name: null,
+                        category_icon: null,
+                        category_deleted: false
+                    } satisfies BudgetDataObject
+                }),
                 watch: [() => props.id, () => props.mode]
             }
         )
@@ -114,27 +123,34 @@
                 if (!newVal?.data) return
 
                 state.id = props.id
-                state.name = newVal.data.name
-                state.category = newVal.data.category
-                state.value = newVal.data.value
-                state.period = newVal.data.period
+                state.name = newVal.data.name ?? ''
+                state.category = newVal.data.category ?? undefined
+                state.value = Number(newVal.data.value ?? 0)
+                state.period = (newVal.data.period as BudgetPeriodType) ?? 'monthly'
             },
             { immediate: true }
         )
     }
 
     // Fetch categories
-    const {
-        status: categoryStatus,
-        categorySelectOptions,
-        getCategoryIcon
-    } = useCategories()
+    const { status: categoryStatus, categorySelectOptions } = useCategories()
 
     const operation = computed(() => {
         return props.mode === 'edit' ? 'edit' : 'create'
     })
 
-    const categoryDisplayIcon = computed(() => getCategoryIcon(state.category))
+    const selectedCategoryItem = computed(() => {
+        return categorySelectOptions.value.find(
+            (opt) => opt.value === state.category
+        )
+    })
+    const onUpdateSelectedCategory = (opt?: {
+        label: string
+        value: number
+        icon?: string
+    }) => {
+        state.category = opt?.value
+    }
 
     const onCreateCategory = function (event: FormSubmitEvent<Schema>) {
         $fetch(`/api/budgets/${operation.value}`, {
@@ -181,13 +197,19 @@
         </UFormField>
 
         <UFormField :label="$t('Category')" name="category">
-            <USelect
-                v-model="state.category"
+            <USelectMenu
+                :model-value="selectedCategoryItem"
+                @update:model-value="onUpdateSelectedCategory"
                 :items="categorySelectOptions"
                 :loading="categoryStatus === 'pending'"
-                :icon="categoryDisplayIcon"
-                class="hide-select-span w-full">
-            </USelect>
+                option-attribute="label"
+                value-attribute="value"
+                :icon="selectedCategoryItem?.icon"
+                searchable
+                :search-input="{ placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
+                clear-search-on-close
+                class="w-full">
+            </USelectMenu>
         </UFormField>
 
         <UFormField :label="$t('Period')" name="period">
