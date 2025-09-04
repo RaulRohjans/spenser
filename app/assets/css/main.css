@@ -4,9 +4,6 @@
 :root {
     /* Fallback so SSR has a value before JS sets the real navbar height */
     --header-height: 64px;
-    /* Default table heights for cards that need footer pinned */
-    --table-vh: 69vh; /* transactions, admin users/currencies */
-    --table-vh-alt: 72vh; /* categories (slightly taller filters) */
 }
 
 /*
@@ -74,43 +71,70 @@ input[type='number'] {
 }
 
 /*
- * Responsive table heights based on viewport height
- * Ensures the table scrolls and card footer stays visible on short screens
+ * Transactions: table/message height with fine-grained breakpoints
+ * Apply the class to both the table and the empty-state message container
  */
-.table-vh {
-    height: var(--table-vh);
-}
-.table-vh-alt {
-    height: var(--table-vh-alt);
+.tx-table-h {
+    height: calc(89vh - var(--header-height) - 2rem);
 }
 
-@media (max-height: 1000px) {
-    :root {
-        --table-vh: 62vh;
-        --table-vh-alt: 65vh;
-    }
+@media (max-height: 2070px) {
+    .tx-table-h { height: calc(88vh - var(--header-height) - 2rem); }
 }
-@media (max-height: 900px) {
-    :root {
-        --table-vh: 58vh;
-        --table-vh-alt: 60vh;
-    }
+@media (max-height: 1825px) {
+    .tx-table-h { height: calc(87vh - var(--header-height) - 2rem); }
+}
+@media (max-height: 1600px) {
+    .tx-table-h { height: calc(86vh - var(--header-height) - 2rem); }
+}
+@media (max-height: 1360px) {
+    .tx-table-h { height: calc(85vh - var(--header-height) - 2rem); }
+}
+@media (max-height: 1270px) {
+    .tx-table-h { height: calc(84vh - var(--header-height) - 2rem); }
+}
+@media (max-height: 1175px) {
+    .tx-table-h { height: calc(82vh - var(--header-height) - 2rem); }
+}
+@media (max-height: 1100px) {
+    .tx-table-h { height: calc(81vh - var(--header-height) - 2rem); }
+}
+@media (max-height: 1000px) {
+    .tx-table-h { height: calc(80vh - var(--header-height) - 1.75rem); }
+}
+@media (max-height: 920px) {
+    .tx-table-h { height: calc(78vh - var(--header-height) - 1.5rem); }
+}
+@media (max-height: 860px) {
+    .tx-table-h { height: calc(76vh - var(--header-height) - 1.25rem); }
 }
 @media (max-height: 800px) {
-    :root {
-        --table-vh: 52vh;
-        --table-vh-alt: 55vh;
-    }
+    .tx-table-h { height: calc(74vh - var(--header-height) - 1rem); }
+}
+@media (max-height: 740px) {
+    .tx-table-h { height: calc(72vh - var(--header-height) - 0.75rem); }
 }
 @media (max-height: 700px) {
-    :root {
-        --table-vh: 46vh;
-        --table-vh-alt: 48vh;
-    }
+    .tx-table-h { height: calc(70vh - var(--header-height) - 0.5rem); }
+}
+@media (max-height: 650px) {
+    .tx-table-h { height: calc(68vh - var(--header-height) - 0.25rem); }
 }
 @media (max-height: 600px) {
-    :root {
-        --table-vh: 40vh;
-        --table-vh-alt: 42vh;
-    }
+    .tx-table-h { height: calc(66vh - var(--header-height)); }
+}
+@media (max-height: 550px) {
+    .tx-table-h { height: calc(64vh - var(--header-height)); }
+}
+@media (max-height: 520px) {
+    .tx-table-h { height: calc(62vh - var(--header-height)); }
+}
+@media (max-height: 480px) {
+    .tx-table-h { height: calc(60vh - var(--header-height)); }
+}
+@media (max-height: 445px) {
+    .tx-table-h { height: calc(58vh - var(--header-height)); }
+}
+@media (max-height: 420px) {
+    .tx-table-h { height: calc(54vh - var(--header-height)); }
 }
