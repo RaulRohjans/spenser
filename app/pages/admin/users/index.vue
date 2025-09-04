@@ -244,7 +244,7 @@
         </div>
 
         <!-- Sidebars -->
-        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" storage-key="admin:users" />
 
         <ModalUser
             :key="reloadModal"

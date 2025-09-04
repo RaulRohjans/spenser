@@ -239,7 +239,7 @@
         </div>
 
         <!-- Sidebars -->
-        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" storage-key="categories" />
 
         <!-- Slot for popup forms to CRUD over categories -->
         <NuxtPage @successful-submit="reload" />

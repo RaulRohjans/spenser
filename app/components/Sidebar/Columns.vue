@@ -5,8 +5,11 @@
         modelValue?: boolean
         title?: string
         tableApi?: Table<T>
+        storageKey?: string
+        persist?: boolean
     }>(), {
-        modelValue: false
+        modelValue: false,
+        persist: true
     })
 
     const emit = defineEmits<{
@@ -36,10 +39,52 @@
         draftState.value = state.map((s) => ({ ...s }))
     }
 
+    function saveToStorage() {
+        if (!props.persist || !props.storageKey) return
+        try {
+            const map: Record<string, boolean> = {}
+            props.tableApi?.getAllColumns().forEach((c) => {
+                map[c.id] = c.getIsVisible()
+            })
+            sessionStorage.setItem(`spenser:columns:${props.storageKey}`, JSON.stringify(map))
+        } catch {
+            /* empty */
+        }
+    }
+
+    function loadFromStorage() {
+        if (!props.persist || !props.storageKey) return
+        try {
+            const raw = sessionStorage.getItem(`spenser:columns:${props.storageKey}`)
+            if (!raw) return
+            const map = JSON.parse(raw) as Record<string, boolean>
+            props.tableApi?.getAllColumns().forEach((c) => {
+                const v = map[c.id]
+                if (typeof v === 'boolean') c.toggleVisibility(v)
+            })
+            // refresh local state
+            readFromTable()
+        } catch {
+            /* empty */
+        }
+    }
+
     watch(
         () => props.modelValue,
         (open) => {
             if (open) readFromTable()
+        }
+    )
+
+    onMounted(() => {
+        // If table is ready on mount, sync from storage
+        if (props.tableApi) loadFromStorage()
+    })
+
+    watch(
+        () => props.tableApi,
+        (api) => {
+            if (api) loadFromStorage()
         }
     )
 
@@ -48,6 +93,7 @@
             const col = props.tableApi?.getColumn(s.id)
             if (col) col.toggleVisibility(Boolean(s.visible))
         })
+        saveToStorage()
         emit('apply')
         isOpen.value = false
     }
@@ -55,6 +101,7 @@
     function onReset() {
         props.tableApi?.getAllColumns().forEach((c) => c.toggleVisibility(true))
         readFromTable()
+        saveToStorage()
         emit('reset')
         isOpen.value = false
     }

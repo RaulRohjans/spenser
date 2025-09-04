@@ -456,7 +456,7 @@
             </template>
         </SidebarFilters>
 
-        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" storage-key="transactions" />
 
         <!-- Slot for popup forms to CRUD over transactions -->
         <NuxtPage @successful-submit="reload" />
