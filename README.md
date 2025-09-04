@@ -3,11 +3,11 @@
 
 ## Overview
 
-Spenser is a web application built with Nuxt 3 and TypeScript, designed to help users manage their personal transactions efficiently. The platform offers various features including transaction management, category creation, budget specification, and more, all through an intuitive user interface.
+Spenser is a web application built with Nuxt and TypeScript, designed to help users manage their personal transactions efficiently. The platform offers various features including transaction management, category creation, budget specification, and more, all through an intuitive user interface.
 
 ## Live Demo
 
-A live demo for the platform can be checked [here](https://spenser.demo.rohjans.com/).
+A live demo for the platform can be checked [here](https://spenser-demo.rohjans.com/).
 
 ## Features
 
@@ -18,7 +18,7 @@ A live demo for the platform can be checked [here](https://spenser.demo.rohjans.
 ### Transactions
 
 - **Manage Transactions:** Users can view, add, edit, and delete their transactions.
-- **LLM Import:** Import transactions via text input (file upload or text). The app will parse the input and attempt to attribute categories to the records.
+- **AI Import:** Import transactions via text input (file upload or text). The app will parse the input and attempt to attribute categories to the transactions.
 
 ### Categories
 
@@ -37,7 +37,7 @@ A live demo for the platform can be checked [here](https://spenser.demo.rohjans.
 
 - **User Management:** Admins can perform CRUD operations on user accounts.
 - **Currency Management:** Add more currencies to the platform.
-- **LLM Configuration:** Choose between different LLM providers (currently supports ChatGPT and Ollama).
+- **AI Configuration:** Choose between different AI providers (ChatGPT, Ollama, or OpenRouter).
 
 ## Installation
 
@@ -51,7 +51,7 @@ A live demo for the platform can be checked [here](https://spenser.demo.rohjans.
 #### Clone the repository:
 
 ```
-git clone https://github.com/yourusername/spenser.git
+git clone https://github.com/RaulRohjans/spenser.git
 cd spenser
 ```
 
