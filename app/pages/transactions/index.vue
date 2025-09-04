@@ -312,6 +312,14 @@
     const isEmptyState = computed(
         () => status.value === 'success' && (tableRows.value?.length ?? 0) === 0
     )
+    const isFiltered = computed(() => {
+        return Boolean(
+            (filters.searchQuery && filters.searchQuery.trim() !== '') ||
+            (filters.dateRange && filters.dateRange.length > 0) ||
+            (filters.groupCategory === true) ||
+            ((filters.categoryIds?.length ?? 0) > 0)
+        )
+    })
 </script>
 
 <template>
@@ -378,12 +386,11 @@
                         v-if="isEmptyState"
                         class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
                         <div>
-                            <div class="text-4xl mb-3">🧾</div>
+                            <div class="text-4xl mb-3">{{ isFiltered ? '🔎' : '🧾' }}</div>
                             <p class="text-lg">
-                                {{
-                                    $t(
-                                        'The income and spending that you track will show up here.'
-                                    )
+                                {{ isFiltered
+                                    ? $t('No results with filters')
+                                    : $t('The income and spending that you track will show up here.')
                                 }}
                             </p>
                         </div>

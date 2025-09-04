@@ -165,6 +165,7 @@
     const isEmptyState = computed(() =>
         status.value === 'success' && (tableRows.value?.length ?? 0) === 0
     )
+    const isFiltered = computed(() => Boolean(filters.searchQuery && filters.searchQuery.trim() !== ''))
 
     // Persist categories filters (search) separately
     const { load: loadCatFilters } = useFilterSession('categories', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
@@ -213,8 +214,8 @@
                 <div class="flex-1 overflow-hidden">
                     <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
                         <div>
-                            <div class="text-4xl mb-3">🗂️</div>
-                            <p class="text-lg">{{ $t('Your categories will appear here once you add them.') }}</p>
+                            <div class="text-4xl mb-3">{{ isFiltered ? '🔎' : '🗂️' }}</div>
+                            <p class="text-lg">{{ isFiltered ? $t('No results with filters') : $t('Your categories will appear here once you add them.') }}</p>
                         </div>
                     </div>
                     <div v-else class="h-full">

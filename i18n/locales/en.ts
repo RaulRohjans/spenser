@@ -176,6 +176,7 @@ export default {
     Logout: 'Logout',
     'Are you sure you want to logout?': 'Are you sure you want to logout?',
     'No data to display': 'No data to display',
+    "No results with filters": "We couldn't find anything with those filters 😅",
     'Edit Transaction': 'Edit Transaction',
     'Duplicate Transaction': 'Duplicate Transaction',
     'Edit Category': 'Edit Category',
