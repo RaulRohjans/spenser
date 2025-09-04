@@ -195,6 +195,13 @@
     const isEmptyState = computed(() =>
         status.value === 'success' && (tableRows.value?.length ?? 0) === 0
     )
+
+    // Persist users filters (search) separately
+    const { load: loadUserFilters } = useFilterSession('admin:users', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
+    onMounted(() => {
+        const loaded = loadUserFilters()
+        if (loaded) reload()
+    })
 </script>
 
 <template>
@@ -237,7 +244,7 @@
         </div>
 
         <!-- Sidebars -->
-        <SidebarColumns v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" />
 
         <ModalUser
             :key="reloadModal"

@@ -1,10 +1,12 @@
 <script setup lang="ts" generic="T extends Record<string, unknown>">
-    const props = defineProps<{
+    const props = withDefaults(defineProps<{
         title?: string
-        modelValue: boolean
-        appliedFilters: T
-        defaultFilters: T
-    }>()
+        modelValue?: boolean
+        appliedFilters?: T
+        defaultFilters?: T
+    }>(), {
+        modelValue: false
+    })
 
     const emit = defineEmits<{
         (e: 'update:modelValue', v: boolean): void
@@ -22,7 +24,7 @@
     watch(
         () => props.modelValue,
         (open) => {
-            if (open) Object.assign(draft, props.appliedFilters)
+            if (open && props.appliedFilters) Object.assign(draft, props.appliedFilters)
         }
     )
 

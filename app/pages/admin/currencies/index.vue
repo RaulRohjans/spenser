@@ -140,6 +140,13 @@
     const isEmptyState = computed(() =>
         status.value === 'success' && (tableRows.value?.length ?? 0) === 0
     )
+
+    // Persist currencies filters (search) separately
+    const { load: loadCurrencyFilters } = useFilterSession('admin:currencies', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
+    onMounted(() => {
+        const loaded = loadCurrencyFilters()
+        if (loaded) reload()
+    })
 </script>
 
 <template>
@@ -183,7 +190,7 @@
         </div>
 
         <!-- Sidebars -->
-        <SidebarColumns v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" />
 
         <ModalCurrency v-model="isModalOpen" @successful-submit="reload" />
         <ClientOnly>

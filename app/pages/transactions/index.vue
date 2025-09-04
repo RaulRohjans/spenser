@@ -255,6 +255,39 @@
     }
     const draftFilters = reactive({ ...defaultFilters })
 
+    // Persist only global toolbar filters
+    const persistedFilters = reactive({
+        searchQuery: '' as string,
+        dateRange: [] as Date[],
+        groupCategory: false as boolean,
+        categoryIds: [] as number[]
+    })
+    watch(
+        () => ({
+            searchQuery: filters?.searchQuery,
+            dateRange: filters?.dateRange,
+            groupCategory: filters?.groupCategory,
+            categoryIds: filters?.categoryIds
+        }),
+        (s) => {
+            persistedFilters.searchQuery = s.searchQuery || ''
+            persistedFilters.dateRange = (s.dateRange as Date[]) || []
+            persistedFilters.groupCategory = Boolean(s.groupCategory)
+            persistedFilters.categoryIds = (s.categoryIds as number[]) || []
+        },
+        { deep: true, immediate: true }
+    )
+    const { load: loadFilters } = useFilterSession('transactions', persistedFilters, { storage: 'session', debounceMs: 150 })
+    const mounted = ref(false)
+    onMounted(() => {
+        const loaded = loadFilters()
+        if (loaded) {
+            Object.assign(filters, persistedFilters)
+            reload()
+        }
+        mounted.value = true
+    })
+
     function openFilters() {
         Object.assign(draftFilters, filters)
         showFilters.value = true
@@ -377,7 +410,7 @@
         </div>
 
         <!-- Sidebars -->
-        <SidebarFilters
+        <SidebarFilters v-if="mounted"
             v-model="showFilters"
             :applied-filters="filters"
             :default-filters="defaultFilters"
@@ -423,7 +456,7 @@
             </template>
         </SidebarFilters>
 
-        <SidebarColumns v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" />
 
         <!-- Slot for popup forms to CRUD over transactions -->
         <NuxtPage @successful-submit="reload" />

@@ -93,6 +93,25 @@
         store.setFilterOverOnly(null)
         onDateChange(dateModel.value)
     }
+
+    // Persist budgets filters in session storage (independent key)
+    const budgetFilters = reactive({
+        categoryIds: store.filterCategoryIds,
+        period: store.filterPeriod,
+        overOnly: store.filterOverOnly,
+        searchQuery: store.filterQuery
+    })
+    const { load: loadBudgetFilters } = useFilterSession('budgets', budgetFilters, { storage: 'session', debounceMs: 150 })
+    onMounted(() => {
+        const loaded = loadBudgetFilters()
+        if (loaded) {
+            store.setFilterCategories(budgetFilters.categoryIds || [])
+            store.setFilterPeriod(budgetFilters.period ?? null)
+            store.setFilterOverOnly(budgetFilters.overOnly ?? null)
+            store.setFilterQuery(budgetFilters.searchQuery || '')
+            store.fetchBudgets()
+        }
+    })
 </script>
 
 <template>

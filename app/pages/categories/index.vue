@@ -165,6 +165,13 @@
     const isEmptyState = computed(() =>
         status.value === 'success' && (tableRows.value?.length ?? 0) === 0
     )
+
+    // Persist categories filters (search) separately
+    const { load: loadCatFilters } = useFilterSession('categories', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
+    onMounted(() => {
+        const loaded = loadCatFilters()
+        if (loaded) reload()
+    })
 </script>
 
 <template>
@@ -232,7 +239,7 @@
         </div>
 
         <!-- Sidebars -->
-        <SidebarColumns v-model="showColumns" :table-api="table?.tableApi" />
+        <SidebarColumns v-if="table?.tableApi" v-model="showColumns" :table-api="table?.tableApi" />
 
         <!-- Slot for popup forms to CRUD over categories -->
         <NuxtPage @successful-submit="reload" />

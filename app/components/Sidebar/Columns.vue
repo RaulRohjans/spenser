@@ -1,11 +1,13 @@
 <script setup lang="ts" generic="T">
     import type { Table } from '@tanstack/vue-table'
 
-    const props = defineProps<{
-        modelValue: boolean
+    const props = withDefaults(defineProps<{
+        modelValue?: boolean
         title?: string
         tableApi?: Table<T>
-    }>()
+    }>(), {
+        modelValue: false
+    })
 
     const emit = defineEmits<{
         (e: 'update:modelValue', v: boolean): void
