@@ -214,7 +214,6 @@ export default {
         'Nome de utilizador ou palavra-passe inválidos',
     'An error occurred when saving user settings.':
         'Ocorreu um erro ao guardar as definições do utilizador.',
-    // Server responses
     'LLM is not configured.': 'O LLM não está configurado.',
     'Please provide a valid file.': 'Por favor, forneça um ficheiro válido.',
     'Please provide text.': 'Por favor, forneça texto.',
@@ -285,11 +284,9 @@ export default {
     'The given user does not have acces to this resource.':
         'O utilizador indicado não tem acesso a este recurso.'
     ,
-    // Avatar & UI
     'Image must be square': 'A imagem deve ser quadrada',
     'Select image': 'Selecionar imagem',
     'Delete image': 'Eliminar imagem',
-    // Avatar endpoint errors
     'Invalid user id.': 'ID de utilizador inválido.',
     'Forbidden.': 'Proibido.',
     'Invalid form data.': 'Dados de formulário inválidos.',
@@ -297,7 +294,6 @@ export default {
     'Unsupported file type.': 'Tipo de ficheiro não suportado.',
     'File too large.': 'Ficheiro demasiado grande.'
     ,
-    // Additional validation/UI strings
     'Must be greater than 0': 'Deve ser maior que 0',
     'Invalid number': 'Número inválido',
     Expense: 'Despesa',
@@ -307,5 +303,35 @@ export default {
         'Arraste e largue um único ficheiro aqui, ou clique para selecionar',
     'Optional description to help the AI understand this category':
         'Descrição opcional para ajudar a IA a compreender esta categoria',
-    'Currency code is too big': 'Código de moeda é demasiado grande'
+    'Currency code is too big': 'Código de moeda é demasiado grande',
+    'Date Range': 'Intervalo de Datas',
+    'Group by': 'Agrupar por',
+    'No grouping': 'Sem agrupamento',
+    'By category': 'Por categoria',
+    'All periods': 'Todos os períodos',
+    Weekly: 'Semanal',
+    All: 'Todos',
+    'Over budget only': 'Apenas acima do orçamento',
+    'Not over budget only': 'Apenas não acima do orçamento',
+    'Date of Values': 'Data dos Valores',
+    'Per budget': 'Por orçamento',
+    'View and manage your transactions. Search, filter, and group by category.':
+        'Veja e gere as suas transações. Pesquise, filtre e agrupe por categoria.',
+    'The income and spending that you track will show up here.':
+        'Os rendimentos e despesas que acompanha aparecerão aqui.',
+    'Create and track budgets by period and category.':
+        'Crie e acompanhe orçamentos por período e categoria.',
+    'Your budgets will be displayed here once you create them.':
+        'Os seus orçamentos serão apresentados aqui assim que os criar.',
+    'Manage categories used to organize transactions.':
+        'Gira as categorias usadas para organizar transações.',
+    'Your categories will appear here once you add them.':
+        'As suas categorias aparecerão aqui assim que as adicionar.',
+    'Users you add will appear here.': 'Os utilizadores que adicionar aparecerão aqui.',
+    'Currencies you configure will appear here.':
+        'As moedas que configurar aparecerão aqui.',
+    'Configure platform settings and manage data for your account.':
+        'Configure as definições da plataforma e gere os dados da sua conta.',
+    'Upload a statement or paste text and let AI extract transactions for review.':
+        'Carregue um extrato ou cole texto e deixe a IA extrair transações para revisão.'
 }
