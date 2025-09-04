@@ -182,7 +182,7 @@
             @reset="resetBudgetFilters">
             <template #default="{ draft }">
                 <div class="flex flex-col gap-2">
-                    <SidebarSection :title="$t('Date')">
+                    <SidebarSection :title="$t('Date of Values')">
                         <SDateTimePicker v-model="draft.date" type="date" />
                     </SidebarSection>
 
@@ -215,7 +215,7 @@
                             @update:model-value="(v: BudgetPeriodType | (BudgetPeriodType | null)[] | null) => (draft.period = Array.isArray(v) ? (v[0] ?? null) : v)" />
                     </SidebarSection>
 
-                    <SidebarSection :title="$t('Over budget only')">
+                    <SidebarSection :title="$t('Per budget')">
                         <SidebarOptionList
                             :options="[
                                 { label: $t('All'), value: null },

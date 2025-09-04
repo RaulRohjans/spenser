@@ -433,7 +433,7 @@
             @reset="clearFilters">
             <template #default="{ draft }">
                 <div class="flex flex-col gap-2">
-                    <SidebarSection :title="$t('Date')">
+                    <SidebarSection :title="$t('Date Range')">
                         <SDateTimePicker
                             v-model="draft.dateRange"
                             class="sm:!w-full"
