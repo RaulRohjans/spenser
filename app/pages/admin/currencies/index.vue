@@ -33,7 +33,7 @@
             () => {
                 $fetch(`/api/currencies/delete`, {
                     method: 'POST',
-                    body: { id: row.id }
+                    body: { ids: [row.id] }
                 })
                     .then((data) => {
                         if (!data.success)
@@ -119,14 +119,10 @@
             async () => {
                 bulkBusy.value = true
                 try {
-                    await Promise.all(
-                        selectedIds.value.map((id) =>
-                            $fetch(`/api/currencies/delete`, {
-                                method: 'POST',
-                                body: { id }
-                            })
-                        )
-                    )
+                    await $fetch(`/api/currencies/delete`, {
+                        method: 'POST',
+                        body: { ids: selectedIds.value }
+                    })
                     Notifier.showAlert($t('Currency(ies) deleted successfully!'), 'success')
                     clearAll()
                     reload()

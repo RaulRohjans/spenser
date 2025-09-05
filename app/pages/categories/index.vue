@@ -36,7 +36,7 @@
                 //User accepted
                 $fetch(`/api/categories/delete`, {
                     method: 'POST',
-                    body: { id: row.id }
+                    body: { ids: [row.id] }
                 })
                     .then((data) => {
                         if (!data.success)
@@ -151,14 +151,10 @@
             async () => {
                 bulkBusy.value = true
                 try {
-                    await Promise.all(
-                        selectedIds.value.map((id) =>
-                            $fetch(`/api/categories/delete`, {
-                                method: 'POST',
-                                body: { id }
-                            })
-                        )
-                    )
+                    await $fetch(`/api/categories/delete`, {
+                        method: 'POST',
+                        body: { ids: selectedIds.value }
+                    })
                     Notifier.showAlert($t('Category(ies) deleted successfully!'), 'success')
                     clearAll()
                     reload()

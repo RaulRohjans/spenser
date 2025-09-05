@@ -49,7 +49,7 @@
             () => {
                 $fetch(`/api/users/delete`, {
                     method: 'POST',
-                    body: { id: row.id }
+                    body: { ids: [row.id] }
                 })
                     .then((data) => {
                         if (!data.success)
@@ -167,15 +167,10 @@
             async () => {
                 bulkBusy.value = true
                 try {
-                    // Avoid deleting current user silently; backend will handle permissions too
-                    await Promise.all(
-                        selectedIds.value.map((id) =>
-                            $fetch(`/api/users/delete`, {
-                                method: 'POST',
-                                body: { id }
-                            })
-                        )
-                    )
+                    await $fetch(`/api/users/delete`, {
+                        method: 'POST',
+                        body: { ids: selectedIds.value }
+                    })
                     Notifier.showAlert($t('User(s) deleted successfully!'), 'success')
                     clearAll()
                     reload()
