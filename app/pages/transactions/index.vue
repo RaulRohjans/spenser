@@ -5,6 +5,7 @@
     import type { TableColumn } from '@nuxt/ui'
     import type { TransactionRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
+    import { useRowSelection } from '~/composables/useRowSelection'
 
     // Basic Setup
     const { t: $t } = useI18n()
@@ -330,6 +331,54 @@
             ((filters.categoryIds?.length ?? 0) > 0)
         )
     })
+
+    // Row selection (only when not grouped by category)
+    const {
+        selectionColumn,
+        selectedIds,
+        selectedCount,
+        clearAll
+    } = useRowSelection<TransactionRow>({
+        storageKey: 'transactions',
+        getRowId: (r) => r.id,
+        pageRows: tableRows
+    })
+
+    const finalColumns = computed(() =>
+        filters.groupCategory ? visibleColumns.value : [selectionColumn, ...visibleColumns.value]
+    )
+
+    const bulkBusy = ref(false)
+    async function bulkDeleteSelected() {
+        if (!selectedIds.value.length) return
+        Notifier.showChooser(
+            $t('Delete Transactions'),
+            $t('Are you sure you want to delete the selected items?'),
+            async () => {
+                bulkBusy.value = true
+                try {
+                    await Promise.all(
+                        selectedIds.value.map((id) =>
+                            $fetch(`/api/transactions/delete`, {
+                                method: 'POST',
+                                body: { id }
+                            })
+                        )
+                    )
+                    Notifier.showAlert($t('Transaction(s) deleted successfully!'), 'success')
+                    clearAll()
+                    reload()
+                } catch (e) {
+                    Notifier.showAlert(
+                        toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')),
+                        'error'
+                    )
+                } finally {
+                    bulkBusy.value = false
+                }
+            }
+        )
+    }
 </script>
 
 <template>
@@ -410,10 +459,16 @@
                         </div>
                     </div>
                     <div v-else class="h-full">
+                        <ToolbarSelectionBar
+                            :count="selectedCount"
+                            :open="!filters.groupCategory && selectedCount > 0"
+                            :busy="bulkBusy"
+                            @delete="bulkDeleteSelected"
+                            @clear="clearAll" />
                         <UTable
                             ref="table"
                             :data="tableRows"
-                            :columns="visibleColumns"
+                            :columns="finalColumns"
                             sticky
                             :loading="status === 'pending'"
                             class="w-full tx-table-h" />
