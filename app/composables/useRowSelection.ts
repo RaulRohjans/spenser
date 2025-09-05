@@ -28,6 +28,7 @@ export function useRowSelection<Row extends object>(
     }
 ) {
     const { getRowId, pageRows } = options
+    const { t: $t } = useI18n()
 
     const internalIds = ref<Set<IdType>>(new Set())
 
@@ -122,7 +123,7 @@ export function useRowSelection<Row extends object>(
                 'onUpdate:modelValue': (v: boolean | 'indeterminate') => setSelected(id, v === 'indeterminate' ? true : Boolean(v))
             })
         },
-        meta: { alias: '' }
+        meta: { alias: $t('Select'), searchable: false }
     }
 
     return {

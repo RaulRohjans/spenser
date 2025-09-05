@@ -110,6 +110,7 @@ export default {
     Remove: 'Remove',
     Clear: 'Clear',
     selected: 'selected',
+    Select: 'Select',
     'Rows per page': 'Rows per page',
     Columns: 'Columns',
     Reset: 'Reset',
