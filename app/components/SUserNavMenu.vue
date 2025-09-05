@@ -6,6 +6,7 @@
     const colorMode = useColorMode()
     const { signOut, data: authData } = useAuth()
     const router = useRouter()
+    const { open: openSettings } = useSettingsModal()
 
     const isDark = computed(() => {
         return colorMode.value === 'dark'
@@ -79,7 +80,7 @@
         misc.push({
             label: $t('Settings'),
             icon: 'i-heroicons-cog',
-            onSelect: () => router.push(`/settings`)
+            onSelect: openSettings
         })
         menu.push(misc)
 

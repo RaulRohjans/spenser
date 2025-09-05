@@ -1,15 +1,5 @@
 <script lang="ts" setup>
-    import { useRoute, useRouter } from 'vue-router'
-
-    const route = useRoute()
-    const router = useRouter()
-
-    // Determine if the current route should be treated as a modal
-    const showSettingsModal = computed(() => route.name === 'settings')
-
-    function closeModal() {
-        router.back()
-    }
+    const { isOpen: isSettingsOpen, close } = useSettingsModal()
 </script>
 
 <template>
@@ -18,7 +8,7 @@
 
         <main class="min-h-[calc(95vh-var(--header-height))] p-2 lg:p-3">
             <NuxtPage />
-            <ModalSettings v-if="showSettingsModal" @close="closeModal" />
+            <ModalSettings v-if="isSettingsOpen" @close="close" />
         </main>
 
         <SFooter />
