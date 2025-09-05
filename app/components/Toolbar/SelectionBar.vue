@@ -19,7 +19,7 @@
 <template>
     <div class="pointer-events-none relative h-0">
         <div
-            class="absolute z-10 flex items-center gap-3 px-3 py-2 rounded-md bg-white/90 dark:bg-gray-900/90 shadow duration-300 ease-out border border-gray-200 dark:border-gray-800"
+            class="absolute z-10 flex items-center gap-3 px-3 py-2 rounded-md bg-white dark:bg-gray-900 shadow duration-300 ease-out border border-gray-200 dark:border-gray-800"
             :style="{
                 left: '60px',
                 transform: open ? 'translateX(0)' : 'translateX(-120%)',
