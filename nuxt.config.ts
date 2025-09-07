@@ -1,20 +1,17 @@
-import tailwindcss from '@tailwindcss/vite'
-
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     compatibilityDate: '2025-04-20',
     devtools: { enabled: false },
     modules: [
-      '@nuxt/ui',
-      '@nuxtjs/color-mode',
-      '@nuxt/icon',
-      '@sidebase/nuxt-auth',
-      '@pinia/nuxt',
-      '@pinia-plugin-persistedstate/nuxt',
-      '@nuxt/eslint',
-      '@nuxtjs/i18n',
-      '@compodium/nuxt',
-      'shadcn-nuxt'
+        '@nuxt/ui',
+        '@nuxtjs/color-mode',
+        '@nuxt/icon',
+        '@sidebase/nuxt-auth',
+        '@pinia/nuxt',
+        '@pinia-plugin-persistedstate/nuxt',
+        '@nuxt/eslint',
+        '@nuxtjs/i18n',
+        '@compodium/nuxt'
     ],
     css: ['~/assets/css/main.css'],
     build: {
@@ -118,21 +115,5 @@ export default defineNuxtConfig({
     app: {
         pageTransition: { name: 'page', mode: 'out-in', appear: true },
         layoutTransition: { name: 'layout', mode: 'out-in', appear: true }
-    },
-    vite: {
-        plugins: [
-            tailwindcss(),
-        ],
-    },
-    shadcn: {
-        /**
-         * Prefix for all the imported component
-         */
-        prefix: '',
-        /**
-         * Directory that the component lives in.
-         * @default "./components/ui"
-         */
-        componentDir: './app/components/shadcn-ui'
-    },
+    }
 })
