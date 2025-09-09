@@ -132,9 +132,7 @@
                             <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                                 {{ $t('Budgets') }}
                             </h2>
-                            <UTooltip :text="$t('Create and track budgets by period and category.')">
-                                <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
-                            </UTooltip>
+                            <InfoTip :text="$t('Create and track budgets by period and category.')" />
                         </div>
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <div class="flex flex-row items-center gap-2 mr-auto sm:mr-0">

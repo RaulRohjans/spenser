@@ -1,13 +1,14 @@
 import { ensureAuth, hashPassword } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { users } from '~~/server/db/schema'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import type { User } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read params
     const {
         id,
+        ids,
         username,
         first_name,
         last_name,
@@ -28,22 +29,29 @@ export default defineEventHandler(async (event) => {
         })
 
     // No need to do rest of the logic
-    if (operation === 'delete' && id) {
+    if (operation === 'delete' && (id || (ids && Array.isArray(ids)))) {
+        const idList: number[] = Array.isArray(ids)
+            ? ids.filter((n: unknown) => Number.isFinite(Number(n))).map((n: any) => Number(n))
+            : id != null
+                ? [Number(id)]
+                : []
+        if (!idList.length)
+            throw createError({ statusCode: 400, statusMessage: 'Missing user ID(s).' })
         // Mark user as deleted in the database
         const res = await db
             .update(users)
             .set({ deleted: true })
-            .where(and(eq(users.id, id), eq(users.deleted, false)))
+            .where(and(inArray(users.id, idList), eq(users.deleted, false)))
             .returning({ id: users.id })
-            .then((r) => r[0])
+            .then((r) => r)
 
-        if (!res)
+        if (!res || res.length === 0)
             throw createError({
                 statusCode: 500,
-                statusMessage: 'Could not remove user due to an unknown error.'
+                statusMessage: 'Could not remove user(s) due to an unknown error.'
             })
 
-        return { success: true, userId: res.id }
+        return { success: true, userIds: res.map((x) => x.id) }
     }
 
     if (!username || !first_name || !last_name || !email /*|| !avatar*/)

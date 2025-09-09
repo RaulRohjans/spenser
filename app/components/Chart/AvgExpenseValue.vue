@@ -1,43 +1,14 @@
 <script setup lang="ts">
-    import type { AvgExpenseValueData } from '~~/types/Chart'
-
     const { t: $t } = useI18n()
-
-    // Fetch data
-    const { data: fetchData } = await useLazyAsyncData<{
-        success: boolean
-        data: AvgExpenseValueData
-    }>(
-        'avgExpenseValue',
-        () =>
-            $fetch('/api/charts/avgExpenseValue', {
-                method: 'GET'
-            }),
-        {
-            default: () => {
-                return {
-                    success: false,
-                    data: { value: 0 }
-                }
-            }
-        }
-    )
 </script>
 
 <template>
-    <UCard
-        class="shadow-xl p-4"
-        :ui="{
-            body: 'p-0 divide-y divide-gray-200 dark:divide-gray-700'
-        }">
+    <UCard class="shadow-xl p-4">
         <div class="flex flex-col justify-center items-center">
-            <h2
-                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+            <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                 {{ $t('Average Expense Value') }}
             </h2>
-            <span class="p-8 text-lg">
-                {{ formatCurrencyValue(Number(fetchData.data.value)) }}
-            </span>
+            <span class="p-8 text-lg">—</span>
         </div>
     </UCard>
 </template>

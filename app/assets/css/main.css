@@ -49,16 +49,81 @@ input[type='number'] {
 }
 
 /*
- * Apply page transations
-*/
+ * Page and layout transitions: subtle fade + translate for polish
+ */
 .page-enter-active,
 .page-leave-active {
-    @apply transition-opacity duration-300 ease-in-out;
+    @apply transition-all duration-300 ease-in-out;
 }
 
-.page-enter-from,
+.page-enter-from {
+    @apply opacity-0 translate-y-2;
+}
+
 .page-leave-to {
+    @apply opacity-0 -translate-y-1;
+}
+
+.layout-enter-active,
+.layout-leave-active {
+    @apply transition-all duration-300 ease-in-out;
+}
+
+.layout-enter-from {
+    @apply opacity-0 translate-y-2;
+}
+
+.layout-leave-to {
+    @apply opacity-0 -translate-y-1;
+}
+
+/*
+ * Top route loading indicator (indeterminate)
+ */
+.route-progress-enter-active,
+.route-progress-leave-active {
+    @apply transition-opacity duration-200 ease-out;
+}
+.route-progress-enter-from,
+.route-progress-leave-to {
     @apply opacity-0;
+}
+
+.route-progress {
+    z-index: 2147483646; /* below datepicker but above the app */
+    background-image: linear-gradient(90deg,
+        rgba(56, 189, 248, 0.25) 0%,   /* sky-400 */
+        rgba(59, 130, 246, 0.85) 50%,  /* blue-500 */
+        rgba(99, 102, 241, 0.25) 100%  /* indigo-500 */
+    );
+    background-size: 200% 100%;
+    animation: routeProgressMove 1.1s linear infinite;
+}
+
+@keyframes routeProgressMove {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .page-enter-active,
+    .page-leave-active,
+    .layout-enter-active,
+    .layout-leave-active {
+        transition: none !important;
+    }
+
+    .page-enter-from,
+    .page-leave-to,
+    .layout-enter-from,
+    .layout-leave-to {
+        transform: none !important;
+    }
+
+    .route-progress {
+        animation: none !important;
+    }
 }
 
 /*

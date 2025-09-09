@@ -11,13 +11,13 @@
 
     import { LineChart, type LineSeriesOption } from 'echarts/charts'
     import { UniversalTransition } from 'echarts/features'
-    import { SVGRenderer } from 'echarts/renderers'
+    import { CanvasRenderer } from 'echarts/renderers'
     import type { SpendingOverTimeData } from '~~/types/Chart'
 
     use([
         GridComponent,
         LineChart,
-        SVGRenderer,
+        CanvasRenderer,
         UniversalTransition,
         TooltipComponent
     ])
@@ -100,7 +100,13 @@
             },
             xAxis: {
                 type: 'category',
-                data: categories
+                data: categories,
+                axisLabel: {
+                    formatter: (val: string) =>
+                        timeframe.value === 'month'
+                            ? val
+                            : formatMonthLabel(val)
+                }
             },
             yAxis: {
                 type: 'value'
@@ -134,6 +140,16 @@
 
     const setTimeframe = function (tf: typeof timeframe.value) {
         timeframe.value = tf
+    }
+
+    function formatMonthLabel(input: string): string {
+        // expects YYYY-MM
+        const [y, m] = input.split('-')
+        const monthIndex = Number(m) - 1
+        if (Number.isNaN(monthIndex)) return input
+        return new Date(Number(y), monthIndex, 1).toLocaleString(undefined, {
+            month: 'short'
+        })
     }
 </script>
 

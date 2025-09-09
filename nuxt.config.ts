@@ -110,9 +110,10 @@ export default defineNuxtConfig({
         ],
         compilation: {
             strictMessage: false
-        },
-        bundle: {
-            optimizeTranslationDirective: false
         }
+    },
+    app: {
+        pageTransition: { name: 'page', mode: 'out-in', appear: true },
+        layoutTransition: { name: 'layout', mode: 'out-in', appear: true }
     }
 })

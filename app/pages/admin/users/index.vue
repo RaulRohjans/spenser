@@ -5,6 +5,7 @@
     import type { ModalUserProps } from '@/components/Modal/User.vue'
     import type { UserRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
+    import { useRowSelection } from '~/composables/useRowSelection'
 
     const { data: authData, signOut } = useAuth()
     const { t: $t } = useI18n()
@@ -48,7 +49,7 @@
             () => {
                 $fetch(`/api/users/delete`, {
                     method: 'POST',
-                    body: { id: row.id }
+                    body: { ids: [row.id] }
                 })
                     .then((data) => {
                         if (!data.success)
@@ -144,6 +145,47 @@
         }
     ]
 
+    // Selection integration
+    const tableRowsSel = computed(() => tableData.value?.data?.rows ?? [])
+    const {
+        selectionColumn,
+        selectedIds,
+        selectedCount,
+        clearAll
+    } = useRowSelection<UserRow>({
+        storageKey: 'admin:users',
+        getRowId: (r) => r.id,
+        pageRows: tableRowsSel
+    })
+    const finalColumns = computed(() => [selectionColumn, ...columns])
+    const bulkBusy = ref(false)
+    async function bulkDeleteSelected() {
+        if (!selectedIds.value.length) return
+        Notifier.showChooser(
+            $t('Delete Users'),
+            $t('Are you sure you want to delete the selected items?'),
+            async () => {
+                bulkBusy.value = true
+                try {
+                    await $fetch(`/api/users/delete`, {
+                        method: 'POST',
+                        body: { ids: selectedIds.value }
+                    })
+                    Notifier.showAlert($t('User(s) deleted successfully!'), 'success')
+                    clearAll()
+                    reload()
+                } catch (e) {
+                    Notifier.showAlert(
+                        toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')),
+                        'error'
+                    )
+                } finally {
+                    bulkBusy.value = false
+                }
+            }
+        )
+    }
+
     const {
         page,
         limit: itemsPerPage,
@@ -191,9 +233,8 @@
         title: `Spenser | ${$t('Users Management')}`
     })
 
-    const tableRows = computed(() => tableData.value?.data?.rows ?? [])
     const isEmptyState = computed(() =>
-        status.value === 'success' && (tableRows.value?.length ?? 0) === 0
+        status.value === 'success' && (tableRowsSel.value?.length ?? 0) === 0
     )
 
     // Persist users filters (search) separately
@@ -244,10 +285,16 @@
                     </div>
                 </div>
                 <div v-else class="h-full">
+                    <ToolbarSelectionBar
+                        :count="selectedCount"
+                        :open="selectedCount > 0"
+                        :busy="bulkBusy"
+                        @delete="bulkDeleteSelected"
+                        @clear="clearAll" />
                     <UTable
                         ref="table"
-                        :data="tableRows"
-                        :columns="columns"
+                        :data="tableRowsSel"
+                        :columns="finalColumns"
                         sticky
                         :loading="status === 'pending'"
                         class="w-full tx-table-h" />

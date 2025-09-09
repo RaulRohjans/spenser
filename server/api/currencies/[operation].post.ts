@@ -1,12 +1,12 @@
 import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { currencies } from '~~/server/db/schema'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, inArray } from 'drizzle-orm'
 import type { Currency } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read params
-    const { id, symbol, placement } = await readBody(event)
+    const { id, ids, symbol, placement } = await readBody(event)
     const operation = event.context.params?.operation || null
     const user = ensureAuth(event)
 
@@ -18,22 +18,29 @@ export default defineEventHandler(async (event) => {
         })
 
     // No need to do rest of the logic
-    if (operation === 'delete' && id) {
+    if (operation === 'delete' && (id || (ids && Array.isArray(ids)))) {
+        const idList: number[] = Array.isArray(ids)
+            ? ids.filter((n: unknown) => Number.isFinite(Number(n))).map((n: any) => Number(n))
+            : id != null
+                ? [Number(id)]
+                : []
+        if (!idList.length)
+            throw createError({ statusCode: 400, statusMessage: 'Missing currency ID(s).' })
         // Mark record as deleted in the database
         const res = await db
             .update(currencies)
             .set({ deleted: true })
-            .where(and(eq(currencies.id, id), eq(currencies.deleted, false)))
+            .where(and(inArray(currencies.id, idList), eq(currencies.deleted, false)))
             .returning({ id: currencies.id })
-            .then((r) => r[0])
+            .then((r) => r)
 
-        if (!res)
+        if (!res || res.length === 0)
             throw createError({
                 statusCode: 500,
-                statusMessage: 'Could not find currency record to remove.'
+                statusMessage: 'Could not find currency record(s) to remove.'
             })
 
-        return { success: true }
+        return { success: true, currencyIds: res.map((x) => x.id) }
     }
 
     if (!symbol || !placement)

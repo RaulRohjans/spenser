@@ -5,6 +5,7 @@
     import type { TableColumn } from '@nuxt/ui'
     import type { CategoryRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
+    import { useRowSelection } from '~/composables/useRowSelection'
 
     const { t: $t } = useI18n()
     const router = useRouter()
@@ -35,7 +36,7 @@
                 //User accepted
                 $fetch(`/api/categories/delete`, {
                     method: 'POST',
-                    body: { id: row.id }
+                    body: { ids: [row.id] }
                 })
                     .then((data) => {
                         if (!data.success)
@@ -128,6 +129,47 @@
         }
     ]
 
+    // Selection integration
+    const tableRows = computed(() => tableData.value?.data?.rows ?? [])
+    const {
+        selectionColumn,
+        selectedIds,
+        selectedCount,
+        clearAll
+    } = useRowSelection<CategoryRow>({
+        storageKey: 'categories',
+        getRowId: (r) => r.id,
+        pageRows: tableRows
+    })
+    const finalColumns = computed(() => [selectionColumn, ...columns])
+    const bulkBusy = ref(false)
+    async function bulkDeleteSelected() {
+        if (!selectedIds.value.length) return
+        Notifier.showChooser(
+            $t('Delete Categories'),
+            $t('Are you sure you want to delete the selected items?'),
+            async () => {
+                bulkBusy.value = true
+                try {
+                    await $fetch(`/api/categories/delete`, {
+                        method: 'POST',
+                        body: { ids: selectedIds.value }
+                    })
+                    Notifier.showAlert($t('Category(ies) deleted successfully!'), 'success')
+                    clearAll()
+                    reload()
+                } catch (e) {
+                    Notifier.showAlert(
+                        toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')),
+                        'error'
+                    )
+                } finally {
+                    bulkBusy.value = false
+                }
+            }
+        )
+    }
+
     const {
         page,
         limit: itemsPerPage,
@@ -161,7 +203,7 @@
         title: `Spenser | ${$t('Categories')}`
     })
 
-    const tableRows = computed(() => tableData.value?.data?.rows ?? [])
+    
     const isEmptyState = computed(() =>
         status.value === 'success' && (tableRows.value?.length ?? 0) === 0
     )
@@ -195,9 +237,7 @@
                             <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                                 {{ $t('Categories') }}
                             </h2>
-                            <UTooltip :text="$t('Manage categories used to organize transactions.')">
-                                <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
-                            </UTooltip>
+                            <InfoTip :text="$t('Manage categories used to organize transactions.')" />
                         </div>
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <div class="flex flex-row items-center gap-2">
@@ -233,10 +273,16 @@
                         </div>
                     </div>
                     <div v-else class="h-full">
+                        <ToolbarSelectionBar
+                            :count="selectedCount"
+                            :open="selectedCount > 0"
+                            :busy="bulkBusy"
+                            @delete="bulkDeleteSelected"
+                            @clear="clearAll" />
                         <UTable
                             ref="table"
                             :data="tableRows"
-                            :columns="columns"
+                            :columns="finalColumns"
                             sticky
                             :loading="status === 'pending'"
                             class="w-full tx-table-h" />

@@ -107,6 +107,10 @@ export default {
     Edit: 'Editar',
     Duplicate: 'Duplicar',
     Delete: 'Eliminar',
+    Remove: 'Remover',
+    Clear: 'Limpar',
+    selected: 'selecionado(s)',
+    Select: 'Selecionar',
     'Rows per page': 'Registos por página',
     Columns: 'Colunas',
     Reset: 'Reiniciar',
@@ -178,6 +182,11 @@ export default {
     'No data to display': 'Não existem dados a mostrar',
     'Edit Transaction': 'Editar Transação',
     'Duplicate Transaction': 'Duplicar Transação',
+    'Delete Transactions': 'Eliminar Transações',
+    'Delete Categories': 'Eliminar Categorias',
+    'Delete Users': 'Eliminar Utilizadores',
+    'Delete Currencies': 'Eliminar Moedas',
+    'Are you sure you want to delete the selected items?': 'Tem a certeza de que pretende eliminar os itens selecionados?',
     'Edit Category': 'Editar Categoria',
     'Duplicate Category': 'Duplicar Categoria',
     'Edit Budget': 'Editar Budget',
@@ -282,8 +291,7 @@ export default {
     'The user does not have permisson to access this resource.':
         'O utilizador não tem permissão para aceder a este recurso.',
     'The given user does not have acces to this resource.':
-        'O utilizador indicado não tem acesso a este recurso.'
-    ,
+        'O utilizador indicado não tem acesso a este recurso.',
     'Image must be square': 'A imagem deve ser quadrada',
     'Select image': 'Selecionar imagem',
     'Delete image': 'Eliminar imagem',
@@ -292,8 +300,7 @@ export default {
     'Invalid form data.': 'Dados de formulário inválidos.',
     'No avatar payload provided.': 'Nenhum conteúdo de avatar fornecido.',
     'Unsupported file type.': 'Tipo de ficheiro não suportado.',
-    'File too large.': 'Ficheiro demasiado grande.'
-    ,
+    'File too large.': 'Ficheiro demasiado grande.',
     'Must be greater than 0': 'Deve ser maior que 0',
     'Invalid number': 'Número inválido',
     Expense: 'Despesa',
@@ -333,5 +340,26 @@ export default {
     'Configure platform settings and manage data for your account.':
         'Configure as definições da plataforma e gere os dados da sua conta.',
     'Upload a statement or paste text and let AI extract transactions for review.':
-        'Carregue um extrato ou cole texto e deixe a IA extrair transações para revisão.'
+        'Carregue um extrato ou cole texto e deixe a IA extrair transações para revisão.',
+    'Compare to previous period': 'Comparar com o período anterior',
+    'Total spent': 'Total gasto',
+    'Net cashflow': 'Fluxo de caixa líquido',
+    'Top category': 'Categoria principal',
+    'Avg transaction value': 'Valor médio por transação',
+    'Category Month-over-Month Change': 'Variação mês a mês por categoria',
+    'Cashflow': 'Fluxo de caixa',
+    'Others': 'Outros',
+    'Expenses (prev year)': 'Despesas (ano anterior)',
+    Net: 'Líquido',
+    Quarter: 'Trimestral',
+    YTD: 'YTD',
+    // Tooltips (info)
+    'Spending Over Time (info)': 'Tendência mensal de gastos no período selecionado. Ative a comparação para sobrepor o ano anterior.',
+    "Spending (%) per Category (info)": 'Parcela do total de despesas por categoria. Consolida categorias pequenas em Outros.',
+    'Cashflow (info)': 'Receitas e despesas por mês com linha do líquido para mostrar o resultado.',
+    'Category Month-over-Month Change (info)': 'Variação dos gastos por categoria em relação ao mês anterior (em %).',
+    'Total spent (info)': 'Soma de todas as despesas no período selecionado.',
+    'Net cashflow (info)': 'Receitas menos despesas no período selecionado.',
+    'Top category (info)': 'Categoria com maior gasto e sua percentagem do total.',
+    'Avg transaction value (info)': 'Valor médio das transações no período selecionado.'
 }

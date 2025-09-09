@@ -53,9 +53,7 @@
                         <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
                             {{ $t('Administration') }}<span v-if="currentSectionLabel"> - {{ currentSectionLabel }}</span>
                         </h2>
-                        <UTooltip :text="$t('Configure platform settings and manage data for your account.')">
-                            <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
-                        </UTooltip>
+                        <InfoTip :text="$t('Configure platform settings and manage data for your account.')" />
                     </div>
                     <div id="admin-header-actions" class="flex items-center gap-2"></div>
                 </div>

@@ -5,6 +5,7 @@
     import type { TableColumn } from '@nuxt/ui'
     import type { TransactionRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
+    import { useRowSelection } from '~/composables/useRowSelection'
 
     // Basic Setup
     const { t: $t } = useI18n()
@@ -39,7 +40,7 @@
                 //User accepted
                 $fetch(`/api/transactions/delete`, {
                     method: 'POST',
-                    body: { id: row.id }
+                    body: { ids: [row.id] }
                 })
                     .then((data) => {
                         if (!data.success)
@@ -330,6 +331,50 @@
             ((filters.categoryIds?.length ?? 0) > 0)
         )
     })
+
+    // Row selection (only when not grouped by category)
+    const {
+        selectionColumn,
+        selectedIds,
+        selectedCount,
+        clearAll
+    } = useRowSelection<TransactionRow>({
+        storageKey: 'transactions',
+        getRowId: (r) => r.id,
+        pageRows: tableRows
+    })
+
+    const finalColumns = computed(() =>
+        filters.groupCategory ? visibleColumns.value : [selectionColumn, ...visibleColumns.value]
+    )
+
+    const bulkBusy = ref(false)
+    async function bulkDeleteSelected() {
+        if (!selectedIds.value.length) return
+        Notifier.showChooser(
+            $t('Delete Transactions'),
+            $t('Are you sure you want to delete the selected items?'),
+            async () => {
+                bulkBusy.value = true
+                try {
+                    await $fetch(`/api/transactions/delete`, {
+                        method: 'POST',
+                        body: { ids: selectedIds.value }
+                    })
+                    Notifier.showAlert($t('Transaction(s) deleted successfully!'), 'success')
+                    clearAll()
+                    reload()
+                } catch (e) {
+                    Notifier.showAlert(
+                        toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')),
+                        'error'
+                    )
+                } finally {
+                    bulkBusy.value = false
+                }
+            }
+        )
+    }
 </script>
 
 <template>
@@ -340,13 +385,13 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <h2
-                                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                                {{ $t('Transactions') }}
-                            </h2>
-                            <UTooltip :text="$t('View and manage your transactions. Search, filter, and group by category.')">
-                                <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
-                            </UTooltip>
+                            <div class="flex items-center gap-2">
+                                <h2
+                                    class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                                    {{ $t('Transactions') }}
+                                </h2>
+                                <InfoTip :text="$t('View and manage your transactions. Search, filter, and group by category.')" />
+                            </div>
                         </div>
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <div class="flex flex-row items-center gap-2">
@@ -410,10 +455,16 @@
                         </div>
                     </div>
                     <div v-else class="h-full">
+                        <ToolbarSelectionBar
+                            :count="selectedCount"
+                            :open="!filters.groupCategory && selectedCount > 0"
+                            :busy="bulkBusy"
+                            @delete="bulkDeleteSelected"
+                            @clear="clearAll" />
                         <UTable
                             ref="table"
                             :data="tableRows"
-                            :columns="visibleColumns"
+                            :columns="finalColumns"
                             sticky
                             :loading="status === 'pending'"
                             class="w-full tx-table-h" />
