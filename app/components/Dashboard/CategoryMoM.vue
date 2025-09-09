@@ -52,9 +52,7 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <h3 class="font-semibold text-xl">{{ $t('Category Month-over-Month Change') }}</h3>
-                <UTooltip :text="$t('Category Month-over-Month Change (info)')">
-                    <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
-                </UTooltip>
+                <InfoTip :text="$t('Category Month-over-Month Change (info)')" />
             </div>
         </div>
         <div class="pt-2">

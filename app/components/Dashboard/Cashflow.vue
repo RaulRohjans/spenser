@@ -58,9 +58,7 @@
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <h3 class="font-semibold text-xl">{{ $t('Cashflow') }}</h3>
-                <UTooltip :text="$t('Cashflow (info)')">
-                    <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
-                </UTooltip>
+                <InfoTip :text="$t('Cashflow (info)')" />
             </div>
         </div>
         <div class="pt-2">

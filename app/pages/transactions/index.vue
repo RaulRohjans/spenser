@@ -385,13 +385,13 @@
                 <template #header>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <h2
-                                class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                                {{ $t('Transactions') }}
-                            </h2>
-                            <UTooltip :text="$t('View and manage your transactions. Search, filter, and group by category.')">
-                                <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
-                            </UTooltip>
+                            <div class="flex items-center gap-2">
+                                <h2
+                                    class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
+                                    {{ $t('Transactions') }}
+                                </h2>
+                                <InfoTip :text="$t('View and manage your transactions. Search, filter, and group by category.')" />
+                            </div>
                         </div>
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <div class="flex flex-row items-center gap-2">
