@@ -12,6 +12,7 @@ import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { categories, globalSettings } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
+import { resolveAiConfig } from '~~/server/utils/aiConfig'
 
 const parsedTransactionSchema = z.object({
     name: z.string().min(1),
@@ -32,17 +33,9 @@ export default defineEventHandler(async (event) => {
         .from(globalSettings)
         .then((r) => r[0])
 
-    if (
-        !gSettings ||
-        !gSettings.token ||
-        !gSettings.importer_provider ||
-        !gSettings.model
-    ) {
-        throw createError({
-            statusMessage: 'LLM is not configured.',
-            statusCode: 400
-        })
-    }
+    const { providerName, apiToken, modelName, ollamaBaseUrl } = resolveAiConfig(
+        gSettings || {}
+    )
 
     // Load categories for the user
     const cats = await db
@@ -117,32 +110,31 @@ export default defineEventHandler(async (event) => {
             statusCode: 400
         })
 
-    const providerName = gSettings.importer_provider
     let model
     if (providerName === 'gpt') {
-        const name = gSettings.model || 'gpt-4o-mini'
-        const provider = createOpenAI({ apiKey: gSettings.token || '' })
+        const name = modelName || 'gpt-4o-mini'
+        const provider = createOpenAI({ apiKey: apiToken || '' })
         model = provider(name)
     } else if (providerName === 'anthropic') {
-        const name = gSettings.model || 'claude-3-5-sonnet-latest'
-        const provider = createAnthropic({ apiKey: gSettings.token || '' })
+        const name = modelName || 'claude-3-5-sonnet-latest'
+        const provider = createAnthropic({ apiKey: apiToken || '' })
         model = provider(name)
     } else if (providerName === 'google') {
-        const name = gSettings.model || 'gemini-1.5-flash'
+        const name = modelName || 'gemini-1.5-flash'
         const provider = createGoogleGenerativeAI({
-            apiKey: gSettings.token || ''
+            apiKey: apiToken || ''
         })
         model = provider(name)
     } else if (providerName === 'ollama') {
-        const name = gSettings.model || 'llama3'
+        const name = modelName || 'llama3'
         const provider = createOllama({
-            baseURL: gSettings.ollama_url || 'http://localhost:11434'
+            baseURL: ollamaBaseUrl
         })
         model = provider(name)
     } else if (providerName === 'openrouter') {
-        const name = gSettings.model || 'anthropic/claude-3-5-sonnet-latest'
+        const name = modelName || 'anthropic/claude-3-5-sonnet-latest'
         const provider = createOpenRouter({
-            apiKey: gSettings.token || ''
+            apiKey: apiToken || ''
         })
         model = provider(name)
     } else {
@@ -182,7 +174,7 @@ export default defineEventHandler(async (event) => {
     } catch (err) {
         console.error('[ai-import] generation failed', {
             provider: providerName,
-            model: gSettings.model,
+            model: modelName,
             // @ts-expect-error best-effort
             text: err?.text,
             error: err
