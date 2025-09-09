@@ -11,7 +11,14 @@
     const store = useDashboardStore()
     const colorMode = useColorMode()
     const { t: $t } = useI18n()
-    provide(THEME_KEY, computed(() => colorMode.value))
+    const themeObj = reactive<{ value: string }>({ value: colorMode.value })
+    watch(
+        () => colorMode.value,
+        (v) => {
+            themeObj.value = v
+        }
+    )
+    provide(THEME_KEY, themeObj)
 
     const { data, status } = await useLazyAsyncData<{ success: boolean; data: CategoryMoMResponse }>(
         'dashboard-category-mom',

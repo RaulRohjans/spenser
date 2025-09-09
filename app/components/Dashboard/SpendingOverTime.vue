@@ -12,8 +12,14 @@
     const colorMode = useColorMode()
     const { t: $t } = useI18n()
 
-    const theme = computed(() => colorMode.value)
-    provide(THEME_KEY, theme)
+    const themeObj = reactive<{ value: string }>({ value: colorMode.value })
+    watch(
+        () => colorMode.value,
+        (v) => {
+            themeObj.value = v
+        }
+    )
+    provide(THEME_KEY, themeObj)
     
     import { formatMonthShort } from '~/utils/date'
 
