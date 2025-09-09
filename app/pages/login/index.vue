@@ -7,7 +7,6 @@
     import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { signIn } = useAuth()
-    const config = useRuntimeConfig()
     const { t: $t } = useI18n()
     const validationSchema = z.object({
         username: z.string().trim().min(1, $t('Invalid username')),
@@ -51,9 +50,20 @@
     }
 
     onMounted(async () => {
-        // Auto-login demo user on each visit to login page when DEMO is on,
-        // unless suppressed once (e.g., immediately after logout to allow manual login)
-        if (!config.public.demoMode) return
+        // Query server for demo mode and, if enabled, auto-login demo user
+        let isDemo = false
+        try {
+            const res = await $fetch<{ isDemo: boolean }>('/api/is-demo', {
+                method: 'GET'
+            })
+            isDemo = !!res?.isDemo
+        } catch {
+            // If the check fails, don't block manual login
+            return
+        }
+
+        if (!isDemo) return
+
         const suppressOnce = sessionStorage.getItem('demoAutoSuppressOnce')
         if (suppressOnce) {
             sessionStorage.removeItem('demoAutoSuppressOnce')

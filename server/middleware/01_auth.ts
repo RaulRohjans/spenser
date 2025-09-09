@@ -7,7 +7,8 @@ const isProtectedApiRoute = (event: H3Event) => {
     if (
         pathname.startsWith('/api/auth/login') ||
         pathname.startsWith('/api/auth/logout') ||
-        pathname.startsWith('/api/auth/refresh')
+        pathname.startsWith('/api/auth/refresh') ||
+        pathname.startsWith('/api/is-demo')
     )
         return false
     return true
