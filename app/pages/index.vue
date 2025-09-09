@@ -39,22 +39,24 @@
         <h2 class="text-3xl font-semibold mb-2">
             {{ `${$t('Welcome')} ${getUsername}` }}!
         </h2>
+        <div class="w-full flex flex-col gap-4">
+            <div class="w-full">
+                <DashboardDateScope />
+            </div>
 
-        <div
-            class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-0 sm:justify-between items-center w-full">
-            <ChartSpendingOverTime
-                :key="chartKey"
-                height="50vh"
-                class="w-full sm:w-[65%]" />
-            <ChartExpenseByCategory
-                :key="chartKey"
-                height="50vh"
-                class="w-full sm:w-[32%]" />
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                <DashboardKpis />
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                <DashboardSpendingOverTime class="xl:col-span-2" />
+                <DashboardCategoryBreakdown />
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <DashboardCategoryMoM />
+                <DashboardCashflow />
+            </div>
         </div>
-
-        <ChartTransactionsPerCategories
-            :key="chartKey"
-            height="50vh"
-            width="100%" />
     </div>
 </template>

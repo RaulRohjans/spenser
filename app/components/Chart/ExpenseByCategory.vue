@@ -11,7 +11,7 @@
 
     import { PieChart, type PieSeriesOption } from 'echarts/charts'
     import { LabelLayout } from 'echarts/features'
-    import { SVGRenderer } from 'echarts/renderers'
+    import { CanvasRenderer } from 'echarts/renderers'
     import type { ExpensesByCategoryData } from '~~/types/Chart'
 
     export type ChartExpenseByCategory = {
@@ -35,7 +35,7 @@
         height: '40vh'
     })
 
-    use([TooltipComponent, LegendComponent, PieChart, SVGRenderer, LabelLayout])
+    use([TooltipComponent, LegendComponent, PieChart, CanvasRenderer, LabelLayout])
 
     const colorMode = useColorMode()
     const { t: $t } = useI18n()
@@ -62,11 +62,11 @@
                 method: 'GET',
                 query: {
                     startDate:
-                        dateRange.value.length > 0
+                        dateRange.value.length > 0 && dateRange.value[0]
                             ? dateRange.value[0].getTime()
                             : '',
                     endDate:
-                        dateRange.value.length > 0
+                        dateRange.value.length > 1 && dateRange.value[1]
                             ? dateRange.value[1].getTime()
                             : ''
                 }

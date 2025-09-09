@@ -291,8 +291,7 @@ export default {
     'The user does not have permisson to access this resource.':
         'O utilizador não tem permissão para aceder a este recurso.',
     'The given user does not have acces to this resource.':
-        'O utilizador indicado não tem acesso a este recurso.'
-    ,
+        'O utilizador indicado não tem acesso a este recurso.',
     'Image must be square': 'A imagem deve ser quadrada',
     'Select image': 'Selecionar imagem',
     'Delete image': 'Eliminar imagem',
@@ -301,8 +300,7 @@ export default {
     'Invalid form data.': 'Dados de formulário inválidos.',
     'No avatar payload provided.': 'Nenhum conteúdo de avatar fornecido.',
     'Unsupported file type.': 'Tipo de ficheiro não suportado.',
-    'File too large.': 'Ficheiro demasiado grande.'
-    ,
+    'File too large.': 'Ficheiro demasiado grande.',
     'Must be greater than 0': 'Deve ser maior que 0',
     'Invalid number': 'Número inválido',
     Expense: 'Despesa',
@@ -342,5 +340,17 @@ export default {
     'Configure platform settings and manage data for your account.':
         'Configure as definições da plataforma e gere os dados da sua conta.',
     'Upload a statement or paste text and let AI extract transactions for review.':
-        'Carregue um extrato ou cole texto e deixe a IA extrair transações para revisão.'
+        'Carregue um extrato ou cole texto e deixe a IA extrair transações para revisão.',
+    'Compare to previous period': 'Comparar com o período anterior',
+    'Total spent': 'Total gasto',
+    'Net cashflow': 'Fluxo de caixa líquido',
+    'Top category': 'Categoria principal',
+    'Avg transaction value': 'Valor médio por transação',
+    'Category MoM change': 'Variação mensal por categoria',
+    'Cashflow': 'Fluxo de caixa',
+    'Others': 'Outros',
+    'Expenses (prev year)': 'Despesas (ano anterior)',
+    Net: 'Líquido',
+    Quarter: 'Trimestral',
+    YTD: 'YTD'
 }

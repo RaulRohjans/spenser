@@ -338,5 +338,17 @@ export default {
     'Configure platform settings and manage data for your account.':
         'Configure platform settings and manage data for your account.',
     'Upload a statement or paste text and let AI extract transactions for review.':
-        'Upload a statement or paste text and let AI extract transactions for review.'
+        'Upload a statement or paste text and let AI extract transactions for review.',
+    'Compare to previous period': 'Compare to previous period',
+    'Total spent': 'Total spent',
+    'Net cashflow': 'Net cashflow',
+    'Top category': 'Top category',
+    'Avg transaction value': 'Avg transaction value',
+    'Category MoM change': 'Category MoM change',
+    'Cashflow': 'Cashflow',
+    'Others': 'Others',
+    'Expenses (prev year)': 'Expenses (prev year)',
+    Net: 'Net',
+    Quarter: 'Quarterly',
+    YTD: 'YTD'
 }

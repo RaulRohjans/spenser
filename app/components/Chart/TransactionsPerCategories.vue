@@ -14,7 +14,7 @@
     } from 'echarts/components'
 
     import { BarChart, type BarSeriesOption } from 'echarts/charts'
-    import { SVGRenderer } from 'echarts/renderers'
+    import { CanvasRenderer } from 'echarts/renderers'
 
     import type { TransactionsPerCategoryData } from '~~/types/Chart'
 
@@ -24,7 +24,7 @@
         GridComponent,
         LegendComponent,
         BarChart,
-        SVGRenderer
+        CanvasRenderer
     ])
 
     type EChartsOption = echarts.ComposeOption<
@@ -78,11 +78,11 @@
                 method: 'GET',
                 query: {
                     startDate:
-                        dateRange.value.length > 0
+                        dateRange.value.length > 0 && dateRange.value[0]
                             ? dateRange.value[0].getTime()
                             : '',
                     endDate:
-                        dateRange.value.length > 0
+                        dateRange.value.length > 1 && dateRange.value[1]
                             ? dateRange.value[1].getTime()
                             : ''
                 }
