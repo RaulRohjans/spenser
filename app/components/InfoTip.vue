@@ -18,7 +18,7 @@
 </script>
 
 <template>
-    <div class="inline-flex items-center" @mouseleave="!isTouch && (open = false)">
+    <span class="inline-flex items-center" @mouseleave="!isTouch && (open = false)">
         <UTooltip :open="open" :text="props.text" :popper="{ placement: 'top' }">
             <button
                 type="button"
@@ -31,7 +31,7 @@
                 </span>
             </button>
         </UTooltip>
-    </div>
+    </span>
     
 </template>
 

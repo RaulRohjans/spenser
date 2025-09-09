@@ -37,9 +37,36 @@
         const expenses = (data.value?.data.series ?? []).map((p) => p.expense)
         const compareExpenses = (data.value?.data.compareSeries ?? []).map((p) => p.expense)
 
+        const series: any[] = [
+            {
+                name: $t('Expenses'),
+                type: 'line',
+                smooth: true,
+                areaStyle: {},
+                data: expenses,
+                itemStyle: { color: 'rgb(227, 0, 0)' }
+            }
+        ]
+        if (store.comparePrev && compareExpenses.length > 0) {
+            series.push({
+                name: $t('Expenses (prev year)'),
+                type: 'line',
+                smooth: true,
+                lineStyle: { type: 'dashed' },
+                data: compareExpenses,
+                itemStyle: { color: 'rgb(200, 100, 100)' }
+            })
+        }
+
         return {
             tooltip: { trigger: 'axis' },
-            legend: { data: [$t('Expenses'), $t('Expenses (prev year)')], bottom: 0 },
+            legend: {
+                data:
+                    store.comparePrev && compareExpenses.length > 0
+                        ? [$t('Expenses'), $t('Expenses (prev year)')]
+                        : [$t('Expenses')],
+                bottom: 0
+            },
             grid: { left: 30, right: 18, top: 28, bottom: 50 },
             xAxis: {
                 type: 'category',
@@ -49,28 +76,7 @@
                 }
             },
             yAxis: { type: 'value' },
-            series: [
-                {
-                    name: $t('Expenses'),
-                    type: 'line',
-                    smooth: true,
-                    areaStyle: {},
-                    data: expenses,
-                    itemStyle: { color: 'rgb(227, 0, 0)' }
-                },
-                ...(store.comparePrev
-                    ? [
-                          {
-                              name: $t('Expenses (prev year)'),
-                              type: 'line',
-                              smooth: true,
-                              lineStyle: { type: 'dashed' },
-                              data: compareExpenses,
-                              itemStyle: { color: 'rgb(200, 100, 100)' }
-                          }
-                      ]
-                    : [])
-            ]
+            series
         }
     })
 
