@@ -346,11 +346,20 @@ export default {
     'Net cashflow': 'Fluxo de caixa líquido',
     'Top category': 'Categoria principal',
     'Avg transaction value': 'Valor médio por transação',
-    'Category MoM change': 'Variação mensal por categoria',
+    'Category Month-over-Month Change': 'Variação mês a mês por categoria',
     'Cashflow': 'Fluxo de caixa',
     'Others': 'Outros',
     'Expenses (prev year)': 'Despesas (ano anterior)',
     Net: 'Líquido',
     Quarter: 'Trimestral',
-    YTD: 'YTD'
+    YTD: 'YTD',
+    // Tooltips (info)
+    'Spending Over Time (info)': 'Tendência mensal de gastos no período selecionado. Ative a comparação para sobrepor o ano anterior.',
+    "Spending (%) per Category (info)": 'Parcela do total de despesas por categoria. Consolida categorias pequenas em Outros.',
+    'Cashflow (info)': 'Receitas e despesas por mês com linha do líquido para mostrar o resultado.',
+    'Category Month-over-Month Change (info)': 'Variação dos gastos por categoria em relação ao mês anterior (em %).',
+    'Total spent (info)': 'Soma de todas as despesas no período selecionado.',
+    'Net cashflow (info)': 'Receitas menos despesas no período selecionado.',
+    'Top category (info)': 'Categoria com maior gasto e sua percentagem do total.',
+    'Avg transaction value (info)': 'Valor médio das transações no período selecionado.'
 }

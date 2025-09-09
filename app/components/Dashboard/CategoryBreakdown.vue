@@ -48,7 +48,12 @@
 <template>
     <UCard class="shadow-xl p-4">
         <div class="flex items-center justify-between">
-            <h3 class="font-semibold text-xl">{{ $t('Spending (%) per Category') }}</h3>
+            <div class="flex items-center gap-2">
+                <h3 class="font-semibold text-xl">{{ $t('Spending (%) per Category') }}</h3>
+                <UTooltip :text="$t('Spending (%) per Category (info)')">
+                    <UIcon name="i-heroicons-information-circle" class="h-5 w-5 text-gray-400" />
+                </UTooltip>
+            </div>
         </div>
         <div class="pt-2">
             <VChart :option="option" :loading="status === 'pending'" class="w-full" style="height: 44vh" autoresize />

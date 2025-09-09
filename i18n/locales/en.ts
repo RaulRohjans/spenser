@@ -344,11 +344,20 @@ export default {
     'Net cashflow': 'Net cashflow',
     'Top category': 'Top category',
     'Avg transaction value': 'Avg transaction value',
-    'Category MoM change': 'Category MoM change',
+    'Category Month-over-Month Change': 'Category Month-over-Month Change',
     'Cashflow': 'Cashflow',
     'Others': 'Others',
     'Expenses (prev year)': 'Expenses (prev year)',
     Net: 'Net',
     Quarter: 'Quarterly',
-    YTD: 'YTD'
+    YTD: 'YTD',
+    // Tooltips (info)
+    'Spending Over Time (info)': 'Monthly spending trend for the selected period. Toggle compare to overlay previous year.',
+    "Spending (%) per Category (info)": 'Share of total monthly expenses by category. Consolidates smaller categories into Others.',
+    'Cashflow (info)': 'Income vs expenses per month with net line to show overall result.',
+    'Category Month-over-Month Change (info)': 'Change in spending by category compared to the previous month (in %).',
+    'Total spent (info)': 'Sum of all expenses in the selected period.',
+    'Net cashflow (info)': 'Income minus expenses for the selected period.',
+    'Top category (info)': 'Category with the highest spending and its share of the total.',
+    'Avg transaction value (info)': 'Average value across all transactions in the selected period.'
 }
