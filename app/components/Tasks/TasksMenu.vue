@@ -87,7 +87,6 @@
     }
 
     const itemsRunningCount = computed(() => {
-        console.log(store?.items, store?.items?.filter(i => i.status === 'running')?.length || 0)
         return store?.items?.filter(i => i.status === 'running')?.length || 0
     })
 
