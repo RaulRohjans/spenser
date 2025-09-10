@@ -72,15 +72,7 @@
                 15
             )
 
-            let res: {
-                success: boolean
-                transactions: Array<{
-                    category: number | null
-                    name: string
-                    value: number
-                    date: string
-                }>
-            }
+            let res: { success: boolean; taskId: string }
 
             if (hasFile) {
                 const fd = new FormData()
@@ -104,22 +96,11 @@
                 })
             }
 
-            progressHandle.update(80, $t('Processing AI response...'))
-
-            if (!res.success || !Array.isArray(res.transactions))
-                throw new Error('Invalid AI response')
-
-            store.setItems(
-                res.transactions.map((t) => ({
-                    category: t.category ?? null,
-                    name: String(t.name || ''),
-                    value: Number(t.value || 0),
-                    date: String(t.date || '')
-                }))
+            progressHandle.success($t('Parsing started in background...'))
+            Notifier.showAlert(
+                $t('Track progress in the bell menu on the top-right.'),
+                'info'
             )
-
-            progressHandle.success($t('Done! Redirecting...'))
-            await router.push('/transactions/import-ai/review')
             reset()
         } catch (e) {
             const err = e as NuxtError
