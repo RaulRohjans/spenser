@@ -366,7 +366,7 @@ export default {
     'Avg transaction value (info)': 'Valor médio das transações no período selecionado.'
     ,
     '1 task running...': '1 tarefa em execução...',
-    '0 tasks running...': '0 tarefas em execução...',
+    'tasks running...': 'tarefas em execução...',
     'Elapsed time:': 'Tempo decorrido:',
     Ready: 'Pronto',
     Failed: 'Falhou',

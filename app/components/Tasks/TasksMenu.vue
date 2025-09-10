@@ -86,6 +86,11 @@
         animateHighlight()
     }
 
+    const itemsRunningCount = computed(() => {
+        console.log(store?.items, store?.items?.filter(i => i.status === 'running')?.length || 0)
+        return store?.items?.filter(i => i.status === 'running')?.length || 0
+    })
+
     onMounted(() => {
         window.addEventListener('tasks:highlight-bell', onHighlightEvent as EventListener)
     })
@@ -105,10 +110,10 @@
             <div class="w-[490px] sm:w-[600px] max-w-[490px] p-4">
                 <div class="text-sm mb-3 opacity-80 flex items-center justify-between px-1">
                     <span>
-                        <span v-if="store.items.some(i => i.status === 'running')">
-                            {{ $t('1 task running...') }}
+                        <span v-if="itemsRunningCount !== 1">
+                            {{ `${itemsRunningCount} ${$t('tasks running...')}` }}
                         </span>
-                        <span v-else>{{ $t('0 tasks running...') }}</span>
+                        <span v-else>{{ $t('1 task running...') }}</span>
                     </span>
                 </div>
 
@@ -155,7 +160,9 @@
     .tasks-bell-highlighted {
         border-radius: 9999px;
         outline: none;
+        /* For some unknown reason the component needs 2 box shadows to have the correct background color*/
         box-shadow: 0 0 25px 10px #f59e0b33;
+        box-shadow: 0 0 28px 12px rgba(239, 177, 0, 0.28);
         background-color: rgba(239, 177, 0, 1);
         color: white;
     }
