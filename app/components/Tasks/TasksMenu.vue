@@ -150,6 +150,7 @@
         box-shadow: 0 0 25px 10px #f59e0b33;
         box-shadow: 0 0 28px 12px rgba(239, 177, 0, 0.28);
         background-color: rgba(239, 177, 0, 1);
+        color: white;
     }
 </style>
 
