@@ -13,6 +13,8 @@ export const useTasksStore = defineStore('tasks', () => {
     const polling = ref(false)
     let timer: number | null = null
 
+    let prevHasRunning = false
+
     const startPolling = () => {
         if (polling.value) return
         polling.value = true
@@ -22,7 +24,18 @@ export const useTasksStore = defineStore('tasks', () => {
                     '/api/tasks',
                     { method: 'GET' }
                 )
-                if (res.success) items.value = res.items
+                if (res.success) {
+                    items.value = res.items
+                    const hasRunning = items.value.some(i => i.status === 'running')
+                    if (hasRunning && !prevHasRunning) {
+                        try {
+                            window.dispatchEvent(new Event('tasks:highlight-bell'))
+                        } catch {
+                            /* empty */
+                        }
+                    }
+                    prevHasRunning = hasRunning
+                }
             } catch {
                 /* empty */
             }

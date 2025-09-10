@@ -29,6 +29,61 @@
             store.close()
         }
     }
+    // Highlight animation: pop out, glow, wiggle, return
+    const bellRef = ref<HTMLElement | null>(null)
+    const resolveEl = (maybe: unknown): HTMLElement | null => {
+        if (!maybe) return null
+        if (maybe instanceof HTMLElement) return maybe
+        // Vue component instance with $el
+        try {
+            const el = (maybe as { $el?: unknown }).$el as unknown
+            if (el instanceof HTMLElement) return el
+        } catch {
+            /* empty */
+        }
+        return null
+    }
+
+    const animateHighlight = () => {
+        // Find the actual bell DOM element
+        const refEl = resolveEl(bellRef.value)
+        const qsEl = document.querySelector('[data-tasks-bell]') as HTMLElement | null
+        const btn = refEl || qsEl
+        if (!btn) return
+        requestAnimationFrame(() => {
+            btn.classList.add('tasks-bell-highlighted')
+            btn.animate(
+                [
+                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
+                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none' }
+                ],
+                { duration: 1800, easing: 'ease-in-out' }
+            ).onfinish = () => btn.classList.remove('tasks-bell-highlighted')
+        })
+    }
+
+    const onHighlightEvent = () => {
+        // Respect prefers-reduced-motion by skipping heavy transforms
+        try {
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+        } catch {
+            /* empty */
+        }
+        animateHighlight()
+    }
+
+    onMounted(() => {
+        window.addEventListener('tasks:highlight-bell', onHighlightEvent as EventListener)
+    })
+    onBeforeUnmount(() => {
+        window.removeEventListener('tasks:highlight-bell', onHighlightEvent as EventListener)
+    })
 </script>
 
 <template>
@@ -36,7 +91,7 @@
         :open="store.isOpen"
         @update:open="onOpenChange"
         :content="{ align: 'end', side: 'bottom', sideOffset: 8 }">
-        <UButton color="neutral" variant="ghost" icon="i-heroicons-bell-alert" />
+        <UButton data-tasks-bell ref="bellRef" color="neutral" variant="ghost" icon="i-heroicons-bell-alert" />
 
         <template #content>
             <div class="w-[490px] sm:w-[600px] max-w-[490px] p-4">
@@ -88,5 +143,13 @@
         </template>
     </UPopover>
 </template>
-
+<style scoped>
+    .tasks-bell-highlighted {
+        border-radius: 9999px;
+        outline: none;
+        box-shadow: 0 0 25px 10px #f59e0b33;
+        box-shadow: 0 0 28px 12px rgba(239, 177, 0, 0.28);
+        background-color: rgba(239, 177, 0, 1);
+    }
+</style>
 

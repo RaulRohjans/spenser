@@ -5,19 +5,11 @@
 
     
     const { t: $t } = useI18n()
-    const router = useRouter()
-    const store = useAiImportStore()
 
     const isDragging: Ref<boolean> = ref(false)
     const selectedFile: Ref<File | null> = ref(null)
     const textInput: Ref<string> = ref('')
     const isSubmitting: Ref<boolean> = ref(false)
-    let progressHandle: {
-        update: (nextValue?: number, nextMessage?: string) => void
-        success: (finalMessage?: string, autoCloseMs?: number) => void
-        error: (finalMessage?: string, autoCloseMs?: number) => void
-        close: () => void
-    } | null = null
     const fileInput: Ref<HTMLInputElement | null> = ref(null)
     const fileDisabled = computed(() => textInput.value.trim().length > 0)
     const textDisabled = computed(() => !!selectedFile.value)
@@ -49,10 +41,6 @@
     const reset = () => {
         selectedFile.value = null
         textInput.value = ''
-        if (progressHandle) {
-            progressHandle.close()
-            progressHandle = null
-        }
     }
 
     const submit = async () => {
@@ -67,40 +55,23 @@
 
         try {
             isSubmitting.value = true
-            progressHandle = Notifier.showProgress(
-                $t('Uploading and preparing data...'),
-                15
-            )
-
             let res: { success: boolean; taskId: string }
-
             if (hasFile) {
                 const fd = new FormData()
                 fd.append('0', selectedFile.value as File)
-                progressHandle.update(
-                    30,
-                    $t('Sending file to be parsed by AI...')
-                )
                 res = await $fetch('/api/ai-import/parse', {
                     method: 'POST',
                     body: fd
                 })
             } else {
-                progressHandle.update(
-                    30,
-                    $t('Sending text to be parsed by AI...')
-                )
                 res = await $fetch('/api/ai-import/parse', {
                     method: 'POST',
                     body: { transactionText: textInput.value }
                 })
             }
 
-            progressHandle.success($t('Parsing started in background...'))
-            Notifier.showAlert(
-                $t('Track progress in the bell menu on the top-right.'),
-                'info'
-            )
+            // Kick off bell highlight animation so the user notices where to look
+            try { window.dispatchEvent(new Event('tasks:highlight-bell')) } catch { /* empty */ }
             reset()
         } catch (e) {
             const err = e as NuxtError
@@ -115,10 +86,6 @@
             )
         } finally {
             isSubmitting.value = false
-            if (progressHandle) {
-                progressHandle.close()
-                progressHandle = null
-            }
         }
     }
 
