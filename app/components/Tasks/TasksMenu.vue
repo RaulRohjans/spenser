@@ -64,14 +64,22 @@
                     { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none' }
                 ],
                 { duration: 1800, easing: 'ease-in-out' }
-            ).onfinish = () => btn.classList.remove('tasks-bell-highlighted')
+            ).onfinish = () => {
+                btn.classList.remove('tasks-bell-highlighted')
+                // Open tasks popover after animation so user sees the new task
+                try { store.open() } catch { /* empty */ }
+            }
         })
     }
 
     const onHighlightEvent = () => {
         // Respect prefers-reduced-motion by skipping heavy transforms
         try {
-            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+            if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                // Skip animation but still open the popover to show the task
+                store.open()
+                return
+            }
         } catch {
             /* empty */
         }
@@ -148,7 +156,6 @@
         border-radius: 9999px;
         outline: none;
         box-shadow: 0 0 25px 10px #f59e0b33;
-        box-shadow: 0 0 28px 12px rgba(239, 177, 0, 0.28);
         background-color: rgba(239, 177, 0, 1);
         color: white;
     }
