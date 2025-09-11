@@ -6,27 +6,39 @@ interface ActionCallbacks<T> {
     onDuplicate?: (row: T) => void
     onDelete?: (row: T) => void
     onSetDefault?: (row: T) => void
+    onUnsetDefault?: (row: T) => void
 }
 
 export function useActionColumnCell<T>(options: {
-    actions: ('edit' | 'duplicate' | 'delete' | 'setDefault')[]
+    actions: ('edit' | 'duplicate' | 'delete' | 'setDefault' | 'unsetDefault')[]
     callbacks: ActionCallbacks<T>
     isSetDefaultDisabled?: (row: T) => boolean
+    isRowDefault?: (row: T) => boolean
 }) {
-    const { actions, callbacks, isSetDefaultDisabled } = options
+    const { actions, callbacks, isSetDefaultDisabled, isRowDefault } = options
     const { t: $t } = useI18n()
 
     return {
         cell: ({ row }: { row: { original: T } }) => {
+            const isDefault = isRowDefault?.(row.original) === true
             const items = [
                 { type: 'label', label: $t('Actions') },
-                ...(actions.includes('setDefault')
+                ...(actions.includes('setDefault') && !isDefault
                     ? [
                           {
                               label: $t('Set as Default'),
                               icon: 'i-heroicons-check-circle',
                               disabled: isSetDefaultDisabled?.(row.original) === true,
                               onSelect: () => callbacks.onSetDefault?.(row.original)
+                          }
+                      ]
+                    : []),
+                ...(actions.includes('unsetDefault') && isDefault
+                    ? [
+                          {
+                              label: $t('Unset Default'),
+                              icon: 'i-heroicons-x-circle',
+                              onSelect: () => callbacks.onUnsetDefault?.(row.original)
                           }
                       ]
                     : []),

@@ -17,6 +17,14 @@
     const setDefault = async (row: AiModelRow) => {
         await $fetch('/api/ai-models/set-default', { method: 'POST', body: { id: row.id } })
         Notifier.showAlert($t('Settings saved successfully!'), 'success')
+        await refreshDefaultId()
+        reload()
+    }
+
+    const unsetDefault = async (row?: AiModelRow) => {
+        await $fetch('/api/ai-models/unset-default', { method: 'POST' })
+        Notifier.showAlert($t('Settings saved successfully!'), 'success')
+        await refreshDefaultId()
         reload()
     }
 
@@ -34,13 +42,15 @@
     }
 
     const { cell: actionCell } = useActionColumnCell<AiModelRow>({
-        actions: ['edit', 'delete', 'setDefault'],
+        actions: ['edit', 'delete', 'setDefault', 'unsetDefault'],
         callbacks: {
             onEdit: editModel,
             onDelete: delModel,
-            onSetDefault: setDefault
+            onSetDefault: setDefault,
+            onUnsetDefault: unsetDefault
         },
-        isSetDefaultDisabled: (row) => defaultId.value != null && row.id === defaultId.value
+        isSetDefaultDisabled: (row) => defaultId.value != null && row.id === defaultId.value,
+        isRowDefault: (row) => defaultId.value != null && row.id === defaultId.value
     })
 
     const columns: TableColumn<AiModelRow>[] = [
@@ -94,14 +104,15 @@
     })
 
     // Fetch default model id on client to avoid SSR hydration mismatch
-    onMounted(async () => {
+    const refreshDefaultId = async () => {
         try {
             const gs = await $fetch<{ success: boolean; data?: { ai_model?: number } }>(`/api/global-settings`, { method: 'GET' })
             defaultId.value = (gs?.data?.ai_model as number | undefined) ?? null
         } catch {
             defaultId.value = null
         }
-    })
+    }
+    onMounted(refreshDefaultId)
 
     const showColumns = ref(false)
     const modalProps = ref<any | null>(null)

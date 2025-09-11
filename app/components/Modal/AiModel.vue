@@ -36,6 +36,14 @@
         ollama_url: props.ollama_url || ''
     })
 
+    const providerItems = [
+        { label: 'OpenAI (GPT)', value: 'gpt' },
+        { label: 'Anthropic', value: 'anthropic' },
+        { label: 'Google', value: 'google' },
+        { label: 'Ollama', value: 'ollama' },
+        { label: 'OpenRouter', value: 'openrouter' }
+    ]
+
     const operation = computed(() => (!props.id ? 'insert' : 'edit'))
 
     const onSubmit = (event: FormSubmitEvent<Schema>) => {
@@ -56,7 +64,9 @@
         <template #body>
             <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
                 <div class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
-                    <UFormField :label="$t('LLM Provider')" name="provider"><UInput v-model="state.provider" class="w-full" /></UFormField>
+                    <UFormField :label="$t('LLM Provider')" name="provider">
+                        <USelect v-model="state.provider" :items="providerItems" class="w-full" />
+                    </UFormField>
                     <UFormField :label="$t('Model')" name="model"><UInput v-model="state.model" class="w-full" /></UFormField>
                 </div>
                 <UFormField :label="$t('Validator Model (optional)')" name="validator_model"><UInput v-model="state.validator_model" class="w-full" /></UFormField>
