@@ -380,7 +380,7 @@
 <template>
     <main>
         <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
-            <UCard
+            <SCard
                 class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <div class="flex items-center justify-between">
@@ -438,11 +438,11 @@
                 </template>
 
                 <!-- Table / Empty state -->
-                <div class="flex-1 overflow-hidden">
+                <div class="flex-1 overflow-auto">
                     <div
                         v-if="isEmptyState"
                         class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
-                        <div class="tx-table-h">
+                        <div class="">
                             <div class="mt-14">
                                 <div class="text-4xl mb-3">{{ isFiltered ? '🔎' : '🧾' }}</div>
                                 <p class="text-lg">
@@ -467,16 +467,18 @@
                             :columns="finalColumns"
                             sticky
                             :loading="status === 'pending'"
-                            class="w-full tx-table-h" />
+                            class="w-full" />
                     </div>
                 </div>
 
                 <!-- Number of rows & Pagination -->
-                <SPaginationFooter
-                    v-model:page="page"
-                    v-model:items-per-page="itemsPerPage"
-                    :total="tableData?.data?.totalRecordCount ?? 0" />
-            </UCard>
+                <template #footer>
+                    <SPaginationFooter
+                        v-model:page="page"
+                        v-model:items-per-page="itemsPerPage"
+                        :total="tableData?.data?.totalRecordCount ?? 0" />
+                </template>
+            </SCard>
         </div>
 
         <!-- Sidebars -->
