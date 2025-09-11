@@ -31,7 +31,7 @@ export async function runAiImportParse(
         .from(globalSettings)
         .then((r) => r[0])
 
-    const { providerName, apiToken, modelName, ollamaBaseUrl } = resolveAiConfig(
+    const { providerName, apiToken, modelName, validatorModelName, ollamaBaseUrl, maxValidationRetries } = resolveAiConfig(
         gSettings || {}
     )
 
@@ -45,26 +45,32 @@ export async function runAiImportParse(
         .where(and(eq(categories.user, userId), eq(categories.deleted, false)))
 
     let model: unknown
+    let validatorModel: unknown
     if (providerName === 'gpt') {
         const name = modelName || 'gpt-4o-mini'
         const provider = createOpenAI({ apiKey: apiToken || '' })
         model = provider(name)
+        validatorModel = provider(validatorModelName || name)
     } else if (providerName === 'anthropic') {
         const name = modelName || 'claude-3-5-sonnet-latest'
         const provider = createAnthropic({ apiKey: apiToken || '' })
         model = provider(name)
+        validatorModel = provider(validatorModelName || name)
     } else if (providerName === 'google') {
         const name = modelName || 'gemini-1.5-flash'
         const provider = createGoogleGenerativeAI({ apiKey: apiToken || '' })
         model = provider(name)
+        validatorModel = provider(validatorModelName || name)
     } else if (providerName === 'ollama') {
         const name = modelName || 'llama3'
         const provider = createOllama({ baseURL: ollamaBaseUrl })
         model = provider(name)
+        validatorModel = provider(validatorModelName || name)
     } else if (providerName === 'openrouter') {
         const name = modelName || 'anthropic/claude-3-5-sonnet-latest'
         const provider = createOpenRouter({ apiKey: apiToken || '' })
         model = provider(name)
+        validatorModel = provider(validatorModelName || name)
     } else {
         throw createError({ statusMessage: 'Unsupported provider.', statusCode: 400 })
     }
@@ -82,18 +88,77 @@ export async function runAiImportParse(
 
     const userPrompt = `Unstructured content:\n\n${rawText}\n\nUser Categories (id: name):\n${categoryGuidance}`
 
-    try {
+    const runOnce = async (extraInstruction?: string) => {
+        const finalUserPrompt = extraInstruction
+            ? `${userPrompt}\n\nImportant: ${extraInstruction}`
+            : userPrompt
+
         const { object } = await generateObject({
             // @ts-expect-error model type is provided by providers
             model,
             schema: responseSchema,
             system: systemPrompt,
-            prompt: userPrompt,
+            prompt: finalUserPrompt,
             temperature: 0.2,
             maxOutputTokens: 8192,
             abortSignal
         })
-        return { transactions: object.transactions }
+        return object.transactions
+    }
+
+    const validate = async (
+        originalRaw: string,
+        extracted: Array<{ name: string; value: number; date: string; category: number | null }>
+    ): Promise<{ ok: boolean; hint?: string }> => {
+        const validationSchema = z.object({ ok: z.boolean(), hint: z.string().optional() })
+        const validationPrompt = `You are a strict validator for extracted financial transactions.
+            Context input (unstructured):\n\n${originalRaw}\n\nExtracted JSON: ${JSON.stringify(extracted)}\n\n
+            Check only for: valid ISO-like dates consistent with common banking statements; 
+            category ids being integers or null; names not being generic placeholders; 
+            item count sort of machine the volume of the input data.
+            Respond with JSON: { ok: boolean, hint?: string }. If not ok, hint must briefly say what to improve 
+            (e.g., "dates not ISO", "category ids invalid", "names look generic").`
+
+        const { object } = await generateObject({
+            // @ts-expect-error validator model typing
+            model: validatorModel,
+            schema: validationSchema,
+            system: 'You validate and output only the minimal JSON object requested.',
+            prompt: validationPrompt,
+            temperature: 0,
+            maxOutputTokens: 512,
+            abortSignal
+        })
+        return object
+    }
+
+    try {
+        // First pass
+        let transactions = await runOnce()
+        let verdict = await validate(rawText, transactions)
+
+        // Retry loop according to configuration
+        let attempts = 0
+        const totalRetries = Math.max(0, maxValidationRetries)
+        while (!verdict.ok && attempts < totalRetries) {
+            attempts++
+            
+            const hint = verdict.hint ? String(verdict.hint) : 'Ensure dates are ISO (YYYY-MM-DD) and category ids are correct.'
+            try {
+                transactions = await runOnce(`Fix previous issues: ${hint}. Do not invent categories; set unknown category to null. Keep the same schema.`)
+                verdict = await validate(rawText, transactions)
+            } catch (retryErr) {
+                console.error('[aiImportRunner] retry attempt failed', {
+                    userId,
+                    attempt: attempts,
+                    errorName: (retryErr as { name?: string } | null)?.name,
+                    errorMessage: (retryErr as { message?: string } | null)?.message
+                })
+                break
+            }
+        }
+
+        return { transactions }
     } catch (err) {
         // Detailed server log for failures
         console.error('[aiImportRunner] generateObject failed', {

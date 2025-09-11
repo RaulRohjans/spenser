@@ -58,6 +58,7 @@ export const globalSettings = pgTable('global_settings', {
     id: serial('id').primaryKey(),
     importer_provider: varchar('importer_provider', { length: 50 }).notNull(),
     model: varchar('model', { length: 100 }),
+    validator_model: varchar('validator_model', { length: 150 }),
     token: varchar('token', { length: 150 }),
     ollama_url: varchar('ollama_url', { length: 150 })
 })

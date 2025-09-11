@@ -4,7 +4,9 @@ export interface ResolvedAiConfig {
     providerName: AiProviderName
     apiToken: string
     modelName: string
+    validatorModelName: string
     ollamaBaseUrl: string
+    maxValidationRetries: number
 }
 
 export function resolveAiConfig(
@@ -12,6 +14,7 @@ export function resolveAiConfig(
         importer_provider: string | null
         token: string | null
         model: string | null
+        validator_model?: string | null
         ollama_url?: string | null
     }>
 ): ResolvedAiConfig {
@@ -19,7 +22,9 @@ export function resolveAiConfig(
     const envProvider = process.env.AI_PROVIDER
     const envToken = process.env.AI_TOKEN
     const envModel = process.env.AI_MODEL
+    const envValidatorModel = process.env.AI_VALIDATOR_MODEL
     const envOllamaUrl = process.env.OLLAMA_URL
+    const envMaxRetries = Number(process.env.AI_VALIDATOR_RETRIES || '1')
 
     const hasAdminConfig = Boolean(
         gSettings && gSettings.importer_provider && gSettings.token && gSettings.model
@@ -29,7 +34,10 @@ export function resolveAiConfig(
     const providerName = (providerRaw || '').toLowerCase() as AiProviderName | ''
     const apiToken = (hasAdminConfig ? gSettings.token : envToken) || ''
     const modelName = (hasAdminConfig ? gSettings.model : envModel) || ''
+    const validatorModelName =
+        (hasAdminConfig ? gSettings.validator_model : envValidatorModel) || modelName
     const ollamaBaseUrl = gSettings.ollama_url || envOllamaUrl || 'http://localhost:11434'
+    const maxValidationRetries = Number.isFinite(envMaxRetries) ? Math.max(0, Math.floor(envMaxRetries)) : 1
 
     const allowedProviders: ReadonlyArray<AiProviderName> = [
         'gpt',
@@ -55,7 +63,7 @@ export function resolveAiConfig(
         })
     }
 
-    return { providerName, apiToken, modelName, ollamaBaseUrl }
+    return { providerName, apiToken, modelName, validatorModelName, ollamaBaseUrl, maxValidationRetries }
 }
 
 

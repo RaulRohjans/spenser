@@ -4,7 +4,7 @@ import { globalSettings } from '~~/server/db/schema'
 
 export default defineEventHandler(async (event) => {
     // Read params
-    const { provider, model, token, ollamaUrl } = await readBody(event)
+    const { provider, model, validatorModel, token, ollamaUrl } = await readBody(event)
     ensureAuth(event)
 
     if (
@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
         .set({
             importer_provider: provider,
             model,
+            validator_model: validatorModel,
             token,
             ollama_url: ollamaUrl
         })

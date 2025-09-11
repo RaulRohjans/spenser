@@ -30,6 +30,7 @@
             globalSettings.data?.importer_provider ||
             getProviderOptions.value[0]?.value,
         model: globalSettings.data?.model || 'gpt-4o-mini',
+        validatorModel: (globalSettings.data as any)?.validator_model || '',
         token: globalSettings.data?.token || '',
         ollamaUrl: globalSettings.data?.ollama_url || ''
     })
@@ -96,6 +97,16 @@
                 :placeholder="
                     $t(
                         'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest'
+                    )
+                " />
+        </UFormField>
+
+        <UFormField :label="$t('Validator Model (optional)')" name="validatorModel" class="w-full">
+            <UInput
+                v-model="state.validatorModel"
+                :placeholder="
+                    $t(
+                        'Optional. If empty, the main model validates. Use a model from the same provider.'
                     )
                 " />
         </UFormField>
