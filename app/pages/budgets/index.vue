@@ -124,8 +124,8 @@
 
 <template>
     <main>
-        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
-            <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
+        <div class="mx-auto max-w-screen-2xl lg:px-6">
+            <SCard class="w-full shadow-lg !min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">                            
@@ -142,15 +142,18 @@
                                 </UTooltip>
                             </div>
                             <div class="flex flex-row gap-2">
-                                <UButton icon="i-heroicons-plus" color="primary" @click="openCreate">
+                                <!-- Desktop with label -->
+                                <UButton icon="i-heroicons-plus" color="primary" class="hidden md:inline-flex" @click="openCreate">
                                     {{ $t('Create') }}
                                 </UButton>
+                                <!-- Mobile icon-only -->
+                                <UButton icon="i-heroicons-plus" color="primary" size="sm" class="md:hidden" :aria-label="$t('Create')" @click="openCreate" />
                             </div>
                         </div>
                     </div>
                 </template>
 
-                <div class="flex-1 overflow-hidden">
+                <div class="flex-1 overflow-auto">
                     <div v-if="store.loading" class="h-full flex items-center justify-center py-12"><SLoader /></div>
                     <div v-else-if="(store.filtered?.length ?? 0) === 0" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
                         <div class="mt-14">
@@ -158,7 +161,7 @@
                             <p class="text-lg">{{ hasActiveFilters ? $t('No results with filters') : $t('Your budgets will be displayed here once you create them.') }}</p>
                         </div>
                     </div>
-                    <div v-else class="h-full overflow-auto py-2">
+                    <div v-else class="h-full py-2">
                         <BudgetBoard
                             v-model="store.filtered"
                             @reorder="persistOrder"
@@ -167,7 +170,7 @@
                             @create="openCreate" />
                     </div>
                 </div>
-            </UCard>
+            </SCard>
         </div>
 
         <!-- Sidebar: Filters for budgets -->

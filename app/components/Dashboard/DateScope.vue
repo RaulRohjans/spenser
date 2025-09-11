@@ -12,10 +12,10 @@
 </script>
 
 <template>
-    <UCard class="shadow-xl p-3">
-        <div class="flex flex-wrap items-center justify-between gap-3 sm:gap-3">
-            <div class="flex flex-wrap items-center gap-2 mx-auto sm:mx-0">
-                <div class="flex flex-row gap-1 w-full justify-center sm:w-auto sm:justify-start" role="group">
+    <SCard class="shadow-md p-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 md:gap-3">
+            <div class="flex flex-wrap items-center gap-2 mx-auto md:mx-0">
+                <div class="flex flex-row gap-1 w-full justify-center md:w-auto md:justify-start" role="group">
                     <UButton
                         v-for="m in modes"
                         :key="m.key"
@@ -26,7 +26,7 @@
                     </UButton>
                 </div>
 
-                <div class="flex items-center gap-1 justify-center w-full sm:w-auto mt-2 sm:mt-0">
+                <div class="flex items-center gap-1 justify-center w-full md:w-auto mt-2 md:mt-0">
                     <UButton icon="i-heroicons-chevron-left" size="sm" variant="ghost" @click="store.stepMonth(-1)" />
                     <span class="min-w-[7ch] text-center font-medium">
                         {{ new Date(store.anchorYear, store.anchorMonth - 1, 1).toLocaleString(undefined, { month: 'short', year: 'numeric' }) }}
@@ -35,7 +35,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-center mt-2 sm:mt-0">
+            <div class="flex items-center gap-2 w-full md:w-auto justify-center mt-2 md:mt-0">
                 <UButton
                     size="sm"
                     :variant="store.comparePrev ? 'solid' : 'outline'"
@@ -44,7 +44,7 @@
                 </UButton>
             </div>
         </div>
-    </UCard>
+    </SCard>
 </template>
 
 

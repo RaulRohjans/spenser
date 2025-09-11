@@ -86,6 +86,14 @@
 
     watch(selectedLocale, (newVal) => setLocale(newVal))
 
+    // Close mobile menu after navigation completes
+    watch(
+        () => route.fullPath,
+        () => {
+            if (isMobileMenuShown.value) isMobileMenuShown.value = false
+        }
+    )
+
     // Keep a CSS var with the current header height for layout sizing
     const setHeaderHeightVar = function () {
         const heightPx = `${navbarRef.value?.clientHeight || 64}px`
@@ -104,7 +112,7 @@
 
 <template>
     <nav ref="navbarRef" class="bg-white drop-shadow-md dark:bg-gray-800">
-        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
+        <div class="mx-auto max-w-screen-2xl lg:px-6">
             <div class="relative flex h-16 items-center justify-between">
                 <!-- Mobile Nav Header -->
                 <div
@@ -186,12 +194,15 @@
                         <ULink
                             :to="localePath(page.href)"
                             :class="getNaviationItemClass(page)"
+                            @click="isMobileMenuShown = false"
                             >{{ page.name }}</ULink
                         >
                     </template>
                 </div>
             </div>
         </Transition>
+        <!-- Inline area for mobile tasks (notifications) -->
+        <div id="nav-tasks-inline" class="lg:hidden"></div>
     </nav>
 </template>
 

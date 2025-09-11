@@ -264,24 +264,32 @@
                     <UTooltip v-if="table?.tableApi" :text="$t('Columns')">
                         <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
                     </UTooltip>
+                    <!-- Desktop with label -->
                     <UButton
                         icon="i-heroicons-plus"
                         color="primary"
                         size="md"
+                        class="hidden md:inline-flex"
                         @click="toggleModal">
                         {{ $t('Create') }}
                     </UButton>
+                    <!-- Mobile icon-only -->
+                    <UButton
+                        icon="i-heroicons-plus"
+                        color="primary"
+                        size="sm"
+                        class="md:hidden"
+                        :aria-label="$t('Create')"
+                        @click="toggleModal" />
                 </div>
             </Teleport>
         </ClientOnly>
         <div class="w-full flex flex-col gap-2">
-            <div class="flex-1 overflow-hidden">
+            <div class="flex-1 overflow-auto">
                 <div v-if="isEmptyState" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
-                    <div class="tx-table-h">
-                        <div class="mt-14">
-                            <div class="text-4xl mb-3">👥</div>
-                            <p class="text-lg">{{ $t('Users you add will appear here.') }}</p>
-                        </div>
+                    <div class="mt-14">
+                        <div class="text-4xl mb-3">👥</div>
+                        <p class="text-lg">{{ $t('Users you add will appear here.') }}</p>
                     </div>
                 </div>
                 <div v-else class="h-full">
@@ -297,7 +305,7 @@
                         :columns="finalColumns"
                         sticky
                         :loading="status === 'pending'"
-                        class="w-full tx-table-h" />
+                        class="w-full" />
                 </div>
             </div>
         </div>

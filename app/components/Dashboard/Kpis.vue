@@ -19,7 +19,7 @@
 </script>
 
 <template>
-        <UCard class="shadow-xl">
+        <SCard class="shadow-md">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -32,9 +32,9 @@
                     {{ pct(data?.data.deltas.spentPct ?? 0) }}
                 </UBadge>
             </div>
-        </UCard>
+        </SCard>
 
-        <UCard class="shadow-xl">
+        <SCard class="shadow-md">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -47,9 +47,9 @@
                     {{ pct(data?.data.deltas.netPct ?? 0) }}
                 </UBadge>
             </div>
-        </UCard>
+        </SCard>
 
-        <UCard class="shadow-xl">
+        <SCard class="shadow-md">
             <div>
                 <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
                     {{ $t('Top category') }}
@@ -61,9 +61,9 @@
                     ({{ pct(data?.data.topCategory?.percent ?? 0) }})
                 </p>
             </div>
-        </UCard>
+        </SCard>
 
-        <UCard class="shadow-xl">
+        <SCard class="shadow-md">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -76,7 +76,7 @@
                     {{ pct(data?.data.deltas.avgTxPct ?? 0) }}
                 </UBadge>
             </div>
-        </UCard>
+        </SCard>
     
 </template>
 

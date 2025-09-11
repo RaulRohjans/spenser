@@ -45,13 +45,13 @@
 </script>
 
 <template>
-    <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
-        <UCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
+    <div class="mx-auto max-w-screen-2xl lg:px-6">
+        <SCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
             <template #header>
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                            {{ $t('Administration') }}<span v-if="currentSectionLabel"> - {{ currentSectionLabel }}</span>
+                            {{ `${$t('Admin')} - ${currentSectionLabel || ''}`.trim().replace(/\-\s*$/, '') }}
                         </h2>
                         <InfoTip :text="$t('Configure platform settings and manage data for your account.')" />
                     </div>
@@ -59,7 +59,7 @@
                 </div>
             </template>
             
-            <div class="flex flex-col lg:flex-row gap-6 flex-1 overflow-hidden">
+            <div class="flex flex-col lg:flex-row gap-6 flex-1 overflow-auto">
                 <!-- Sidebar -->
                 <aside class="lg:w-44 flex-shrink-0 lg:py-4 lg:px-2">
                     <div class="sticky top-[--header-height]">
@@ -77,18 +77,20 @@
                 </aside>
 
                 <!-- Content -->
-                <section class="flex-1 min-w-0 overflow-hidden">
+                <section class="flex-1 min-w-0 overflow-auto">
                     <div class="h-full overflow-auto">
                         <NuxtPage />
                     </div>
                 </section>
             </div>
 
-            <div class="flex items-center">
-                <!-- left spacer equal to sidebar width on lg and gap on small -->
-                <div class="hidden lg:block lg:w-[13.5rem]" aria-hidden="true"></div>
-                <div id="admin-footer" class="flex-1"></div>
-            </div>
-        </UCard>
+            <template #footer>
+                <div class="flex items-center">
+                    <!-- left spacer equal to sidebar width on lg and gap on small -->
+                    <div class="hidden lg:block lg:w-[13.5rem]" aria-hidden="true"></div>
+                    <div id="admin-footer" class="flex-1"></div>
+                </div>
+            </template>
+        </SCard>
     </div>
 </template>
