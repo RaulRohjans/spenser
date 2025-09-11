@@ -201,6 +201,8 @@
                 </div>
             </div>
         </Transition>
+        <!-- Inline area for mobile tasks (notifications) -->
+        <div id="nav-tasks-inline" class="lg:hidden"></div>
     </nav>
 </template>
 
