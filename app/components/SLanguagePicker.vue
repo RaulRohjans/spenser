@@ -30,8 +30,8 @@
         v-model="selected"
         :items="languages"
         :size="props.size"
-        class="w-48 min-w-[11rem]"
-        :ui="{ base: 'justify-start', content: 'min-w-[12rem]' }">
+        class="w-full md:w-[8rem]"
+        :ui="{ base: 'justify-start', content: 'w-[96vw] md:w-[12rem]' }">
         <template #leading="{ modelValue }">
             <span v-if="findByCode(modelValue)" class="text-lg leading-none">
                 {{ findByCode(modelValue)?.flag }}
