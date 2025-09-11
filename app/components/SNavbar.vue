@@ -112,7 +112,7 @@
 
 <template>
     <nav ref="navbarRef" class="bg-white drop-shadow-md dark:bg-gray-800">
-        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
+        <div class="mx-auto max-w-screen-2xl lg:px-6">
             <div class="relative flex h-16 items-center justify-between">
                 <!-- Mobile Nav Header -->
                 <div

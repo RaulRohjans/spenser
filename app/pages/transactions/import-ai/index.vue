@@ -94,7 +94,7 @@
 
 <template>
     <main>
-        <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
+        <div class="mx-auto max-w-screen-2xl lg:px-6">
             <SCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <div class="flex items-center justify-between">
