@@ -31,7 +31,7 @@ export async function runAiImportParse(
         .from(globalSettings)
         .then((r) => r[0])
 
-    const { providerName, apiToken, modelName, validatorModelName, ollamaBaseUrl, maxValidationRetries } = resolveAiConfig(
+    const { providerName, apiToken, modelName, validatorModelName, ollamaBaseUrl, maxValidationRetries } = await resolveAiConfig(
         gSettings || {}
     )
 

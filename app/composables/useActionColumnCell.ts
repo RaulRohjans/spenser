@@ -5,19 +5,31 @@ interface ActionCallbacks<T> {
     onEdit?: (row: T) => void
     onDuplicate?: (row: T) => void
     onDelete?: (row: T) => void
+    onSetDefault?: (row: T) => void
 }
 
 export function useActionColumnCell<T>(options: {
-    actions: ('edit' | 'duplicate' | 'delete')[]
+    actions: ('edit' | 'duplicate' | 'delete' | 'setDefault')[]
     callbacks: ActionCallbacks<T>
+    isSetDefaultDisabled?: (row: T) => boolean
 }) {
-    const { actions, callbacks } = options
+    const { actions, callbacks, isSetDefaultDisabled } = options
     const { t: $t } = useI18n()
 
     return {
         cell: ({ row }: { row: { original: T } }) => {
             const items = [
                 { type: 'label', label: $t('Actions') },
+                ...(actions.includes('setDefault')
+                    ? [
+                          {
+                              label: $t('Set as Default'),
+                              icon: 'i-heroicons-check-circle',
+                              disabled: isSetDefaultDisabled?.(row.original) === true,
+                              onSelect: () => callbacks.onSetDefault?.(row.original)
+                          }
+                      ]
+                    : []),
                 ...(actions.includes('edit')
                     ? [
                           {
@@ -50,24 +62,19 @@ export function useActionColumnCell<T>(options: {
             ]
 
             return h('div', { class: 'text-right' }, [
-                h(
-                    UDropdownMenu,
-                    {
-                        content: { align: 'end' },
-                        items,
+                h(UDropdownMenu as any, {
+                    content: { align: 'end' },
+                    items,
+                    'aria-label': $t('Actions')
+                }, {
+                    default: () => h(UButton, {
+                        icon: 'i-heroicons-ellipsis-vertical',
+                        color: 'neutral',
+                        variant: 'ghost',
+                        class: 'ml-auto',
                         'aria-label': $t('Actions')
-                    },
-                    {
-                        default: () =>
-                            h(UButton, {
-                                icon: 'i-heroicons-ellipsis-vertical',
-                                color: 'neutral',
-                                variant: 'ghost',
-                                class: 'ml-auto',
-                                'aria-label': $t('Actions')
-                            })
-                    }
-                )
+                    })
+                })
             ])
         }
     }

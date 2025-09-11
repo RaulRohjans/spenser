@@ -210,6 +210,9 @@ export default {
     'Parsing started in background...': 'Parsing started in background...',
     'Track progress in the bell menu on the top-right.': 'Track progress in the bell menu on the top-right.',
     Model: 'Model',
+    'Validator Model': 'Validator Model',
+    'Set as Default': 'Set as Default',
+    Default: 'Default',
     'API Token': 'API Token',
     'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest':
         'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest',

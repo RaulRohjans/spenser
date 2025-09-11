@@ -211,6 +211,9 @@ export default {
     'Parsing started in background...': 'Processamento iniciado em segundo plano...',
     'Track progress in the bell menu on the top-right.': 'Acompanhe o progresso no sino no canto superior direito.',
     Model: 'Modelo',
+    'Validator Model': 'Modelo de Validação',
+    'Set as Default': 'Definir como Padrão',
+    Default: 'Padrão',
     'API Token': 'Token da API',
     'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest':
         'Introduza o identificador do modelo, p.ex., gpt-4o-mini ou anthropic/claude-3-5-sonnet-latest',
@@ -280,11 +283,9 @@ export default {
         'Não foi possível persistir a ordem na base de dados.',
     'Could not perform the operation.': 'Não foi possível realizar a operação.',
     'No id was provided.': 'Nenhum id foi fornecido.',
-    'Could not find record to delete.':
-        'Não foi possível encontrar o registo para eliminar.',
+    'Could not find record to delete.': 'Não foi possível encontrar o registo para eliminar.',
     'Invalid budget ID.': 'ID de orçamento inválido.',
-    'Budget not found or inaccessible.':
-        'Orçamento não encontrado ou inacessível.',
+    'Budget not found or inaccessible.': 'Orçamento não encontrado ou inacessível.',
     'No refreshToken provided in the payload.':
         'Nenhum refreshToken fornecido no payload.',
     'Invalid token provided.': 'Token fornecido inválido.',
@@ -364,8 +365,7 @@ export default {
     'Total spent (info)': 'Soma de todas as despesas no período selecionado.',
     'Net cashflow (info)': 'Receitas menos despesas no período selecionado.',
     'Top category (info)': 'Categoria com maior gasto e sua percentagem do total.',
-    'Avg transaction value (info)': 'Valor médio das transações no período selecionado.'
-    ,
+    'Avg transaction value (info)': 'Valor médio das transações no período selecionado.',
     'Untitled budget': 'Orçamento sem nome',
     'All categories': 'Todas as categorias',
     'Remaining': 'Restante',

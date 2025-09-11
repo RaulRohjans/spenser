@@ -56,11 +56,17 @@ export const userPreferences = pgTable('user_preferences', {
 
 export const globalSettings = pgTable('global_settings', {
     id: serial('id').primaryKey(),
-    importer_provider: varchar('importer_provider', { length: 50 }).notNull(),
-    model: varchar('model', { length: 100 }),
+    ai_model: integer('ai_model')
+})
+
+export const aiModels = pgTable('ai_model', {
+    id: serial('id').primaryKey(),
+    provider: varchar('provider', { length: 50 }).notNull(),
+    model: varchar('model', { length: 150 }).notNull(),
     validator_model: varchar('validator_model', { length: 150 }),
-    token: varchar('token', { length: 150 }),
-    ollama_url: varchar('ollama_url', { length: 150 })
+    token: varchar('token', { length: 200 }),
+    ollama_url: varchar('ollama_url', { length: 200 }),
+    deleted: boolean('deleted').notNull().default(false)
 })
 
 export const budgets = pgTable('budget', {
@@ -92,6 +98,9 @@ export type NewUserPreferences = typeof userPreferences.$inferInsert
 
 export type GlobalSettings = typeof globalSettings.$inferSelect
 export type NewGlobalSettings = typeof globalSettings.$inferInsert
+
+export type AiModel = typeof aiModels.$inferSelect
+export type NewAiModel = typeof aiModels.$inferInsert
 
 export type Budget = typeof budgets.$inferSelect
 export type NewBudget = typeof budgets.$inferInsert
