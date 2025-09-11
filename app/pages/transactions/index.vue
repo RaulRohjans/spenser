@@ -416,10 +416,12 @@
                                 </ClientOnly>
                             </div>
                             <div class="flex flex-row gap-2">
+                                <!-- Desktop buttons with labels -->
                                 <UButton
                                     icon="i-heroicons-arrow-down-on-square-stack"
                                     color="primary"
                                     size="md"
+                                    class="hidden sm:inline-flex"
                                     @click="router.push(`/transactions/import-ai`)"
                                 >
                                     {{ $t('Import') }}
@@ -428,10 +430,26 @@
                                     icon="i-heroicons-plus"
                                     color="primary"
                                     size="md"
+                                    class="hidden sm:inline-flex"
                                     @click="router.push(`/transactions/create`)"
                                 >
                                     {{ $t('Create') }}
                                 </UButton>
+                                <!-- Mobile icon-only -->
+                                <UButton
+                                    icon="i-heroicons-arrow-down-on-square-stack"
+                                    color="primary"
+                                    size="sm"
+                                    class="sm:hidden"
+                                    :aria-label="$t('Import')"
+                                    @click="router.push(`/transactions/import-ai`)" />
+                                <UButton
+                                    icon="i-heroicons-plus"
+                                    color="primary"
+                                    size="sm"
+                                    class="sm:hidden"
+                                    :aria-label="$t('Create')"
+                                    @click="router.push(`/transactions/create`)" />
                             </div>
                         </div>
                     </div>

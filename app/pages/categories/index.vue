@@ -249,14 +249,24 @@
                                 </ClientOnly>
                             </div>
                             <div class="flex flex-row gap-2">
+                                <!-- Desktop with label -->
                                 <UButton
                                     icon="i-heroicons-plus"
                                     color="primary"
                                     size="md"
+                                    class="hidden sm:inline-flex"
                                     @click="router.push(`/categories/create`)"
                                 >
                                     {{ $t('Create') }}
                                 </UButton>
+                                <!-- Mobile icon-only -->
+                                <UButton
+                                    icon="i-heroicons-plus"
+                                    color="primary"
+                                    size="sm"
+                                    class="sm:hidden"
+                                    :aria-label="$t('Create')"
+                                    @click="router.push(`/categories/create`)" />
                             </div>
                         </div>
                     </div>

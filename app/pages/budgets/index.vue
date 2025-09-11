@@ -142,9 +142,12 @@
                                 </UTooltip>
                             </div>
                             <div class="flex flex-row gap-2">
-                                <UButton icon="i-heroicons-plus" color="primary" @click="openCreate">
+                                <!-- Desktop with label -->
+                                <UButton icon="i-heroicons-plus" color="primary" class="hidden sm:inline-flex" @click="openCreate">
                                     {{ $t('Create') }}
                                 </UButton>
+                                <!-- Mobile icon-only -->
+                                <UButton icon="i-heroicons-plus" color="primary" size="sm" class="sm:hidden" :aria-label="$t('Create')" @click="openCreate" />
                             </div>
                         </div>
                     </div>

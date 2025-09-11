@@ -264,13 +264,23 @@
                     <UTooltip v-if="table?.tableApi" :text="$t('Columns')">
                         <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />
                     </UTooltip>
+                    <!-- Desktop with label -->
                     <UButton
                         icon="i-heroicons-plus"
                         color="primary"
                         size="md"
+                        class="hidden sm:inline-flex"
                         @click="toggleModal">
                         {{ $t('Create') }}
                     </UButton>
+                    <!-- Mobile icon-only -->
+                    <UButton
+                        icon="i-heroicons-plus"
+                        color="primary"
+                        size="sm"
+                        class="sm:hidden"
+                        :aria-label="$t('Create')"
+                        @click="toggleModal" />
                 </div>
             </Teleport>
         </ClientOnly>
