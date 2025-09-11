@@ -38,3 +38,5 @@ export interface DateTimeWithOffset {
 
 /* eslint-disable  @typescript-eslint/no-explicit-any */
 export type EmitEventCallback = (...args: any[]) => void
+
+export type { AsyncTaskSummary, AsyncTaskStatus, AsyncTaskType } from './AsyncTasks'

@@ -15,7 +15,29 @@
     
     const { t: $t } = useI18n()
     const router = useRouter()
+    const route = useRoute()
     const store = useAiImportStore()
+
+    // If opened via async task, fetch result
+    const taskParam = computed(() => String(route.query.task || ''))
+    if (!store.items.length && taskParam.value) {
+        try {
+            const res = await $fetch<{ success: boolean; transactions: ParsedTransactionItem[] }>(
+                `/api/tasks/ai-import/${taskParam.value}/result`,
+                { method: 'GET' }
+            )
+            if (res?.success && Array.isArray(res.transactions)) {
+                store.setItems(res.transactions.map((t) => ({
+                    category: t.category ?? null,
+                    name: String(t.name || ''),
+                    value: Number(t.value || 0),
+                    date: String(t.date || '')
+                })))
+            }
+        } catch {
+            await router.replace('/transactions/import-ai')
+        }
+    }
 
     if (!store.items.length) await router.replace('/transactions/import-ai')
 

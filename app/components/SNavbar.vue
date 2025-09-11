@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import type { NavigationItem } from '~~/types/Navigation'
     import type { SelectOption } from '~~/types/Options'
+    import TasksMenu from './Tasks/TasksMenu.vue'
 
     const localePath = useLocalePath()
     const { locale, setLocale, t: $t } = useI18n()
@@ -157,6 +158,8 @@
                         class="hidden lg:block"
                         icon="i-heroicons-flag"
                         :items="getLocales" />
+
+                    <TasksMenu />
 
                     <SUserNavMenu />
                 </div>

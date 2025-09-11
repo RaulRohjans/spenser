@@ -206,6 +206,8 @@ export default {
     'Sending text to be parsed by AI...': 'Sending text to be parsed by AI...',
     'Processing AI response...': 'Processing AI response...',
     'Done! Redirecting...': 'Done! Redirecting...',
+    'Parsing started in background...': 'Parsing started in background...',
+    'Track progress in the bell menu on the top-right.': 'Track progress in the bell menu on the top-right.',
     Model: 'Model',
     'API Token': 'API Token',
     'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest':
@@ -360,4 +362,12 @@ export default {
     'Net cashflow (info)': 'Income minus expenses for the selected period.',
     'Top category (info)': 'Category with the highest spending and its share of the total.',
     'Avg transaction value (info)': 'Average value across all transactions in the selected period.'
+    ,
+    '1 task running...': '1 task running...',
+    'tasks running...': 'tasks running...',
+    'Elapsed time:': 'Elapsed time:',
+    Ready: 'Ready',
+    Failed: 'Failed',
+    Cancelled: 'Cancelled',
+    'No tasks': 'No tasks'
 }

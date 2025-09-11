@@ -207,6 +207,8 @@ export default {
         'A enviar texto para ser processado pela IA...',
     'Processing AI response...': 'A processar resposta da IA...',
     'Done! Redirecting...': 'Concluído! A redirecionar...',
+    'Parsing started in background...': 'Processamento iniciado em segundo plano...',
+    'Track progress in the bell menu on the top-right.': 'Acompanhe o progresso no sino no canto superior direito.',
     Model: 'Modelo',
     'API Token': 'Token da API',
     'Enter model identifier, e.g., gpt-4o-mini or anthropic/claude-3-5-sonnet-latest':
@@ -362,4 +364,12 @@ export default {
     'Net cashflow (info)': 'Receitas menos despesas no período selecionado.',
     'Top category (info)': 'Categoria com maior gasto e sua percentagem do total.',
     'Avg transaction value (info)': 'Valor médio das transações no período selecionado.'
+    ,
+    '1 task running...': '1 tarefa em execução...',
+    'tasks running...': 'tarefas em execução...',
+    'Elapsed time:': 'Tempo decorrido:',
+    Ready: 'Pronto',
+    Failed: 'Falhou',
+    Cancelled: 'Cancelado',
+    'No tasks': 'Sem tarefas'
 }
