@@ -19,7 +19,7 @@ A live demo for the platform can be checked [here](https://spenser-demo.rohjans.
 
 - **Manage Transactions:** Users can view, add, edit, and delete their transactions.
 - **AI Import:** Import transactions via text input (file upload or text). The app will parse the input and attempt to attribute categories to the transactions.
-- **Backgroun Tasks:** Long-running imports execute as background tasks with a navbar tasks menu (bell icon) to monitor progress, cancel, and open results when ready.
+- **Background Tasks:** Long-running imports execute as background tasks with a navbar tasks menu (bell icon) to monitor progress, cancel, and open results when ready.
 
 ### Categories
 
@@ -41,6 +41,7 @@ A live demo for the platform can be checked [here](https://spenser-demo.rohjans.
 - **AI Configuration:** Choose between different AI providers (ChatGPT, Ollama, or OpenRouter).
 
 ## Installation
+
 ### Background tasks for AI Import
 
 Long-running AI imports run in background using an in-memory task manager:
@@ -51,7 +52,6 @@ Long-running AI imports run in background using an in-memory task manager:
 - Retrieve parsed result: `GET /api/tasks/ai-import/:id/result`.
 
 Tasks are not persisted to the DB and expire ~4h after inactivity.
-
 
 ### Prerequisites
 
