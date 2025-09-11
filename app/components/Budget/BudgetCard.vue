@@ -41,7 +41,7 @@
 
 <template>
     <SCard
-        class="drag-me w-full max-w-none lg:max-w-[400px] shadow-md transition-transform duration-200 hover:-translate-y-0.5 will-change-transform">
+        class="drag-me w-full max-w-none lg:max-w-[400px] shadow-md transition-transform duration-200 hover:-translate-y-0.5 will-change-transform p-2">
         <div class="flex items-center gap-3 mb-2">
             <UIcon
                 v-if="budget.category_icon"

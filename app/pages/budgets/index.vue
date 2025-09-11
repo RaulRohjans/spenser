@@ -158,7 +158,7 @@
                             <p class="text-lg">{{ hasActiveFilters ? $t('No results with filters') : $t('Your budgets will be displayed here once you create them.') }}</p>
                         </div>
                     </div>
-                    <div v-else class="h-full overflow-auto py-2">
+                    <div v-else class="h-full py-2">
                         <BudgetBoard
                             v-model="store.filtered"
                             @reorder="persistOrder"
