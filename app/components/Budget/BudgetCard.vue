@@ -49,13 +49,13 @@
                 class="text-xl" />
             <div class="flex-1">
                 <div class="font-medium truncate">
-                    {{ budget.name || 'Untitled budget' }}
+                    {{ budget.name || $t('Untitled budget') }}
                 </div>
                 <div class="text-sm opacity-70">
                     <span v-if="budget.category_name">{{
                         budget.category_name
                     }}</span>
-                    <span v-else>All categories</span>
+                    <span v-else>{{ $t('All categories') }}</span>
                     ·
                     <span class="capitalize">{{
                         budget.period.replace('_', ' ')
@@ -63,7 +63,7 @@
                 </div>
             </div>
             <div class="text-right">
-                <div class="text-sm opacity-70">Remaining</div>
+                <div class="text-sm opacity-70">{{ $t('Remaining') }}</div>
                 <div class="font-semibold">{{ formatCurrency(remaining) }}</div>
             </div>
         </div>
@@ -76,20 +76,20 @@
         </div>
 
         <div class="mt-3 flex justify-between text-sm opacity-80">
-            <div>Spent: {{ formatCurrency(Number(budget.expenses || 0)) }}</div>
-            <div>Total: {{ formatCurrency(Number(budget.value)) }}</div>
+            <div>{{ $t('Spent') }}: {{ formatCurrency(Number(budget.expenses || 0)) }}</div>
+            <div>{{ $t('Total') }}: {{ formatCurrency(Number(budget.value)) }}</div>
         </div>
 
         <div class="mt-4 flex justify-end gap-2">
             <UButton size="xs" variant="ghost" @click="emit('edit', budget)"
-                >Edit</UButton
+                >{{ $t('Edit') }}</UButton
             >
             <UButton
                 size="xs"
                 color="error"
                 variant="soft"
                 @click="emit('delete', budget)"
-                >Delete</UButton
+                >{{ $t('Delete') }}</UButton
             >
         </div>
     </SCard>

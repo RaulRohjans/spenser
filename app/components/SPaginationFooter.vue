@@ -26,18 +26,19 @@
 
 <template>
     <div class="flex flex-wrap justify-between items-center gap-2">
-        <!-- Mobile: rows-per-page only -->
-        <div class="block sm:hidden">
+        <!-- Mobile: rows-per-page with total -->
+        <div class="block sm:hidden text-sm leading-5">
             <USelect
                 :model-value="itemsPerPage"
                 :items="pageSizeOptions"
                 size="xs"
                 aria-label="Rows per page"
-                class="inline-block align-middle w-16"
+                class="inline-block align-middle w-16 mr-1"
                 @update:model-value="(v:number) => {
                     itemsPerPage = Number(v)
                     clampPage(1)
                 }" />
+            {{ t('of') }} <span class="font-medium">{{ props.total }}</span> {{ t('records') }}
         </div>
 
         <!-- Desktop: full summary with rows-per-page inline -->
