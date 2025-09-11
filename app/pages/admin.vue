@@ -51,7 +51,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <h2 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
-                            {{ $t('Administration') }}<span v-if="currentSectionLabel"> - {{ currentSectionLabel }}</span>
+                            {{ `${$t('Admin')} - ${currentSectionLabel || ''}`.trim().replace(/\-\s*$/, '') }}
                         </h2>
                         <InfoTip :text="$t('Configure platform settings and manage data for your account.')" />
                     </div>
