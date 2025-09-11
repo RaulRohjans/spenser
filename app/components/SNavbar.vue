@@ -161,11 +161,9 @@
                 <!-- Right nav side -->
                 <div
                     class="absolute inset-y-0 right-0 flex flex-row justify-center items-center pr-2 gap-3 lg:static lg:inset-auto lg:ml-6 lg:pr-0">
-                    <USelect
-                        v-model="selectedLocale"
-                        class="hidden lg:block"
-                        icon="i-heroicons-flag"
-                        :items="getLocales" />
+                    <div class="hidden lg:block">
+                        <SLanguagePicker v-model="selectedLocale" size="sm" />
+                    </div>
 
                     <TasksMenu />
 
@@ -178,17 +176,9 @@
         <Transition name="slide-fade">
             <div v-show="isMobileMenuShown" class="lg:hidden">
                 <div class="flex flex-col space-y-1 px-2 pb-3 pt-2">
-                    <USelect
-                        v-model="selectedLocale"
-                        class="mb-2"
-                        :items="getLocales">
-                        <template #leading>
-                            <UIcon
-                                name="i-heroicons-flag"
-                                class="w-4 h-4"
-                                dynamic />
-                        </template>
-                    </USelect>
+                    <div class="mb-2">
+                        <SLanguagePicker v-model="selectedLocale" size="md" />
+                    </div>
 
                     <template v-for="page in navigationPages" :key="page.href">
                         <ULink
