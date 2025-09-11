@@ -442,16 +442,14 @@
                     <div
                         v-if="isEmptyState"
                         class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
-                        <div class="">
-                            <div class="mt-14">
-                                <div class="text-4xl mb-3">{{ isFiltered ? '🔎' : '🧾' }}</div>
-                                <p class="text-lg">
-                                    {{ isFiltered
-                                        ? $t('No results with filters')
-                                        : $t('The income and spending that you track will show up here.')
-                                    }}
-                                </p>
-                            </div>
+                        <div class="mt-14">
+                            <div class="text-4xl mb-3">{{ isFiltered ? '🔎' : '🧾' }}</div>
+                            <p class="text-lg">
+                                {{ isFiltered
+                                    ? $t('No results with filters')
+                                    : $t('The income and spending that you track will show up here.')
+                                }}
+                            </p>
                         </div>
                     </div>
                     <div v-else class="h-full">

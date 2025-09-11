@@ -55,7 +55,7 @@
 </script>
 
 <template>
-    <UCard class="shadow-xl p-4">
+    <SCard class="shadow-xl p-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <h3 class="font-semibold text-xl">{{ $t('Category Month-over-Month Change') }}</h3>
@@ -65,7 +65,7 @@
         <div class="pt-2">
             <VChart :option="option" :loading="status === 'pending'" class="w-full" style="height: 44vh" autoresize />
         </div>
-    </UCard>
+    </SCard>
 </template>
 
 

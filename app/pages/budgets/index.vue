@@ -125,7 +125,7 @@
 <template>
     <main>
         <div class="mx-auto max-w-screen-2xl px-3 lg:px-6">
-            <UCard class="w-full shadow-lg min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
+            <SCard class="w-full shadow-lg !min-h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
                 <template #header>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">                            
@@ -150,7 +150,7 @@
                     </div>
                 </template>
 
-                <div class="flex-1 overflow-hidden">
+                <div class="flex-1 overflow-auto">
                     <div v-if="store.loading" class="h-full flex items-center justify-center py-12"><SLoader /></div>
                     <div v-else-if="(store.filtered?.length ?? 0) === 0" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
                         <div class="mt-14">
@@ -167,7 +167,7 @@
                             @create="openCreate" />
                     </div>
                 </div>
-            </UCard>
+            </SCard>
         </div>
 
         <!-- Sidebar: Filters for budgets -->
