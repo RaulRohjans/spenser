@@ -254,7 +254,7 @@
                                     icon="i-heroicons-plus"
                                     color="primary"
                                     size="md"
-                                    class="hidden sm:inline-flex"
+                                    class="hidden md:inline-flex"
                                     @click="router.push(`/categories/create`)"
                                 >
                                     {{ $t('Create') }}
@@ -264,7 +264,7 @@
                                     icon="i-heroicons-plus"
                                     color="primary"
                                     size="sm"
-                                    class="sm:hidden"
+                                    class="md:hidden"
                                     :aria-label="$t('Create')"
                                     @click="router.push(`/categories/create`)" />
                             </div>

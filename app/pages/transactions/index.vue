@@ -421,7 +421,7 @@
                                     icon="i-heroicons-arrow-down-on-square-stack"
                                     color="primary"
                                     size="md"
-                                    class="hidden sm:inline-flex"
+                                    class="hidden md:inline-flex"
                                     @click="router.push(`/transactions/import-ai`)"
                                 >
                                     {{ $t('Import') }}
@@ -430,7 +430,7 @@
                                     icon="i-heroicons-plus"
                                     color="primary"
                                     size="md"
-                                    class="hidden sm:inline-flex"
+                                    class="hidden md:inline-flex"
                                     @click="router.push(`/transactions/create`)"
                                 >
                                     {{ $t('Create') }}
@@ -440,14 +440,14 @@
                                     icon="i-heroicons-arrow-down-on-square-stack"
                                     color="primary"
                                     size="sm"
-                                    class="sm:hidden"
+                                    class="md:hidden"
                                     :aria-label="$t('Import')"
                                     @click="router.push(`/transactions/import-ai`)" />
                                 <UButton
                                     icon="i-heroicons-plus"
                                     color="primary"
                                     size="sm"
-                                    class="sm:hidden"
+                                    class="md:hidden"
                                     :aria-label="$t('Create')"
                                     @click="router.push(`/transactions/create`)" />
                             </div>

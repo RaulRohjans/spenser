@@ -269,7 +269,7 @@
                         icon="i-heroicons-plus"
                         color="primary"
                         size="md"
-                        class="hidden sm:inline-flex"
+                        class="hidden md:inline-flex"
                         @click="toggleModal">
                         {{ $t('Create') }}
                     </UButton>
@@ -278,7 +278,7 @@
                         icon="i-heroicons-plus"
                         color="primary"
                         size="sm"
-                        class="sm:hidden"
+                        class="md:hidden"
                         :aria-label="$t('Create')"
                         @click="toggleModal" />
                 </div>

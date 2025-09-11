@@ -86,6 +86,14 @@
 
     watch(selectedLocale, (newVal) => setLocale(newVal))
 
+    // Close mobile menu after navigation completes
+    watch(
+        () => route.fullPath,
+        () => {
+            if (isMobileMenuShown.value) isMobileMenuShown.value = false
+        }
+    )
+
     // Keep a CSS var with the current header height for layout sizing
     const setHeaderHeightVar = function () {
         const heightPx = `${navbarRef.value?.clientHeight || 64}px`
@@ -186,6 +194,7 @@
                         <ULink
                             :to="localePath(page.href)"
                             :class="getNaviationItemClass(page)"
+                            @click="isMobileMenuShown = false"
                             >{{ page.name }}</ULink
                         >
                     </template>

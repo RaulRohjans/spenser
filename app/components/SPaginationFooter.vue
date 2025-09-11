@@ -27,7 +27,7 @@
 <template>
     <div class="flex flex-wrap justify-between items-center gap-2">
         <!-- Mobile: rows-per-page with total -->
-        <div class="block sm:hidden text-sm leading-5">
+        <div class="block md:hidden text-sm leading-5">
             <USelect
                 :model-value="itemsPerPage"
                 :items="pageSizeOptions"
@@ -42,7 +42,7 @@
         </div>
 
         <!-- Desktop: full summary with rows-per-page inline -->
-        <span class="hidden sm:block text-sm leading-5">
+        <span class="hidden md:block text-sm leading-5">
             {{ t('Showing') }}
             <span class="font-medium">{{ pageFrom }}</span>
             {{ t('to') }}
@@ -62,7 +62,7 @@
         </span>
 
         <!-- Mobile: compact pager with only first/prev/next/last -->
-        <div class="block sm:hidden ml-auto">
+        <div class="block md:hidden ml-auto">
             <div class="flex items-center gap-1">
                 <UButton
                     icon="i-heroicons-chevron-double-left"
@@ -96,7 +96,7 @@
         </div>
 
         <!-- Desktop: full pagination -->
-        <div class="hidden sm:block ml-auto">
+        <div class="hidden md:block ml-auto">
             <UPagination
                 :items-per-page="itemsPerPage"
                 :total="props.total"
