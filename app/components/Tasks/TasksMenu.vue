@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import type { AsyncTaskSummary } from '~~/types/AsyncTasks'
     import { useTasksStore } from '~/stores/tasks'
-    import { useMediaQuery } from '@vueuse/core'
 
     const { t: $t } = useI18n()
     const router = useRouter()
@@ -91,11 +90,8 @@
         return store?.items?.filter(i => i.status === 'running')?.length || 0
     })
 
-    // Render mode: desktop popover when >= md, inline panel when < md
-    const isMdUp = useMediaQuery('(min-width: 768px)')
-
     // Mobile: cap list height to ~1.5 items (approx)
-    const mobileMaxHeight = computed(() => (isMdUp.value ? undefined : '180px'))
+    const mobileMaxHeight = '180px'
 
     onMounted(() => {
         window.addEventListener('tasks:highlight-bell', onHighlightEvent as EventListener)
@@ -106,67 +102,69 @@
 </script>
 
 <template>
-    <!-- Desktop (>= md): popover -->
-    <div v-if="isMdUp">
-        <UPopover
-            :open="store.isOpen"
-            @update:open="onOpenChange"
-            :content="{ align: 'end', side: 'bottom', sideOffset: 8 }">
-            <UButton data-tasks-bell ref="bellRef" color="neutral" variant="ghost" icon="i-heroicons-bell-alert" />
+    <!-- Desktop (>= md): popover (client-only to avoid hydration mismatches) -->
+    <ClientOnly>
+        <div class="hidden md:block">
+            <UPopover
+                :open="store.isOpen"
+                @update:open="onOpenChange"
+                :content="{ align: 'end', side: 'bottom', sideOffset: 8 }">
+                <UButton data-tasks-bell ref="bellRef" color="neutral" variant="ghost" icon="i-heroicons-bell-alert" />
 
-            <template #content>
-                <div class="w-[490px] sm:w-[600px] max-w-[490px] p-4">
-                    <div class="text-sm mb-3 opacity-80 flex items-center justify-between px-1">
-                        <span>
-                            <span v-if="itemsRunningCount !== 1">
-                                {{ `${itemsRunningCount} ${$t('tasks running...')}` }}
+                <template #content>
+                    <div class="w-[490px] sm:w-[600px] max-w-[490px] p-4">
+                        <div class="text-sm mb-3 opacity-80 flex items-center justify-between px-1">
+                            <span>
+                                <span v-if="itemsRunningCount !== 1">
+                                    {{ `${itemsRunningCount} ${$t('tasks running...')}` }}
+                                </span>
+                                <span v-else>{{ $t('1 task running...') }}</span>
                             </span>
-                            <span v-else>{{ $t('1 task running...') }}</span>
-                        </span>
-                    </div>
+                        </div>
 
-                    <!-- List with max height ~ 3 items, scroll when overflow -->
-                    <div class="flex flex-col gap-2 overflow-y-auto max-h-[60vh] sm:max-h-[360px] pr-1">
-                        <div v-for="task in store.items" :key="task.id" class="p-3">
-                            <div class="flex items-start justify-between gap-2">
-                                <div class="flex-1">
-                                    <div class="font-medium text-gray-900 dark:text-white">{{ task.title }}</div>
-                                    <div class="text-xs opacity-70" v-if="task.message">{{ task.message }}</div>
-                                </div>
-                                <div class="text-xs opacity-70 whitespace-nowrap">
-                                    {{ $t('Elapsed time:') }} {{ formattedElapsed(task.elapsedMs) }}
-                                </div>
-                            </div>
-
-                            <div class="mt-3 flex items-center justify-between">
-                                <div class="flex-1 mr-3">
-                                    <UProgress v-if="task.status === 'running'" animation="carousel" />
-                                    <div v-else class="flex items-center gap-2 text-sm">
-                                        <UIcon :name="task.status === 'completed' ? 'i-heroicons-check-circle' : task.status === 'failed' ? 'i-heroicons-exclamation-circle' : 'i-heroicons-x-circle'" class="w-5 h-5" dynamic />
-                                        <span>
-                                            {{ task.status === 'completed' ? $t('Ready') : task.status === 'failed' ? $t('Failed') : $t('Cancelled') }}
-                                        </span>
+                        <!-- List with max height ~ 3 items, scroll when overflow -->
+                        <div class="flex flex-col gap-2 overflow-y-auto max-h-[60vh] sm:max-h-[360px] pr-1">
+                            <div v-for="task in store.items" :key="task.id" class="p-3">
+                                <div class="flex items-start justify-between gap-2">
+                                    <div class="flex-1">
+                                        <div class="font-medium text-gray-900 dark:text-white">{{ task.title }}</div>
+                                        <div class="text-xs opacity-70" v-if="task.message">{{ task.message }}</div>
+                                    </div>
+                                    <div class="text-xs opacity-70 whitespace-nowrap">
+                                        {{ $t('Elapsed time:') }} {{ formattedElapsed(task.elapsedMs) }}
                                     </div>
                                 </div>
 
-                                <div class="flex items-center gap-2">
-                                    <UButton v-if="task.status === 'running' && task.canCancel" icon="i-heroicons-x-mark" variant="ghost" color="neutral" @click="store.cancelTask(task)" />
-                                    <UButton v-else-if="task.type === 'ai-import-parse' && task.status === 'completed'" icon="i-heroicons-arrow-top-right-on-square" color="primary" variant="ghost" @click="goToResult(task)" />
+                                <div class="mt-3 flex items-center justify-between">
+                                    <div class="flex-1 mr-3">
+                                        <UProgress v-if="task.status === 'running'" animation="carousel" />
+                                        <div v-else class="flex items-center gap-2 text-sm">
+                                            <UIcon :name="task.status === 'completed' ? 'i-heroicons-check-circle' : task.status === 'failed' ? 'i-heroicons-exclamation-circle' : 'i-heroicons-x-circle'" class="w-5 h-5" dynamic />
+                                            <span>
+                                                {{ task.status === 'completed' ? $t('Ready') : task.status === 'failed' ? $t('Failed') : $t('Cancelled') }}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center gap-2">
+                                        <UButton v-if="task.status === 'running' && task.canCancel" icon="i-heroicons-x-mark" variant="ghost" color="neutral" @click="store.cancelTask(task)" />
+                                        <UButton v-else-if="task.type === 'ai-import-parse' && task.status === 'completed'" icon="i-heroicons-arrow-top-right-on-square" color="primary" variant="ghost" @click="goToResult(task)" />
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div v-if="store.items.length === 0" class="text-center text-sm opacity-60 py-4">
-                            {{ $t('No tasks') }}
+                            <div v-if="store.items.length === 0" class="text-center text-sm opacity-60 py-4">
+                                {{ $t('No tasks') }}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </template>
-        </UPopover>
-    </div>
+                </template>
+            </UPopover>
+        </div>
+    </ClientOnly>
 
     <!-- Mobile (< md): full-width overlay panel under navbar -->
-    <div v-else>
+    <div class="md:hidden">
         <UButton data-tasks-bell ref="bellRef" color="neutral" variant="ghost" icon="i-heroicons-bell-alert" @click="store.isOpen ? close() : open()" />
         <ClientOnly>
             <Teleport to="body">
