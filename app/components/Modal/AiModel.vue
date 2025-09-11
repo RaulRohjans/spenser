@@ -63,11 +63,11 @@
     <UModal v-model:open="modelOpen" :title="$t('Create')">
         <template #body>
             <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-                <div class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
-                    <UFormField :label="$t('LLM Provider')" name="provider">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <UFormField :label="$t('LLM Provider')" name="provider" class="w-full">
                         <USelect v-model="state.provider" :items="providerItems" class="w-full" />
                     </UFormField>
-                    <UFormField :label="$t('Model')" name="model"><UInput v-model="state.model" class="w-full" /></UFormField>
+                    <UFormField :label="$t('Model')" name="model" class="w-full"><UInput v-model="state.model" class="w-full" /></UFormField>
                 </div>
                 <UFormField :label="$t('Validator Model (optional)')" name="validator_model"><UInput v-model="state.validator_model" class="w-full" /></UFormField>
                 <UFormField :label="$t('API Token (optional)')" name="token"><UInput v-model="state.token" type="password" class="w-full" /></UFormField>

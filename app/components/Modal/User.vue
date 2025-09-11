@@ -204,13 +204,11 @@
                         accept="image/*"
                         @change="onFileChange" />
                 </div>
-                <div
-                    class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
-                    <UFormField :label="$t('First Name')" name="first_name">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <UFormField :label="$t('First Name')" name="first_name" class="w-full">
                         <UInput v-model="state.first_name" class="w-full" />
                     </UFormField>
-
-                    <UFormField :label="$t('Last Name')" name="last_name">
+                    <UFormField :label="$t('Last Name')" name="last_name" class="w-full">
                         <UInput v-model="state.last_name" class="w-full" />
                     </UFormField>
                 </div>
