@@ -61,7 +61,7 @@
 </script>
 
 <template>
-    <SCard class="shadow-xl p-4">
+    <SCard class="shadow-md p-4">
         <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <h3 class="font-semibold text-xl">{{ $t('Cashflow') }}</h3>

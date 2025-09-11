@@ -19,7 +19,7 @@
 </script>
 
 <template>
-        <SCard class="shadow-xl">
+        <SCard class="shadow-md">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -34,7 +34,7 @@
             </div>
         </SCard>
 
-        <SCard class="shadow-xl">
+        <SCard class="shadow-md">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
@@ -49,7 +49,7 @@
             </div>
         </SCard>
 
-        <SCard class="shadow-xl">
+        <SCard class="shadow-md">
             <div>
                 <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
                     {{ $t('Top category') }}
@@ -63,7 +63,7 @@
             </div>
         </SCard>
 
-        <SCard class="shadow-xl">
+        <SCard class="shadow-md">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">

@@ -12,7 +12,7 @@
 </script>
 
 <template>
-    <SCard class="shadow-xl p-3">
+    <SCard class="shadow-md p-3">
         <div class="flex flex-wrap items-center justify-between gap-3 sm:gap-3">
             <div class="flex flex-wrap items-center gap-2 mx-auto sm:mx-0">
                 <div class="flex flex-row gap-1 w-full justify-center sm:w-auto sm:justify-start" role="group">
