@@ -89,20 +89,26 @@ export class Notifier {
         return mountEl
     }
 
+    private static safeRemoveNode(el: HTMLElement | null) {
+        try {
+            if (el && el.parentNode) el.parentNode.removeChild(el)
+        } catch {
+            /* no-op */
+        }
+    }
+
     static showChooser(
         title: string,
         message: string,
         confirmCallback?: { (): void },
-        cancelCallback?: { (): void }
+        cancelCallback?: { (): void },
+        options?: { buttons?: Array<{ label: string; action: 'confirm' | 'cancel' | 'close'; color?: string }> }
     ) {
         const container = this.setupDomContainer()
         const nuxtApp = useNuxtApp()
 
         // Build component emit callbacks
-        const unmount = () => {
-            render(null, container)
-            document.body.removeChild(container)
-        }
+        const unmount = () => { render(null, container); this.safeRemoveNode(container) }
         const emitCallbacks: { [key: string]: EmitEventCallback } = {
             confirm: (_app: App<Element>) => {
                 if (confirmCallback) confirmCallback()
@@ -118,10 +124,7 @@ export class Notifier {
         }
 
         // Build component props
-        const props: ModalChooserProps = {
-            title,
-            message
-        }
+        const props: ModalChooserProps = { title, message, buttons: options?.buttons }
 
         // Render ModalChooser directly within existing Nuxt app context
         const vnode = h(ModalChooser, {

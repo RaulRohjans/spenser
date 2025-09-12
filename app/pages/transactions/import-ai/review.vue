@@ -12,7 +12,7 @@
     import { buildDateTimeWithOffset } from '~/utils/date'
     import { toUserMessage } from '~/utils/errors'
     import { useActionColumnCell } from '~/composables/useActionColumnCell'
-    
+
     const { t: $t } = useI18n()
     const router = useRouter()
     const route = useRoute()
@@ -20,19 +20,36 @@
 
     // If opened via async task, fetch result
     const taskParam = computed(() => String(route.query.task || ''))
+    const validationInfo = ref<{
+        ok: boolean
+        hint?: string
+        attempts: number
+        maxRetries: number
+    } | null>(null)
     if (!store.items.length && taskParam.value) {
         try {
-            const res = await $fetch<{ success: boolean; transactions: ParsedTransactionItem[] }>(
-                `/api/tasks/ai-import/${taskParam.value}/result`,
-                { method: 'GET' }
-            )
+            const res = await $fetch<{
+                success: boolean
+                transactions: ParsedTransactionItem[]
+                validation?: {
+                    ok: boolean
+                    hint?: string
+                    attempts: number
+                    maxRetries: number
+                }
+            }>(`/api/tasks/ai-import/${taskParam.value}/result`, {
+                method: 'GET'
+            })
             if (res?.success && Array.isArray(res.transactions)) {
-                store.setItems(res.transactions.map((t) => ({
-                    category: t.category ?? null,
-                    name: String(t.name || ''),
-                    value: Number(t.value || 0),
-                    date: String(t.date || '')
-                })))
+                store.setItems(
+                    res.transactions.map((t) => ({
+                        category: t.category ?? null,
+                        name: String(t.name || ''),
+                        value: Number(t.value || 0),
+                        date: String(t.date || '')
+                    }))
+                )
+                validationInfo.value = res.validation || null
             }
         } catch {
             await router.replace('/transactions/import-ai')
@@ -47,6 +64,25 @@
         ...r,
         value: Math.abs(Number(r.value))
     }))
+
+    // Show a warning dialog when validation failed after max retries
+    onMounted(() => {
+        const v = validationInfo.value
+        if (v && v.ok === false && v.attempts >= v.maxRetries) {
+            const title = $t('Warning')
+            const msg = [
+                $t(
+                    'The result may contain inconsistencies detected by the validator.'
+                ),
+                v.hint ? `${$t('Details')}:\n${v.hint}` : ''
+            ]
+                .filter(Boolean)
+                .join('\n\n')
+            Notifier.showChooser(title, msg, undefined, undefined, {
+                buttons: [{ label: 'OK', action: 'close', color: 'primary' }]
+            })
+        }
+    })
 
     const delRow = (row: ParsedTransactionItem) => {
         const idx = rows.value.indexOf(row)
@@ -119,13 +155,19 @@
                 return h(resolveComponent('USelectMenu'), {
                     items: categoryOptions.value,
                     loading: categoryLoading.value,
-                    modelValue: categoryOptions.value.find(o => o.value === rows.value[idx]?.category),
-                    'onUpdate:modelValue': (o: { label: string; value: number } | null) =>
-                        (rows.value[idx]!.category = o?.value ?? null),
+                    modelValue: categoryOptions.value.find(
+                        (o) => o.value === rows.value[idx]?.category
+                    ),
+                    'onUpdate:modelValue': (
+                        o: { label: string; value: number } | null
+                    ) => (rows.value[idx]!.category = o?.value ?? null),
                     class: 'w-full',
                     size: 'xs',
                     searchable: true,
-                    searchInput: { placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' },
+                    searchInput: {
+                        placeholder: $t('Filter...'),
+                        icon: 'i-heroicons-magnifying-glass'
+                    },
                     clearSearchOnClose: true,
                     optionAttribute: 'label',
                     valueAttribute: 'value',
@@ -268,6 +310,6 @@
             :columns="tableColumns"
             sticky
             :loading="categoryLoading"
-            class="w-full h-[87vh]" />
+            class="w-full h-[85vh]" />
     </UContainer>
 </template>

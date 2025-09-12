@@ -25,15 +25,33 @@ export async function runAiImportParse(
     userId: number,
     rawText: string,
     abortSignal?: AbortSignal
-): Promise<{ transactions: Array<{ name: string; value: number; date: string; category: number | null }> }> {
+): Promise<{
+    transactions: Array<{
+        name: string
+        value: number
+        date: string
+        category: number | null
+    }>
+    validation?: {
+        ok: boolean
+        hint?: string
+        attempts: number
+        maxRetries: number
+    }
+}> {
     const gSettings = await db
         .select()
         .from(globalSettings)
         .then((r) => r[0])
 
-    const { providerName, apiToken, modelName, validatorModelName, ollamaBaseUrl, maxValidationRetries } = await resolveAiConfig(
-        gSettings || {}
-    )
+    const {
+        providerName,
+        apiToken,
+        modelName,
+        validatorModelName,
+        ollamaBaseUrl,
+        maxValidationRetries
+    } = await resolveAiConfig(gSettings || {})
 
     const cats = await db
         .select({
@@ -72,11 +90,17 @@ export async function runAiImportParse(
         model = provider(name)
         validatorModel = provider(validatorModelName || name)
     } else {
-        throw createError({ statusMessage: 'Unsupported provider.', statusCode: 400 })
+        throw createError({
+            statusMessage: 'Unsupported provider.',
+            statusCode: 400
+        })
     }
 
     const categoryGuidance = cats
-        .map((c) => `- ${c.id}: ${c.name}${c.description ? ` — ${c.description}` : ''}`)
+        .map(
+            (c) =>
+                `- ${c.id}: ${c.name}${c.description ? ` — ${c.description}` : ''}`
+        )
         .join('\n')
 
     const systemPrompt = `You are a precise finance extraction assistant. \n
@@ -84,7 +108,9 @@ export async function runAiImportParse(
          - Every transaction MUST include all fields. \n
          - If category is unknown or not a confident match, set it to null (never leave it empty). \n
          - Never include comments, trailing commas, ellipses, or extra text before/after the JSON. \n
-         - Dates must be ISO-like (YYYY-MM-DD or full ISO). Amounts: positive income, negative expense.`
+         - Dates must be ISO-like (YYYY-MM-DD or full ISO). Amounts: positive income, negative expense.
+         - Make sure you consider values correctly 0.89 should be 0.89 not 89, values should only have 2 decimals, 
+         make sure you always respect the original number even if the value is smaller than 1, ex: 0.79.`
 
     const userPrompt = `Unstructured content:\n\n${rawText}\n\nUser Categories (id: name):\n${categoryGuidance}`
 
@@ -108,16 +134,34 @@ export async function runAiImportParse(
 
     const validate = async (
         originalRaw: string,
-        extracted: Array<{ name: string; value: number; date: string; category: number | null }>
+        extracted: Array<{
+            name: string
+            value: number
+            date: string
+            category: number | null
+        }>
     ): Promise<{ ok: boolean; hint?: string }> => {
-        const validationSchema = z.object({ ok: z.boolean(), hint: z.string().optional() })
-        const validationPrompt = `You are a strict validator for extracted financial transactions.
+        const validationSchema = z.object({
+            ok: z.boolean(),
+            hint: z.string().optional()
+        })
+        const validationPrompt = `You are a pragmatic validator for extracted financial transactions.
             Context input (unstructured):\n\n${originalRaw}\n\nExtracted JSON: ${JSON.stringify(extracted)}\n\n
-            Check only for: valid ISO-like dates consistent with common banking statements; 
-            category ids being integers or null; names not being generic placeholders; 
-            item count sort of machine the volume of the input data.
-            Respond with JSON: { ok: boolean, hint?: string }. If not ok, hint must briefly say what to improve 
-            (e.g., "dates not ISO", "category ids invalid", "names look generic").`
+            Focus on structural correctness and obvious numeric/date problems. Do NOT nitpick formatting or style.
+            Allowed and expected normalizations:
+            - Dates may be normalized to YYYY-MM-DD (ISO-like) even if the source shows DD/MM/YYYY. This is correct and SHOULD NOT be flagged.
+            - Names should be kept as-is from the source; do NOT flag casing/style differences unless they are generic placeholders like "Unknown".
+            - Category can be null when there is no confident match. This is valid and SHOULD NOT be flagged.
+
+            Validate ONLY:
+            1) Dates: each is a valid calendar date, preferably normalized to YYYY-MM-DD or full ISO (strings are fine). No out-of-range values.
+            2) Values: numeric, reasonable scale (e.g., avoid missing decimals like -32 instead of -0.32), negative for expenses and positive for income.
+            3) Category: integer id or null.
+            4) JSON structure strictly matches the schema.
+            5) Item count roughly matches the volume of the input content (soft check).
+
+            Respond with EXACT JSON: { ok: boolean, hint?: string }.
+            If not ok, hint must briefly state concrete issues and how to fix them. Avoid false positives about date normalization, null categories, or name casing.`
 
         const { object } = await generateObject({
             // @ts-expect-error validator model typing
@@ -125,7 +169,7 @@ export async function runAiImportParse(
             schema: validationSchema,
             system: 'You validate and output only the minimal JSON object requested.',
             prompt: validationPrompt,
-            temperature: 0,
+            temperature: 0.1,
             maxOutputTokens: 512,
             abortSignal
         })
@@ -142,23 +186,40 @@ export async function runAiImportParse(
         const totalRetries = Math.max(0, maxValidationRetries)
         while (!verdict.ok && attempts < totalRetries) {
             attempts++
-            
-            const hint = verdict.hint ? String(verdict.hint) : 'Ensure dates are ISO (YYYY-MM-DD) and category ids are correct.'
+
+            const hint = verdict.hint
+                ? String(verdict.hint)
+                : 'Ensure valid ISO-like dates, correct value scale (decimals), and valid category ids or null.'
             try {
-                transactions = await runOnce(`Fix previous issues: ${hint}. Do not invent categories; set unknown category to null. Keep the same schema.`)
+                transactions = await runOnce(`Fix previous issues: ${hint}.
+                    Rules: 
+                    - Normalize dates to YYYY-MM-DD; do not try to mimic DD/MM/YYYY.
+                    - Keep names as in the source; do not change casing.
+                    - Do not invent categories; set unknown to null.
+                    - Preserve the JSON schema and numeric precision (fix missing decimals).`)
+
                 verdict = await validate(rawText, transactions)
             } catch (retryErr) {
                 console.error('[aiImportRunner] retry attempt failed', {
                     userId,
                     attempt: attempts,
                     errorName: (retryErr as { name?: string } | null)?.name,
-                    errorMessage: (retryErr as { message?: string } | null)?.message
+                    errorMessage: (retryErr as { message?: string } | null)
+                        ?.message
                 })
                 break
             }
         }
 
-        return { transactions }
+        return {
+            transactions,
+            validation: {
+                ok: !!verdict.ok,
+                hint: verdict.hint,
+                attempts,
+                maxRetries: totalRetries
+            }
+        }
     } catch (err) {
         // Detailed server log for failures
         console.error('[aiImportRunner] generateObject failed', {
@@ -171,5 +232,3 @@ export async function runAiImportParse(
         throw err
     }
 }
-
-
