@@ -377,9 +377,10 @@ function getMonthDate(year: number, monthZeroBased: number, day: number): Date {
     return makeDateUTC(year, monthZeroBased, safeDay)
 }
 
-function generateYearlyTransactions(
+function generateTransactionsForMonths(
     userId: number,
-    categoriesByName: Map<string, number>
+    categoriesByName: Map<string, number>,
+    monthsCount: number
 ) {
     const out: {
         user: number
@@ -391,8 +392,8 @@ function generateYearlyTransactions(
     }[] = []
 
     const now = new Date()
-    // Iterate last 12 months including current
-    for (let m = 0; m < 12; m++) {
+    // Iterate last N months including current
+    for (let m = 0; m < monthsCount; m++) {
         const ref = new Date(
             Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - m, 1)
         )
@@ -568,9 +569,10 @@ export async function seedDemo() {
     await ensureBudgets(demoUser.id, categoriesByName)
 
     // Generate realistic yearly transactions where monthly expenses do not exceed income
-    const allTransactions = generateYearlyTransactions(
+    const allTransactions = generateTransactionsForMonths(
         demoUser.id,
-        categoriesByName
+        categoriesByName,
+        24
     )
 
     // Insert in batches to avoid parameter limits
