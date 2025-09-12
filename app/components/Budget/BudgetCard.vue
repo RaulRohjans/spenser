@@ -43,10 +43,7 @@
     <SCard
         class="drag-me w-full max-w-none lg:max-w-[400px] shadow-md transition-transform duration-200 hover:-translate-y-0.5 will-change-transform p-2">
         <div class="flex items-center gap-3 mb-2">
-            <UIcon
-                v-if="budget.category_icon"
-                :name="getHeroIconName(budget.category_icon)"
-                class="text-xl" />
+            <span v-if="budget.category_icon" class="text-xl leading-none">{{ budget.category_icon }}</span>
             <div class="flex-1">
                 <div class="font-medium truncate">
                     {{ budget.name || $t('Untitled budget') }}

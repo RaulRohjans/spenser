@@ -55,13 +55,13 @@
     const getIcon = computed(() => {
         switch (props.type) {
             case 'info':
-                return getHeroIconName('information-circle')
+                return 'i-heroicons-information-circle'
             case 'error':
-                return getHeroIconName('x-circle')
+                return 'i-heroicons-x-circle'
             case 'success':
-                return getHeroIconName('check-circle')
+                return 'i-heroicons-check-circle'
             case 'warning':
-                return getHeroIconName('exclamation-circle')
+                return 'i-heroicons-exclamation-circle'
             default:
                 throw new Error('Invalid notification type')
         }

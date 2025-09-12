@@ -94,19 +94,8 @@
             accessorKey: 'icon',
             header: $t('Icon'),
             cell: ({ row }) => {
-                const icon = row.original.icon
-
-                const iconComponent = icon
-                    ? [
-                          h(resolveComponent('UIcon'), {
-                              name: getHeroIconName(icon),
-                              class: 'h-5 w-5',
-                              dynamic: true
-                          })
-                      ]
-                    : []
-
-                return h('div', undefined, iconComponent)
+                const emoji = row.original.icon
+                return h('div', undefined, emoji ? [h('span', { class: 'text-xl leading-none' }, emoji)] : [])
             },
             meta: { alias: $t('Icon'), searchable: false }
         },

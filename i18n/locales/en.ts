@@ -109,6 +109,7 @@ export default {
     Delete: 'Delete',
     Remove: 'Remove',
     Clear: 'Clear',
+    'Pick emoji': 'Pick emoji',
     selected: 'selected',
     Select: 'Select',
     'Rows per page': 'Rows per page',

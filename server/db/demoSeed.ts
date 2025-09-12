@@ -60,21 +60,21 @@ function priceWithRealisticEnding(min: number, max: number): string {
 }
 
 const categorySeeds: CategorySeed[] = [
-    { name: 'Salary', icon: 'banknotes', type: 'income' },
-    { name: 'Rent', icon: 'home', type: 'fixed' },
-    { name: 'Utilities', icon: 'bolt', type: 'fixed' },
-    { name: 'Internet', icon: 'globe-alt', type: 'fixed' },
-    { name: 'Mobile', icon: 'device-phone-mobile', type: 'fixed' },
-    { name: 'Subscriptions', icon: 'play', type: 'fixed' },
-    { name: 'Groceries', icon: 'shopping-cart', type: 'variable' },
-    { name: 'Dining', icon: 'cake', type: 'variable' },
-    { name: 'Coffee', icon: 'beaker', type: 'variable' },
-    { name: 'Transport', icon: 'truck', type: 'variable' },
-    { name: 'Entertainment', icon: 'film', type: 'variable' },
-    { name: 'Health', icon: 'heart', type: 'variable' },
-    { name: 'Gifts', icon: 'gift', type: 'variable' },
-    { name: 'Home', icon: 'wrench-screwdriver', type: 'variable' },
-    { name: 'Travel', icon: 'paper-airplane', type: 'variable' }
+    { name: 'Salary', icon: '💼', type: 'income' },
+    { name: 'Rent', icon: '🏠', type: 'fixed' },
+    { name: 'Utilities', icon: '⚡️', type: 'fixed' },
+    { name: 'Internet', icon: '🌐', type: 'fixed' },
+    { name: 'Mobile', icon: '📱', type: 'fixed' },
+    { name: 'Subscriptions', icon: '🔁', type: 'fixed' },
+    { name: 'Groceries', icon: '🛒', type: 'variable' },
+    { name: 'Dining', icon: '🍽️', type: 'variable' },
+    { name: 'Coffee', icon: '☕️', type: 'variable' },
+    { name: 'Transport', icon: '🚗', type: 'variable' },
+    { name: 'Entertainment', icon: '🎬', type: 'variable' },
+    { name: 'Health', icon: '❤️', type: 'variable' },
+    { name: 'Gifts', icon: '🎁', type: 'variable' },
+    { name: 'Home', icon: '🛠️', type: 'variable' },
+    { name: 'Travel', icon: '✈️', type: 'variable' }
 ]
 
 const variableVendors: Record<string, string[]> = {

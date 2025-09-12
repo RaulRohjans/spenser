@@ -22,17 +22,15 @@ export function useCategories() {
 
     const categorySelectOptions = computed(() => {
         return data.value.data.rows.map((category) => ({
-            label: category.name,
-            value: category.id,
-            icon: category.icon ? getHeroIconName(category.icon) : ''
+            label: category.icon ? `${category.icon} ${category.name}` : category.name,
+            value: category.id
         }))
     })
 
-    const getCategoryIcon = (categoryId: number | undefined) => {
+    const getCategoryEmoji = (categoryId: number | undefined) => {
         if (!categoryId) return
-
         const category = data.value.data.rows.find((c) => c.id === categoryId)
-        return category?.icon ? getHeroIconName(category.icon) : undefined
+        return category?.icon || undefined
     }
 
     return {
@@ -40,6 +38,6 @@ export function useCategories() {
         status,
         error,
         categorySelectOptions,
-        getCategoryIcon
+        getCategoryEmoji
     }
 }

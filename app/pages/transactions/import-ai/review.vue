@@ -220,7 +220,7 @@
 
     const categoryOptions = computed(() =>
         categoryData.value.data.rows.map((c) => ({
-            label: c.name,
+            label: c.icon ? `${c.icon} ${c.name}` : c.name,
             value: c.id
         }))
     )

@@ -109,6 +109,7 @@ export default {
     Delete: 'Eliminar',
     Remove: 'Remover',
     Clear: 'Limpar',
+    'Pick emoji': 'Escolher emoji',
     selected: 'selecionado(s)',
     Select: 'Selecionar',
     'Rows per page': 'Registos por página',

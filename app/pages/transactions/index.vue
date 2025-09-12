@@ -118,19 +118,7 @@
                 if (deleted) return h('span', '-')
 
                 return h('div', { class: 'flex flex-row items-center gap-3' }, [
-                    h(
-                        'div',
-                        undefined,
-                        icon
-                            ? [
-                                  h(resolveComponent('UIcon'), {
-                                      name: getHeroIconName(icon),
-                                      class: 'h-5 w-5',
-                                      dynamic: true
-                                  })
-                              ]
-                            : []
-                    ),
+                    h('div', undefined, icon ? [h('span', { class: 'text-lg leading-none' }, icon)] : []),
                     h('span', name!)
                 ])
             },
@@ -184,19 +172,7 @@
                 const icon = row.original.category_icon
 
                 return h('div', { class: 'flex flex-row items-center gap-3' }, [
-                    h(
-                        'div',
-                        undefined,
-                        icon
-                            ? [
-                                  h(resolveComponent('UIcon'), {
-                                      name: getHeroIconName(icon),
-                                      class: 'h-5 w-5',
-                                      dynamic: true
-                                  })
-                              ]
-                            : []
-                    ),
+                    h('div', undefined, icon ? [h('span', { class: 'text-lg leading-none' }, icon)] : []),
                     h('span', name || '-')
                 ])
             },

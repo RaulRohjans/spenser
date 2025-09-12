@@ -121,10 +121,76 @@
             })
     }
 
-    const displayIcon = computed(() => {
-        if (!state.icon) return
+    // Emoji picker state
+    const openPicker = ref(false)
+    const pickerHost = useTemplateRef<HTMLDivElement | null>('pickerHost')
+    let PickerCtor: any | null = null
+    let pickerInstance: any | null = null
 
-        return getHeroIconName(state.icon)
+    const { locale } = useI18n()
+    const colorMode = useColorMode()
+
+    function computeEmojiTheme() {
+        const v = colorMode.value
+        if (v === 'dark') return 'dark'
+        if (v === 'light') return 'light'
+        return 'auto'
+    }
+
+    async function loadEmojiI18n(langCode: string) {
+        // Map our app locale to emoji-mart i18n filenames
+        const code = langCode.toLowerCase()
+        const file = code.startsWith('pt') ? 'pt' : 'en'
+        try {
+            const res = await fetch(
+                `https://cdn.jsdelivr.net/npm/@emoji-mart/data/i18n/${file}.json`
+            )
+            if (!res.ok) throw new Error('i18n fetch failed')
+            return await res.json()
+        } catch {
+            return undefined
+        }
+    }
+
+    onMounted(async () => {
+        try {
+            const mod = await import('emoji-mart')
+            PickerCtor = (mod as any).Picker
+        } catch {
+            PickerCtor = null
+        }
+    })
+
+    watch(openPicker, async (v) => {
+        if (!v) return
+
+        // Mount picker when popover opens and target exists
+        await nextTick()
+        if (!PickerCtor || !pickerHost.value) return
+
+        // If already created once, clear and recreate to ensure fresh state
+        pickerHost.value.innerHTML = ''
+        const dataLoader = async () => {
+            const res = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data')
+            return res.json()
+        }
+        const i18n = await loadEmojiI18n(locale.value)
+        const theme = computeEmojiTheme()
+
+        pickerInstance = new PickerCtor({
+            data: dataLoader,
+            theme,
+            i18n,
+            previewPosition: 'none',
+            skinTonePosition: 'search',
+            searchPosition: 'sticky',
+            onEmojiSelect: (emoji: any) => {
+                // Ensure only one selection stored: replace previous
+                state.icon = emoji?.native || ''
+                openPicker.value = false
+            }
+        })
+        pickerHost.value.appendChild(pickerInstance as unknown as Node)
     })
 </script>
 
@@ -139,20 +205,30 @@
         </UFormField>
 
         <UFormField :label="$t('Icon')" name="icon">
-            <div class="flex flex-row gap-1">
-                <!-- This should be an icon picker, but NuxtJS doesn't have one yet -->
-                <UInput
-                    v-model="state.icon"
-                    class="w-full"
-                    :trailing-icon="displayIcon">
-                </UInput>
-                <ULink to="https://heroicons.com/" target="_blank">
+            <div class="flex flex-row items-center gap-2">
+                <UPopover v-model:open="openPicker" :content="{ align: 'start', side: 'bottom', sideOffset: 8 }">
                     <UButton
-                        icon="i-heroicons-arrow-top-right-on-square"
+                        icon="i-heroicons-face-smile"
                         color="primary"
-                        square
-                        variant="ghost" />
-                </ULink>
+                        variant="soft"
+                        :aria-label="$t('Pick emoji')">
+                        {{ $t('Pick emoji') }}
+                    </UButton>
+                    <template #content>
+                        <ClientOnly>
+                            <div class="w-[330px] max-w-[90vw]" ref="pickerHost" />
+                        </ClientOnly>
+                    </template>
+                </UPopover>
+
+                <span v-if="state.icon" class="text-2xl leading-none select-none">{{ state.icon }}</span>
+                <UButton
+                    v-if="state.icon"
+                    icon="i-heroicons-x-mark"
+                    color="neutral"
+                    variant="ghost"
+                    :aria-label="$t('Clear')"
+                    @click="state.icon = ''" />
             </div>
         </UFormField>
 
