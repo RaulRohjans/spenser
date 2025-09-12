@@ -39,14 +39,14 @@
     const { status: categoryStatus, categorySelectOptions } = useCategories()
 
     const selectedCategoryItem = computed<
-        { label: string; value: number; icon: string } | { label: string; value: null; icon: string } | undefined
+        { label: string; value: number } | { label: string; value: null } | undefined
     >(() => {
         return [
-            { label: $t('All categories'), value: null, icon: 'i-heroicons-squares-2x2' },
+            { label: $t('All categories'), value: null },
             ...categorySelectOptions.value
         ].find((opt) => opt.value === form.category) as
-            | { label: string; value: number; icon: string }
-            | { label: string; value: null; icon: string }
+            | { label: string; value: number }
+            | { label: string; value: null }
             | undefined
     })
 
@@ -107,13 +107,12 @@
                         :model-value="selectedCategoryItem"
                         @update:model-value="onUpdateSelectedCategory"
                         :items="[
-                            { label: $t('All categories'), value: null, icon: 'i-heroicons-squares-2x2' },
+                            { label: $t('All categories'), value: null },
                             ...categorySelectOptions
                         ]"
                         :loading="categoryStatus === 'pending'"
                         option-attribute="label"
                         value-attribute="value"
-                        :icon="selectedCategoryItem?.icon"
                         searchable
                         :search-input="{ placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
                         clear-search-on-close

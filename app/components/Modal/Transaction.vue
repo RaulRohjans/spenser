@@ -162,9 +162,7 @@
     }
 
     const selectedCategoryItem = computed(() => {
-        return categorySelectOptions.value.find(
-            (opt) => opt.value === state.category
-        )
+        return categorySelectOptions.value.find((opt) => opt.value === state.category)
     })
     const onUpdateSelectedCategory = (opt?: {
         label: string
@@ -209,7 +207,6 @@
                     :loading="categoryStatus === 'pending'"
                     option-attribute="label"
                     value-attribute="value"
-                    :icon="selectedCategoryItem?.icon"
                     searchable
                     :search-input="{ placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
                     clear-search-on-close
