@@ -73,6 +73,10 @@
     }
 
     const onHighlightEvent = () => {
+        // If tasks popover is already open or there are already running tasks at mount, skip animation
+        if (store.isOpen || (store.items && store.items.some(i => i.status === 'running'))) {
+            return
+        }
         // Respect prefers-reduced-motion by skipping heavy transforms
         try {
             if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {

@@ -27,7 +27,7 @@ export const useTasksStore = defineStore('tasks', () => {
                 if (res.success) {
                     items.value = res.items
                     const hasRunning = items.value.some(i => i.status === 'running')
-                    if (hasRunning && !prevHasRunning) {
+                    if (hasRunning && !prevHasRunning && !isOpen.value) {
                         try {
                             window.dispatchEvent(new Event('tasks:highlight-bell'))
                         } catch {
