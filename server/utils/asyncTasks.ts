@@ -104,20 +104,27 @@ export async function runAsyncTask<Result>(
         task.updatedAt = task.finishedAt
         task.elapsedMs = (task.finishedAt || 0) - (task.startedAt || task.createdAt)
     } catch (err) {
-        console.error('[asyncTask] Task failed', {
-            id: task.id,
-            type: task.type,
-            userId: task.userId,
-            createdAt: task.createdAt,
-            startedAt: task.startedAt,
-            errorName: (err as { name?: string } | null)?.name,
-            errorMessage: (err as { message?: string } | null)?.message,
-            errorStack: (err as { stack?: string } | null)?.stack
-        })
-        // If aborted, mark as cancelled; else failed
+        // If aborted, treat as user-intended cancellation and avoid error-level logging
         if ((err as { name?: string } | null)?.name === 'AbortError') {
+            console.info('[asyncTask] Task cancelled by user', {
+                id: task.id,
+                type: task.type,
+                userId: task.userId,
+                createdAt: task.createdAt,
+                startedAt: task.startedAt
+            })
             task.status = 'cancelled'
         } else {
+            console.error('[asyncTask] Task failed', {
+                id: task.id,
+                type: task.type,
+                userId: task.userId,
+                createdAt: task.createdAt,
+                startedAt: task.startedAt,
+                errorName: (err as { name?: string } | null)?.name,
+                errorMessage: (err as { message?: string } | null)?.message,
+                errorStack: (err as { stack?: string } | null)?.stack
+            })
             task.status = 'failed'
             task.error = (err as { message?: string } | null)?.message || 'Task failed'
         }
