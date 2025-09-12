@@ -18,12 +18,24 @@ async function truncateAll() {
     }
 
     console.log('[reset] truncating all tables (restart identity)')
-    // Use CASCADE and restart identity to reset sequences
-    await db.execute(
-        sql`TRUNCATE TABLE "transaction", "budget", "user_preferences", "category", "user" RESTART IDENTITY CASCADE;`
-    )
-    // Note: do not truncate currency to keep base currency references stable; but we are reseeding anyway
-    await db.execute(sql`TRUNCATE TABLE "currency" RESTART IDENTITY CASCADE;`)
+    // Build and execute TRUNCATE dynamically from pg_tables to avoid manual maintenance
+    await db.execute(sql`DO $$
+    DECLARE
+        stmt text;
+    BEGIN
+        SELECT 'TRUNCATE TABLE '
+               || string_agg(format('%I', tablename), ', ')
+               || ' RESTART IDENTITY CASCADE'
+        INTO stmt
+        FROM pg_tables
+        WHERE schemaname = 'public'
+          AND tablename NOT LIKE 'drizzle_%';
+
+        IF stmt IS NOT NULL THEN
+            EXECUTE stmt;
+        END IF;
+    END
+    $$;`)
 }
 
 async function main() {
