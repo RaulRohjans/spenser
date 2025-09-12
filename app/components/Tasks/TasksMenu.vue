@@ -51,21 +51,18 @@
         const btn = refEl || qsEl
         if (!btn) return
         requestAnimationFrame(() => {
-            btn.classList.add('tasks-bell-highlighted')
             btn.animate(
                 [
-                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)' },
-                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none' }
+                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
+                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white' }
                 ],
                 { duration: 1800, easing: 'ease-in-out' }
             ).onfinish = () => {
-                btn.classList.remove('tasks-bell-highlighted')
                 // Open tasks popover after animation so user sees the new task
                 try { store.open() } catch { /* empty */ }
             }
@@ -247,15 +244,3 @@
         </template>
     </ClientOnly>
 </template>
-<style scoped>
-    .tasks-bell-highlighted {
-        border-radius: 9999px;
-        outline: none;
-        /* For some unknown reason the component needs 2 box shadows to have the correct background color*/
-        box-shadow: 0 0 25px 10px #f59e0b33;
-        box-shadow: 0 0 28px 12px rgba(239, 177, 0, 0.28);
-        background-color: rgba(239, 177, 0, 1);
-        color: white;
-    }
-</style>
-
