@@ -127,6 +127,31 @@
     let PickerCtor: any | null = null
     let pickerInstance: any | null = null
 
+    const { locale } = useI18n()
+    const colorMode = useColorMode()
+
+    function computeEmojiTheme() {
+        const v = colorMode.value
+        if (v === 'dark') return 'dark'
+        if (v === 'light') return 'light'
+        return 'auto'
+    }
+
+    async function loadEmojiI18n(langCode: string) {
+        // Map our app locale to emoji-mart i18n filenames
+        const code = langCode.toLowerCase()
+        const file = code.startsWith('pt') ? 'pt' : 'en'
+        try {
+            const res = await fetch(
+                `https://cdn.jsdelivr.net/npm/@emoji-mart/data/i18n/${file}.json`
+            )
+            if (!res.ok) throw new Error('i18n fetch failed')
+            return await res.json()
+        } catch {
+            return undefined
+        }
+    }
+
     onMounted(async () => {
         try {
             const mod = await import('emoji-mart')
@@ -149,10 +174,13 @@
             const res = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data')
             return res.json()
         }
-        
+        const i18n = await loadEmojiI18n(locale.value)
+        const theme = computeEmojiTheme()
+
         pickerInstance = new PickerCtor({
             data: dataLoader,
-            theme: 'auto',
+            theme,
+            i18n,
             previewPosition: 'none',
             skinTonePosition: 'search',
             searchPosition: 'sticky',
