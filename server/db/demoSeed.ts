@@ -316,62 +316,72 @@ async function ensureBudgets(
     if (toInsert.length) await db.insert(budgets).values(toInsert)
 }
 
-function buildProfiles(): CategoryProfile[] {
-    // Aim for ~100 transactions per variable category, fewer for fixed/income
-    return categorySeeds.map((c) => {
-        if (c.type === 'variable')
-            return { ...c, targetCount: randomInt(110, 160) }
-        if (c.type === 'fixed') return { ...c, targetCount: 6 } // once per month
-        return { ...c, targetCount: 6 } // income monthly
-    })
+function chunk<T>(arr: T[], size: number): T[][] {
+    const out: T[][] = []
+    for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
+    return out
 }
 
-function generateDatesOverLastMonths(
-    months: number,
-    preferredDays?: number[]
-): Date[] {
-    const dates: Date[] = []
-    const now = new Date()
-    for (let i = 0; i < months; i++) {
-        const ref = new Date(
-            Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1)
-        )
-        if (preferredDays && preferredDays.length) {
-            for (const d of preferredDays) {
-                const day = Math.min(d, endOfMonth(ref).getUTCDate())
-                dates.push(
-                    makeDateUTC(ref.getUTCFullYear(), ref.getUTCMonth(), day)
-                )
-            }
-        } else {
-            // spread 15-25 random days per month
-            const perMonth = randomInt(15, 25)
-            const endDay = endOfMonth(ref).getUTCDate()
-            const used = new Set<number>()
-            for (let k = 0; k < perMonth; k++) {
-                let day = randomInt(1, endDay)
-                // avoid duplicates on the same day to spread usage
-                let guard = 0
-                while (used.has(day) && guard++ < 10) day = randomInt(1, endDay)
-                used.add(day)
-                dates.push(
-                    makeDateUTC(ref.getUTCFullYear(), ref.getUTCMonth(), day)
-                )
-            }
+function clamp(n: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, n))
+}
+
+function monthSeasonFactorForUtilities(monthIndex: number): number {
+    // monthIndex: 0=Jan ... 11=Dec
+    // Slightly higher in winter (Nov-Mar), lower in summer (Jun-Sep)
+    const winter = [10, 11, 0, 1, 2] // Nov, Dec, Jan, Feb, Mar
+    const summer = [5, 6, 7, 8] // Jun, Jul, Aug, Sep
+    if (winter.includes(monthIndex)) return 1.2
+    if (summer.includes(monthIndex)) return 0.85
+    return 1.0
+}
+
+function randomBetween(min: number, max: number): number {
+    return min + Math.random() * (max - min)
+}
+
+function splitIntoTransactions(
+    total: number,
+    minPerTx: number,
+    maxPerTx: number,
+    minCount: number,
+    maxCount: number
+): number[] {
+    if (total <= 0) return []
+    const count = randomInt(minCount, maxCount)
+    const amounts: number[] = []
+    let remaining = total
+    for (let i = 0; i < count; i++) {
+        const maxForThis = clamp(remaining, minPerTx, maxPerTx)
+        const minForThis = Math.min(minPerTx, maxForThis)
+        let amount = randomBetween(minForThis, maxForThis)
+        amount = Math.min(amount, remaining)
+        amounts.push(amount)
+        remaining -= amount
+        // if remaining is too small to make another valid tx, add it to the last one
+        if (i < count - 1 && remaining > 0 && remaining < minPerTx) {
+            amounts[amounts.length - 1] += remaining
+            remaining = 0
+            break
         }
+        if (remaining <= 0) break
     }
-    // newest first to oldest last
-    dates.sort((a, b) => b.getTime() - a.getTime())
-    return dates
+    // Round to 2 decimals
+    return amounts.map((a) => Math.round(a * 100) / 100)
 }
 
-function generateTransactionsForCategory(
+function getMonthDate(year: number, monthZeroBased: number, day: number): Date {
+    const dt = new Date(Date.UTC(year, monthZeroBased, 1))
+    const lastDay = endOfMonth(dt).getUTCDate()
+    const safeDay = clamp(day, 1, lastDay)
+    return makeDateUTC(year, monthZeroBased, safeDay)
+}
+
+function generateYearlyTransactions(
     userId: number,
-    categoryName: string,
-    categoryId: number,
-    profile: CategoryProfile
+    categoriesByName: Map<string, number>
 ) {
-    const tx: {
+    const out: {
         user: number
         category: number
         name: string
@@ -380,113 +390,167 @@ function generateTransactionsForCategory(
         deleted: boolean
     }[] = []
 
-    const months = 6
-    if (profile.type === 'income') {
-        // Salary on last business day of each month
-        const now = new Date()
-        for (let i = 0; i < months; i++) {
-            const firstOfMonth = new Date(
-                Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1)
-            )
-            const payDate = lastBusinessDayOfMonth(firstOfMonth)
-            const amount = randomInt(2400, 4200)
-            tx.push({
+    const now = new Date()
+    // Iterate last 12 months including current
+    for (let m = 0; m < 12; m++) {
+        const ref = new Date(
+            Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - m, 1)
+        )
+        const year = ref.getUTCFullYear()
+        const month = ref.getUTCMonth()
+
+        // Salary: vary a bit month-to-month
+        const baseSalary = randomInt(2800, 4500)
+        const salaryVariance = randomInt(-100, 200)
+        const salary = clamp(baseSalary + salaryVariance, 2400, 5200)
+
+        // Income transaction (Salary)
+        const salaryCat = categoriesByName.get('Salary')
+        if (salaryCat) {
+            out.push({
                 user: userId,
-                category: categoryId,
+                category: salaryCat,
                 name: `${incomeVendors[0].vendor} - Salary`,
-                value: `${amount}.00`,
-                date: payDate,
+                value: `${salary}.00`,
+                date: lastBusinessDayOfMonth(ref),
                 deleted: false
             })
         }
-        return tx
-    }
 
-    if (profile.type === 'fixed') {
-        const rules = fixedVendors[categoryName] || []
-        const datesByRule = rules.map((r) =>
-            generateDatesOverLastMonths(months, [r.day])
-        )
-        for (let i = 0; i < datesByRule.length; i++) {
-            const r = rules[i]
-            for (const d of datesByRule[i]) {
-                const amount = priceWithRealisticEnding(r.min, r.max)
-                tx.push({
+        // Fixed expenses
+        let fixedTotal = 0
+        const utilFactor = monthSeasonFactorForUtilities(month)
+        for (const key of Object.keys(fixedVendors)) {
+            const rules = fixedVendors[key]
+            const catId = categoriesByName.get(key)
+            if (!catId) continue
+            for (const r of rules) {
+                let min = r.min
+                let max = r.max
+                if (key === 'Utilities') {
+                    min = Math.round(min * utilFactor)
+                    max = Math.round(max * utilFactor)
+                }
+                const amountStr = priceWithRealisticEnding(min, max)
+                const amountNum = Number(amountStr)
+                fixedTotal += amountNum
+
+                out.push({
                     user: userId,
-                    category: categoryId,
+                    category: catId,
                     name: r.vendor,
-                    value: `-${amount}`,
-                    date: d,
+                    value: `-${amountStr}`,
+                    date: getMonthDate(year, month, r.day),
                     deleted: false
                 })
             }
         }
-        return tx
-    }
 
-    // Variable spending: generate many entries across the last 6 months
-    const vendors = variableVendors[categoryName] || [categoryName]
-    const dates = generateDatesOverLastMonths(months)
-    // Ensure approximately targetCount, sampling dates multiple times if needed
-    const total = profile.targetCount
-    for (let i = 0; i < total; i++) {
-        const d = dates[i % dates.length]
-        let min = 5
-        let max = 100
-        switch (categoryName) {
-            case 'Groceries':
-                min = 15
-                max = 180
-                break
-            case 'Dining':
-                min = 8
-                max = 70
-                break
-            case 'Coffee':
-                min = 2
-                max = 8
-                break
-            case 'Transport':
-                min = 5
-                max = 90
-                break
-            case 'Entertainment':
-                min = 6
-                max = 120
-                break
-            case 'Health':
-                min = 10
-                max = 200
-                break
-            case 'Gifts':
-                min = 10
-                max = 150
-                break
-            case 'Home':
-                min = 10
-                max = 250
-                break
-            case 'Travel':
-                min = 20
-                max = 400
-                break
+        // Decide savings rate and target variable spending
+        let savingsRate = randomBetween(0.05, 0.25)
+        let maxVariable = salary - fixedTotal
+        if (maxVariable < 0) {
+            // If fixed exceeded salary, clamp variable to 0 and reduce implied savings
+            maxVariable = 0
+            savingsRate = 0
         }
-        const amount = priceWithRealisticEnding(min, max)
-        tx.push({
-            user: userId,
-            category: categoryId,
-            name: chooseOne(vendors),
-            value: `-${amount}`,
-            date: d,
-            deleted: false
-        })
-    }
-    return tx
-}
+        let variableTarget = Math.max(
+            0,
+            Math.floor(maxVariable * randomBetween(0.6, 0.9))
+        )
 
-function chunk<T>(arr: T[], size: number): T[][] {
-    const out: T[][] = []
-    for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size))
+        // Build variable category monthly budgets (before scaling)
+        type VarSpec = {
+            name: string
+            min: number
+            max: number
+            minCount: number
+            maxCount: number
+            activeChance?: number // 0..1 to sometimes skip category in a month
+            seasonalBoost?: number // multiplier for months with holidays/travel
+        }
+        const isHolidayMonth = month === 10 || month === 11 // Nov, Dec
+        const varSpecs: VarSpec[] = [
+            { name: 'Groceries', min: 280, max: 620, minCount: 4, maxCount: 10 },
+            { name: 'Dining', min: 60, max: 180, minCount: 2, maxCount: 8 },
+            { name: 'Coffee', min: 15, max: 45, minCount: 5, maxCount: 20 },
+            { name: 'Transport', min: 50, max: 180, minCount: 2, maxCount: 12 },
+            { name: 'Entertainment', min: 20, max: 120, minCount: 0, maxCount: 4 },
+            { name: 'Health', min: 0, max: 80, minCount: 0, maxCount: 2 },
+            {
+                name: 'Gifts',
+                min: isHolidayMonth ? 40 : 0,
+                max: isHolidayMonth ? 300 : 140,
+                minCount: 0,
+                maxCount: isHolidayMonth ? 4 : 2
+            },
+            { name: 'Home', min: 0, max: 200, minCount: 0, maxCount: 3, activeChance: 0.6 },
+            {
+                name: 'Travel',
+                min: 0,
+                max: 800,
+                minCount: 0,
+                maxCount: 2,
+                activeChance: 0.3
+            }
+        ]
+
+        // Compute preliminary budgets, with optional inactivity
+        const prelimBudgets: { name: string; budget: number; min: number; max: number; minCount: number; maxCount: number }[] = []
+        for (const spec of varSpecs) {
+            const roll = Math.random()
+            if (spec.activeChance !== undefined && roll > spec.activeChance) {
+                continue
+            }
+            const budget = Math.round(randomBetween(spec.min, spec.max))
+            prelimBudgets.push({
+                name: spec.name,
+                budget,
+                min: spec.min,
+                max: spec.max,
+                minCount: spec.minCount,
+                maxCount: spec.maxCount
+            })
+        }
+
+        // Scale down budgets to fit variableTarget
+        let sumPre = prelimBudgets.reduce((s, b) => s + b.budget, 0)
+        let scale = sumPre > 0 ? Math.min(1, variableTarget / sumPre) : 0
+        for (const b of prelimBudgets) b.budget = Math.floor(b.budget * scale)
+
+        // Generate variable transactions per category
+        for (const b of prelimBudgets) {
+            const catId = categoriesByName.get(b.name)
+            if (!catId || b.budget <= 0) continue
+
+            const amounts = splitIntoTransactions(
+                b.budget,
+                Math.max(2, Math.floor(b.min * 0.2)),
+                Math.max(5, b.max),
+                b.minCount,
+                b.maxCount
+            )
+            const vendors = variableVendors[b.name] || [b.name]
+            const usedDays = new Set<number>()
+            for (const amt of amounts) {
+                const endDay = endOfMonth(ref).getUTCDate()
+                let day = randomInt(1, endDay)
+                let guard = 0
+                while (usedDays.has(day) && guard++ < 10) day = randomInt(1, endDay)
+                usedDays.add(day)
+                const amountStr = priceWithRealisticEnding(Math.max(2, Math.floor(amt * 0.6)), Math.max(3, Math.ceil(amt)))
+                out.push({
+                    user: userId,
+                    category: catId,
+                    name: chooseOne(vendors),
+                    value: `-${amountStr}`,
+                    date: makeDateUTC(year, month, day),
+                    deleted: false
+                })
+            }
+        }
+    }
+
     return out
 }
 
@@ -503,33 +567,14 @@ export async function seedDemo() {
     const categoriesByName = await ensureCategories(demoUser.id)
     await ensureBudgets(demoUser.id, categoriesByName)
 
-    // Build target profiles and generate transactions
-    const profiles = buildProfiles()
-    const allTransactions: {
-        user: number
-        category: number
-        name: string
-        value: string
-        date: Date
-        deleted: boolean
-    }[] = []
-
-    for (const p of profiles) {
-        const catId = categoriesByName.get(p.name)
-        if (!catId) continue
-        const txs = generateTransactionsForCategory(
-            demoUser.id,
-            p.name,
-            catId,
-            p
-        )
-        allTransactions.push(...txs)
-    }
+    // Generate realistic yearly transactions where monthly expenses do not exceed income
+    const allTransactions = generateYearlyTransactions(
+        demoUser.id,
+        categoriesByName
+    )
 
     // Insert in batches to avoid parameter limits
     if (allTransactions.length) {
-        // Check duplicates: avoid inserting duplicates if rerun - use (user, category, name, date, value)
-        // For simplicity and speed we skip de-dup across runs; in real scenario consider keys or cleanup.
         const batches = chunk(allTransactions, 500)
         for (const batch of batches) {
             await db.insert(transactions).values(batch)
