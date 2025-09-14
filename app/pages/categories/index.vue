@@ -234,7 +234,9 @@
                         </div>
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <div class="flex flex-row items-center gap-2">
-                                <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                                <ClientOnly>
+                                    <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                                </ClientOnly>
                                 <ClientOnly>
                                     <UTooltip v-if="table?.tableApi" :text="$t('Columns')">
                                         <UButton icon="i-heroicons-view-columns" color="neutral" variant="ghost" @click="showColumns = true" />

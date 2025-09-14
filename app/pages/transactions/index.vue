@@ -1,6 +1,7 @@
 <script setup lang="ts">
     import type { NuxtError } from 'nuxt/app'
-    import { h, resolveComponent } from 'vue'
+    import type { ModelValue } from '@vuepic/vue-datepicker'
+    import { h } from 'vue'
     import type { FetchTableDataResult, TableFilters } from '~~/types/Table'
     import type { TableColumn } from '@nuxt/ui'
     import type { TransactionRow } from '~~/types/ApiRows'
@@ -224,16 +225,16 @@
     const showFilters = ref(false)
     const showColumns = ref(false)
 
-    const defaultFilters = {
+    const defaultFilters: TableFilters = {
         searchQuery: '',
         dateRange: [] as Date[],
         groupCategory: false,
         categoryIds: [] as number[]
     }
-    const draftFilters = reactive({ ...defaultFilters })
+    const draftFilters = reactive<TableFilters>({ ...defaultFilters })
 
     // Persist only global toolbar filters
-    const persistedFilters = reactive({
+    const persistedFilters = reactive<Record<string, unknown>>({
         searchQuery: '' as string,
         dateRange: [] as Date[],
         groupCategory: false as boolean,
@@ -374,7 +375,9 @@
                         </div>
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <div class="flex flex-row items-center gap-2">
-                                <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                                <ClientOnly>
+                                    <ToolbarSearch v-model="filters.searchQuery" :placeholder="$t('Search...')" width-class="w-64" />
+                                </ClientOnly>
                                 <UTooltip :text="$t('Filters')">
                                     <UButton
                                         icon="i-heroicons-funnel"
@@ -479,15 +482,15 @@
         <!-- Sidebars -->
         <SidebarFilters v-if="mounted"
             v-model="showFilters"
-            :applied-filters="filters"
-            :default-filters="defaultFilters"
+            :applied-filters="(filters as Record<string, unknown>)"
+            :default-filters="(defaultFilters as Record<string, unknown>)"
             @apply="applyFilters"
             @reset="clearFilters">
             <template #default="{ draft }">
                 <div class="flex flex-col gap-2">
                     <SidebarSection :title="$t('Date Range')">
                         <SDateTimePicker
-                            v-model="draft.dateRange"
+                            v-model="(draft.dateRange as ModelValue)"
                             class="sm:!w-full"
                             type="date"
                             range
@@ -497,7 +500,7 @@
                     <SidebarSection :title="$t('Category')">
                         <template #header-extra>
                             <ToolbarSearch
-                                v-model="draft.categorySearch"
+                                v-model="(draft.categorySearch as string)"
                                 :placeholder="$t('Search...')"
                                 width-class="w-48"
                                 @update:model-value="() => {}" />
@@ -506,7 +509,7 @@
                             :options="categorySelectOptions as { label: string; value: number }[]"
                             :model-value="(draft.categoryIds ?? []) as unknown as (string | number | boolean | null)[]"
                             :multiple="true"
-                            :query="draft.categorySearch || ''"
+                            :query="(draft.categorySearch || '') as string"
                             @update:model-value="(v: string | number | boolean | (string | number | boolean | null)[] | null) => (draft.categoryIds = Array.isArray(v) ? (v as number[]) : [])" />
                     </SidebarSection>
 

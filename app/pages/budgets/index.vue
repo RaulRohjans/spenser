@@ -136,7 +136,9 @@
                         </div>
                         <div class="flex flex-wrap items-center justify-end gap-3">
                             <div class="flex flex-row items-center gap-2 mr-auto sm:mr-0">
-                                <ToolbarSearch :placeholder="$t('Search...')" width-class="w-64" v-model="store.$state.filterQuery" />
+                                <ClientOnly>
+                                    <ToolbarSearch :placeholder="$t('Search...')" width-class="w-64" v-model="store.filterQuery" />
+                                </ClientOnly>
                                 <UTooltip :text="$t('Filters')">
                                     <UButton icon="i-heroicons-funnel" color="neutral" variant="ghost" @click="showFilters = true" />
                                 </UTooltip>
@@ -153,23 +155,25 @@
                     </div>
                 </template>
 
-                <div class="flex-1 overflow-auto">
-                    <div v-if="store.loading" class="h-full flex items-center justify-center py-12"><SLoader /></div>
-                    <div v-else-if="(store.filtered?.length ?? 0) === 0" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
-                        <div class="mt-14">
-                            <div class="text-4xl mb-3">{{ hasActiveFilters ? '🔎' : '📊' }}</div>
-                            <p class="text-lg">{{ hasActiveFilters ? $t('No results with filters') : $t('Your budgets will be displayed here once you create them.') }}</p>
+                <ClientOnly>
+                    <div class="flex-1 overflow-auto">
+                        <div v-if="store.loading" class="h-full flex items-center justify-center py-12"><SLoader /></div>
+                        <div v-else-if="(store.filtered?.length ?? 0) === 0" class="h-full flex items-center justify-center text-center text-gray-500 dark:text-gray-400 px-6">
+                            <div class="mt-14">
+                                <div class="text-4xl mb-3">{{ hasActiveFilters ? '🔎' : '📊' }}</div>
+                                <p class="text-lg">{{ hasActiveFilters ? $t('No results with filters') : $t('Your budgets will be displayed here once you create them.') }}</p>
+                            </div>
+                        </div>
+                        <div v-else class="h-full py-2">
+                            <BudgetBoard
+                                v-model="store.items"
+                                @reorder="persistOrder"
+                                @edit="openEdit"
+                                @delete="handleDelete"
+                                @create="openCreate" />
                         </div>
                     </div>
-                    <div v-else class="h-full py-2">
-                        <BudgetBoard
-                            v-model="store.items"
-                            @reorder="persistOrder"
-                            @edit="openEdit"
-                            @delete="handleDelete"
-                            @create="openCreate" />
-                    </div>
-                </div>
+                </ClientOnly>
             </SCard>
         </div>
 

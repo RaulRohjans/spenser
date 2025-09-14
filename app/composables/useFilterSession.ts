@@ -36,50 +36,65 @@ export function useFilterSession<T extends Record<string, unknown>>(
     options?: UseFilterSessionOptions
 ) {
     const opts = Object.assign({ storage: 'session' as StorageMode, debounceMs: 200 }, options)
-    const storage = getStorage(opts.storage!)
-    const storageKey = makeKey(key)
 
-    const saveNow = () => {
-        try {
-            const json = JSON.stringify(target, replacer)
-            storage.setItem(storageKey, json)
-        } catch {
-            /* empty */
-        }
-    }
+    // Default to no-ops during SSR to avoid touching web storage
+    let load: () => boolean = () => false
+    let saveImmediate: () => void = () => {}
+    let clear: () => void = () => {}
 
-    const save = opts.debounceMs ? debounce(saveNow, opts.debounceMs) : saveNow
+    if (import.meta.client) {
+        const storage = getStorage(opts.storage!)
+        const storageKey = makeKey(key)
 
-    const load = (): boolean => {
-        try {
-            const json = storage.getItem(storageKey)
-            if (!json) return false
-            const parsed = JSON.parse(json, reviver)
-            if (parsed && typeof parsed === 'object') {
-                Object.assign(target, parsed)
-                return true
+        const saveNowClient = () => {
+            try {
+                const json = JSON.stringify(target, replacer)
+                storage.setItem(storageKey, json)
+            } catch {
+                /* empty */
             }
-        } catch {
-            /* empty */
         }
-        return false
+
+        const saveDebounced = opts.debounceMs ? debounce(saveNowClient, opts.debounceMs) : saveNowClient
+
+        const loadClient = (): boolean => {
+            try {
+                const json = storage.getItem(storageKey)
+                if (!json) return false
+                
+                const parsed = JSON.parse(json, reviver)
+                if (parsed && typeof parsed === 'object') {
+                    Object.assign(target, parsed)
+                    return true
+                }
+            } catch {
+                /* empty */
+            }
+            return false
+        }
+
+        const clearClient = () => {
+            try {
+                storage.removeItem(storageKey)
+            } catch {
+                /* empty */
+            }
+        }
+
+        // Persist changes on client only
+        watch(
+            () => JSON.stringify(target, replacer),
+            () => saveDebounced(),
+            { deep: true }
+        )
+
+        // Expose client implementations
+        load = loadClient
+        saveImmediate = saveNowClient
+        clear = clearClient
     }
 
-    const clear = () => {
-        try {
-            storage.removeItem(storageKey)
-        } catch {
-            /* empty */
-        }
-    }
-
-    watch(
-        () => JSON.stringify(target, replacer),
-        () => save(),
-        { deep: true }
-    )
-
-    return { load, save: saveNow, clear }
+    return { load, save: saveImmediate, clear }
 }
 
 

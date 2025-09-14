@@ -18,7 +18,10 @@ export function usePaginatedTable<T>(opts: PaginatedTableOptions<T>) {
     const limit = ref(10)
     const sort = ref('id')
     const order = ref<'asc' | 'desc'>('asc')
-    const filters = reactive(opts.defaultFilters ?? {})
+    
+    // Provide defaults so templates can access common keys during SSR
+    const baseFilters: TableFilters = { searchQuery: '', groupCategory: false, dateRange: [] }
+    const filters = reactive({ ...baseFilters, ...(opts.defaultFilters ?? {}) }) as TableFilters
 
     const reloadKey = ref(0)
 
