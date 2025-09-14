@@ -19,14 +19,18 @@
 </script>
 
 <template>
-    <UModal
-        v-model:open="isOpen"
-        :title="$t('Create Transaction')"
-        @update:open="handleOpenChange">
-        <template #body>
-            <ModalTransaction
-                mode="create"
-                @successful-submit="onSuccessfulSubmit" />
-        </template>
-    </UModal>
+    <div>
+        <UModal
+            v-model:open="isOpen"
+            :title="$t('Create Transaction')"
+            :description="$t('Fill in the transaction details and submit')"
+            @update:open="handleOpenChange">
+            <template #body>
+                <ModalTransaction
+                    mode="create"
+                    @successful-submit="onSuccessfulSubmit" />
+            </template>
+        </UModal>
+    </div>
+    
 </template>

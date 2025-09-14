@@ -118,6 +118,11 @@ export default {
     Apply: 'Apply',
     Filters: 'Filters',
     'Search...': 'Search...',
+    'Filter...': 'Filter...',
+    Title: 'Title',
+    Amount: 'Amount',
+    'Category (optional)': 'Category (optional)',
+    Cancel: 'Cancel',
     'Loading...': 'Loading...',
     Showing: 'Showing',
     to: 'to',
@@ -308,6 +313,7 @@ export default {
     ,
     'Must be greater than 0': 'Must be greater than 0',
     'Invalid number': 'Invalid number',
+    'Maximum 500 characters': 'Maximum 500 characters',
     Expense: 'Expense',
     'Upload a file or write the transaction data to be parsed by AI.':
         'Upload a file or write the transaction data to be parsed by AI.',
@@ -346,6 +352,7 @@ export default {
         'Configure platform settings and manage data for your account.',
     'Upload a statement or paste text and let AI extract transactions for review.':
         'Upload a statement or paste text and let AI extract transactions for review.',
+    'Fill in the transaction details and submit': 'Fill in the transaction details and submit',
     'Compare to previous period': 'Compare to previous period',
     'Total spent': 'Total spent',
     'Net cashflow': 'Net cashflow',

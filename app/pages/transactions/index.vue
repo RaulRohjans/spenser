@@ -337,7 +337,10 @@
                         method: 'POST',
                         body: { ids: selectedIds.value }
                     })
+
                     Notifier.showAlert($t('Transaction(s) deleted successfully!'), 'success')
+                    
+                    page.value = 1
                     clearAll()
                     reload()
                 } catch (e) {

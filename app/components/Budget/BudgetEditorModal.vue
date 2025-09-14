@@ -3,6 +3,7 @@
     import type { FormSubmitEvent } from '@nuxt/ui'
     import type { BudgetDataObject } from '~~/types/Data'
     const { t: $t } = useI18n()
+    import { parseNumberLocale } from '~~/app/utils/helpers'
 
     const props = defineProps<{ budget?: BudgetDataObject | null }>()
     const emit = defineEmits<{ (e: 'saved'): void }>()
@@ -29,11 +30,11 @@
     )
 
     const periods = ref([
-        { label: 'Daily', value: 'daily' },
-        { label: 'Weekly', value: 'weekly' },
-        { label: 'Monthly', value: 'monthly' },
-        { label: 'Half-yearly', value: 'semi-annual' },
-        { label: 'Yearly', value: 'yearly' }
+        { label: $t('Daily'), value: 'daily' },
+        { label: $t('Weekly'), value: 'weekly' },
+        { label: $t('Monthly'), value: 'monthly' },
+        { label: $t('Semi-Annual'), value: 'semi-annual' },
+        { label: $t('Yearly'), value: 'yearly' }
     ])
 
     const { status: categoryStatus, categorySelectOptions } = useCategories()
@@ -60,7 +61,23 @@
     const schema = z.object({
         id: z.number().optional(),
         name: z.string().trim().min(1, $t('Mandatory Field')),
-        value: z.number().gt(0, $t('Must be greater than 0')),
+        value: z.preprocess(
+            (v) => {
+                if (v === '' || v === null || typeof v === 'undefined')
+                    return undefined
+                const n = parseNumberLocale(v as unknown)
+                return Number.isNaN(n) ? undefined : n
+            },
+            z
+                .number({ error: $t('Mandatory Field') })
+                .min(1, $t('Must be greater than 0'))
+                .refine(
+                    (x) =>
+                        Math.abs(x * 100 - Math.trunc(x * 100)) <
+                        Number.EPSILON,
+                    $t('Invalid number')
+                )
+        ),
         category: z.number().nullable().optional(),
         period: z.string().min(1, $t('Mandatory Field'))
     })
@@ -79,6 +96,27 @@
             model.value = false
         }
     }
+
+    // Reset form state when modal opens in create mode to avoid stale values
+    watch(
+        model,
+        (open) => {
+            if (!open) return
+            if (!props.budget) {
+                form.id = undefined
+                form.name = ''
+                form.value = 0
+                form.category = null
+                form.period = 'monthly'
+            } else {
+                form.id = props.budget.id
+                form.name = props.budget.name ?? ''
+                form.value = Number(props.budget.value ?? 0)
+                form.category = props.budget.category ?? null
+                form.period = (props.budget.period as BudgetDataObject['period']) ?? 'monthly'
+            }
+        }
+    )
 </script>
 
 <template>

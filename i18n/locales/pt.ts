@@ -118,6 +118,11 @@ export default {
     Apply: 'Aplicar',
     Filters: 'Filtros',
     'Search...': 'Pesquisar...',
+    'Filter...': 'Filtrar...',
+    Title: 'Título',
+    Amount: 'Valor',
+    'Category (optional)': 'Categoria (opcional)',
+    Cancel: 'Cancelar',
     'Loading...': 'A carregar...',
     Showing: 'A mostrar',
     to: 'até',
@@ -308,6 +313,7 @@ export default {
     'File too large.': 'Ficheiro demasiado grande.',
     'Must be greater than 0': 'Deve ser maior que 0',
     'Invalid number': 'Número inválido',
+    'Maximum 500 characters': 'Máximo de 500 caracteres',
     Expense: 'Despesa',
     'Upload a file or write the transaction data to be parsed by AI.':
         'Faça upload de um ficheiro ou escreva os dados da transação para serem analisados pela IA.',
@@ -346,6 +352,7 @@ export default {
         'Configure as definições da plataforma e gere os dados da sua conta.',
     'Upload a statement or paste text and let AI extract transactions for review.':
         'Carregue um extrato ou cole texto e deixe a IA extrair transações para revisão.',
+    'Fill in the transaction details and submit': 'Preencha os dados da transação e submeta',
     'Compare to previous period': 'Comparar com o período anterior',
     'Total spent': 'Total gasto',
     'Net cashflow': 'Fluxo de caixa líquido',

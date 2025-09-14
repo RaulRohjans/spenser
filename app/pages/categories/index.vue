@@ -144,7 +144,11 @@
                         method: 'POST',
                         body: { ids: selectedIds.value }
                     })
+                    
                     Notifier.showAlert($t('Category(ies) deleted successfully!'), 'success')
+
+                    // Reset to first page and reload fresh data
+                    page.value = 1
                     clearAll()
                     reload()
                 } catch (e) {

@@ -29,7 +29,7 @@
     const schema = z.object({
         name: z.string().trim().min(1, $t('Mandatory Field')),
         icon: z.string().optional(),
-        description: z.string().max(500).optional()
+        description: z.string().max(500, $t('Maximum 500 characters')).optional()
     })
 
     type Schema = z.output<typeof schema>

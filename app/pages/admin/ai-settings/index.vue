@@ -81,6 +81,8 @@
             try {
                 await $fetch(`/api/ai-models/delete`, { method: 'POST', body: { ids: selectedIds.value } })
                 Notifier.showAlert($t('Operation completed successfully!'), 'success')
+                
+                page.value = 1
                 clearAll()
                 reload()
             } catch (e) {

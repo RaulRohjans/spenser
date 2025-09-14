@@ -9,8 +9,8 @@
     const { signIn } = useAuth()
     const { t: $t } = useI18n()
     const validationSchema = z.object({
-        username: z.string().trim().min(1, $t('Invalid username')),
-        password: z.string().trim().min(1, $t('Must be at least 8 characters'))
+        username: z.string().trim().min(1, $t('Mandatory Field')),
+        password: z.string().trim().min(1, $t('Mandatory Field'))
     })
     const state = reactive({
         username: '',
