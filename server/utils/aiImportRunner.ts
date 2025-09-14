@@ -174,7 +174,7 @@ export async function runAiImportParse(
             system: 'You validate and output only the minimal JSON object requested.',
             prompt: validationPrompt,
             temperature: 0.1,
-            maxOutputTokens: 512,
+            maxOutputTokens: 2048,
             abortSignal
         })
         return object
