@@ -30,7 +30,12 @@
             return
         }
         const file = input.files?.[0]
-        if (file) selectedFile.value = file
+        if (file) {
+            selectedFile.value = file
+        } else {
+            // Reset the input so selecting the same file again triggers change
+            if (fileInput.value) fileInput.value.value = ''
+        }
     }
 
     const clearSelectedFile = () => {
@@ -41,6 +46,7 @@
     const reset = () => {
         selectedFile.value = null
         textInput.value = ''
+        if (fileInput.value) fileInput.value.value = ''
     }
 
     const submit = async () => {

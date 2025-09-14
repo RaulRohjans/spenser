@@ -161,7 +161,11 @@ export async function runAiImportParse(
             5) Item count roughly matches the volume of the input content (soft check).
 
             Respond with EXACT JSON: { ok: boolean, hint?: string }.
-            If not ok, hint must briefly state concrete issues and how to fix them. Avoid false positives about date normalization, null categories, or name casing.`
+            If not ok:
+            - Format hint as plain text lines using a leading "- " for each distinct topic or error.
+            - Insert explicit newline characters ("\n") between lines or paragraphs where appropriate.
+            - Keep the message concise and actionable.
+            Avoid false positives about date normalization, null categories, or name casing.`
 
         const { object } = await generateObject({
             // @ts-expect-error validator model typing

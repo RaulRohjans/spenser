@@ -65,23 +65,19 @@
         value: Math.abs(Number(r.value))
     }))
 
-    // Show a warning dialog when validation failed after max retries
+    // Alert visibility for validator warning
+    const showValidatorAlert = ref(false)
     onMounted(() => {
         const v = validationInfo.value
         if (v && v.ok === false && v.attempts >= v.maxRetries) {
-            const title = $t('Warning')
-            const msg = [
-                $t(
-                    'The result may contain inconsistencies detected by the validator.'
-                ),
-                v.hint ? `${$t('Details')}:\n${v.hint}` : ''
-            ]
-                .filter(Boolean)
-                .join('\n\n')
-            Notifier.showChooser(title, msg, undefined, undefined, {
-                buttons: [{ label: 'OK', action: 'close', color: 'primary' }]
-            })
+            showValidatorAlert.value = true
         }
+    })
+
+    // Normalize validator hint newlines (convert literal "\\n" to real newlines)
+    const formattedHint = computed(() => {
+        const raw = validationInfo.value?.hint || ''
+        return String(raw).replace(/\r\n/g, '\n').replace(/\\n/g, '\n')
     })
 
     const delRow = (row: ParsedTransactionItem) => {
@@ -290,6 +286,37 @@
 
 <template>
     <UContainer class="py-4">
+        <transition name="fade">
+            <div v-if="showValidatorAlert && validationInfo" class="relative mb-4">
+                <UAlert
+                    color="warning"
+                    icon="i-heroicons-exclamation-triangle"
+                    variant="subtle"
+                    class="border border-yellow-300/50 dark:border-yellow-400/30 bg-yellow-50/80 dark:bg-yellow-950/30 backdrop-blur-sm rounded-md text-gray-900 dark:text-gray-100">
+                    <template #title>
+                        {{ $t('Validator Warning') }}
+                    </template>
+                    <template #description>
+                        <div class="text-sm leading-relaxed whitespace-pre-line">
+                            {{ $t('The result may contain inconsistencies detected by the validator.') }}
+                            <br />
+                            <span v-if="validationInfo?.hint">
+                                <span class="font-medium">{{ $t('Details') }}:</span>
+                                <br />{{ formattedHint }}
+                            </span>
+                        </div>
+                    </template>
+                </UAlert>
+                <UButton
+                    color="warning"
+                    variant="ghost"
+                    size="xs"
+                    icon="i-heroicons-x-mark"
+                    aria-label="Dismiss"
+                    class="!absolute right-2 top-2"
+                    @click="showValidatorAlert = false" />
+            </div>
+        </transition>
         <div class="w-full flex flex-row justify-between items-center mb-3">
             <h2
                 class="font-semibold text-xl text-gray-900 dark:text-white leading-tight">
