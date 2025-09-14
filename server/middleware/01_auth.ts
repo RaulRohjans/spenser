@@ -4,6 +4,8 @@ import { extractToken, validateJWT } from '~~/server/utils/auth'
 const isProtectedApiRoute = (event: H3Event) => {
     const { pathname } = getRequestURL(event)
     if (!pathname.startsWith('/api')) return false
+    // Allow Nuxt Icon endpoints without authentication
+    if (pathname.startsWith('/api/_nuxt_icon')) return false
     if (
         pathname.startsWith('/api/auth/login') ||
         pathname.startsWith('/api/auth/logout') ||
