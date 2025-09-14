@@ -19,15 +19,27 @@ const isProtectedApiRoute = (event: H3Event) => {
 export default defineEventHandler((event) => {
     if (!isProtectedApiRoute(event)) return
 
+    // Prefer Authorization header, if absent, fallback to local-provider token cookie
+    let rawToken: string | undefined
     const authHeaderValue = getRequestHeader(event, 'authorization')
-    if (typeof authHeaderValue === 'undefined')
+    if (typeof authHeaderValue === 'string' && authHeaderValue.length > 0) {
+        rawToken = authHeaderValue
+    } else {
+        // Local provider default cookie name per nuxt-auth docs is 'auth.token'
+        const cookieToken = getCookie(event, 'auth.token')
+        if (cookieToken) {
+            rawToken = `Bearer ${cookieToken}`
+        }
+    }
+
+    if (!rawToken)
         throw createError({
             statusCode: 403,
             statusMessage: 'Invalid Bearer-authorization header.'
         })
 
     try {
-        const token = extractToken(authHeaderValue)
+        const token = extractToken(rawToken)
 
         // Validate token signature and expiration and keep claims for downstream
         const claims = validateJWT(token)

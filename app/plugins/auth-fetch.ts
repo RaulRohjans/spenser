@@ -10,8 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             return (
                 path.endsWith('/api/auth/login') ||
                 path.endsWith('/api/auth/logout') ||
-                path.endsWith('/api/auth/refresh') ||
-                path.endsWith('/api/auth/user')
+                path.endsWith('/api/auth/refresh')
             )
         } catch {
             return false
