@@ -2,7 +2,7 @@
     import type { DropdownMenuItem } from '@nuxt/ui'
     import type { JwtPayload } from '~~/types/Jwt'
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const colorMode = useColorMode()
     const { signOut, data: authData } = useAuth()
     const router = useRouter()
@@ -14,8 +14,8 @@
 
     const onLogout = function () {
         Notifier.showChooser(
-            $t('Logout'),
-            $t('Are you sure you want to logout?'),
+            translate('Logout'),
+            translate('Are you sure you want to logout?'),
             () => {
                 // Suppress the next auto login once, so user can log into a different account
                 try {
@@ -39,7 +39,7 @@
 
     const items = computed((): DropdownMenuItem[][] => {
         const menu: DropdownMenuItem[][] = []
-        const label = isDark.value ? $t('Use Light Mode') : $t('Use Dark Mode')
+        const label = isDark.value ? translate('Use Light Mode') : translate('Use Dark Mode')
         const icon = isDark.value ? 'i-heroicons-sun' : 'i-heroicons-moon'
         const userlabel = `${authData.value?.first_name} ${authData.value?.last_name}`
 
@@ -72,13 +72,13 @@
         if (showAdminOptions.value)
             //If admin, gets special option
             misc.push({
-                label: $t('Administration'),
+                label: translate('Administration'),
                 icon: 'i-heroicons-wrench-screwdriver',
                 onSelect: () => router.push(`/admin`)
             })
 
         misc.push({
-            label: $t('Settings'),
+            label: translate('Settings'),
             icon: 'i-heroicons-cog',
             onSelect: openSettings
         })
@@ -87,7 +87,7 @@
         // Add logout
         menu.push([
             {
-                label: $t('Logout'),
+                label: translate('Logout'),
                 icon: 'i-heroicons-arrow-right-start-on-rectangle',
                 color: 'error',
                 onSelect: onLogout

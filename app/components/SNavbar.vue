@@ -4,7 +4,7 @@
     import TasksMenu from './Tasks/TasksMenu.vue'
 
     const localePath = useLocalePath()
-    const { locale, setLocale, t: $t } = useI18n()
+    const { locale, setLocale, t: translate } = useI18n()
     const route = useRoute()
 
     const isMobileMenuShown = ref(false)
@@ -14,22 +14,22 @@
     const navigationPages = computed((): NavigationItem[] => {
         return [
             {
-                name: $t('Home'),
+                name: translate('Home'),
                 href: '/',
                 selected: isRouteActive(route, '/', true)
             },
             {
-                name: $t('Transactions'),
+                name: translate('Transactions'),
                 href: '/transactions',
                 selected: isRouteActive(route, '/transactions')
             },
             {
-                name: $t('Budgets'),
+                name: translate('Budgets'),
                 href: '/budgets',
                 selected: isRouteActive(route, '/budgets')
             },
             {
-                name: $t('Categories'),
+                name: translate('Categories'),
                 href: '/categories',
                 selected: isRouteActive(route, '/categories')
             }

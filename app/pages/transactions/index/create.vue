@@ -1,6 +1,6 @@
 <script setup lang="ts">
     const router = useRouter()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     const isOpen = ref<boolean>(true)
 

@@ -8,7 +8,7 @@
     import { useRowSelection } from '~/composables/useRowSelection'
 
     // Basic Setup
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const router = useRouter()
 
     // Load categories for sidebar filters
@@ -34,8 +34,8 @@
 
     const delTransaction = function (row: TransactionRow) {
         Notifier.showChooser(
-            $t('Delete Transaction'),
-            $t('Are you sure you want to delete this transaction?'),
+            translate('Delete Transaction'),
+            translate('Are you sure you want to delete this transaction?'),
             () => {
                 //User accepted
                 $fetch(`/api/transactions/delete`, {
@@ -45,14 +45,14 @@
                     .then((data) => {
                         if (!data.success)
                             return Notifier.showAlert(
-                                $t(
+                                translate(
                                     'An error occurred while removing your transaction.'
                                 ),
                                 'error'
                             )
 
                         Notifier.showAlert(
-                            $t('Transaction deleted successfully!'),
+                            translate('Transaction deleted successfully!'),
                             'success'
                         )
                         reload()
@@ -61,7 +61,7 @@
                         Notifier.showAlert(
                             toUserMessage(
                                 e,
-                                $t(
+                                translate(
                                     'An unexpected error occurred while deleting.'
                                 )
                             ),
@@ -91,12 +91,12 @@
         },
         {
             accessorKey: 'name',
-            header: ({ column }) => columnSorter.value(column, $t('Name')),
-            meta: { alias: $t('Name') }
+            header: ({ column }) => columnSorter.value(column, translate('Name')),
+            meta: { alias: translate('Name') }
         },
         {
             accessorKey: 'value',
-            header: ({ column }) => columnSorter.value(column, $t('Value')),
+            header: ({ column }) => columnSorter.value(column, translate('Value')),
             cell: ({ row }) => {
                 const value = Number(row.getValue('value'))
 
@@ -105,11 +105,11 @@
 
                 return h('span', { class: colorClass }, formatted)
             },
-            meta: { alias: $t('Value') }
+            meta: { alias: translate('Value') }
         },
         {
             accessorKey: 'category_name',
-            header: ({ column }) => columnSorter.value(column, $t('Category')),
+            header: ({ column }) => columnSorter.value(column, translate('Category')),
             cell: ({ row }) => {
                 const deleted = row.original.category_deleted
                 const name = row.original.category_name
@@ -122,24 +122,24 @@
                     h('span', name!)
                 ])
             },
-            meta: { alias: $t('Category') }
+            meta: { alias: translate('Category') }
         },
         {
             accessorKey: 'date',
-            header: ({ column }) => columnSorter.value(column, $t('Date')),
+            header: ({ column }) => columnSorter.value(column, translate('Date')),
             cell: ({ row }) => {
                 const date = new Date(row.original.date)
                 const formatted = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
 
                 return h('span', formatted)
             },
-            meta: { alias: $t('Date') }
+            meta: { alias: translate('Date') }
         },
         {
             id: 'actions',
             enableHiding: false,
             cell: actionCell,
-            meta: { alias: $t('Actions'), searchable: false }
+            meta: { alias: translate('Actions'), searchable: false }
         }
     ]
 
@@ -153,7 +153,7 @@
         },
         {
             accessorKey: 'value',
-            header: ({ column }) => columnSorter.value(column, $t('Value')),
+            header: ({ column }) => columnSorter.value(column, translate('Value')),
             cell: ({ row }) => {
                 const value = Number(row.getValue('value'))
 
@@ -162,11 +162,11 @@
 
                 return h('span', { class: colorClass }, formatted)
             },
-            meta: { alias: $t('Value') }
+            meta: { alias: translate('Value') }
         },
         {
             accessorKey: 'category_name',
-            header: ({ column }) => columnSorter.value(column, $t('Category')),
+            header: ({ column }) => columnSorter.value(column, translate('Category')),
             cell: ({ row }) => {
                 const name = row.original.category_name
                 const icon = row.original.category_icon
@@ -176,7 +176,7 @@
                     h('span', name || '-')
                 ])
             },
-            meta: { alias: $t('Category') }
+            meta: { alias: translate('Category') }
         }
     ]
 
@@ -292,7 +292,7 @@
         reload()
     }
     useHead({
-        title: `Spenser | ${$t('Transactions')}`
+        title: `Spenser | ${translate('Transactions')}`
     })
 
     const tableRows = computed(() => tableData.value?.data?.rows ?? [])
@@ -328,8 +328,8 @@
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
-            $t('Delete Transactions'),
-            $t('Are you sure you want to delete the selected items?'),
+            translate('Delete Transactions'),
+            translate('Are you sure you want to delete the selected items?'),
             async () => {
                 bulkBusy.value = true
                 try {
@@ -338,14 +338,14 @@
                         body: { ids: selectedIds.value }
                     })
 
-                    Notifier.showAlert($t('Transaction(s) deleted successfully!'), 'success')
+                    Notifier.showAlert(translate('Transaction(s) deleted successfully!'), 'success')
                     
                     page.value = 1
                     clearAll()
                     reload()
                 } catch (e) {
                     Notifier.showAlert(
-                        toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')),
+                        toUserMessage(e as NuxtError, translate('An unexpected error occurred while deleting.')),
                         'error'
                     )
                 } finally {

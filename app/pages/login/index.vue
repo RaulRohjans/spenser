@@ -7,10 +7,10 @@
     import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { signIn } = useAuth()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const validationSchema = z.object({
-        username: z.string().trim().min(1, $t('Mandatory Field')),
-        password: z.string().trim().min(1, $t('Mandatory Field'))
+        username: z.string().trim().min(1, translate('Mandatory Field')),
+        password: z.string().trim().min(1, translate('Mandatory Field'))
     })
     const state = reactive({
         username: '',
@@ -43,7 +43,7 @@
             .catch((e: NuxtError) => {
                 logUnknownError(e)
                 Notifier.showAlert(
-                    toUserMessage(e, $t('Invalid username or password')),
+                    toUserMessage(e, translate('Invalid username or password')),
                     'error'
                 )
             })
@@ -88,7 +88,7 @@
     })
 
     useHead({
-        title: `Spenser | ${$t('Login')}`
+        title: `Spenser | ${translate('Login')}`
     })
 </script>
 

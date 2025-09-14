@@ -4,7 +4,7 @@
     import type { ModelValue } from '@vuepic/vue-datepicker'
     import { buildDateTimeWithOffset } from '~/utils/date'
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const router = useRouter()
     const store = useBudgetsStore()
 
@@ -16,8 +16,8 @@
 
     function handleDelete(budget: BudgetDataObject) {
         Notifier.showChooser(
-            $t('Delete Budget'),
-            $t('Are you sure you want to delete this budget?'),
+            translate('Delete Budget'),
+            translate('Are you sure you want to delete this budget?'),
             async () => {
                 const res = await $fetch('/api/budgets/delete', {
                     method: 'POST',
@@ -66,7 +66,7 @@
     }
 
     useHead({
-        title: `Spenser | ${$t('Budgets')}`
+        title: `Spenser | ${translate('Budgets')}`
     })
 
     // Sidebar state
@@ -163,7 +163,7 @@
                     </div>
                     <div v-else class="h-full py-2">
                         <BudgetBoard
-                            v-model="store.filtered"
+                            v-model="store.items"
                             @reorder="persistOrder"
                             @edit="openEdit"
                             @delete="handleDelete"

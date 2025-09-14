@@ -19,6 +19,7 @@
         set: (v: boolean) => emit('update:modelValue', v)
     })
 
+    const { t: translate } = useI18n()
     const draft = reactive<T>({ ...(props.appliedFilters as T) })
 
     watch(
@@ -50,7 +51,7 @@
 <template>
     <SidebarBase
         v-model="isOpen"
-        :title="props.title ?? $t('Filters')"
+        :title="props.title ?? translate('Filters')"
         @apply="onApply"
         @reset="onReset">
         <slot :draft="draft" />

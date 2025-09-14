@@ -8,6 +8,8 @@
         widthClass: 'w-full sm:w-[420px]'
     })
 
+    const { t: translate } = useI18n()
+
     const isOpen = defineModel<boolean>({ default: false })
 
     const emit = defineEmits<{
@@ -44,14 +46,14 @@
                         color="neutral"
                         variant="outline"
                         @click="emit('reset')">
-                        {{ $t('Reset') }}
+                        {{ translate('Reset') }}
                     </UButton>
 
                     <UButton
                         icon="i-heroicons-check"
                         color="primary"
                         @click="emit('apply')">
-                        {{ $t('Apply') }}
+                        {{ translate('Apply') }}
                     </UButton>
                 </div>
             </div>

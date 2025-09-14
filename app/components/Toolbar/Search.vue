@@ -19,6 +19,8 @@
     const openMobile = ref(false)
     const inputRefMobile = useTemplateRef<HTMLInputElement | null>('inputMobile')
 
+    const { t: translate } = useI18n()
+
     function toggle() {
         open.value = !open.value
         if (open.value) nextTick(() => inputRef.value?.focus())
@@ -46,7 +48,7 @@
             icon="i-heroicons-magnifying-glass"
             color="neutral"
             variant="ghost"
-            :aria-label="$t('Search...')"
+            :aria-label="translate('Search...')"
             @click="toggle" />
     </div>
 
@@ -59,7 +61,7 @@
                 icon="i-heroicons-magnifying-glass"
                 color="neutral"
                 variant="ghost"
-                :aria-label="$t('Search...')" />
+                :aria-label="translate('Search...')" />
 
             <template #content>
                 <div class="w-[90vw] max-w-[520px] z-50 p-2">

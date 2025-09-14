@@ -24,12 +24,12 @@
         (event: 'successful-submit'): void
     }>()
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     const schema = z.object({
-        name: z.string().trim().min(1, $t('Mandatory Field')),
+        name: z.string().trim().min(1, translate('Mandatory Field')),
         icon: z.string().optional(),
-        description: z.string().max(500, $t('Maximum 500 characters')).optional()
+        description: z.string().max(500, translate('Maximum 500 characters')).optional()
     })
 
     type Schema = z.output<typeof schema>
@@ -96,7 +96,7 @@
             .then((data) => {
                 if (!data.success)
                     return Notifier.showAlert(
-                        $t('An error occurred when creating your category.'),
+                        translate('An error occurred when creating your category.'),
                         'error'
                     )
 
@@ -105,7 +105,7 @@
 
                 // Disaply success message
                 Notifier.showAlert(
-                    $t('Operation completed successfully!'),
+                    translate('Operation completed successfully!'),
                     'success'
                 )
             })
@@ -114,7 +114,7 @@
                 Notifier.showAlert(
                     toUserMessage(
                         e,
-                        $t('An unexpected error occurred while saving.')
+                        translate('An unexpected error occurred while saving.')
                     ),
                     'error'
                 )
@@ -200,19 +200,19 @@
         :state="state"
         class="space-y-4"
         @submit="onCreateCategory">
-        <UFormField :label="$t('Name')" name="name">
+        <UFormField :label="translate('Name')" name="name">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
-        <UFormField :label="$t('Icon')" name="icon">
+        <UFormField :label="translate('Icon')" name="icon">
             <div class="flex flex-row items-center gap-2">
                 <UPopover v-model:open="openPicker" :content="{ align: 'start', side: 'bottom', sideOffset: 8 }">
                     <UButton
                         icon="i-heroicons-face-smile"
                         color="primary"
                         variant="soft"
-                        :aria-label="$t('Pick emoji')">
-                        {{ $t('Pick emoji') }}
+                        :aria-label="translate('Pick emoji')">
+                        {{ translate('Pick emoji') }}
                     </UButton>
                     <template #content>
                         <ClientOnly>
@@ -227,25 +227,25 @@
                     icon="i-heroicons-x-mark"
                     color="neutral"
                     variant="ghost"
-                    :aria-label="$t('Clear')"
+                    :aria-label="translate('Clear')"
                     @click="state.icon = ''" />
             </div>
         </UFormField>
 
-        <UFormField :label="$t('Description')" name="description">
+        <UFormField :label="translate('Description')" name="description">
             <UTextarea
                 v-model="state.description"
                 :rows="4"
                 class="w-full"
                 :placeholder="
-                    $t(
+                    translate(
                         'Optional description to help the AI understand this category'
                     )
                 " />
         </UFormField>
 
         <div class="flex flex-row justify-end">
-            <UButton type="submit"> {{ $t('Submit') }} </UButton>
+            <UButton type="submit"> {{ translate('Submit') }} </UButton>
         </div>
     </UForm>
 </template>

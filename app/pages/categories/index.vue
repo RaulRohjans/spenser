@@ -7,7 +7,7 @@
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const router = useRouter()
 
     // Table loading
@@ -30,8 +30,8 @@
 
     const delCategory = function (row: CategoryRow) {
         Notifier.showChooser(
-            $t('Delete Category'),
-            $t('Are you sure you want to delete this category?'),
+            translate('Delete Category'),
+            translate('Are you sure you want to delete this category?'),
             () => {
                 //User accepted
                 $fetch(`/api/categories/delete`, {
@@ -41,14 +41,14 @@
                     .then((data) => {
                         if (!data.success)
                             return Notifier.showAlert(
-                                $t(
+                                translate(
                                     'An error occurred while removing your category.'
                                 ),
                                 'error'
                             )
 
                         Notifier.showAlert(
-                            $t('Category deleted successfully!'),
+                            translate('Category deleted successfully!'),
                             'success'
                         )
                         reload()
@@ -57,7 +57,7 @@
                         Notifier.showAlert(
                             toUserMessage(
                                 e,
-                                $t(
+                                translate(
                                     'An unexpected error occurred while deleting.'
                                 )
                             ),
@@ -87,34 +87,34 @@
         },
         {
             accessorKey: 'name',
-            header: ({ column }) => columnSorter.value(column, $t('Name')),
-            meta: { alias: $t('Name') }
+            header: ({ column }) => columnSorter.value(column, translate('Name')),
+            meta: { alias: translate('Name') }
         },
         {
             accessorKey: 'icon',
-            header: $t('Icon'),
+            header: translate('Icon'),
             cell: ({ row }) => {
                 const emoji = row.original.icon
                 return h('div', undefined, emoji ? [h('span', { class: 'text-xl leading-none' }, emoji)] : [])
             },
-            meta: { alias: $t('Icon'), searchable: false }
+            meta: { alias: translate('Icon'), searchable: false }
         },
         {
             accessorKey: 'description',
-            header: $t('Description'),
+            header: translate('Description'),
             cell: ({ row }) => {
                 const desc = row.original.description || ''
                 const short =
                     desc.length > 60 ? `${desc.slice(0, 60)}...` : desc
                 return h('span', { title: desc }, short)
             },
-            meta: { alias: $t('Description') }
+            meta: { alias: translate('Description') }
         },
         {
             id: 'actions',
             enableHiding: false,
             cell: actionCell,
-            meta: { alias: $t('Actions'), searchable: false }
+            meta: { alias: translate('Actions'), searchable: false }
         }
     ]
 
@@ -135,8 +135,8 @@
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
-            $t('Delete Categories'),
-            $t('Are you sure you want to delete the selected items?'),
+            translate('Delete Categories'),
+            translate('Are you sure you want to delete the selected items?'),
             async () => {
                 bulkBusy.value = true
                 try {
@@ -145,7 +145,7 @@
                         body: { ids: selectedIds.value }
                     })
                     
-                    Notifier.showAlert($t('Category(ies) deleted successfully!'), 'success')
+                    Notifier.showAlert(translate('Category(ies) deleted successfully!'), 'success')
 
                     // Reset to first page and reload fresh data
                     page.value = 1
@@ -153,7 +153,7 @@
                     reload()
                 } catch (e) {
                     Notifier.showAlert(
-                        toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')),
+                        toUserMessage(e as NuxtError, translate('An unexpected error occurred while deleting.')),
                         'error'
                     )
                 } finally {
@@ -193,7 +193,7 @@
     const showColumns = ref(false)
 
     useHead({
-        title: `Spenser | ${$t('Categories')}`
+        title: `Spenser | ${translate('Categories')}`
     })
 
     

@@ -8,7 +8,7 @@
     import { useRowSelection } from '~/composables/useRowSelection'
 
     const { data: authData, signOut } = useAuth()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     // Table loading
     const table = useTemplateRef('table')
@@ -44,8 +44,8 @@
 
     const delUser = function (row: UserRow) {
         Notifier.showChooser(
-            $t('Delete User'),
-            $t('Are you sure you want to delete this user?'),
+            translate('Delete User'),
+            translate('Are you sure you want to delete this user?'),
             () => {
                 $fetch(`/api/users/delete`, {
                     method: 'POST',
@@ -54,7 +54,7 @@
                     .then((data) => {
                         if (!data.success)
                             return Notifier.showAlert(
-                                $t(
+                                translate(
                                     'An error occurred while removing the user.'
                                 ),
                                 'error'
@@ -73,7 +73,7 @@
                         } else reload()
 
                         Notifier.showAlert(
-                            $t('User deleted successfully!'),
+                            translate('User deleted successfully!'),
                             'success'
                         )
                     })
@@ -81,7 +81,7 @@
                         Notifier.showAlert(
                             toUserMessage(
                                 e,
-                                $t(
+                                translate(
                                     'An unexpected error occurred while deleting.'
                                 )
                             ),
@@ -109,39 +109,39 @@
         },
         {
             accessorKey: 'username',
-            header: ({ column }) => columnSorter.value(column, $t('Username')),
-            meta: { alias: $t('Username') }
+            header: ({ column }) => columnSorter.value(column, translate('Username')),
+            meta: { alias: translate('Username') }
         },
         {
             accessorKey: 'first_name',
             header: ({ column }) =>
-                columnSorter.value(column, $t('First Name')),
-            meta: { alias: $t('First Name') }
+                columnSorter.value(column, translate('First Name')),
+            meta: { alias: translate('First Name') }
         },
         {
             accessorKey: 'last_name',
-            header: ({ column }) => columnSorter.value(column, $t('Last Name')),
-            meta: { alias: $t('Last Name') }
+            header: ({ column }) => columnSorter.value(column, translate('Last Name')),
+            meta: { alias: translate('Last Name') }
         },
         {
             accessorKey: 'email',
-            header: ({ column }) => columnSorter.value(column, $t('Email')),
-            meta: { alias: $t('Email') }
+            header: ({ column }) => columnSorter.value(column, translate('Email')),
+            meta: { alias: translate('Email') }
         },
         {
             accessorKey: 'is_admin',
             header: ({ column }) =>
-                columnSorter.value(column, $t('Administrator')),
+                columnSorter.value(column, translate('Administrator')),
             cell: ({ row }) => {
                 return h('span', row.original.is_admin == true ? 'Yes' : 'No')
             },
-            meta: { alias: $t('Administrator') }
+            meta: { alias: translate('Administrator') }
         },
         {
             id: 'actions',
             enableHiding: false,
             cell: actionCell,
-            meta: { alias: $t('Actions'), searchable: false }
+            meta: { alias: translate('Actions'), searchable: false }
         }
     ]
 
@@ -162,8 +162,8 @@
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
-            $t('Delete Users'),
-            $t('Are you sure you want to delete the selected items?'),
+            translate('Delete Users'),
+            translate('Are you sure you want to delete the selected items?'),
             async () => {
                 bulkBusy.value = true
                 try {
@@ -172,14 +172,14 @@
                         body: { ids: selectedIds.value }
                     })
 
-                    Notifier.showAlert($t('User(s) deleted successfully!'), 'success')
+                    Notifier.showAlert(translate('User(s) deleted successfully!'), 'success')
                     
                     page.value = 1
                     clearAll()
                     reload()
                 } catch (e) {
                     Notifier.showAlert(
-                        toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')),
+                        toUserMessage(e as NuxtError, translate('An unexpected error occurred while deleting.')),
                         'error'
                     )
                 } finally {
@@ -233,7 +233,7 @@
     })
 
     useHead({
-        title: `Spenser | ${$t('Users Management')}`
+        title: `Spenser | ${translate('Users Management')}`
     })
 
     const isEmptyState = computed(() =>

@@ -26,10 +26,10 @@
         (event: 'successful-submit'): void
     }>()
     
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     const schema = z.object({
-        name: z.string().min(1, $t('Mandatory Field')),
+        name: z.string().min(1, translate('Mandatory Field')),
         value: z.preprocess(
             (v) => {
                 if (v === '' || v === null || typeof v === 'undefined')
@@ -38,19 +38,19 @@
                 return Number.isNaN(n) ? undefined : n
             },
             z
-                .number({ error: $t('Mandatory Field') })
-                .min(1, $t('Must be greater than 0'))
+                .number({ error: translate('Mandatory Field') })
+                .min(1, translate('Must be greater than 0'))
                 .refine(
                     (x) =>
                         Math.abs(x * 100 - Math.trunc(x * 100)) <
                         Number.EPSILON,
-                    $t('Invalid number')
+                    translate('Invalid number')
                 )
         ),
         isExpense: z.boolean().default(false),
         category: z
-            .number({ error: $t('Mandatory Field') })
-            .min(1, $t('Mandatory Field')),
+            .number({ error: translate('Mandatory Field') })
+            .min(1, translate('Mandatory Field')),
         date: z.date()
     })
 
@@ -137,7 +137,7 @@
             .then((data) => {
                 if (!data.success)
                     return Notifier.showAlert(
-                        $t('An error occurred when performing the action.'),
+                        translate('An error occurred when performing the action.'),
                         'error'
                     )
 
@@ -146,7 +146,7 @@
 
                 // Disaply success message
                 Notifier.showAlert(
-                    $t('Operation completed successfully!'),
+                    translate('Operation completed successfully!'),
                     'success'
                 )
             })
@@ -154,7 +154,7 @@
                 Notifier.showAlert(
                     toUserMessage(
                         e,
-                        $t('An unexpected error occurred while saving.')
+                        translate('An unexpected error occurred while saving.')
                     ),
                     'error'
                 )
@@ -179,13 +179,13 @@
         :state="state"
         class="space-y-4"
         @submit="onSubmitTransaction">
-        <UFormField :label="$t('Transaction Name')" name="name">
+        <UFormField :label="translate('Transaction Name')" name="name">
             <UInput v-model="state.name" class="w-full" />
         </UFormField>
 
         <div
             class="flex flex-col sm:flex-row justify-center sm:justify-between items-start space-y-4 sm:space-x-4 sm:space-y-0">
-            <UFormField :label="$t('Value')" name="value" class="w-full">
+            <UFormField :label="translate('Value')" name="value" class="w-full">
                 <div class="flex items-center gap-3">
                     <UInput
                         v-model="state.value"
@@ -195,11 +195,11 @@
                         class="w-28" />
                     <UCheckbox
                         v-model="state.isExpense"
-                        :label="$t('Expense')" />
+                        :label="translate('Expense')" />
                 </div>
             </UFormField>
 
-            <UFormField :label="$t('Category')" name="category" class="w-full">
+            <UFormField :label="translate('Category')" name="category" class="w-full">
                 <USelectMenu
                     :model-value="selectedCategoryItem"
                     @update:model-value="onUpdateSelectedCategory"
@@ -208,19 +208,19 @@
                     option-attribute="label"
                     value-attribute="value"
                     searchable
-                    :search-input="{ placeholder: $t('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
+                    :search-input="{ placeholder: translate('Filter...'), icon: 'i-heroicons-magnifying-glass' }"
                     clear-search-on-close
                     class="w-full">
                 </USelectMenu>
             </UFormField>
         </div>
 
-        <UFormField :label="$t('Date')" name="date">
+        <UFormField :label="translate('Date')" name="date">
             <SDateTimePicker v-model="state.date" type="datetime" />
         </UFormField>
 
         <div class="flex flex-row justify-end">
-            <UButton type="submit"> {{ $t('Submit') }} </UButton>
+            <UButton type="submit"> {{ translate('Submit') }} </UButton>
         </div>
     </UForm>
 </template>

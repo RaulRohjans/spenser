@@ -7,6 +7,7 @@
     }>()
 
     const settings = useSettingsStore()
+    const { t: translate } = useI18n()
 
     const remaining = computed(() => {
         const valueNum = Number(props.budget.value)

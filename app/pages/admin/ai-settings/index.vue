@@ -6,7 +6,7 @@
     import { useRowSelection } from '~/composables/useRowSelection'
     import { UIcon } from '#components'
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     // Table loading
     const table = useTemplateRef('table')
@@ -16,14 +16,14 @@
 
     const setDefault = async (row: AiModelRow) => {
         await $fetch('/api/ai-models/set-default', { method: 'POST', body: { id: row.id } })
-        Notifier.showAlert($t('Settings saved successfully!'), 'success')
+        Notifier.showAlert(translate('Settings saved successfully!'), 'success')
         await refreshDefaultId()
         reload()
     }
 
     const unsetDefault = async (row?: AiModelRow) => {
         await $fetch('/api/ai-models/unset-default', { method: 'POST' })
-        Notifier.showAlert($t('Settings saved successfully!'), 'success')
+        Notifier.showAlert(translate('Settings saved successfully!'), 'success')
         await refreshDefaultId()
         reload()
     }
@@ -34,9 +34,9 @@
     }
 
     const delModel = (row: AiModelRow) => {
-        Notifier.showChooser($t('Delete'), $t('Are you sure you want to delete the selected items?'), async () => {
+        Notifier.showChooser(translate('Delete'), translate('Are you sure you want to delete the selected items?'), async () => {
             await $fetch('/api/ai-models/delete', { method: 'POST', body: { ids: [row.id] } })
-            Notifier.showAlert($t('Operation completed successfully!'), 'success')
+            Notifier.showAlert(translate('Operation completed successfully!'), 'success')
             reload()
         })
     }
@@ -55,19 +55,19 @@
 
     const columns: TableColumn<AiModelRow>[] = [
         { accessorKey: 'id', sortDescFirst: true, header: ({ column }) => columnSorter.value(column, '#'), meta: { alias: 'Id' } },
-        { accessorKey: 'provider', header: ({ column }) => columnSorter.value(column, $t('LLM Provider')), meta: { alias: $t('LLM Provider') } },
-        { accessorKey: 'model', header: ({ column }) => columnSorter.value(column, $t('Model')), meta: { alias: $t('Model') } },
-        { accessorKey: 'validator_model', header: ({ column }) => columnSorter.value(column, $t('Validator Model')), meta: { alias: $t('Validator Model') } },
-        { accessorKey: 'ollama_url', header: ({ column }) => columnSorter.value(column, $t('Ollama URL')), meta: { alias: $t('Ollama URL') } },
+        { accessorKey: 'provider', header: ({ column }) => columnSorter.value(column, translate('LLM Provider')), meta: { alias: translate('LLM Provider') } },
+        { accessorKey: 'model', header: ({ column }) => columnSorter.value(column, translate('Model')), meta: { alias: translate('Model') } },
+        { accessorKey: 'validator_model', header: ({ column }) => columnSorter.value(column, translate('Validator Model')), meta: { alias: translate('Validator Model') } },
+        { accessorKey: 'ollama_url', header: ({ column }) => columnSorter.value(column, translate('Ollama URL')), meta: { alias: translate('Ollama URL') } },
         {
             id: 'default',
             header: () => '',
             cell: ({ row }) => h('div', { class: 'w-6 flex items-center justify-center' }, [
                 h(UIcon as any, { name: 'i-heroicons-check-circle', class: row.original.id === defaultId.value ? 'w-6 h-6 text-green-500' : 'w-6 h-6 opacity-0', dynamic: true })
             ]),
-            meta: { alias: $t('Default'), searchable: false }
+            meta: { alias: translate('Default'), searchable: false }
         },
-        { id: 'actions', enableHiding: false, cell: actionCell, meta: { alias: $t('Actions'), searchable: false } }
+        { id: 'actions', enableHiding: false, cell: actionCell, meta: { alias: translate('Actions'), searchable: false } }
     ]
 
     const tableRowsSel = computed(() => tableData.value?.data?.rows ?? [])
@@ -76,17 +76,17 @@
     const bulkBusy = ref(false)
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
-        Notifier.showChooser($t('Delete'), $t('Are you sure you want to delete the selected items?'), async () => {
+        Notifier.showChooser(translate('Delete'), translate('Are you sure you want to delete the selected items?'), async () => {
             bulkBusy.value = true
             try {
                 await $fetch(`/api/ai-models/delete`, { method: 'POST', body: { ids: selectedIds.value } })
-                Notifier.showAlert($t('Operation completed successfully!'), 'success')
+                Notifier.showAlert(translate('Operation completed successfully!'), 'success')
                 
                 page.value = 1
                 clearAll()
                 reload()
             } catch (e) {
-                Notifier.showAlert(toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')), 'error')
+                Notifier.showAlert(toUserMessage(e as NuxtError, translate('An unexpected error occurred while deleting.')), 'error')
             } finally {
                 bulkBusy.value = false
             }
@@ -125,7 +125,7 @@
     }
     watch(isModalOpen, (v) => { if (!v) modalProps.value = null; reloadModal.value++ })
 
-    useHead({ title: `Spenser | ${$t('AI Settings')}` })
+    useHead({ title: `Spenser | ${translate('AI Settings')}` })
 </script>
 
 <template>

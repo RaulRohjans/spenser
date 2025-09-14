@@ -6,7 +6,7 @@
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     // Table loading
     const table = useTemplateRef('table')
@@ -28,8 +28,8 @@
 
     const delCurrency = function (row: CurrencyRow) {
         Notifier.showChooser(
-            $t('Delete Currency'),
-            $t('Are you sure you want to delete this currency?'),
+            translate('Delete Currency'),
+            translate('Are you sure you want to delete this currency?'),
             () => {
                 $fetch(`/api/currencies/delete`, {
                     method: 'POST',
@@ -38,14 +38,14 @@
                     .then((data) => {
                         if (!data.success)
                             return Notifier.showAlert(
-                                $t(
+                                translate(
                                     'An error occurred while removing your currency.'
                                 ),
                                 'error'
                             )
 
                         Notifier.showAlert(
-                            $t('Currency deleted successfully!'),
+                            translate('Currency deleted successfully!'),
                             'success'
                         )
                         reload()
@@ -54,7 +54,7 @@
                         Notifier.showAlert(
                             toUserMessage(
                                 e,
-                                $t(
+                                translate(
                                     'An unexpected error occurred while deleting.'
                                 )
                             ),
@@ -81,19 +81,19 @@
         },
         {
             accessorKey: 'symbol',
-            header: ({ column }) => columnSorter.value(column, $t('Symbol')),
-            meta: { alias: $t('Symbol') }
+            header: ({ column }) => columnSorter.value(column, translate('Symbol')),
+            meta: { alias: translate('Symbol') }
         },
         {
             accessorKey: 'placement',
-            header: ({ column }) => columnSorter.value(column, $t('Placement')),
-            meta: { alias: $t('Placement') }
+            header: ({ column }) => columnSorter.value(column, translate('Placement')),
+            meta: { alias: translate('Placement') }
         },
         {
             id: 'actions',
             enableHiding: false,
             cell: actionCell,
-            meta: { alias: $t('Actions'), searchable: false }
+            meta: { alias: translate('Actions'), searchable: false }
         }
     ]
 
@@ -114,8 +114,8 @@
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
-            $t('Delete Currencies'),
-            $t('Are you sure you want to delete the selected items?'),
+            translate('Delete Currencies'),
+            translate('Are you sure you want to delete the selected items?'),
             async () => {
                 bulkBusy.value = true
                 try {
@@ -124,14 +124,14 @@
                         body: { ids: selectedIds.value }
                     })
 
-                    Notifier.showAlert($t('Currency(ies) deleted successfully!'), 'success')
+                    Notifier.showAlert(translate('Currency(ies) deleted successfully!'), 'success')
                     
                     page.value = 1
                     clearAll()
                     reload()
                 } catch (e) {
                     Notifier.showAlert(
-                        toUserMessage(e as NuxtError, $t('An unexpected error occurred while deleting.')),
+                        toUserMessage(e as NuxtError, translate('An unexpected error occurred while deleting.')),
                         'error'
                     )
                 } finally {
@@ -178,7 +178,7 @@
     }
 
     useHead({
-        title: `Spenser | ${$t('Currency Settings')}`
+        title: `Spenser | ${translate('Currency Settings')}`
     })
 
     const isEmptyState = computed(() =>
