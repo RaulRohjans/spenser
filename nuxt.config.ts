@@ -93,7 +93,9 @@ export default defineNuxtConfig({
             process.env.MAX_TRANSACTION_FILE_SIZE || 1024 * 1024 * 10
         ), //10 MB
         public: {
-            demoMode: String(process.env.DEMO || '').toLowerCase() === 'true'
+            demoMode: String(process.env.DEMO || '').toLowerCase() === 'true',
+            umamiScriptUrl: process.env.UMAMI_SCRIPT_URL,
+            umamiWebsiteId: process.env.UMAMI_ID
         }
     },
     i18n: {

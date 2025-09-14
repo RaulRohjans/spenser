@@ -77,6 +77,37 @@ Open the docker-compose.yml file and configure it to your liking.
 docker compose up -d
 ```
 
+### Analytics (Umami)
+
+To enable privacy-friendly analytics with Umami, set the following environment variables (for both local `.env` and production):
+
+```
+# URL to your Umami tracker script. Examples:
+# - Cloud: https://cloud.umami.is/script.js
+# - Self-hosted: https://analytics.example.com/script.js
+UMAMI_SCRIPT_URL=
+
+# The Website ID from your Umami dashboard (UUID)
+UMAMI_ID=
+```
+
+Notes:
+- When these variables are present, the app injects the Umami script on the client and automatically tracks pageviews on SPA route changes.
+
+Custom events:
+
+```ts
+// Anywhere in your app
+import { useUmami } from '@/composables/useUmami'
+
+const { isEnabled, trackEvent, identify } = useUmami()
+
+if (isEnabled) {
+  trackEvent('signup-button', { plan: 'pro' })
+  identify('user-123', { role: 'admin' })
+}
+```
+
 ## Contributing
 
 Contributions are welcome! Please submit a pull request with detailed information about your changes!
