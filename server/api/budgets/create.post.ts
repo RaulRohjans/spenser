@@ -7,7 +7,7 @@ import { z } from 'zod'
 export default defineEventHandler(async (event) => {
     const schema = z.object({
         name: z.string().trim().min(1).optional(),
-        category: z.coerce.number().int().positive().optional(),
+        category: z.union([z.null(), z.coerce.number().int().positive()]).optional(),
         value: z.coerce.number().refine((n) => Number.isFinite(n), 'Invalid number'),
         period: z.string().min(1)
     })
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
         .values({
             name,
             category: category ?? null,
-            value,
+            value: value.toString(),
             period,
             user: user.id,
             order: 0,
