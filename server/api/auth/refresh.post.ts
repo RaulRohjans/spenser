@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
     return {
         token: {
             accessToken,
-            newRefreshToken
+            refreshToken: newRefreshToken
         }
     }
 })

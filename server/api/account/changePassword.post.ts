@@ -18,6 +18,10 @@ export default defineEventHandler(async (event) => {
             statusMessage: 'Invalid password.'
         })
 
+    // Basic password policy
+    if (typeof password !== 'string' || password.length < 8)
+        throw createError({ statusCode: 400, statusMessage: 'Password must be at least 8 characters.' })
+
     // Get user password
     const res = await db
         .select({ password: users.password })
