@@ -2,18 +2,9 @@ import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { categories } from '~~/server/db/schema'
 import { and, eq, sql } from 'drizzle-orm'
-import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
-    const schema = z.object({
-        name: z.string().trim().min(1),
-        icon: z.string().trim().optional().nullable(),
-        description: z.string().trim().max(500).optional().nullable()
-    })
-    const parsed = schema.safeParse(await readBody(event))
-    if (!parsed.success)
-        throw createError({ statusCode: 400, statusMessage: 'Category name is required.' })
-    const { name, icon, description } = parsed.data
+    const { name, icon, description } = await readBody(event)
     const user = ensureAuth(event)
 
     if (!name)

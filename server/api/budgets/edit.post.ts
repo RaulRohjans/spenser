@@ -3,22 +3,17 @@ import { ensureAuth } from '~~/server/utils/auth'
 import { budgets } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
 import { validateCategory } from '../../utils/validateCategory'
-import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
-    const schema = z.object({
-        id: z.coerce.number().int().positive(),
-        name: z.string().trim().min(1).optional(),
-        category: z.coerce.number().int().positive().optional(),
-        value: z.coerce.number().refine((n) => Number.isFinite(n), 'Invalid number'),
-        period: z.string().min(1)
-    })
-    const body = await readBody(event)
-    const parsed = schema.safeParse(body)
-    if (!parsed.success)
-        throw createError({ statusCode: 400, statusMessage: 'One or more mandatory fields are empty.' })
-    const { id, name, category, value, period } = parsed.data
+    const { id, name, category, value, period } = await readBody(event)
     const user = ensureAuth(event)
+
+    if (!value || !period) {
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'One or more mandatory fields are empty.'
+        })
+    }
 
     if (category) await validateCategory(user.id, category)
 

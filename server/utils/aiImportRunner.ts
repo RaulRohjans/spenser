@@ -5,7 +5,6 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import { createOllama } from 'ollama-ai-provider-v2'
 import { createOpenRouter } from '@openrouter/ai-sdk-provider'
 import { generateObject } from 'ai'
-import { logger } from './logger'
 import { db } from '~~/server/db/client'
 import { categories, globalSettings } from '~~/server/db/schema'
 import { and, eq } from 'drizzle-orm'
@@ -205,7 +204,7 @@ export async function runAiImportParse(
 
                 verdict = await validate(rawText, transactions)
             } catch (retryErr) {
-                logger.warn('[aiImportRunner] retry attempt failed', {
+                console.error('[aiImportRunner] retry attempt failed', {
                     userId,
                     attempt: attempts,
                     errorName: (retryErr as { name?: string } | null)?.name,
@@ -227,7 +226,7 @@ export async function runAiImportParse(
         }
     } catch (err) {
         // Detailed server log for failures
-        logger.error('[aiImportRunner] generateObject failed', {
+        console.error('[aiImportRunner] generateObject failed', {
             userId,
             provider: (model as { modelId?: string } | null)?.modelId,
             errorName: (err as { name?: string } | null)?.name,

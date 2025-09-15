@@ -2,17 +2,9 @@ import { ensureAuth } from '~~/server/utils/auth'
 import { db } from '~~/server/db/client'
 import { categories } from '~~/server/db/schema'
 import { and, eq, inArray } from 'drizzle-orm'
-import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
-    const schema = z.object({
-        id: z.coerce.number().int().positive().optional(),
-        ids: z.array(z.coerce.number().int().positive()).optional()
-    })
-    const parsed = schema.safeParse(await readBody(event))
-    if (!parsed.success)
-        throw createError({ statusCode: 400, statusMessage: 'ID(s) are required.' })
-    const { id, ids } = parsed.data
+    const { id, ids } = await readBody(event)
     const user = ensureAuth(event)
 
     const idList: number[] = Array.isArray(ids)
@@ -22,7 +14,10 @@ export default defineEventHandler(async (event) => {
             : []
 
     if (!idList.length)
-        throw createError({ statusCode: 400, statusMessage: 'ID(s) are required.' })
+        throw createError({
+            statusCode: 400,
+            statusMessage: 'ID(s) are required.'
+        })
 
     const deleteRes = await db
         .update(categories)

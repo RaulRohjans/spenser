@@ -40,13 +40,10 @@ export default defineNuxtConfig({
                 token: {
                     signInResponseRefreshTokenPointer: '/token/refreshToken',
                     refreshRequestTokenPointer: '/refreshToken',
-                    refreshResponseTokenPointer: '/token/accessToken',
                     maxAgeInSeconds: process.env.JWT_EXPIRATION
                         ? Number(process.env.JWT_EXPIRATION)
                         : 900,
-                    sameSiteAttribute: 'lax',
-                    secureCookieAttribute: true,
-                    httpOnlyCookieAttribute: true
+                    sameSiteAttribute: 'lax'
                 }
             },
             pages: {
@@ -57,9 +54,7 @@ export default defineNuxtConfig({
                 maxAgeInSeconds: process.env.JWT_EXPIRATION
                     ? Number(process.env.JWT_EXPIRATION)
                     : 900,
-                sameSiteAttribute: 'lax',
-                secureCookieAttribute: true,
-                httpOnlyCookieAttribute: true
+                sameSiteAttribute: 'lax'
             },
             session: {
                 dataType: {
@@ -74,13 +69,8 @@ export default defineNuxtConfig({
         },
         globalAppMiddleware: {
             isEnabled: true
-        },
-        sessionRefresh: {
-            enableOnWindowFocus: true,
-            enablePeriodically: 10 * 60 * 1000
         }
     },
-    
     runtimeConfig: {
         nitro: {
             // Remove mandatory NUXT_ from system runtime variables
@@ -98,7 +88,6 @@ export default defineNuxtConfig({
         dbUser: process.env.DB_USER,
         dbPassword: process.env.DB_PASSWORD,
         dbPort: process.env.DB_PORT || '5432',
-        dbSsl: process.env.DB_SSL || 'false',
 
         maxTransactionFileSize: Number(
             process.env.MAX_TRANSACTION_FILE_SIZE || 1024 * 1024 * 10
