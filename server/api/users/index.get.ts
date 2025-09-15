@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     // Check if user is admin
     if (!user.is_admin)
         throw createError({
-            statusCode: 403,
+            statusCode: 401,
             statusMessage:
                 'The user does not have permisson to access this resource.'
         })

@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const { id } = await readBody(event)
     const user = ensureAuth(event)
 
-    if (!user.is_admin) throw createError({ statusCode: 403, statusMessage: 'The given user does not have access to this resource.' })
+    if (!user.is_admin) throw createError({ statusCode: 401, statusMessage: 'The given user does not have access to this resource.' })
     if (!id) throw createError({ statusCode: 400, statusMessage: 'ID is required.' })
         
     // Ensure there is a single settings row; if none exists, create it

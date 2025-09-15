@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     const { q: search, page, limit, sort, order } = getQuery(event)
     const user = ensureAuth(event)
     if (!user.is_admin)
-        throw createError({ statusCode: 403, statusMessage: 'The user does not have permisson to access this resource.' })
+        throw createError({ statusCode: 401, statusMessage: 'The user does not have permisson to access this resource.' })
 
     const parsedLimit: number = parseInt(limit?.toString() || '') || 100
     const parsedPage: number = parseInt(page?.toString() || '') || 1
@@ -34,17 +34,12 @@ export default defineEventHandler(async (event) => {
         .then((r) => r[0])
 
     const rows = await query
-    // Mask tokens before returning to client
-    const masked = rows.map((r) => ({
-        ...r,
-        token: r.token ? r.token.replace(/.(?=.{4})/g, '•') : r.token
-    }))
 
     return {
         success: true,
         data: {
             totalRecordCount: Number(totalRecordsRes?.total || 0),
-            rows: masked
+            rows
         }
     }
 })
