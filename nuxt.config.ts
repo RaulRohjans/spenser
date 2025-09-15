@@ -88,6 +88,7 @@ export default defineNuxtConfig({
         dbUser: process.env.DB_USER,
         dbPassword: process.env.DB_PASSWORD,
         dbPort: process.env.DB_PORT || '5432',
+        dbSsl: process.env.DB_SSL || 'false',
 
         maxTransactionFileSize: Number(
             process.env.MAX_TRANSACTION_FILE_SIZE || 1024 * 1024 * 10

@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const { id, ids } = await readBody(event)
     const user = ensureAuth(event)
     if (!user.is_admin)
-        throw createError({ statusCode: 401, statusMessage: 'The given user does not have access to this resource.' })
+        throw createError({ statusCode: 403, statusMessage: 'The given user does not have access to this resource.' })
 
     const idList: number[] = Array.isArray(ids)
         ? ids.filter((n: unknown) => Number.isFinite(Number(n))).map((n: any) => Number(n))
