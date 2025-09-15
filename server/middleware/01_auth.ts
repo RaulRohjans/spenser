@@ -19,18 +19,12 @@ const isProtectedApiRoute = (event: H3Event) => {
 export default defineEventHandler((event) => {
     if (!isProtectedApiRoute(event)) return
 
-    // Prefer Authorization header, if absent, fallback to local-provider token cookie
-    let rawToken: string | undefined
-    const authHeaderValue = getRequestHeader(event, 'authorization')
-    if (typeof authHeaderValue === 'string' && authHeaderValue.length > 0) {
-        rawToken = authHeaderValue
-    } else {
-        // Local provider default cookie name per nuxt-auth docs is 'auth.token'
-        const cookieToken = getCookie(event, 'auth.token')
-        if (cookieToken) {
-            rawToken = `Bearer ${cookieToken}`
-        }
-    }
+    // Require Authorization header for API routes to avoid CSRF via cookies
+    const rawHeader = getRequestHeader(event, 'authorization')
+    const rawToken: string | undefined =
+        typeof rawHeader === 'string' && rawHeader.length > 0
+            ? rawHeader
+            : undefined
 
     if (!rawToken)
         throw createError({

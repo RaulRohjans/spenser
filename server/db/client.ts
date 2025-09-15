@@ -8,6 +8,7 @@ let dbHost: string | undefined
 let dbUser: string | undefined
 let dbPassword: string | undefined
 let dbPort: string | undefined
+let dbSsl: string | undefined
 
 try {
     const cfg =
@@ -18,6 +19,7 @@ try {
         dbUser = cfg.dbUser
         dbPassword = cfg.dbPassword
         dbPort = cfg.dbPort
+        dbSsl = cfg.dbSsl
     }
 } catch {
     // ignore, fallback to env
@@ -28,6 +30,7 @@ dbHost ||= process.env.DB_HOST
 dbUser ||= process.env.DB_USER
 dbPassword ||= process.env.DB_PASSWORD
 dbPort ||= process.env.DB_PORT || '5432'
+dbSsl ||= process.env.DB_SSL || 'false'
 
 if (!dbName || !dbHost || !dbUser || !dbPassword) {
     console.error(
@@ -41,7 +44,8 @@ const pool = new pg.Pool({
     user: dbUser,
     password: `${dbPassword}`,
     port: Number(dbPort),
-    max: 10
+    max: 10,
+    ssl: String(dbSsl).toLowerCase() === 'true' ? { rejectUnauthorized: false } : undefined
 })
 
 export const db = drizzle(pool, { schema })

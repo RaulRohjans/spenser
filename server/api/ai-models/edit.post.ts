@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
     const { id, provider, model, validator_model, token, ollama_url } = await readBody(event)
     const user = ensureAuth(event)
     if (!user.is_admin)
-        throw createError({ statusCode: 401, statusMessage: 'The given user does not have access to this resource.' })
+        throw createError({ statusCode: 403, statusMessage: 'The given user does not have access to this resource.' })
 
     if (!id) throw createError({ statusCode: 400, statusMessage: 'ID is required.' })
     if (!provider || !model)
