@@ -1,6 +1,6 @@
 <script setup lang="ts">
     const page = defineModel<number>('page', { default: 1 })
-    const itemsPerPage = defineModel<number>('itemsPerPage', { default: 10 })
+    const itemsPerPage = defineModel<number>('itemsPerPage', { default: 50 })
 
     const props = defineProps<{
         total: number
