@@ -53,13 +53,13 @@
         requestAnimationFrame(() => {
             btn.animate(
                 [
-                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white' }
+                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white', borderRadius: '50%' }
                 ],
                 { duration: 1800, easing: 'ease-in-out' }
             ).onfinish = () => {
