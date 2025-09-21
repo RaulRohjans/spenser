@@ -65,7 +65,11 @@
         }
 
         return {
-            tooltip: { trigger: 'axis' },
+            tooltip: {
+                trigger: 'axis',
+                valueFormatter: (value: number | string) =>
+                    formatCurrencyValue(Number(value))
+            },
             legend: {
                 data:
                     store.comparePrev && compareExpenses.length > 0
@@ -81,7 +85,12 @@
                     formatter: (val: string) => formatMonthShort(val)
                 }
             },
-            yAxis: { type: 'value' },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: (val: number) => formatCurrencyValue(Number(val))
+                }
+            },
             series
         }
     })

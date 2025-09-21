@@ -40,7 +40,11 @@
         const expense = points.map((p) => p.expense)
         const net = points.map((p) => p.net)
         return {
-            tooltip: { trigger: 'axis' },
+            tooltip: {
+                trigger: 'axis',
+                valueFormatter: (value: number | string) =>
+                    formatCurrencyValue(Number(value))
+            },
             legend: { data: [translate('Earnings'), translate('Expenses'), translate('Net')], bottom: 0 },
             grid: { left: 40, right: 18, top: 28, bottom: 50 },
             xAxis: {
@@ -48,7 +52,12 @@
                 data: months,
                 axisLabel: { formatter: (val: string) => formatMonthShort(val) }
             },
-            yAxis: { type: 'value' },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: (val: number) => formatCurrencyValue(Number(val))
+                }
+            },
             series: [
                 { name: translate('Earnings'), type: 'bar', data: income, itemStyle: { color: 'rgb(51, 153, 102)' } },
                 { name: translate('Expenses'), type: 'bar', data: expense, itemStyle: { color: 'rgb(227, 0, 0)' } },

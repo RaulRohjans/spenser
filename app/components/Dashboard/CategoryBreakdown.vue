@@ -37,7 +37,11 @@
             seriesData.push({ name: translate('Others'), value: data.value?.data.others?.amount ?? 0 })
         }
         return {
-            tooltip: { trigger: 'item' },
+            tooltip: {
+                trigger: 'item',
+                valueFormatter: (value: number | string) =>
+                    formatCurrencyValue(Number(value))
+            },
             legend: { bottom: 0 },
             series: [
                 {

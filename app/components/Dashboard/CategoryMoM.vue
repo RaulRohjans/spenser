@@ -35,7 +35,10 @@
         const cats = items.map((i) => i.name)
         const deltas = items.map((i) => Math.round(i.deltaPct * 100))
         return {
-            tooltip: { trigger: 'axis' },
+            tooltip: {
+                trigger: 'axis',
+                valueFormatter: (value: number | string) => `${Number(value).toFixed(0)}%`
+            },
             grid: { left: 40, right: 18, top: 20, bottom: 50 },
             legend: { show: false, bottom: 0 },
             xAxis: { type: 'value', axisLabel: { formatter: '{value}%' } },
