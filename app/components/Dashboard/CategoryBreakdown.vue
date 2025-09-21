@@ -48,7 +48,10 @@
                     type: 'pie',
                     radius: ['35%', '70%'],
                     avoidLabelOverlap: true,
-                    label: { show: true, formatter: '{b}: {d}%' },
+                    label: {
+                        show: true,
+                        formatter: (params: any) => `${params.name}: ${Number(params.percent).toFixed(2)}%`
+                    },
                     data: seriesData
                 }
             ]

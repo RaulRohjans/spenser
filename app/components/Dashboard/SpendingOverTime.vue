@@ -40,8 +40,8 @@
 
     const option = computed(() => {
         const months = (data.value?.data.series ?? []).map((p) => p.month)
-        const expenses = (data.value?.data.series ?? []).map((p) => p.expense)
-        const compareExpenses = (data.value?.data.compareSeries ?? []).map((p) => p.expense)
+        const expenses = (data.value?.data.series ?? []).map((p) => Number(Number(p.expense).toFixed(2)))
+        const compareExpenses = (data.value?.data.compareSeries ?? []).map((p) => Number(Number(p.expense).toFixed(2)))
 
         const series: any[] = [
             {
@@ -88,7 +88,7 @@
             yAxis: {
                 type: 'value',
                 axisLabel: {
-                    formatter: (val: number) => formatCurrencyValue(Number(val))
+                    formatter: (val: number) => formatCurrencyValue(Number(Number(val).toFixed(2)))
                 }
             },
             series

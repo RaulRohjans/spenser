@@ -36,9 +36,9 @@
     const option = computed(() => {
         const points = data.value?.data.series ?? []
         const months = points.map((p) => p.month)
-        const income = points.map((p) => p.income)
-        const expense = points.map((p) => p.expense)
-        const net = points.map((p) => p.net)
+        const income = points.map((p) => Number(Number(p.income).toFixed(2)))
+        const expense = points.map((p) => Number(Number(p.expense).toFixed(2)))
+        const net = points.map((p) => Number(Number(p.net).toFixed(2)))
         return {
             tooltip: {
                 trigger: 'axis',
@@ -55,7 +55,7 @@
             yAxis: {
                 type: 'value',
                 axisLabel: {
-                    formatter: (val: number) => formatCurrencyValue(Number(val))
+                    formatter: (val: number) => formatCurrencyValue(Number(Number(val).toFixed(2)))
                 }
             },
             series: [
