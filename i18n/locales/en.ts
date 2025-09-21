@@ -397,4 +397,7 @@ export default {
     Failed: 'Failed',
     Cancelled: 'Cancelled',
     'No tasks': 'No tasks'
+    ,
+    'The demo data resets every 15 minutes at :00, :15, :30, and :45 (UTC).':
+        'The demo resets every 15 minutes at :00, :15, :30, and :45 (UTC).'
 }

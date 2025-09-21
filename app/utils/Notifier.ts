@@ -13,6 +13,9 @@ export class Notifier {
         position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
     } = { position: 'top-right' }
 
+    
+    private static toastAutoDismissEnabled: boolean = true
+
     private static ensureUiProvidersMounted() {
         if (!import.meta.client) return
         if (this.uiProviderMounted) return
@@ -50,6 +53,10 @@ export class Notifier {
     }) {
         this.toasterOptions = { ...this.toasterOptions, ...options }
         this.updateUiProviders()
+    }
+
+    static setToastAutoDismiss(enabled: boolean) {
+        this.toastAutoDismissEnabled = enabled
     }
 
     private static buildAlertTitle(type: string) {
@@ -146,7 +153,8 @@ export class Notifier {
             | 'success'
             | 'primary'
             | 'neutral'
-            | 'secondary' = 'info'
+            | 'secondary' = 'info',
+        options?: { persistent?: boolean; durationMs?: number }
     ) {
         // Ensure a single notifications outlet exists without duplicating providers
         this.ensureUiProvidersMounted()
@@ -156,10 +164,15 @@ export class Notifier {
         nuxtApp.vueApp.runWithContext(() => {
             const toast = useToast()
             if (toast && typeof toast.add === 'function') {
+                let duration: number | undefined
+                if (typeof options?.durationMs === 'number') duration = options.durationMs
+                else if (options?.persistent === true) duration = 0
+                else duration = this.toastAutoDismissEnabled ? undefined : 0
                 toast.add({
                     title: this.buildAlertTitle(type),
                     description: message || '',
                     color: type,
+                    duration,
                     close: {
                         color: 'neutral',
                         variant: 'ghost'
