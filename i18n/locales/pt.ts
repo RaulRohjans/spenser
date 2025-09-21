@@ -329,6 +329,7 @@ export default {
     'All periods': 'Todos os períodos',
     Weekly: 'Semanal',
     weekly: 'semanal',
+    "No results with filters": "Não foi possível encontrar nada com esses filtros 😅",
     All: 'Todos',
     'Over budget only': 'Apenas acima do orçamento',
     'Not over budget only': 'Apenas não acima do orçamento',
