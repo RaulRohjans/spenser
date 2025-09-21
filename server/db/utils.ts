@@ -1,6 +1,7 @@
 import { asc, desc, sql } from 'drizzle-orm'
 import type { SQL } from 'drizzle-orm'
 import {
+    aiModels,
     budgets,
     categories,
     currencies,
@@ -15,6 +16,7 @@ export const tablesMap = {
     category: categories,
     transaction: transactions,
     currency: currencies,
+    ai_model: aiModels,
     user_preferences: userPreferences,
     global_settings: globalSettings,
     budget: budgets
@@ -73,7 +75,7 @@ export function makeMultiColumnSearch(
         expr = expr ? sql`${expr} OR ${cond}` : cond
     }
 
-    return expr
+    return expr ? sql`(${expr})` : null
 }
 
 export function makeOrderBy(sort?: string, order?: 'asc' | 'desc') {

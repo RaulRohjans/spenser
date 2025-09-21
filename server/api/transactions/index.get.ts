@@ -166,7 +166,7 @@ export default defineEventHandler(async (event) => {
 		let gQuery = db.select().from(g).$dynamic()
 		const like = '%' + String(search || '') + '%'
 		const gSearch = search
-			? sql`${g.category_name}::text ILIKE ${like} OR ${g.value}::text ILIKE ${like} OR ${g.id}::text ILIKE ${like}`
+			? sql`(${g.category_name}::text ILIKE ${like} OR ${g.value}::text ILIKE ${like} OR ${g.id}::text ILIKE ${like})`
 			: undefined
 		if (gSearch) gQuery = gQuery.where(and(gSearch))
 		query = gQuery
@@ -218,7 +218,7 @@ export default defineEventHandler(async (event) => {
 		const gName = sql`(select ${categories.name} from ${categories} where ${categories.id} = g.id)`
 		const like = '%' + String(search || '') + '%'
 		const gSearch = search
-			? sql`${gName}::text ILIKE ${like} OR g.value::text ILIKE ${like} OR g.id::text ILIKE ${like}`
+			? sql`(${gName}::text ILIKE ${like} OR g.value::text ILIKE ${like} OR g.id::text ILIKE ${like})`
 			: undefined
 		totalQuery = db
 			.select({ total: sql<number>`count(*)` })
