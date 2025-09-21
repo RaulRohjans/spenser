@@ -112,11 +112,12 @@
     const { page, limit: itemsPerPage, sort, order, filters, data: tableData, status, reload } = usePaginatedTable<FetchTableDataResult<AiModelRow>>({
         key: 'all-aimodels',
         fetcher: async ({ page, limit, sort, order, filters }) => {
-            const res = await $fetch(`/api/ai-models`, { method: 'GET', query: { q: filters?.searchQuery, page, limit, sort, order } })
-            return res
+        const res = await $fetch<FetchTableDataResult<AiModelRow>>(`/api/ai-models`, { method: 'GET', query: { q: filters?.searchQuery, page, limit, sort, order } })
+        return res
         },
         defaultFilters: { searchQuery: '' },
-        watch: []
+        watch: [],
+        persistPerPageKey: 'admin:aimodels'
     })
 
     // Fetch default model id on client to avoid SSR hydration mismatch

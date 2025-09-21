@@ -218,7 +218,8 @@
             categoryIds: [],
             categorySearch: ''
         },
-        watch: [] // optional: other filters to watch
+        watch: [],
+        persistPerPageKey: 'transactions'
     })
 
     // Local UI state for sidebars
@@ -256,22 +257,13 @@
         { deep: true, immediate: true }
     )
 
-    // Persist rows-per-page
-    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
-    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
-
     const { load: loadFilters } = useFilterSession('transactions', persistedFilters, { storage: 'session', debounceMs: 150 })
-    const { load: loadPerPage } = useFilterSession('perPage:transactions', perPageState, { storage: 'session', debounceMs: 0 })
     const mounted = ref(false)
     onMounted(() => {
         const loaded = loadFilters()
         if (loaded) {
             Object.assign(filters, persistedFilters)
             reload()
-        }
-        const loadedPerPage = loadPerPage()
-        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
-            itemsPerPage.value = perPageState.itemsPerPage
         }
         mounted.value = true
     })

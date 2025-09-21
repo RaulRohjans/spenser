@@ -190,7 +190,8 @@
         defaultFilters: {
             searchQuery: ''
         },
-        watch: []
+        watch: [],
+        persistPerPageKey: 'admin:currencies'
     })
     
     const showColumns = ref(false)
@@ -212,18 +213,9 @@
     // Persist currencies filters (search) separately
     const { load: loadCurrencyFilters } = useFilterSession('admin:currencies', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
 
-    // Persist rows-per-page for admin currencies
-    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
-    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
-    const { load: loadPerPage } = useFilterSession('perPage:admin:currencies', perPageState, { storage: 'session', debounceMs: 0 })
-
     onMounted(() => {
         const loaded = loadCurrencyFilters()
         if (loaded) reload()
-        const loadedPerPage = loadPerPage()
-        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
-            itemsPerPage.value = perPageState.itemsPerPage
-        }
     })
 </script>
 
