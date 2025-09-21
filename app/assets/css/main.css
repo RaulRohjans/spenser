@@ -158,3 +158,11 @@ table tbody tr:has([role="checkbox"][aria-checked="true"]) {
 table tbody tr:has([role="checkbox"][aria-checked="true"]):hover {
     @apply bg-gray-200 dark:bg-gray-700/70;
 }
+
+/* Opt-out: pages can add .no-row-select-highlight to disable the highlight */
+.no-row-select-highlight table tbody tr:has([role="checkbox"][aria-checked="true"]) {
+    background-color: inherit !important;
+}
+.no-row-select-highlight table tbody tr:has([role="checkbox"][aria-checked="true"]):hover {
+    background-color: inherit !important;
+}

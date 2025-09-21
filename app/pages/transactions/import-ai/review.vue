@@ -285,7 +285,7 @@
 </script>
 
 <template>
-    <UContainer class="py-4">
+    <UContainer class="py-4 no-row-select-highlight">
         <transition name="fade">
             <div v-if="showValidatorAlert && validationInfo" class="relative mb-4">
                 <UAlert
