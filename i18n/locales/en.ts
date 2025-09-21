@@ -328,6 +328,7 @@ export default {
     'By category': 'By category',
     'All periods': 'All periods',
     Weekly: 'Weekly',
+    weekly: 'weekly',
     All: 'All',
     'Over budget only': 'Over budget only',
     'Not over budget only': 'Not over budget only',
