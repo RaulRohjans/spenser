@@ -32,6 +32,9 @@ export function useRowSelection<Row extends object>(
 
     const internalIds = ref<Set<IdType>>(new Set())
 
+    const lastCheckedId = ref<IdType | null>(null)
+    const shiftPressed = ref(false)
+
     // Optional persistence using session storage
     if (options.persist && options.storageKey) {
         const persisted = reactive<SelectionState>({ ids: [] })
@@ -87,6 +90,24 @@ export function useRowSelection<Row extends object>(
         if (value) selectMany(ids)
         else deselectMany(ids)
     }
+
+    /** Select or deselect a contiguous range on the current page between two ids (inclusive). */
+    const applyRangeSelection = (startId: IdType, endId: IdType, value: boolean): void => {
+        const ids = pageIds.value
+        const startIdx = ids.indexOf(startId)
+        const endIdx = ids.indexOf(endId)
+        if (startIdx === -1 || endIdx === -1) {
+            // If either id is not on the current page, fallback to single toggle for the current id
+            if (value) internalIds.value.add(endId)
+            else internalIds.value.delete(endId)
+            return
+        }
+        const lo = Math.min(startIdx, endIdx)
+        const hi = Math.max(startIdx, endIdx)
+        const rangeIds = ids.slice(lo, hi + 1)
+        if (value) selectMany(rangeIds as IdType[])
+        else deselectMany(rangeIds as IdType[])
+    }
     
     const shouldClearOnLeave = options.clearOnRouteLeave !== false
     if (shouldClearOnLeave) {
@@ -119,8 +140,24 @@ export function useRowSelection<Row extends object>(
             return h(UCheckbox, {
                 'modelValue': isSelected(id),
                 'aria-label': 'Select row',
-                'onClick': (e: Event) => e.stopPropagation(),
-                'onUpdate:modelValue': (v: boolean | 'indeterminate') => setSelected(id, v === 'indeterminate' ? true : Boolean(v))
+                'onPointerdown': (e: Event) => {
+                    // Capture Shift state BEFORE value update events fire
+                    shiftPressed.value = Boolean((e as PointerEvent).shiftKey)
+                },
+                'onClick': (e: Event) => {
+                    ;(e as MouseEvent).stopPropagation()
+                },
+                'onUpdate:modelValue': (v: boolean | 'indeterminate') => {
+                    const next = v === 'indeterminate' ? true : Boolean(v)
+                    if (shiftPressed.value && next === true && lastCheckedId.value != null) {
+                        // When checking with Shift held, select the whole range from last checked anchor to current
+                        applyRangeSelection(lastCheckedId.value, id, true)
+                    } else setSelected(id, next)
+                    
+                    // Update anchor only when checking; keep previous anchor when unchecking
+                    if (next === true) lastCheckedId.value = id
+                    shiftPressed.value = false
+                }
             })
         },
         meta: { alias: $t('Select'), searchable: false }
