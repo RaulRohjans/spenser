@@ -39,10 +39,10 @@ export default defineNuxtPlugin(() => {
         sessionStorage.setItem(shownKey, '1')
     }
 
-    // Show once after initial route ready and also after login redirect
+    // Only trigger after redirect from /login and when authenticated
     const router = useRouter()
-    router.isReady().then(() => queueMicrotask(showToastIfNeeded))
-    router.afterEach((to, from) => {
-        if (from?.path === '/login') queueMicrotask(showToastIfNeeded)
+    const auth = useAuth()
+    router.afterEach((_, from) => {
+        if (from?.path === '/login' && auth?.status?.value === 'authenticated') queueMicrotask(showToastIfNeeded)
     })
 })
