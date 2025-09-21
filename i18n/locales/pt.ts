@@ -341,7 +341,7 @@ export default {
     'View and manage your transactions. Search, filter, and group by category.':
         'Veja e gere as suas transações. Pesquise, filtre e agrupe por categoria.',
     'The income and spending that you track will show up here.':
-        'Os rendimentos e despesas que acompanha aparecerão aqui.',
+        'Os rendimentos e despesas que registar aparecerão aqui.',
     'Create and track budgets by period and category.':
         'Crie e acompanhe orçamentos por período e categoria.',
     'Your budgets will be displayed here once you create them.':
