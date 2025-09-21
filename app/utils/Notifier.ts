@@ -186,10 +186,11 @@ export class Notifier {
                 if (typeof options?.durationMs === 'number') duration = options.durationMs
                 else if (options?.persistent === true) duration = 0
                 else duration = this.toastAutoDismissEnabled ? undefined : 0
+                const toastColor = type === 'info' ? 'primary' : type
                 toast.add({
                     title: this.buildAlertTitle(type),
                     description: message || '',
-                    color: type,
+                    color: toastColor,
                     icon: this.iconForType(type),
                     duration,
                     close: {
