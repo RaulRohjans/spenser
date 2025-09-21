@@ -12,7 +12,7 @@ export function useUmami() {
         umamiWebsiteId?: string
     }
 
-    const isEnabled = Boolean(process.client && umamiScriptUrl && umamiWebsiteId)
+    const isEnabled = Boolean(import.meta.client && umamiScriptUrl && umamiWebsiteId)
 
     const getGlobal = (): UmamiGlobal | null => {
         if (!isEnabled) return null
