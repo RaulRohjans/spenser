@@ -15,7 +15,7 @@ export type PaginatedTableOptions<T> = {
 
 export function usePaginatedTable<T>(opts: PaginatedTableOptions<T>) {
     const page = ref(1)
-    const limit = ref(10)
+    const limit = ref(50)
     const sort = ref('id')
     const order = ref<'asc' | 'desc'>('asc')
     
