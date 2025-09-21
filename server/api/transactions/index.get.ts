@@ -15,7 +15,8 @@ export default defineEventHandler(async (event) => {
 		startDate,
 		endDate,
 		groupCategory,
-		categoryIds
+		categoryIds,
+		idsOnly
 	} = getQuery(event)
 	const user = ensureAuth(event)
 
@@ -99,6 +100,15 @@ export default defineEventHandler(async (event) => {
 		search?.toString()
 	)
 
+	const buildWhere = (withSearch: boolean) => {
+		const conditions: any[] = [baseWhere]
+		if (rangeStart) conditions.push(rangeStart)
+		if (rangeEnd) conditions.push(rangeEnd)
+		if (withSearch && mainSearch) conditions.push(mainSearch)
+		if (categoryIdList.length) conditions.push(inArray(transactions.category, categoryIdList))
+		return and(...conditions)
+	}
+
 	let query
 	if (!isGrouped) {
 		query = db
@@ -115,15 +125,7 @@ export default defineEventHandler(async (event) => {
 			})
 			.from(transactions)
 			.innerJoin(categories, eq(categories.id, transactions.category))
-			.where(
-				and(
-					baseWhere,
-					...(rangeStart ? [rangeStart] : []),
-					...(rangeEnd ? [rangeEnd] : []),
-					...(mainSearch ? [mainSearch] : []),
-					...(categoryIdList.length ? [inArray(transactions.category, categoryIdList)] : [])
-				)
-			)
+			.where(buildWhere(true))
 			.$dynamic()
 
 		query = query
@@ -142,14 +144,7 @@ export default defineEventHandler(async (event) => {
 			})
 			.from(transactions)
 			.innerJoin(categories, eq(categories.id, transactions.category))
-			.where(
-				and(
-					baseWhere,
-					...(rangeStart ? [rangeStart] : []),
-					...(rangeEnd ? [rangeEnd] : []),
-					...(categoryIdList.length ? [inArray(transactions.category, categoryIdList)] : [])
-				)
-			)
+			.where(buildWhere(false))
 			.groupBy(
 				categories.id,
 				categories.name,
@@ -179,6 +174,23 @@ export default defineEventHandler(async (event) => {
 			.offset((parsedPage - 1) * parsedLimit)
 			.limit(parsedLimit)
 	}
+
+	// Fast path: return all matching ids when idsOnly=true
+	const onlyIds = String(idsOnly || '').toLowerCase() === 'true'
+	if (onlyIds) {
+		const idCol = isGrouped ? categories.id : transactions.id
+		const where = buildWhere(!isGrouped)
+		let q = db
+			.select({ id: idCol })
+			.from(transactions)
+			.innerJoin(categories, eq(categories.id, transactions.category))
+			.where(where)
+			.orderBy(idCol)
+			.$dynamic()
+		if (isGrouped) q = q.groupBy(categories.id)
+		const idRows = await q
+		return { success: true, data: { ids: idRows.map((r: { id: number }) => r.id) } }
+	}
 	/* ----------------------------------------------------------------- */
 
 	// Get total record count
@@ -188,29 +200,17 @@ export default defineEventHandler(async (event) => {
 			.select({ total: sql<number>`count(*)` })
 			.from(transactions)
 			.innerJoin(categories, eq(categories.id, transactions.category))
-			.where(
-				and(
-					baseWhere,
-					...(rangeStart ? [rangeStart] : []),
-					...(rangeEnd ? [rangeEnd] : []),
-					...(mainSearch ? [mainSearch] : []),
-					...(categoryIdList.length ? [inArray(transactions.category, categoryIdList)] : [])
-				)
-			)
+			.where(buildWhere(true))
 			.$dynamic()
 	} else {
 		const grouped = db
-			.select({ id: categories.id })
+			.select({
+				id: categories.id,
+				value: sql<number>`sum(${transactions.value})`.as('value')
+			})
 			.from(transactions)
 			.innerJoin(categories, eq(categories.id, transactions.category))
-			.where(
-				and(
-					baseWhere,
-					...(rangeStart ? [rangeStart] : []),
-					...(rangeEnd ? [rangeEnd] : []),
-					...(categoryIdList.length ? [inArray(transactions.category, categoryIdList)] : [])
-				)
-			)
+			.where(buildWhere(false))
 			.groupBy(categories.id)
 			.as('g')
 

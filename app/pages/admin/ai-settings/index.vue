@@ -71,9 +71,23 @@
     ]
 
     const tableRowsSel = computed(() => tableData.value?.data?.rows ?? [])
-    const { selectionColumn, selectedIds, selectedCount, clearAll } = useRowSelection<AiModelRow>({ storageKey: 'admin:aimodels', getRowId: (r) => r.id, pageRows: tableRowsSel })
+    const { selectionColumn, selectedIds, selectedCount, clearAll, selectMany } = useRowSelection<AiModelRow>({ storageKey: 'admin:aimodels', getRowId: (r) => r.id, pageRows: tableRowsSel })
     const finalColumns = computed(() => [selectionColumn, ...columns])
     const bulkBusy = ref(false)
+    const totalCount = computed(() => Number(tableData.value?.data?.totalRecordCount ?? 0))
+    const selectAllVisible = computed(() => selectedCount.value > 0 && selectedCount.value < totalCount.value)
+    async function selectAllAcrossTable() {
+        bulkBusy.value = true
+        try {
+            const res = await $fetch<{ success: boolean; data: { ids: number[] } }>(`/api/ai-models`, { method: 'GET', query: { q: filters?.searchQuery, idsOnly: true } })
+            const ids = (res?.data?.ids ?? []) as number[]
+            if (Array.isArray(ids) && ids.length) selectMany(ids)
+        } catch {
+            /* empty */
+        } finally {
+            bulkBusy.value = false
+        }
+    }
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(translate('Delete'), translate('Are you sure you want to delete the selected items?'), async () => {
@@ -147,7 +161,7 @@
 
         <div class="w-full flex flex-col gap-2">
             <div class="flex-1 overflow-auto">
-                <ToolbarSelectionBar :count="selectedCount" :open="selectedCount > 0" :busy="bulkBusy" @delete="bulkDeleteSelected" @clear="clearAll" />
+                <ToolbarSelectionBar :count="selectedCount" :open="selectedCount > 0" :busy="bulkBusy" :select-all-visible="selectAllVisible" @delete="bulkDeleteSelected" @clear="clearAll" @select-all="selectAllAcrossTable" />
                 <UTable ref="table" :data="tableRowsSel" :columns="finalColumns" sticky :loading="status === 'pending'" class="w-full" />
             </div>
         </div>

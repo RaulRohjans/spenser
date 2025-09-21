@@ -5,14 +5,18 @@
         open?: boolean
         /** Disable actions (e.g., while deleting) */
         busy?: boolean
+        /** Show a Select All control (when not all rows are selected) */
+        selectAllVisible?: boolean
     }>(), {
         open: false,
-        busy: false
+        busy: false,
+        selectAllVisible: false
     })
 
     const emit = defineEmits<{
         (e: 'clear'): void
         (e: 'delete'): void
+        (e: 'select-all'): void
     }>()
 </script>
 
@@ -38,6 +42,15 @@
                 :loading="busy"
                 @click.stop="emit('delete')">
                 {{ $t('Remove') }}
+            </UButton>
+            <UButton
+                v-if="props.selectAllVisible"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                :disabled="busy"
+                @click.stop="emit('select-all')">
+                {{ $t('Select All') }}
             </UButton>
             <UButton
                 color="neutral"

@@ -124,7 +124,8 @@
         selectionColumn,
         selectedIds,
         selectedCount,
-        clearAll
+        clearAll,
+        selectMany
     } = useRowSelection<CategoryRow>({
         storageKey: 'categories',
         getRowId: (r) => r.id,
@@ -132,6 +133,23 @@
     })
     const finalColumns = computed(() => [selectionColumn, ...columns])
     const bulkBusy = ref(false)
+    const totalCount = computed(() => Number(tableData.value?.data?.totalRecordCount ?? 0))
+    const selectAllVisible = computed(() => selectedCount.value > 0 && selectedCount.value < totalCount.value)
+    async function selectAllAcrossTable() {
+        bulkBusy.value = true
+        try {
+            const res = await $fetch<{ success: boolean; data: { ids: number[] } }>(`/api/categories`, {
+                method: 'GET',
+                query: { q: filters?.searchQuery, idsOnly: true }
+            })
+            const ids = (res?.data?.ids ?? []) as number[]
+            if (Array.isArray(ids) && ids.length) selectMany(ids)
+        } catch {
+            /* empty */
+        } finally {
+            bulkBusy.value = false
+        }
+    }
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
@@ -280,8 +298,10 @@
                             :count="selectedCount"
                             :open="selectedCount > 0"
                             :busy="bulkBusy"
+                            :select-all-visible="selectAllVisible"
                             @delete="bulkDeleteSelected"
-                            @clear="clearAll" />
+                            @clear="clearAll"
+                            @select-all="selectAllAcrossTable" />
                         <UTable
                             ref="table"
                             :data="tableRows"

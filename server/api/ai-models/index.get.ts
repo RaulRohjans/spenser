@@ -5,7 +5,7 @@ import { and, eq, sql } from 'drizzle-orm'
 import { makeOrderBy, makeMultiColumnSearch } from '~~/server/db/utils'
 
 export default defineEventHandler(async (event) => {
-    const { q: search, page, limit, sort, order } = getQuery(event)
+    const { q: search, page, limit, sort, order, idsOnly } = getQuery(event)
     const user = ensureAuth(event)
     if (!user.is_admin)
         throw createError({ statusCode: 403, statusMessage: 'The user does not have permisson to access this resource.' })
@@ -26,6 +26,20 @@ export default defineEventHandler(async (event) => {
         .offset((parsedPage - 1) * parsedLimit)
         .limit(parsedLimit)
         .orderBy(orderBy || aiModels.id)
+
+    // Fast path: return all matching ids when idsOnly=true
+    const onlyIds = String(idsOnly || '').toLowerCase() === 'true'
+    if (onlyIds) {
+        const idRows = await db
+            .select({ id: aiModels.id })
+            .from(aiModels)
+            .where(searchSql ? and(baseWhere, searchSql) : baseWhere)
+            .orderBy(aiModels.id)
+        return {
+            success: true,
+            data: { ids: idRows.map((r) => r.id) }
+        }
+    }
 
     const totalRecordsRes = await db
         .select({ total: sql<number>`count(*)` })

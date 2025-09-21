@@ -109,6 +109,7 @@ export default {
     Delete: 'Delete',
     Remove: 'Remove',
     Clear: 'Clear',
+    'Select All': 'Select All',
     'Pick emoji': 'Pick emoji',
     selected: 'selected',
     Select: 'Select',

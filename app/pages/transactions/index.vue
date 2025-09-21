@@ -314,7 +314,8 @@
         selectionColumn,
         selectedIds,
         selectedCount,
-        clearAll
+        clearAll,
+        selectMany
     } = useRowSelection<TransactionRow>({
         storageKey: 'transactions',
         getRowId: (r) => r.id,
@@ -326,6 +327,31 @@
     )
 
     const bulkBusy = ref(false)
+    const totalCount = computed(() => Number(tableData.value?.data?.totalRecordCount ?? 0))
+    const selectAllVisible = computed(() => !filters.groupCategory && selectedCount.value > 0 && selectedCount.value < totalCount.value)
+    async function selectAllAcrossTable() {
+        if (filters.groupCategory) return
+        bulkBusy.value = true
+        try {
+            const res = await $fetch<{ success: boolean; data: { ids: number[] } }>(`/api/transactions`, {
+                method: 'GET',
+                query: {
+                    q: filters?.searchQuery,
+                    startDate: filters?.dateRange?.[0]?.getTime() ?? '',
+                    endDate: filters?.dateRange?.[1]?.getTime() ?? '',
+                    groupCategory: false,
+                    categoryIds: (filters?.categoryIds || []).map((id) => String(id)),
+                    idsOnly: true
+                }
+            })
+            const ids = (res?.data?.ids ?? []) as number[]
+            if (Array.isArray(ids) && ids.length) selectMany(ids)
+        } catch {
+            /* empty */
+        } finally {
+            bulkBusy.value = false
+        }
+    }
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
@@ -457,8 +483,10 @@
                             :count="selectedCount"
                             :open="!filters.groupCategory && selectedCount > 0"
                             :busy="bulkBusy"
+                            :select-all-visible="selectAllVisible"
                             @delete="bulkDeleteSelected"
-                            @clear="clearAll" />
+                            @clear="clearAll"
+                            @select-all="selectAllAcrossTable" />
                         <UTable
                             ref="table"
                             :data="tableRows"
