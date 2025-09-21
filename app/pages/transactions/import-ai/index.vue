@@ -116,7 +116,7 @@
                 </template>
                 <div class="flex-1 flex items-start justify-center pt-8 sm:pt-12">
                     <div class="flex flex-col justify-start items-center w-full gap-4 px-2 sm:px-4">
-                        <span class="mb-4 text-center">
+                        <span class="mb-4 text-center w-full sm:w-3/4">
                             {{
                                 $t(
                                     'Upload a file or write the transaction data to be parsed by AI.'

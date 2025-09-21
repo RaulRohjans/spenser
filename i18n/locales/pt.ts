@@ -232,6 +232,7 @@ export default {
         'Ocorreu um erro inesperado ao guardar as definições.',
     'An unexpected error occurred while importing.':
         'Ocorreu um erro inesperado ao importar.',
+    'Please resolve highlighted errors before importing.': 'Por favor, corrija os erros assinalados antes de importar.',
     'An unexpected error occurred while processing the import.':
         'Ocorreu um erro inesperado ao processar a importação.',
     'Invalid username or password':
@@ -363,11 +364,11 @@ export default {
     'Fill in the transaction details and submit': 'Preencha os dados da transação e submeta',
     'Compare to previous period': 'Comparar com o período anterior',
     'Total spent': 'Total gasto',
-    'Net cashflow': 'Fluxo de caixa líquido',
+    'Net cashflow': 'Cashflow líquido',
     'Top category': 'Categoria principal',
     'Avg transaction value': 'Valor médio por transação',
     'Category Month-over-Month Change': 'Variação mês a mês por categoria',
-    'Cashflow': 'Fluxo de caixa',
+    'Cashflow': 'Cashflow',
     'Others': 'Outros',
     'Expenses (prev year)': 'Despesas (ano anterior)',
     Net: 'Líquido',

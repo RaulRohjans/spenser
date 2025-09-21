@@ -1,4 +1,5 @@
 <script setup lang="ts">
+    import { z } from 'zod'
     import type { NuxtError } from 'nuxt/app'
     import { h, resolveComponent } from 'vue'
     import type { LlmTransactionObject } from '~~/types/Data'
@@ -59,6 +60,7 @@
     if (!store.items.length) await router.replace('/transactions/import-ai')
 
     const rows = ref<ParsedTransactionItem[]>([...store.items])
+    const rowIndex = (r: ParsedTransactionItem) => rows.value.indexOf(r)
     const isExpense = ref<boolean[]>(rows.value.map((r) => Number(r.value) < 0))
     rows.value = rows.value.map((r) => ({
         ...r,
@@ -80,10 +82,17 @@
         return String(raw).replace(/\r\n/g, '\n').replace(/\\n/g, '\n')
     })
 
+    const rebuildAllErrors = () => {
+        rowErrors.value = {}
+        rows.value.forEach((r, i) => validateRow(r, i))
+    }
+
     const delRow = (row: ParsedTransactionItem) => {
         const idx = rows.value.indexOf(row)
         if (idx > -1) {
             rows.value.splice(idx, 1)
+            isExpense.value.splice(idx, 1)
+            rebuildAllErrors()
             Notifier.showAlert(
                 $t('Transaction removed successfully'),
                 'success'
@@ -104,13 +113,13 @@
                 const idx = rows.value.indexOf(row.original)
                 return h(resolveComponent('UInput'), {
                     modelValue: rows.value[idx]?.name,
-                    'onUpdate:modelValue': (v: string) =>
-                        (rows.value[idx]!.name = v),
+                    'onUpdate:modelValue': (v: string) => {
+                        rows.value[idx]!.name = v
+                        validateRow(rows.value[idx]!, idx)
+                    },
                     size: 'xs',
-                    class: 'w-full',
-                    color: hasValidationError(row.original)
-                        ? 'error'
-                        : undefined
+                    class: 'w-full ' + (rowErrors.value[rowIndex(row.original)]?.name ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : ''),
+                    color: rowErrors.value[rowIndex(row.original)]?.name ? 'error' : undefined
                 })
             },
             meta: { alias: $t('Name') }
@@ -120,18 +129,19 @@
             header: () => $t('Value'),
             cell: ({ row }) => {
                 const idx = rows.value.indexOf(row.original)
+                const rowIndex = (r: ParsedTransactionItem) => rows.value.indexOf(r)
                 return h('div', { class: 'flex items-center gap-2' }, [
                     h(resolveComponent('UInput'), {
                         modelValue: rows.value[idx]?.value,
-                        'onUpdate:modelValue': (v: string | number) =>
-                            (rows.value[idx]!.value = Number(v)),
+                        'onUpdate:modelValue': (v: string | number) => {
+                            rows.value[idx]!.value = Number(v)
+                            validateRow(rows.value[idx]!, idx)
+                        },
                         type: 'number',
                         step: 'any',
                         size: 'xs',
-                        class: 'w-28',
-                        color: hasValidationError(row.original)
-                            ? 'error'
-                            : undefined
+                        class: 'w-28 ' + (rowErrors.value[rowIndex(row.original)]?.value ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : ''),
+                        color: rowErrors.value[rowIndex(row.original)]?.value ? 'error' : undefined
                     }),
                     h(resolveComponent('UCheckbox'), {
                         modelValue: isExpense.value[idx],
@@ -148,6 +158,7 @@
             header: () => $t('Category'),
             cell: ({ row }) => {
                 const idx = rows.value.indexOf(row.original)
+                const rowIndex = (r: ParsedTransactionItem) => rows.value.indexOf(r)
                 return h(resolveComponent('USelectMenu'), {
                     items: categoryOptions.value,
                     loading: categoryLoading.value,
@@ -156,8 +167,11 @@
                     ),
                     'onUpdate:modelValue': (
                         o: { label: string; value: number } | null
-                    ) => (rows.value[idx]!.category = o?.value ?? null),
-                    class: 'w-full',
+                    ) => {
+                        rows.value[idx]!.category = o?.value ?? null
+                        validateRow(rows.value[idx]!, idx)
+                    },
+                    class: 'w-full ' + (rowErrors.value[rowIndex(row.original)]?.category ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : ''),
                     size: 'xs',
                     searchable: true,
                     searchInput: {
@@ -167,9 +181,7 @@
                     clearSearchOnClose: true,
                     optionAttribute: 'label',
                     valueAttribute: 'value',
-                    color: hasValidationError(row.original)
-                        ? 'error'
-                        : undefined
+                    color: rowErrors.value[rowIndex(row.original)]?.category ? 'error' : undefined
                 })
             },
             meta: { alias: $t('Category') }
@@ -179,14 +191,16 @@
             header: () => $t('Date'),
             cell: ({ row }) => {
                 const idx = rows.value.indexOf(row.original)
+                const rowIndex = (r: ParsedTransactionItem) => rows.value.indexOf(r)
                 return h(resolveComponent('UInput'), {
                     modelValue: rows.value[idx]?.date,
-                    'onUpdate:modelValue': (v: string) =>
-                        (rows.value[idx]!.date = v),
+                    'onUpdate:modelValue': (v: string) => {
+                        rows.value[idx]!.date = v
+                        validateRow(rows.value[idx]!, idx)
+                    },
                     size: 'xs',
-                    color: hasValidationError(row.original)
-                        ? 'error'
-                        : undefined
+                    class: rowErrors.value[rowIndex(row.original)]?.date ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : undefined,
+                    color: rowErrors.value[rowIndex(row.original)]?.date ? 'error' : undefined
                 })
             },
             meta: { alias: $t('Date') }
@@ -221,13 +235,37 @@
         }))
     )
 
-    const hasValidationError = (row: ParsedTransactionItem) => {
-        return (
-            !row.name ||
-            Number(row.value) <= 0 ||
-            !row.date ||
-            row.category === null
-        )
+    // Zod schema for each row
+    const rowSchema = z.object({
+        name: z.string().trim().min(1, $t('Name') + ': ' + $t('Mandatory Field')),
+        value: z.number().positive($t('Value') + ': ' + $t('The value has to be bigger than 0.')),
+        date: z.string().trim().min(1, $t('Date') + ': ' + $t('Mandatory Field')),
+        category: z
+            .union([z.number(), z.null()])
+            .refine((v) => v != null, $t('Category') + ': ' + $t('Mandatory Field'))
+    })
+
+    const rowErrors = ref<Record<number, Partial<Record<keyof z.infer<typeof rowSchema>, string>>>>({})
+
+    const validateRow = (row: ParsedTransactionItem, idx: number) => {
+        const parsed = {
+            name: String(row.name || '').trim(),
+            value: Number(row.value),
+            date: String(row.date || '').trim(),
+            category: row.category == null ? null : Number(row.category)
+        }
+        const res = rowSchema.safeParse(parsed)
+        const err: Partial<Record<keyof typeof parsed, string>> = {}
+        if (!res.success) {
+            for (const issue of res.error.issues) {
+                const key = issue.path[0] as keyof typeof parsed
+                if (!err[key]) err[key] = issue.message
+            }
+            rowErrors.value[idx] = err
+            return false
+        }
+        delete rowErrors.value[idx]
+        return true
     }
 
     const toFinalPayload = (): LlmTransactionObject[] =>
@@ -241,13 +279,13 @@
     const importAll = async () => {
         if (!rows.value.length) return
 
-        // Client-side validation
-        const invalidCount = rows.value.filter(hasValidationError).length
+        // Client-side validation with zod
+        let invalidCount = 0
+        rows.value.forEach((r, i) => {
+            if (!validateRow(r, i)) invalidCount++
+        })
         if (invalidCount > 0) {
-            Notifier.showAlert(
-                $t('Please resolve highlighted errors before submitting.'),
-                'error'
-            )
+            Notifier.showAlert($t('Please resolve highlighted errors before importing.'), 'error')
             return
         }
 

@@ -232,6 +232,7 @@ export default {
         'An unexpected error occurred while saving settings.',
     'An unexpected error occurred while importing.':
         'An unexpected error occurred while importing.',
+    'Please resolve highlighted errors before importing.': 'Please resolve highlighted errors before importing.',
     'An unexpected error occurred while processing the import.':
         'An unexpected error occurred while processing the import.',
     'Invalid username or password': 'Invalid username or password',
