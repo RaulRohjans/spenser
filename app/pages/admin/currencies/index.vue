@@ -3,6 +3,7 @@
     import type { TableColumn } from '@nuxt/ui'
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { CurrencyRow } from '~~/types/ApiRows'
+    import { h } from 'vue'
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
 
@@ -87,6 +88,11 @@
         {
             accessorKey: 'placement',
             header: ({ column }) => columnSorter.value(column, translate('Placement')),
+            cell: ({ row }) => {
+                const raw = String(row.getValue('placement') || '')
+                const label = raw === 'before' ? translate('Before') : translate('After')
+                return h('span', label)
+            },
             meta: { alias: translate('Placement') }
         },
         {
