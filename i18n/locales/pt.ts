@@ -320,6 +320,8 @@ export default {
     Expense: 'Despesa',
     'Upload a file or write the transaction data to be parsed by AI.':
         'Faça upload de um ficheiro ou escreva os dados da transação para serem analisados pela IA.',
+    'Keep in mind that the quality of the results depends on the quality of the input data, as well as the model used. Failures can happen often, especially with free models.':
+        'Tenha em atenção que a qualidade dos resultados depende da qualidade dos dados de fornecidos, bem como do modelo utilizado. Falhas podem acontecer frequentemente, especialmente com modelos gratuitos.',
     'Drag and drop a single file here, or click to select':
         'Arraste e largue um único ficheiro aqui, ou clique para selecionar',
     'Optional description to help the AI understand this category':
