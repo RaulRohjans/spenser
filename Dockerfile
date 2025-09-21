@@ -5,10 +5,10 @@ FROM oven/bun:1 AS builder
 WORKDIR /app
 
 # Copy package.json
-COPY package*.json ./
+COPY package*.json bun.lock ./
 
 # Install dependencies
-RUN bun i
+RUN bun i --frozen-lockfile
 
 # Copy the rest of the application files
 COPY . .
