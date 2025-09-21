@@ -6,6 +6,7 @@
     import { h } from 'vue'
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
+    import { useDebounceFn } from '@vueuse/core'
 
     const { t: translate } = useI18n()
 
@@ -210,11 +211,20 @@
         status.value === 'success' && (tableRowsSel.value?.length ?? 0) === 0
     )
 
+    // Debounce UI search updates
+    const searchDraft = ref('')
+    const debouncedSearch = useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200)
+    watch(searchDraft, (v) => debouncedSearch(v))
+
     // Persist currencies filters (search) separately
     const { load: loadCurrencyFilters } = useFilterSession('admin:currencies', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
 
     onMounted(() => {
         const loaded = loadCurrencyFilters()
+        searchDraft.value = String(filters.searchQuery || '')
         if (loaded) reload()
     })
 </script>

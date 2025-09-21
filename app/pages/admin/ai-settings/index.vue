@@ -5,6 +5,7 @@
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
     import { UIcon } from '#components'
+    import { useDebounceFn } from '@vueuse/core'
 
     const { t: translate } = useI18n()
 
@@ -119,6 +120,14 @@
         watch: [],
         persistPerPageKey: 'admin:aimodels'
     })
+    // Debounce UI search
+    const searchDraft = ref('')
+    const debouncedSearch = useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200)
+    watch(searchDraft, (v) => debouncedSearch(v))
+
 
     // Fetch default model id on client to avoid SSR hydration mismatch
     const refreshDefaultId = async () => {

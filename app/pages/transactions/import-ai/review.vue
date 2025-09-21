@@ -118,7 +118,7 @@
                         validateRow(rows.value[idx]!, idx)
                     },
                     size: 'xs',
-                    class: 'w-full ' + (rowErrors.value[rowIndex(row.original)]?.name ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : ''),
+                    class: 'min-w-32 w-full ' + (rowErrors.value[rowIndex(row.original)]?.name ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : ''),
                     color: rowErrors.value[rowIndex(row.original)]?.name ? 'error' : undefined
                 })
             },
@@ -171,7 +171,7 @@
                         rows.value[idx]!.category = o?.value ?? null
                         validateRow(rows.value[idx]!, idx)
                     },
-                    class: 'w-full ' + (rowErrors.value[rowIndex(row.original)]?.category ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : ''),
+                    class: 'min-w-32 w-full ' + (rowErrors.value[rowIndex(row.original)]?.category ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : ''),
                     size: 'xs',
                     searchable: true,
                     searchInput: {
@@ -199,7 +199,7 @@
                         validateRow(rows.value[idx]!, idx)
                     },
                     size: 'xs',
-                    class: rowErrors.value[rowIndex(row.original)]?.date ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : undefined,
+                    class: '!min-w-32 !w-full ' + (rowErrors.value[rowIndex(row.original)]?.date ? '!ring-1 !ring-red-500 focus:!ring-red-500 !border-red-500' : undefined),
                     color: rowErrors.value[rowIndex(row.original)]?.date ? 'error' : undefined
                 })
             },

@@ -6,6 +6,7 @@
     import type { UserRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
+    import { useDebounceFn } from '@vueuse/core'
 
     const { data: authData, signOut } = useAuth()
     const { t: translate } = useI18n()
@@ -259,11 +260,19 @@
         status.value === 'success' && (tableRowsSel.value?.length ?? 0) === 0
     )
 
+    // Debounce UI search updates
+    const searchDraft = ref('')
+    watch(searchDraft, useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200))
+
     // Persist users filters (search) separately
     const { load: loadUserFilters } = useFilterSession('admin:users', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
 
     onMounted(() => {
         const loaded = loadUserFilters()
+        searchDraft.value = String(filters.searchQuery || '')
         if (loaded) reload()
     })
 </script>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-    import { h, resolveComponent } from 'vue'
+    import { h } from 'vue'
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { NuxtError } from 'nuxt/app'
     import type { TableColumn } from '@nuxt/ui'
     import type { CategoryRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
+    import { useDebounceFn } from '@vueuse/core'
 
     const { t: translate } = useI18n()
     const router = useRouter()
@@ -221,11 +222,20 @@
     )
     const isFiltered = computed(() => Boolean(filters.searchQuery && filters.searchQuery.trim() !== ''))
 
+    // Debounce UI search to reduce fetch churn
+    const searchDraft = ref('')
+    watch(searchDraft, useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200))
+
     // Persist categories filters (search) separately
     const { load: loadCatFilters } = useFilterSession('categories', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
 
     onMounted(() => {
         const loaded = loadCatFilters()
+        // Sync UI draft from persisted value and trigger reload
+        searchDraft.value = String(filters.searchQuery || '')
         if (loaded) reload()
     })
 </script>

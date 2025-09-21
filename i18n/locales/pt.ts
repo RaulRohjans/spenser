@@ -400,5 +400,6 @@ export default {
     'No tasks': 'Sem tarefas'
     ,
     'The demo data resets every 15 minutes at :00, :15, :30, and :45 (UTC).':
-        'Os dados de demo são repostos a cada 15 minutos às :00, :15, :30 e :45 (UTC).'
+        'Os dados de demo são repostos a cada 15 minutos às :00, :15, :30 e :45 (UTC).',
+    'Transaction(s) deleted successfully!': 'Transação(ões) eliminada(s) com sucesso!',
 }

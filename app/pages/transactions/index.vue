@@ -7,6 +7,7 @@
     import type { TransactionRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
+    import { useDebounceFn } from '@vueuse/core'
 
     // Basic Setup
     const { t: translate } = useI18n()
@@ -234,6 +235,14 @@
     }
     const draftFilters = reactive<TableFilters>({ ...defaultFilters })
 
+    // Debounce UI search updates
+    const searchDraft = ref('')
+    const debouncedSearch = useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200)
+    watch(searchDraft, (v) => debouncedSearch(v))
+
     // Persist only global toolbar filters
     const persistedFilters = reactive<Record<string, unknown>>({
         searchQuery: '' as string,
@@ -265,6 +274,7 @@
             Object.assign(filters, persistedFilters)
             reload()
         }
+        searchDraft.value = String(filters.searchQuery || '')
         mounted.value = true
     })
 

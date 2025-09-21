@@ -101,7 +101,7 @@
 <template>
     <main>
         <div class="mx-auto max-w-screen-2xl lg:px-6">
-            <SCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
+            <SCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col !overflow-auto md:overflow-hidden">
                 <template #header>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">                            
@@ -122,6 +122,7 @@
                                     'Upload a file or write the transaction data to be parsed by AI.'
                                 )
                             }}
+                            <br />
                             <br />
                             {{
                                 $t(
