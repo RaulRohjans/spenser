@@ -9,21 +9,21 @@
         (event: 'successful-submit'): void
     }>()
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const model = defineModel<boolean>()
 
     const placementOptions = ref([
-        { label: 'Before', value: 'before' },
-        { label: 'After', value: 'after' }
+        { label: translate('Before'), value: 'before' },
+        { label: translate('After'), value: 'after' }
     ])
 
     const schema = z.object({
         symbol: z
             .string()
             .trim()
-            .min(1, $t('Mandatory Field'))
-            .max(5, $t('Currency code is too big')),
-        placement: z.enum(['before', 'after'])
+            .min(1, translate('Mandatory Field'))
+            .max(5, translate('Currency code is too big')),
+        placement: z.enum(['before', 'after'], translate('Currency placement is required'))
     })
 
     type Schema = z.output<typeof schema>
@@ -42,7 +42,7 @@
             .then((data) => {
                 if (!data.success)
                     return Notifier.showAlert(
-                        $t('An error occurred while creating your currency.'),
+                        translate('An error occurred while creating your currency.'),
                         'error'
                     )
 
@@ -51,7 +51,7 @@
 
                 // Disaply success message
                 Notifier.showAlert(
-                    $t('Currency created successfully!'),
+                    translate('Currency created successfully!'),
                     'success'
                 )
 
@@ -63,7 +63,7 @@
                 Notifier.showAlert(
                     toUserMessage(
                         e,
-                        $t('An unexpected error occurred while saving.')
+                        translate('An unexpected error occurred while saving.')
                     ),
                     'error'
                 )

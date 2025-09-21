@@ -1,5 +1,4 @@
 <script setup lang="ts">
-    const { t: $t } = useI18n()
     const store = useDashboardStore()
 
     const modes: { key: typeof store.mode; label: string }[] = [

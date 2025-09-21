@@ -10,7 +10,7 @@
 
     const store = useDashboardStore()
     const colorMode = useColorMode()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const themeObj = reactive<{ value: string }>({ value: colorMode.value })
     watch(
         () => colorMode.value,
@@ -34,7 +34,7 @@
         const items = data.value?.data.categories ?? []
         const seriesData = items.map((i) => ({ name: i.name, value: i.amount }))
         if ((data.value?.data.others?.amount ?? 0) > 0) {
-            seriesData.push({ name: $t('Others'), value: data.value?.data.others?.amount ?? 0 })
+            seriesData.push({ name: translate('Others'), value: data.value?.data.others?.amount ?? 0 })
         }
         return {
             tooltip: { trigger: 'item' },

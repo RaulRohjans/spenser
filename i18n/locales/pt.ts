@@ -186,6 +186,8 @@ export default {
     Logout: 'Terminar Sessão',
     'Are you sure you want to logout?':
         'Tem a certeza que pretende terminar a sessão?',
+    Before: 'Antes',
+    After: 'Depois',
     'No data to display': 'Não existem dados a mostrar',
     'Edit Transaction': 'Editar Transação',
     'Duplicate Transaction': 'Duplicar Transação',
@@ -331,6 +333,7 @@ export default {
     weekly: 'semanal',
     "No results with filters": "Não foi possível encontrar nada com esses filtros 😅",
     All: 'Todos',
+    'Currency placement is required': 'A posição da moeda é obrigatória',
     'Over budget only': 'Apenas acima do orçamento',
     'Not over budget only': 'Apenas não acima do orçamento',
     'Date of Values': 'Data dos Valores',

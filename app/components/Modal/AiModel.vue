@@ -15,7 +15,6 @@
 
     const props = defineProps<ModalAiModelProps>()
     const emit = defineEmits<{ (event: 'submit'): void; (event: 'successful-submit'): void }>()
-    const { t: $t } = useI18n()
     const modelOpen = defineModel<boolean>()
 
     const schema = z.object({

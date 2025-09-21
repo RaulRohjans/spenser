@@ -1,6 +1,5 @@
 <script setup lang="ts">
     const model = defineModel<boolean>()
-    const { t: $t } = useI18n()
 </script>
 
 <template>

@@ -8,7 +8,7 @@
     import type { FormSubmitEvent } from '@nuxt/ui'
     import type { JwtPayload } from '~~/types/Jwt'
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const { data: authData, refresh } = useAuth()
 
     const emit = defineEmits(['close'])
@@ -17,10 +17,10 @@
     const isChangePasswordOpen = ref(false)
 
     const schema = z.object({
-        first_name: z.string().trim().min(1, $t('Mandatory Field')),
-        last_name: z.string().trim().min(1, $t('Mandatory Field')),
-        email: z.string().trim().email($t('Invalid Email')),
-        currency: z.number({ error: $t('Mandatory Field') })
+        first_name: z.string().trim().min(1, translate('Mandatory Field')),
+        last_name: z.string().trim().min(1, translate('Mandatory Field')),
+        email: z.email(translate('Invalid Email')),
+        currency: z.number({ error: translate('Mandatory Field') })
     })
 
     type Schema = z.output<typeof schema>
@@ -124,7 +124,7 @@
 
             if (!prefRes.success)
                 return Notifier.showAlert(
-                    $t('An error occurred when saving user settings.'),
+                    translate('An error occurred when saving user settings.'),
                     'error'
                 )
 
@@ -169,7 +169,7 @@
 
             emit('close')
             Notifier.showAlert(
-                $t('Operation completed successfully!'),
+                translate('Operation completed successfully!'),
                 'success'
             )
         } catch (e) {
@@ -177,7 +177,7 @@
             Notifier.showAlert(
                 toUserMessage(
                     e,
-                    $t('An unexpected error occurred while saving settings.')
+                    translate('An unexpected error occurred while saving settings.')
                 ),
                 'error'
             )

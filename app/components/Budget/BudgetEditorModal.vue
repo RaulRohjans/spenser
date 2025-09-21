@@ -12,7 +12,7 @@
     const form = reactive({
         id: props.budget?.id ?? undefined,
         name: props.budget?.name ?? '',
-        value: Number(props.budget?.value ?? 0),
+        value: props.budget?.value != null ? Number(props.budget?.value) : null,
         category: props.budget?.category ?? (null as number | null),
         period:
             (props.budget?.period as BudgetDataObject['period']) ?? 'monthly'
@@ -23,7 +23,7 @@
         (b) => {
             form.id = b?.id
             form.name = b?.name ?? ''
-            form.value = Number(b?.value ?? 0)
+            form.value = b?.value != null ? Number(b?.value) : null
             form.category = b?.category ?? null
             form.period = (b?.period as BudgetDataObject['period']) ?? 'monthly'
         }
@@ -105,13 +105,13 @@
             if (!props.budget) {
                 form.id = undefined
                 form.name = ''
-                form.value = 0
+                form.value = null
                 form.category = null
                 form.period = 'monthly'
             } else {
                 form.id = props.budget.id
                 form.name = props.budget.name ?? ''
-                form.value = Number(props.budget.value ?? 0)
+                form.value = props.budget.value != null ? Number(props.budget.value) : null
                 form.category = props.budget.category ?? null
                 form.period = (props.budget.period as BudgetDataObject['period']) ?? 'monthly'
             }

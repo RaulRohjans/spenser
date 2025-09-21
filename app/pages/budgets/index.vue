@@ -3,9 +3,9 @@
     import type { BudgetPeriodType } from '~~/types/budget-period'
     import type { ModelValue } from '@vuepic/vue-datepicker'
     import { buildDateTimeWithOffset } from '~/utils/date'
+    import { useDebounceFn } from '@vueuse/core'
 
     const { t: translate } = useI18n()
-    const router = useRouter()
     const store = useBudgetsStore()
 
     onMounted(() => store.fetchBudgets())
@@ -59,7 +59,9 @@
     )
     function onDateChange(v?: ModelValue) {
         const picked = Array.isArray(v!) ? (v?.[0] as Date | undefined) : (v as Date | undefined)
-        if (!picked) return
+        if (!picked) return        
+        dateModel.value = picked
+        
         const dto = buildDateTimeWithOffset(picked)
         store.setSelectedDate(dto)
         store.fetchBudgets()
@@ -120,6 +122,14 @@
         store.filterPeriod !== null ||
         store.filterOverOnly !== null
     ))
+
+    // Fetch data on each search keystroke
+    watch(
+        () => store.filterQuery,
+        useDebounceFn(() => {
+            store.fetchBudgets()
+        }, 200)
+    )
 </script>
 
 <template>

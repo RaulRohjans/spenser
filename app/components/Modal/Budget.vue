@@ -26,34 +26,34 @@
         (event: 'successful-submit'): void
     }>()
 
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     const periodOptions: Ref<SelectOption[]> = ref([
         {
-            label: $t('Daily'),
+            label: translate('Daily'),
             value: 'daily'
         },
         {
-            label: $t('Monthly'),
+            label: translate('Monthly'),
             value: 'monthly'
         },
         {
-            label: $t('Quarterly'),
+            label: translate('Quarterly'),
             value: 'quarterly'
         },
         {
-            label: $t('Semi-Annual'),
+            label: translate('Semi-Annual'),
             value: 'semi-annual'
         },
         {
-            label: $t('Yearly'),
+            label: translate('Yearly'),
             value: 'yearly'
         }
     ])
 
     const schema = z.object({
         id: z.number().optional(),
-        name: z.string().min(2, $t('Mandatory Field')),
+        name: z.string().min(2, translate('Mandatory Field')),
         category: z.number().optional().nullable(),
         value: z.preprocess(
             (v) => {
@@ -63,16 +63,16 @@
                 return Number.isNaN(n) ? undefined : n
             },
             z
-                .number({ error: $t('Mandatory Field') })
-                .min(1, $t('Mandatory Field'))
+                .number({ error: translate('Mandatory Field') })
+                .min(1, translate('Mandatory Field'))
                 .refine(
                     (x) =>
                         Math.abs(x * 100 - Math.trunc(x * 100)) <
                         Number.EPSILON,
-                    $t('Invalid number')
+                    translate('Invalid number')
                 )
         ),
-        period: z.string({ error: $t('Mandatory Field') })
+        period: z.string({ error: translate('Mandatory Field') })
     })
 
     type Schema = z.output<typeof schema>

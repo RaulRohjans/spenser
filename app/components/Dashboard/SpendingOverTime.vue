@@ -10,7 +10,7 @@
 
     const store = useDashboardStore()
     const colorMode = useColorMode()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     const themeObj = reactive<{ value: string }>({ value: colorMode.value })
     watch(
@@ -45,7 +45,7 @@
 
         const series: any[] = [
             {
-                name: $t('Expenses'),
+                name: translate('Expenses'),
                 type: 'line',
                 smooth: true,
                 areaStyle: {},
@@ -55,7 +55,7 @@
         ]
         if (store.comparePrev && compareExpenses.length > 0) {
             series.push({
-                name: $t('Expenses (prev year)'),
+                name: translate('Expenses (prev year)'),
                 type: 'line',
                 smooth: true,
                 lineStyle: { type: 'dashed' },
@@ -69,8 +69,8 @@
             legend: {
                 data:
                     store.comparePrev && compareExpenses.length > 0
-                        ? [$t('Expenses'), $t('Expenses (prev year)')]
-                        : [$t('Expenses')],
+                        ? [translate('Expenses'), translate('Expenses (prev year)')]
+                        : [translate('Expenses')],
                 bottom: 0
             },
             grid: { left: 30, right: 18, top: 28, bottom: 50 },

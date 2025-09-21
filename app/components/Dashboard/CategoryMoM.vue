@@ -10,7 +10,6 @@
 
     const store = useDashboardStore()
     const colorMode = useColorMode()
-    const { t: $t } = useI18n()
     const themeObj = reactive<{ value: string }>({ value: colorMode.value })
     watch(
         () => colorMode.value,

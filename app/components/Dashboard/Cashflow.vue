@@ -10,7 +10,7 @@
 
     const store = useDashboardStore()
     const colorMode = useColorMode()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const themeObj = reactive<{ value: string }>({ value: colorMode.value })
     watch(
         () => colorMode.value,
@@ -41,7 +41,7 @@
         const net = points.map((p) => p.net)
         return {
             tooltip: { trigger: 'axis' },
-            legend: { data: [$t('Earnings'), $t('Expenses'), $t('Net')], bottom: 0 },
+            legend: { data: [translate('Earnings'), translate('Expenses'), translate('Net')], bottom: 0 },
             grid: { left: 40, right: 18, top: 28, bottom: 50 },
             xAxis: {
                 type: 'category',
@@ -50,9 +50,9 @@
             },
             yAxis: { type: 'value' },
             series: [
-                { name: $t('Earnings'), type: 'bar', data: income, itemStyle: { color: 'rgb(51, 153, 102)' } },
-                { name: $t('Expenses'), type: 'bar', data: expense, itemStyle: { color: 'rgb(227, 0, 0)' } },
-                { name: $t('Net'), type: 'line', data: net }
+                { name: translate('Earnings'), type: 'bar', data: income, itemStyle: { color: 'rgb(51, 153, 102)' } },
+                { name: translate('Expenses'), type: 'bar', data: expense, itemStyle: { color: 'rgb(227, 0, 0)' } },
+                { name: translate('Net'), type: 'line', data: net }
             ]
         }
     })
