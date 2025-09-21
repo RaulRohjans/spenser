@@ -114,7 +114,7 @@ export default {
     Select: 'Selecionar',
     'Rows per page': 'Registos por página',
     Columns: 'Colunas',
-    Reset: 'Reiniciar',
+    Reset: 'Repor',
     Apply: 'Aplicar',
     Filters: 'Filtros',
     'Search...': 'Pesquisar...',
