@@ -33,6 +33,17 @@ export default defineNuxtPlugin((nuxtApp) => {
             options.headers = hdrs
         },
 
+        async onResponse({ request, response, options }) {
+            // When login succeeds, clear session guard so toast shows on each login
+            try {
+                const url = typeof request === 'string' ? request : request.toString()
+                if (typeof window !== 'undefined' && url.toString().endsWith('/api/auth/login') && response.ok) {
+                    sessionStorage.removeItem('dailyResetToastShown')
+                    ;(window as unknown as { __dailyResetToastFired?: boolean }).__dailyResetToastFired = false
+                }
+            } catch { /* empty */ }
+        },
+
         async onResponseError({ request, response, options }) {
             // Only handle 401/403, skip if already retried
             if (response.status !== 401 && response.status !== 403) return

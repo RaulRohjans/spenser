@@ -14,6 +14,12 @@ export default defineNuxtPlugin(() => {
         // Only show once per session after first successful login/navigation
         if (sessionStorage.getItem(shownKey) === '1') return
 
+        // For some reason this toast is shown twice on the login page
+        // So we need to check if it has already been shown with this abomination window hack
+        const w = window as unknown as { __dailyResetToastFired?: boolean }
+        if (w.__dailyResetToastFired) return
+        w.__dailyResetToastFired = true
+
         const { $i18n } = useNuxtApp()
         const translate = (key: string) => {
             if (
@@ -33,14 +39,10 @@ export default defineNuxtPlugin(() => {
         sessionStorage.setItem(shownKey, '1')
     }
 
-    // Run once on client ready, after route resolved
+    // Show once after initial route ready and also after login redirect
     const router = useRouter()
-    let ranOnce = false
-    router.afterEach(() => {
-        if (ranOnce) return
-        ranOnce = true
-        
-        // Defer to next tick to ensure app context is mounted
-        queueMicrotask(showToastIfNeeded)
+    router.isReady().then(() => queueMicrotask(showToastIfNeeded))
+    router.afterEach((to, from) => {
+        if (from?.path === '/login') queueMicrotask(showToastIfNeeded)
     })
 })

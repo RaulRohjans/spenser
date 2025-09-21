@@ -89,6 +89,24 @@ export class Notifier {
         }
     }
 
+    private static iconForType(type: string): string | undefined {
+        switch (type) {
+            case 'error':
+                return 'i-heroicons-exclamation-circle'
+            case 'warning':
+                return 'i-heroicons-exclamation-triangle'
+            case 'info':
+            case 'primary':
+            case 'neutral':
+            case 'secondary':
+                return 'i-heroicons-information-circle'
+            case 'success':
+                return 'i-heroicons-check-circle'
+            default:
+                return undefined
+        }
+    }
+
     private static setupDomContainer() {
         const mountEl = document.createElement('div')
         document.body.appendChild(mountEl)
@@ -172,6 +190,7 @@ export class Notifier {
                     title: this.buildAlertTitle(type),
                     description: message || '',
                     color: type,
+                    icon: this.iconForType(type),
                     duration,
                     close: {
                         color: 'neutral',
