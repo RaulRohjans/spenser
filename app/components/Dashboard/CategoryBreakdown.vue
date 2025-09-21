@@ -36,13 +36,25 @@
         if ((data.value?.data.others?.amount ?? 0) > 0) {
             seriesData.push({ name: translate('Others'), value: data.value?.data.others?.amount ?? 0 })
         }
+        const {
+            labelColor,
+            legendTextColor,
+            axisLabelColor,
+            tooltipBackground,
+            tooltipBorder,
+            tooltipText
+        } = getChartThemeColors()
         return {
+            textStyle: { color: labelColor },
             tooltip: {
                 trigger: 'item',
                 valueFormatter: (value: number | string) =>
-                    formatCurrencyValue(Number(value))
+                    formatCurrencyValue(Number(value)),
+                backgroundColor: tooltipBackground,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText }
             },
-            legend: { bottom: 0 },
+            legend: { bottom: 0, textStyle: { color: legendTextColor } },
             series: [
                 {
                     type: 'pie',
@@ -50,7 +62,10 @@
                     avoidLabelOverlap: true,
                     label: {
                         show: true,
-                        formatter: (params: any) => `${params.name}: ${Number(params.percent).toFixed(2)}%`
+                        formatter: (params: any) => `${params.name}: ${Number(params.percent).toFixed(2)}%`,
+                        color: axisLabelColor,
+                        textBorderWidth: 0,
+                        textShadowBlur: 0
                     },
                     data: seriesData
                 }

@@ -43,6 +43,15 @@
         const expenses = (data.value?.data.series ?? []).map((p) => Number(Number(p.expense).toFixed(2)))
         const compareExpenses = (data.value?.data.compareSeries ?? []).map((p) => Number(Number(p.expense).toFixed(2)))
 
+        const {
+            labelColor,
+            legendTextColor,
+            axisLabelColor,
+            tooltipBackground,
+            tooltipBorder,
+            tooltipText
+        } = getChartThemeColors()
+
         const series: any[] = [
             {
                 name: translate('Expenses'),
@@ -65,30 +74,37 @@
         }
 
         return {
+            textStyle: { color: labelColor },
             tooltip: {
                 trigger: 'axis',
                 valueFormatter: (value: number | string) =>
-                    formatCurrencyValue(Number(value))
+                    formatCurrencyValue(Number(value)),
+                backgroundColor: tooltipBackground,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText }
             },
             legend: {
                 data:
                     store.comparePrev && compareExpenses.length > 0
                         ? [translate('Expenses'), translate('Expenses (prev year)')]
                         : [translate('Expenses')],
-                bottom: 0
+                bottom: 0,
+                textStyle: { color: legendTextColor }
             },
             grid: { left: 30, right: 18, top: 28, bottom: 50 },
             xAxis: {
                 type: 'category',
                 data: months,
                 axisLabel: {
-                    formatter: (val: string) => formatMonthShort(val)
+                    formatter: (val: string) => formatMonthShort(val),
+                    color: axisLabelColor
                 }
             },
             yAxis: {
                 type: 'value',
                 axisLabel: {
-                    formatter: (val: number) => formatCurrencyValue(Number(Number(val).toFixed(2)))
+                    formatter: (val: number) => formatCurrencyValue(Number(Number(val).toFixed(2))),
+                    color: axisLabelColor
                 }
             },
             series

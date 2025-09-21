@@ -33,16 +33,34 @@
         const items = [...(data.value?.data.items ?? [])]
         items.sort((a, b) => Math.abs(b.deltaPct) - Math.abs(a.deltaPct))
         const cats = items.map((i) => i.name)
-        const deltas = items.map((i) => Math.round(i.deltaPct * 100))
+        const deltas = items.map((i) => Number((i.deltaPct * 100).toFixed(2)))
+        const {
+            labelColor,
+            legendTextColor,
+            axisLabelColor,
+            tooltipBackground,
+            tooltipBorder,
+            tooltipText
+        } = getChartThemeColors()
         return {
+            textStyle: { color: labelColor },
             tooltip: {
                 trigger: 'axis',
-                valueFormatter: (value: number | string) => `${Number(value).toFixed(0)}%`
+                valueFormatter: (value: number | string) => `${Number(value).toFixed(2)}%`,
+                backgroundColor: tooltipBackground,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText }
             },
             grid: { left: 40, right: 18, top: 20, bottom: 50 },
-            legend: { show: false, bottom: 0 },
-            xAxis: { type: 'value', axisLabel: { formatter: '{value}%' } },
-            yAxis: { type: 'category', data: cats },
+            legend: { show: false, bottom: 0, textStyle: { color: legendTextColor } },
+            xAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: (val: number) => `${Number(val).toFixed(2)}%`,
+                    color: axisLabelColor
+                }
+            },
+            yAxis: { type: 'category', data: cats, axisLabel: { color: axisLabelColor } },
             series: [
                 {
                     type: 'bar',

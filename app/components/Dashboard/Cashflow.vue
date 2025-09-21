@@ -39,23 +39,40 @@
         const income = points.map((p) => Number(Number(p.income).toFixed(2)))
         const expense = points.map((p) => Number(Number(p.expense).toFixed(2)))
         const net = points.map((p) => Number(Number(p.net).toFixed(2)))
+        const {
+            labelColor,
+            legendTextColor,
+            axisLabelColor,
+            tooltipBackground,
+            tooltipBorder,
+            tooltipText
+        } = getChartThemeColors()
         return {
+            textStyle: { color: labelColor },
             tooltip: {
                 trigger: 'axis',
                 valueFormatter: (value: number | string) =>
-                    formatCurrencyValue(Number(value))
+                    formatCurrencyValue(Number(value)),
+                backgroundColor: tooltipBackground,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText }
             },
-            legend: { data: [translate('Earnings'), translate('Expenses'), translate('Net')], bottom: 0 },
+            legend: {
+                data: [translate('Earnings'), translate('Expenses'), translate('Net')],
+                bottom: 0,
+                textStyle: { color: legendTextColor }
+            },
             grid: { left: 40, right: 18, top: 28, bottom: 50 },
             xAxis: {
                 type: 'category',
                 data: months,
-                axisLabel: { formatter: (val: string) => formatMonthShort(val) }
+                axisLabel: { formatter: (val: string) => formatMonthShort(val), color: axisLabelColor }
             },
             yAxis: {
                 type: 'value',
                 axisLabel: {
-                    formatter: (val: number) => formatCurrencyValue(Number(Number(val).toFixed(2)))
+                    formatter: (val: number) => formatCurrencyValue(Number(Number(val).toFixed(2))),
+                    color: axisLabelColor
                 }
             },
             series: [
