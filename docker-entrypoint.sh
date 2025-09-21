@@ -17,18 +17,12 @@ fi
 if [ "${DAILY_RESET}" = "true" ]; then
   (
     while true; do
-      echo "[entrypoint] daily reset will run at 03:00 UTC"
-      # Sleep until next 03:00 UTC
+      echo "[entrypoint] reset aligned to :00,:15,:30,:45 UTC (every 15m)"
+      # Sleep until the next 15-minute boundary (:00, :15, :30, :45) in UTC
       now=$(date -u +%s)
-      # seconds since midnight UTC
-      sec_midnight=$(( $(date -u -d @${now} +%H)*3600 + $(date -u -d @${now} +%M)*60 + $(date -u -d @${now} +%S) ))
-      target=$(( 3*3600 ))
-      sleep_for=$(( target - sec_midnight ))
-      if [ $sleep_for -le 0 ]; then
-        sleep_for=$(( 24*3600 + sleep_for ))
-      fi
+      sleep_for=$(( ( ( (10#${now} / 900 ) + 1 ) * 900 ) - 10#${now} ))
       sleep $sleep_for
-      echo "[entrypoint] running daily reset"
+      echo "[entrypoint] running periodic reset"
       NODE_OPTIONS="--enable-source-maps --import tsconfig-paths/register.js" npx tsx --tsconfig tsconfig.runtime.json server/db/reset.ts | cat || true
     done
   ) &
@@ -36,5 +30,3 @@ fi
 
 echo "[entrypoint] starting server"
 exec node .output/server/index.mjs
-
-
