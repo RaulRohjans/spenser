@@ -16,11 +16,11 @@
 
     const formattedElapsed = (ms: number): string => {
         const s = Math.floor(ms / 1000)
-        if (s < 60) return `${s} sec`
+        if (s < 60) return `${s} ${$t('sec')}`
         const m = Math.floor(s / 60)
-        if (m < 60) return `${m} min`
+        if (m < 60) return `${m} ${$t('min')}`
         const h = Math.floor(m / 60)
-        return `${h} h ${m % 60} min`
+        return `${h} ${$t('h')} ${m % 60} ${$t('min')}`
     }
 
     const goToResult = async (task: AsyncTaskSummary) => {
@@ -53,13 +53,13 @@
         requestAnimationFrame(() => {
             btn.animate(
                 [
-                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white' },
-                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white' }
+                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(-45deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1.7) translateY(18px) rotate(0deg)', boxShadow: '0 0 28px 12px rgba(239, 177, 0, 0.28)', backgroundColor: 'rgba(239, 177, 0, 1)', color: 'white', borderRadius: '50%' },
+                    { transform: 'scale(1) translateY(0) rotate(0deg)', boxShadow: 'none', color: 'white', borderRadius: '50%' }
                 ],
                 { duration: 1800, easing: 'ease-in-out' }
             ).onfinish = () => {

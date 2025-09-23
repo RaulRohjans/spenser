@@ -11,7 +11,8 @@ export default defineEventHandler(async (event) => {
         page,
         limit,
         sort,
-        order
+        order,
+        idsOnly
     } = getQuery(event)
     const user = ensureAuth(event)
 
@@ -38,6 +39,20 @@ export default defineEventHandler(async (event) => {
         .offset((parsedPage - 1) * parsedLimit)
         .limit(parsedLimit)
         .orderBy(orderBy || categories.id)
+
+    // Fast path, return all matching ids when idsOnly=true
+    const onlyIds = String(idsOnly || '').toLowerCase() === 'true'
+    if (onlyIds) {
+        const idRows = await db
+            .select({ id: categories.id })
+            .from(categories)
+            .where(searchSql ? and(baseWhere, searchSql) : baseWhere)
+            .orderBy(categories.id)
+        return {
+            success: true,
+            data: { ids: idRows.map((r) => r.id) }
+        }
+    }
 
     // Get total record count
     const totalRecordsRes = await db

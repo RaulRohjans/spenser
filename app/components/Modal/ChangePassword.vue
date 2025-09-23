@@ -5,7 +5,7 @@
     import { toUserMessage, logUnknownError } from '~/utils/errors'
 
     const { refresh } = useAuth()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     const emit = defineEmits<{
         (event: 'close-modal'): void
@@ -15,16 +15,16 @@
         .object({
             new_password: z
                 .string()
-                .min(4, $t('Must be at least 4 characters')),
+                .min(4, translate('Must be at least 4 characters')),
             repeat_new_password: z
                 .string()
-                .min(4, $t('Must be at least 4 characters'))
+                .min(4, translate('Must be at least 4 characters'))
         })
         .superRefine(({ new_password, repeat_new_password }, ctx) => {
             if (new_password !== repeat_new_password)
                 ctx.addIssue({
                     code: 'custom',
-                    message: $t("The passwords don't match"),
+                    message: translate("The passwords don't match"),
                     path: ['repeat_new_password']
                 })
         })
@@ -42,7 +42,7 @@
             .then(async (data) => {
                 if (!data.success)
                     return Notifier.showAlert(
-                        $t('An error occurred when updating your password.'),
+                        translate('An error occurred when updating your password.'),
                         'error'
                     )
 
@@ -50,7 +50,7 @@
                 emit('close-modal')
 
                 Notifier.showAlert(
-                    $t('Password updated successfully!'),
+                    translate('Password updated successfully!'),
                     'success'
                 )
             })
@@ -59,7 +59,7 @@
                 Notifier.showAlert(
                     toUserMessage(
                         e,
-                        $t('An unexpected error occurred while saving.')
+                        translate('An unexpected error occurred while saving.')
                     ),
                     'error'
                 )

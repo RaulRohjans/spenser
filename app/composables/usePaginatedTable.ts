@@ -1,4 +1,5 @@
 import type { TableFilters } from '~~/types/Table'
+import { useFilterSession } from '@/composables/useFilterSession'
 
 export type PaginatedTableOptions<T> = {
     key: string
@@ -11,11 +12,13 @@ export type PaginatedTableOptions<T> = {
     }) => Promise<T>
     defaultFilters?: TableFilters
     watch?: Array<Ref<unknown> | ComputedRef<unknown>>
+    // This is to persist rows-per-page via session storage and preload on client before first fetch
+    persistPerPageKey?: string
 }
 
 export function usePaginatedTable<T>(opts: PaginatedTableOptions<T>) {
     const page = ref(1)
-    const limit = ref(10)
+    const limit = ref(50)
     const sort = ref('id')
     const order = ref<'asc' | 'desc'>('asc')
     
@@ -25,8 +28,22 @@ export function usePaginatedTable<T>(opts: PaginatedTableOptions<T>) {
 
     const reloadKey = ref(0)
 
+    // Preload persisted per-page BEFORE first fetch
+    if (import.meta.client && opts.persistPerPageKey) {
+        const perPageState = reactive({ itemsPerPage: limit.value as number })
+        const { load } = useFilterSession(`perPage:${opts.persistPerPageKey}`, perPageState, { storage: 'session', debounceMs: 0 })
+        const loaded = load()
+
+        if (loaded && typeof perPageState.itemsPerPage === 'number' && Number.isFinite(perPageState.itemsPerPage)) {
+            limit.value = Number(perPageState.itemsPerPage)
+        }
+        
+        // Keep storage in sync with changes to limit
+        watch(limit, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
+    }
+
     const { data, status, error } = useLazyAsyncData<T>(
-        `paginated-table-${opts.key}`, //Avoids data colisions with multiple composables
+        `paginated-table-${opts.key}-${limit.value}`, // include limit so SSR/client don't mismatch
         () => {
             return opts.fetcher({
                 page: page.value,

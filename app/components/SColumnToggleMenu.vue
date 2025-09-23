@@ -16,8 +16,6 @@
         (event: 'reset'): void
     }>()
 
-    const { t: $t } = useI18n()
-
     const items = computed(() =>
         props.tableApi
             ?.getAllColumns()

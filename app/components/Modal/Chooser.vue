@@ -1,6 +1,4 @@
 <script setup lang="ts">
-    const { t: $t } = useI18n()
-
     export type ModalChooserProps = {
         /**
          * Title of the chooser popup

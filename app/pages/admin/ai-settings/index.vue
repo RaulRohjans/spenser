@@ -5,6 +5,7 @@
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
     import { UIcon } from '#components'
+    import { useDebounceFn } from '@vueuse/core'
 
     const { t: translate } = useI18n()
 
@@ -71,9 +72,23 @@
     ]
 
     const tableRowsSel = computed(() => tableData.value?.data?.rows ?? [])
-    const { selectionColumn, selectedIds, selectedCount, clearAll } = useRowSelection<AiModelRow>({ storageKey: 'admin:aimodels', getRowId: (r) => r.id, pageRows: tableRowsSel })
+    const { selectionColumn, selectedIds, selectedCount, clearAll, selectMany } = useRowSelection<AiModelRow>({ storageKey: 'admin:aimodels', getRowId: (r) => r.id, pageRows: tableRowsSel })
     const finalColumns = computed(() => [selectionColumn, ...columns])
     const bulkBusy = ref(false)
+    const totalCount = computed(() => Number(tableData.value?.data?.totalRecordCount ?? 0))
+    const selectAllVisible = computed(() => selectedCount.value > 0 && selectedCount.value < totalCount.value)
+    async function selectAllAcrossTable() {
+        bulkBusy.value = true
+        try {
+            const res = await $fetch<{ success: boolean; data: { ids: number[] } }>(`/api/ai-models`, { method: 'GET', query: { q: filters?.searchQuery, idsOnly: true } })
+            const ids = (res?.data?.ids ?? []) as number[]
+            if (Array.isArray(ids) && ids.length) selectMany(ids)
+        } catch {
+            /* empty */
+        } finally {
+            bulkBusy.value = false
+        }
+    }
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(translate('Delete'), translate('Are you sure you want to delete the selected items?'), async () => {
@@ -98,12 +113,21 @@
     const { page, limit: itemsPerPage, sort, order, filters, data: tableData, status, reload } = usePaginatedTable<FetchTableDataResult<AiModelRow>>({
         key: 'all-aimodels',
         fetcher: async ({ page, limit, sort, order, filters }) => {
-            const res = await $fetch(`/api/ai-models`, { method: 'GET', query: { q: filters?.searchQuery, page, limit, sort, order } })
-            return res
+        const res = await $fetch<FetchTableDataResult<AiModelRow>>(`/api/ai-models`, { method: 'GET', query: { q: filters?.searchQuery, page, limit, sort, order } })
+        return res
         },
         defaultFilters: { searchQuery: '' },
-        watch: []
+        watch: [],
+        persistPerPageKey: 'admin:aimodels'
     })
+    // Debounce UI search
+    const searchDraft = ref('')
+    const debouncedSearch = useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200)
+    watch(searchDraft, (v) => debouncedSearch(v))
+
 
     // Fetch default model id on client to avoid SSR hydration mismatch
     const refreshDefaultId = async () => {
@@ -147,7 +171,7 @@
 
         <div class="w-full flex flex-col gap-2">
             <div class="flex-1 overflow-auto">
-                <ToolbarSelectionBar :count="selectedCount" :open="selectedCount > 0" :busy="bulkBusy" @delete="bulkDeleteSelected" @clear="clearAll" />
+                <ToolbarSelectionBar :count="selectedCount" :open="selectedCount > 0" :busy="bulkBusy" :select-all-visible="selectAllVisible" @delete="bulkDeleteSelected" @clear="clearAll" @select-all="selectAllAcrossTable" />
                 <UTable ref="table" :data="tableRowsSel" :columns="finalColumns" sticky :loading="status === 'pending'" class="w-full" />
             </div>
         </div>

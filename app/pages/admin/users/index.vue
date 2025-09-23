@@ -6,6 +6,7 @@
     import type { UserRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
+    import { useDebounceFn } from '@vueuse/core'
 
     const { data: authData, signOut } = useAuth()
     const { t: translate } = useI18n()
@@ -151,7 +152,8 @@
         selectionColumn,
         selectedIds,
         selectedCount,
-        clearAll
+        clearAll,
+        selectMany
     } = useRowSelection<UserRow>({
         storageKey: 'admin:users',
         getRowId: (r) => r.id,
@@ -159,6 +161,23 @@
     })
     const finalColumns = computed(() => [selectionColumn, ...columns])
     const bulkBusy = ref(false)
+    const totalCount = computed(() => Number(tableData.value?.data?.totalRecordCount ?? 0))
+    const selectAllVisible = computed(() => selectedCount.value > 0 && selectedCount.value < totalCount.value)
+    async function selectAllAcrossTable() {
+        bulkBusy.value = true
+        try {
+            const res = await $fetch<{ success: boolean; data: { ids: number[] } }>(`/api/users`, {
+                method: 'GET',
+                query: { q: filters?.searchQuery, idsOnly: true }
+            })
+            const ids = (res?.data?.ids ?? []) as number[]
+            if (Array.isArray(ids) && ids.length) selectMany(ids)
+        } catch {
+            /* empty */
+        } finally {
+            bulkBusy.value = false
+        }
+    }
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
@@ -214,7 +233,8 @@
         defaultFilters: {
             searchQuery: ''
         },
-        watch: []
+        watch: [],
+        persistPerPageKey: 'admin:users'
     })
     
     const showColumns = ref(false)
@@ -240,21 +260,20 @@
         status.value === 'success' && (tableRowsSel.value?.length ?? 0) === 0
     )
 
+    // Debounce UI search updates
+    const searchDraft = ref('')
+    watch(searchDraft, useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200))
+
     // Persist users filters (search) separately
     const { load: loadUserFilters } = useFilterSession('admin:users', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
 
-    // Persist rows-per-page for admin users
-    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
-    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
-    const { load: loadPerPage } = useFilterSession('perPage:admin:users', perPageState, { storage: 'session', debounceMs: 0 })
-
     onMounted(() => {
         const loaded = loadUserFilters()
+        searchDraft.value = String(filters.searchQuery || '')
         if (loaded) reload()
-        const loadedPerPage = loadPerPage()
-        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
-            itemsPerPage.value = perPageState.itemsPerPage
-        }
     })
 </script>
 
@@ -302,8 +321,10 @@
                         :count="selectedCount"
                         :open="selectedCount > 0"
                         :busy="bulkBusy"
+                        :select-all-visible="selectAllVisible"
                         @delete="bulkDeleteSelected"
-                        @clear="clearAll" />
+                        @clear="clearAll"
+                        @select-all="selectAllAcrossTable" />
                     <UTable
                         ref="table"
                         :data="tableRowsSel"

@@ -101,7 +101,7 @@
 <template>
     <main>
         <div class="mx-auto max-w-screen-2xl lg:px-6">
-            <SCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col">
+            <SCard class="w-full shadow-lg h-[calc(95vh-var(--header-height)-2rem)] flex flex-col !overflow-auto md:overflow-hidden">
                 <template #header>
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">                            
@@ -116,10 +116,17 @@
                 </template>
                 <div class="flex-1 flex items-start justify-center pt-8 sm:pt-12">
                     <div class="flex flex-col justify-start items-center w-full gap-4 px-2 sm:px-4">
-                        <span class="mb-4">
+                        <span class="mb-4 text-center w-full sm:w-3/4">
                             {{
                                 $t(
                                     'Upload a file or write the transaction data to be parsed by AI.'
+                                )
+                            }}
+                            <br />
+                            <br />
+                            {{
+                                $t(
+                                    'Keep in mind that the quality of the results depends on the quality of the input data, as well as the model used. Failures can happen often, especially with free models.'
                                 )
                             }}
                         </span>

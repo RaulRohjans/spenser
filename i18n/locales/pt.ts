@@ -109,12 +109,13 @@ export default {
     Delete: 'Eliminar',
     Remove: 'Remover',
     Clear: 'Limpar',
+    'Select All': 'Selecionar Tudo',
     'Pick emoji': 'Escolher emoji',
     selected: 'selecionado(s)',
     Select: 'Selecionar',
     'Rows per page': 'Registos por página',
     Columns: 'Colunas',
-    Reset: 'Reiniciar',
+    Reset: 'Repor',
     Apply: 'Aplicar',
     Filters: 'Filtros',
     'Search...': 'Pesquisar...',
@@ -186,6 +187,8 @@ export default {
     Logout: 'Terminar Sessão',
     'Are you sure you want to logout?':
         'Tem a certeza que pretende terminar a sessão?',
+    Before: 'Antes',
+    After: 'Depois',
     'No data to display': 'Não existem dados a mostrar',
     'Edit Transaction': 'Editar Transação',
     'Duplicate Transaction': 'Duplicar Transação',
@@ -229,6 +232,7 @@ export default {
         'Ocorreu um erro inesperado ao guardar as definições.',
     'An unexpected error occurred while importing.':
         'Ocorreu um erro inesperado ao importar.',
+    'Please resolve highlighted errors before importing.': 'Por favor, corrija os erros assinalados antes de importar.',
     'An unexpected error occurred while processing the import.':
         'Ocorreu um erro inesperado ao processar a importação.',
     'Invalid username or password':
@@ -317,6 +321,8 @@ export default {
     Expense: 'Despesa',
     'Upload a file or write the transaction data to be parsed by AI.':
         'Faça upload de um ficheiro ou escreva os dados da transação para serem analisados pela IA.',
+    'Keep in mind that the quality of the results depends on the quality of the input data, as well as the model used. Failures can happen often, especially with free models.':
+        'Tenha em atenção que a qualidade dos resultados depende da qualidade dos dados de fornecidos, bem como do modelo utilizado. Falhas podem acontecer frequentemente, especialmente com modelos gratuitos.',
     'Drag and drop a single file here, or click to select':
         'Arraste e largue um único ficheiro aqui, ou clique para selecionar',
     'Optional description to help the AI understand this category':
@@ -328,7 +334,10 @@ export default {
     'By category': 'Por categoria',
     'All periods': 'Todos os períodos',
     Weekly: 'Semanal',
+    weekly: 'semanal',
+    "No results with filters": "Não foi possível encontrar nada com esses filtros 😅",
     All: 'Todos',
+    'Currency placement is required': 'A posição da moeda é obrigatória',
     'Over budget only': 'Apenas acima do orçamento',
     'Not over budget only': 'Apenas não acima do orçamento',
     'Date of Values': 'Data dos Valores',
@@ -336,7 +345,7 @@ export default {
     'View and manage your transactions. Search, filter, and group by category.':
         'Veja e gere as suas transações. Pesquise, filtre e agrupe por categoria.',
     'The income and spending that you track will show up here.':
-        'Os rendimentos e despesas que acompanha aparecerão aqui.',
+        'Os rendimentos e despesas que registar aparecerão aqui.',
     'Create and track budgets by period and category.':
         'Crie e acompanhe orçamentos por período e categoria.',
     'Your budgets will be displayed here once you create them.':
@@ -355,11 +364,11 @@ export default {
     'Fill in the transaction details and submit': 'Preencha os dados da transação e submeta',
     'Compare to previous period': 'Comparar com o período anterior',
     'Total spent': 'Total gasto',
-    'Net cashflow': 'Fluxo de caixa líquido',
+    'Net cashflow': 'Cashflow líquido',
     'Top category': 'Categoria principal',
     'Avg transaction value': 'Valor médio por transação',
     'Category Month-over-Month Change': 'Variação mês a mês por categoria',
-    'Cashflow': 'Fluxo de caixa',
+    'Cashflow': 'Cashflow',
     'Others': 'Outros',
     'Expenses (prev year)': 'Despesas (ano anterior)',
     Net: 'Líquido',
@@ -382,8 +391,15 @@ export default {
     '1 task running...': '1 tarefa em execução...',
     'tasks running...': 'tarefas em execução...',
     'Elapsed time:': 'Tempo decorrido:',
+    'sec': 'seg',
+    'min': 'min',
+    'h': 'h',
     Ready: 'Pronto',
     Failed: 'Falhou',
     Cancelled: 'Cancelado',
     'No tasks': 'Sem tarefas'
+    ,
+    'The demo data resets every 15 minutes at :00, :15, :30, and :45 (UTC).':
+        'Os dados de demo são repostos a cada 15 minutos às :00, :15, :30 e :45 (UTC).',
+    'Transaction(s) deleted successfully!': 'Transação(ões) eliminada(s) com sucesso!',
 }

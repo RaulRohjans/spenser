@@ -1,9 +1,8 @@
 <script setup lang="ts">
     import type { KpiResponse } from '~~/types/Chart'
-    const { t: $t } = useI18n()
     const store = useDashboardStore()
 
-    const { data, status } = await useLazyAsyncData<{ success: boolean; data: KpiResponse }>(
+    const { data } = await useLazyAsyncData<{ success: boolean; data: KpiResponse }>(
         'dashboard-kpis',
         () =>
             $fetch('/api/dashboard/kpis', {

@@ -109,6 +109,7 @@ export default {
     Delete: 'Delete',
     Remove: 'Remove',
     Clear: 'Clear',
+    'Select All': 'Select All',
     'Pick emoji': 'Pick emoji',
     selected: 'selected',
     Select: 'Select',
@@ -186,8 +187,11 @@ export default {
     Warning: 'Warning',
     Logout: 'Logout',
     'Are you sure you want to logout?': 'Are you sure you want to logout?',
+    Before: 'Before',
+    After: 'After',
     'No data to display': 'No data to display',
     "No results with filters": "We couldn't find anything with those filters 😅",
+    'Currency placement is required': 'Currency placement is required',
     'Edit Transaction': 'Edit Transaction',
     'Duplicate Transaction': 'Duplicate Transaction',
     'Delete Transactions': 'Delete Transactions',
@@ -228,6 +232,7 @@ export default {
         'An unexpected error occurred while saving settings.',
     'An unexpected error occurred while importing.':
         'An unexpected error occurred while importing.',
+    'Please resolve highlighted errors before importing.': 'Please resolve highlighted errors before importing.',
     'An unexpected error occurred while processing the import.':
         'An unexpected error occurred while processing the import.',
     'Invalid username or password': 'Invalid username or password',
@@ -317,6 +322,8 @@ export default {
     Expense: 'Expense',
     'Upload a file or write the transaction data to be parsed by AI.':
         'Upload a file or write the transaction data to be parsed by AI.',
+    'Keep in mind that the quality of the results depends on the quality of the input data, as well as the model used. Failures can happen often, especially with free models.':
+        'Keep in mind that the quality of the results depends on the quality of the input data, as well as the model used. Failures can happen often, especially with free models.',
     'Drag and drop a single file here, or click to select':
         'Drag and drop a single file here, or click to select',
     'Optional description to help the AI understand this category':
@@ -328,6 +335,7 @@ export default {
     'By category': 'By category',
     'All periods': 'All periods',
     Weekly: 'Weekly',
+    weekly: 'weekly',
     All: 'All',
     'Over budget only': 'Over budget only',
     'Not over budget only': 'Not over budget only',
@@ -383,8 +391,15 @@ export default {
     '1 task running...': '1 task running...',
     'tasks running...': 'tasks running...',
     'Elapsed time:': 'Elapsed time:',
+    'sec': 'sec',
+    'min': 'min',
+    'h': 'h',
     Ready: 'Ready',
     Failed: 'Failed',
     Cancelled: 'Cancelled',
     'No tasks': 'No tasks'
+    ,
+    'The demo data resets every 15 minutes at :00, :15, :30, and :45 (UTC).':
+        'The demo resets every 15 minutes at :00, :15, :30, and :45 (UTC).',
+    'Transaction(s) deleted successfully!': 'Transaction(s) deleted successfully!',
 }

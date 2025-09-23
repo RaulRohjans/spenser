@@ -7,6 +7,7 @@
     import type { TransactionRow } from '~~/types/ApiRows'
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
+    import { useDebounceFn } from '@vueuse/core'
 
     // Basic Setup
     const { t: translate } = useI18n()
@@ -218,7 +219,8 @@
             categoryIds: [],
             categorySearch: ''
         },
-        watch: [] // optional: other filters to watch
+        watch: [],
+        persistPerPageKey: 'transactions'
     })
 
     // Local UI state for sidebars
@@ -232,6 +234,14 @@
         categoryIds: [] as number[]
     }
     const draftFilters = reactive<TableFilters>({ ...defaultFilters })
+
+    // Debounce UI search updates
+    const searchDraft = ref('')
+    const debouncedSearch = useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200)
+    watch(searchDraft, (v) => debouncedSearch(v))
 
     // Persist only global toolbar filters
     const persistedFilters = reactive<Record<string, unknown>>({
@@ -256,12 +266,7 @@
         { deep: true, immediate: true }
     )
 
-    // Persist rows-per-page
-    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
-    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
-
     const { load: loadFilters } = useFilterSession('transactions', persistedFilters, { storage: 'session', debounceMs: 150 })
-    const { load: loadPerPage } = useFilterSession('perPage:transactions', perPageState, { storage: 'session', debounceMs: 0 })
     const mounted = ref(false)
     onMounted(() => {
         const loaded = loadFilters()
@@ -269,10 +274,7 @@
             Object.assign(filters, persistedFilters)
             reload()
         }
-        const loadedPerPage = loadPerPage()
-        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
-            itemsPerPage.value = perPageState.itemsPerPage
-        }
+        searchDraft.value = String(filters.searchQuery || '')
         mounted.value = true
     })
 
@@ -314,7 +316,8 @@
         selectionColumn,
         selectedIds,
         selectedCount,
-        clearAll
+        clearAll,
+        selectMany
     } = useRowSelection<TransactionRow>({
         storageKey: 'transactions',
         getRowId: (r) => r.id,
@@ -326,6 +329,31 @@
     )
 
     const bulkBusy = ref(false)
+    const totalCount = computed(() => Number(tableData.value?.data?.totalRecordCount ?? 0))
+    const selectAllVisible = computed(() => !filters.groupCategory && selectedCount.value > 0 && selectedCount.value < totalCount.value)
+    async function selectAllAcrossTable() {
+        if (filters.groupCategory) return
+        bulkBusy.value = true
+        try {
+            const res = await $fetch<{ success: boolean; data: { ids: number[] } }>(`/api/transactions`, {
+                method: 'GET',
+                query: {
+                    q: filters?.searchQuery,
+                    startDate: filters?.dateRange?.[0]?.getTime() ?? '',
+                    endDate: filters?.dateRange?.[1]?.getTime() ?? '',
+                    groupCategory: false,
+                    categoryIds: (filters?.categoryIds || []).map((id) => String(id)),
+                    idsOnly: true
+                }
+            })
+            const ids = (res?.data?.ids ?? []) as number[]
+            if (Array.isArray(ids) && ids.length) selectMany(ids)
+        } catch {
+            /* empty */
+        } finally {
+            bulkBusy.value = false
+        }
+    }
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
@@ -457,8 +485,10 @@
                             :count="selectedCount"
                             :open="!filters.groupCategory && selectedCount > 0"
                             :busy="bulkBusy"
+                            :select-all-visible="selectAllVisible"
                             @delete="bulkDeleteSelected"
-                            @clear="clearAll" />
+                            @clear="clearAll"
+                            @select-all="selectAllAcrossTable" />
                         <UTable
                             ref="table"
                             :data="tableRows"

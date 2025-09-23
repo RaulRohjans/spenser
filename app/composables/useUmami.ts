@@ -1,3 +1,6 @@
+import { storeToRefs } from 'pinia'
+import { usePublicConfigStore } from '~/stores/publicConfig'
+
 type UmamiGlobal = {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     track: (nameOrPayload?: string | Record<string, any>, data?: Record<string, unknown>) => void
@@ -6,13 +9,10 @@ type UmamiGlobal = {
 }
 
 export function useUmami() {
-    const config = useRuntimeConfig()
-    const { umamiScriptUrl, umamiWebsiteId } = (config.public || {}) as {
-        umamiScriptUrl?: string
-        umamiWebsiteId?: string
-    }
+    const store = usePublicConfigStore()
+    const { umamiScriptUrl, umamiWebsiteId, ready } = storeToRefs(store)
 
-    const isEnabled = Boolean(process.client && umamiScriptUrl && umamiWebsiteId)
+    const isEnabled = Boolean(import.meta.client && ready.value && umamiScriptUrl.value && umamiWebsiteId.value)
 
     const getGlobal = (): UmamiGlobal | null => {
         if (!isEnabled) return null

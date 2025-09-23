@@ -13,6 +13,9 @@ export class Notifier {
         position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'
     } = { position: 'top-right' }
 
+    
+    private static toastAutoDismissEnabled: boolean = true
+
     private static ensureUiProvidersMounted() {
         if (!import.meta.client) return
         if (this.uiProviderMounted) return
@@ -52,6 +55,10 @@ export class Notifier {
         this.updateUiProviders()
     }
 
+    static setToastAutoDismiss(enabled: boolean) {
+        this.toastAutoDismissEnabled = enabled
+    }
+
     private static buildAlertTitle(type: string) {
         const { $i18n } = useNuxtApp()
 
@@ -79,6 +86,24 @@ export class Notifier {
                 return translate('Success')
             default:
                 return ''
+        }
+    }
+
+    private static iconForType(type: string): string | undefined {
+        switch (type) {
+            case 'error':
+                return 'i-heroicons-exclamation-circle'
+            case 'warning':
+                return 'i-heroicons-exclamation-triangle'
+            case 'info':
+            case 'primary':
+            case 'neutral':
+            case 'secondary':
+                return 'i-heroicons-information-circle'
+            case 'success':
+                return 'i-heroicons-check-circle'
+            default:
+                return undefined
         }
     }
 
@@ -146,7 +171,8 @@ export class Notifier {
             | 'success'
             | 'primary'
             | 'neutral'
-            | 'secondary' = 'info'
+            | 'secondary' = 'info',
+        options?: { persistent?: boolean; durationMs?: number }
     ) {
         // Ensure a single notifications outlet exists without duplicating providers
         this.ensureUiProvidersMounted()
@@ -156,10 +182,17 @@ export class Notifier {
         nuxtApp.vueApp.runWithContext(() => {
             const toast = useToast()
             if (toast && typeof toast.add === 'function') {
+                let duration: number | undefined
+                if (typeof options?.durationMs === 'number') duration = options.durationMs
+                else if (options?.persistent === true) duration = 0
+                else duration = this.toastAutoDismissEnabled ? undefined : 0
+                const toastColor = type === 'info' ? 'primary' : type
                 toast.add({
                     title: this.buildAlertTitle(type),
                     description: message || '',
-                    color: type,
+                    color: toastColor,
+                    icon: this.iconForType(type),
+                    duration,
                     close: {
                         color: 'neutral',
                         variant: 'ghost'

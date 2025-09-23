@@ -56,7 +56,7 @@
                     <span v-else>{{ $t('All categories') }}</span>
                     ·
                     <span class="capitalize">{{
-                        budget.period.replace('_', ' ')
+                        $t(budget.period.replace('_', ' '))
                     }}</span>
                 </div>
             </div>

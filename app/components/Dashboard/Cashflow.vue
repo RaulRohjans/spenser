@@ -10,7 +10,7 @@
 
     const store = useDashboardStore()
     const colorMode = useColorMode()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const themeObj = reactive<{ value: string }>({ value: colorMode.value })
     watch(
         () => colorMode.value,
@@ -36,23 +36,49 @@
     const option = computed(() => {
         const points = data.value?.data.series ?? []
         const months = points.map((p) => p.month)
-        const income = points.map((p) => p.income)
-        const expense = points.map((p) => p.expense)
-        const net = points.map((p) => p.net)
+        const income = points.map((p) => Number(Number(p.income).toFixed(2)))
+        const expense = points.map((p) => Number(Number(p.expense).toFixed(2)))
+        const net = points.map((p) => Number(Number(p.net).toFixed(2)))
+        const {
+            labelColor,
+            legendTextColor,
+            axisLabelColor,
+            tooltipBackground,
+            tooltipBorder,
+            tooltipText
+        } = getChartThemeColors()
         return {
-            tooltip: { trigger: 'axis' },
-            legend: { data: [$t('Earnings'), $t('Expenses'), $t('Net')], bottom: 0 },
+            textStyle: { color: labelColor },
+            tooltip: {
+                trigger: 'axis',
+                valueFormatter: (value: number | string) =>
+                    formatCurrencyValue(Number(value)),
+                backgroundColor: tooltipBackground,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText }
+            },
+            legend: {
+                data: [translate('Earnings'), translate('Expenses'), translate('Net')],
+                bottom: 0,
+                textStyle: { color: legendTextColor }
+            },
             grid: { left: 40, right: 18, top: 28, bottom: 50 },
             xAxis: {
                 type: 'category',
                 data: months,
-                axisLabel: { formatter: (val: string) => formatMonthShort(val) }
+                axisLabel: { formatter: (val: string) => formatMonthShort(val), color: axisLabelColor }
             },
-            yAxis: { type: 'value' },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: (val: number) => formatCurrencyValue(Number(Number(val).toFixed(2))),
+                    color: axisLabelColor
+                }
+            },
             series: [
-                { name: $t('Earnings'), type: 'bar', data: income, itemStyle: { color: 'rgb(51, 153, 102)' } },
-                { name: $t('Expenses'), type: 'bar', data: expense, itemStyle: { color: 'rgb(227, 0, 0)' } },
-                { name: $t('Net'), type: 'line', data: net }
+                { name: translate('Earnings'), type: 'bar', data: income, itemStyle: { color: 'rgb(51, 153, 102)' } },
+                { name: translate('Expenses'), type: 'bar', data: expense, itemStyle: { color: 'rgb(227, 0, 0)' } },
+                { name: translate('Net'), type: 'line', data: net }
             ]
         }
     })

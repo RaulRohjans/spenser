@@ -10,7 +10,7 @@
 
     const store = useDashboardStore()
     const colorMode = useColorMode()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
 
     const themeObj = reactive<{ value: string }>({ value: colorMode.value })
     watch(
@@ -40,12 +40,21 @@
 
     const option = computed(() => {
         const months = (data.value?.data.series ?? []).map((p) => p.month)
-        const expenses = (data.value?.data.series ?? []).map((p) => p.expense)
-        const compareExpenses = (data.value?.data.compareSeries ?? []).map((p) => p.expense)
+        const expenses = (data.value?.data.series ?? []).map((p) => Number(Number(p.expense).toFixed(2)))
+        const compareExpenses = (data.value?.data.compareSeries ?? []).map((p) => Number(Number(p.expense).toFixed(2)))
+
+        const {
+            labelColor,
+            legendTextColor,
+            axisLabelColor,
+            tooltipBackground,
+            tooltipBorder,
+            tooltipText
+        } = getChartThemeColors()
 
         const series: any[] = [
             {
-                name: $t('Expenses'),
+                name: translate('Expenses'),
                 type: 'line',
                 smooth: true,
                 areaStyle: {},
@@ -55,7 +64,7 @@
         ]
         if (store.comparePrev && compareExpenses.length > 0) {
             series.push({
-                name: $t('Expenses (prev year)'),
+                name: translate('Expenses (prev year)'),
                 type: 'line',
                 smooth: true,
                 lineStyle: { type: 'dashed' },
@@ -65,23 +74,39 @@
         }
 
         return {
-            tooltip: { trigger: 'axis' },
+            textStyle: { color: labelColor },
+            tooltip: {
+                trigger: 'axis',
+                valueFormatter: (value: number | string) =>
+                    formatCurrencyValue(Number(value)),
+                backgroundColor: tooltipBackground,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText }
+            },
             legend: {
                 data:
                     store.comparePrev && compareExpenses.length > 0
-                        ? [$t('Expenses'), $t('Expenses (prev year)')]
-                        : [$t('Expenses')],
-                bottom: 0
+                        ? [translate('Expenses'), translate('Expenses (prev year)')]
+                        : [translate('Expenses')],
+                bottom: 0,
+                textStyle: { color: legendTextColor }
             },
             grid: { left: 30, right: 18, top: 28, bottom: 50 },
             xAxis: {
                 type: 'category',
                 data: months,
                 axisLabel: {
-                    formatter: (val: string) => formatMonthShort(val)
+                    formatter: (val: string) => formatMonthShort(val),
+                    color: axisLabelColor
                 }
             },
-            yAxis: { type: 'value' },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: (val: number) => formatCurrencyValue(Number(Number(val).toFixed(2))),
+                    color: axisLabelColor
+                }
+            },
             series
         }
     })

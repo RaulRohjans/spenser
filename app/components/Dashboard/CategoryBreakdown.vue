@@ -10,7 +10,7 @@
 
     const store = useDashboardStore()
     const colorMode = useColorMode()
-    const { t: $t } = useI18n()
+    const { t: translate } = useI18n()
     const themeObj = reactive<{ value: string }>({ value: colorMode.value })
     watch(
         () => colorMode.value,
@@ -34,17 +34,39 @@
         const items = data.value?.data.categories ?? []
         const seriesData = items.map((i) => ({ name: i.name, value: i.amount }))
         if ((data.value?.data.others?.amount ?? 0) > 0) {
-            seriesData.push({ name: $t('Others'), value: data.value?.data.others?.amount ?? 0 })
+            seriesData.push({ name: translate('Others'), value: data.value?.data.others?.amount ?? 0 })
         }
+        const {
+            labelColor,
+            legendTextColor,
+            axisLabelColor,
+            tooltipBackground,
+            tooltipBorder,
+            tooltipText
+        } = getChartThemeColors()
         return {
-            tooltip: { trigger: 'item' },
-            legend: { bottom: 0 },
+            textStyle: { color: labelColor },
+            tooltip: {
+                trigger: 'item',
+                valueFormatter: (value: number | string) =>
+                    formatCurrencyValue(Number(value)),
+                backgroundColor: tooltipBackground,
+                borderColor: tooltipBorder,
+                textStyle: { color: tooltipText }
+            },
+            legend: { bottom: 0, textStyle: { color: legendTextColor } },
             series: [
                 {
                     type: 'pie',
                     radius: ['35%', '70%'],
                     avoidLabelOverlap: true,
-                    label: { show: true, formatter: '{b}: {d}%' },
+                    label: {
+                        show: true,
+                        formatter: (params: any) => `${params.name}: ${Number(params.percent).toFixed(2)}%`,
+                        color: axisLabelColor,
+                        textBorderWidth: 0,
+                        textShadowBlur: 0
+                    },
                     data: seriesData
                 }
             ]

@@ -11,7 +11,8 @@ export default defineEventHandler(async (event) => {
         page,
         limit,
         sort,
-        order
+        order,
+        idsOnly
     } = getQuery(event)
 
     ensureAuth(event)
@@ -36,6 +37,20 @@ export default defineEventHandler(async (event) => {
         .offset((parsedPage - 1) * parsedLimit)
         .limit(parsedLimit)
         .orderBy(orderBy || currencies.id)
+
+    // Fast path: return all matching ids when idsOnly=true
+    const onlyIds = String(idsOnly || '').toLowerCase() === 'true'
+    if (onlyIds) {
+        const idRows = await db
+            .select({ id: currencies.id })
+            .from(currencies)
+            .where(searchSql ? and(whereBase, searchSql) : whereBase)
+            .orderBy(currencies.id)
+        return {
+            success: true,
+            data: { ids: idRows.map((r) => r.id) }
+        }
+    }
 
     // Get total record count
     const totalRecordsRes = await db

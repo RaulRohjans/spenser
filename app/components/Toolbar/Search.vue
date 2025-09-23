@@ -29,6 +29,27 @@
     watch(openMobile, (v) => {
         if (v) nextTick(() => inputRefMobile.value?.focus())
     })
+
+    // Auto-open when a non-empty model is present (e.g., persisted search restored)
+    const isDesktopViewport = () => {
+        try { return typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches }
+        catch { return false }
+    }
+    const ensureOpenForContent = () => {
+        const hasText = Boolean((model.value || '').trim())
+        if (!hasText) return
+        if (isDesktopViewport()) {
+            open.value = true
+            openMobile.value = false
+            nextTick(() => inputRef.value?.focus())
+        } else {
+            openMobile.value = true
+            open.value = false
+            nextTick(() => inputRefMobile.value?.focus())
+        }
+    }
+    onMounted(ensureOpenForContent)
+    watch(model, () => ensureOpenForContent(), { immediate: false })
 </script>
 
 <template>

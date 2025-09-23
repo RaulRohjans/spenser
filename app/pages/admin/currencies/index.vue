@@ -3,8 +3,10 @@
     import type { TableColumn } from '@nuxt/ui'
     import type { FetchTableDataResult } from '~~/types/Table'
     import type { CurrencyRow } from '~~/types/ApiRows'
+    import { h } from 'vue'
     import { toUserMessage } from '~/utils/errors'
     import { useRowSelection } from '~/composables/useRowSelection'
+    import { useDebounceFn } from '@vueuse/core'
 
     const { t: translate } = useI18n()
 
@@ -87,6 +89,11 @@
         {
             accessorKey: 'placement',
             header: ({ column }) => columnSorter.value(column, translate('Placement')),
+            cell: ({ row }) => {
+                const raw = String(row.getValue('placement') || '')
+                const label = raw === 'before' ? translate('Before') : translate('After')
+                return h('span', label)
+            },
             meta: { alias: translate('Placement') }
         },
         {
@@ -103,7 +110,8 @@
         selectionColumn,
         selectedIds,
         selectedCount,
-        clearAll
+        clearAll,
+        selectMany
     } = useRowSelection<CurrencyRow>({
         storageKey: 'admin:currencies',
         getRowId: (r) => r.id,
@@ -111,6 +119,23 @@
     })
     const finalColumns = computed(() => [selectionColumn, ...columns])
     const bulkBusy = ref(false)
+    const totalCount = computed(() => Number(tableData.value?.data?.totalRecordCount ?? 0))
+    const selectAllVisible = computed(() => selectedCount.value > 0 && selectedCount.value < totalCount.value)
+    async function selectAllAcrossTable() {
+        bulkBusy.value = true
+        try {
+            const res = await $fetch<{ success: boolean; data: { ids: number[] } }>(`/api/currencies`, {
+                method: 'GET',
+                query: { q: filters?.searchQuery, idsOnly: true }
+            })
+            const ids = (res?.data?.ids ?? []) as number[]
+            if (Array.isArray(ids) && ids.length) selectMany(ids)
+        } catch {
+            /* empty */
+        } finally {
+            bulkBusy.value = false
+        }
+    }
     async function bulkDeleteSelected() {
         if (!selectedIds.value.length) return
         Notifier.showChooser(
@@ -166,7 +191,8 @@
         defaultFilters: {
             searchQuery: ''
         },
-        watch: []
+        watch: [],
+        persistPerPageKey: 'admin:currencies'
     })
     
     const showColumns = ref(false)
@@ -185,21 +211,21 @@
         status.value === 'success' && (tableRowsSel.value?.length ?? 0) === 0
     )
 
+    // Debounce UI search updates
+    const searchDraft = ref('')
+    const debouncedSearch = useDebounceFn((v: string) => {
+        filters.searchQuery = v || ''
+        page.value = 1
+    }, 200)
+    watch(searchDraft, (v) => debouncedSearch(v))
+
     // Persist currencies filters (search) separately
     const { load: loadCurrencyFilters } = useFilterSession('admin:currencies', filters as Record<string, unknown>, { storage: 'session', debounceMs: 150 })
 
-    // Persist rows-per-page for admin currencies
-    const perPageState = reactive({ itemsPerPage: itemsPerPage.value as number })
-    watch(itemsPerPage, (v) => { perPageState.itemsPerPage = Number(v) || perPageState.itemsPerPage }, { immediate: true })
-    const { load: loadPerPage } = useFilterSession('perPage:admin:currencies', perPageState, { storage: 'session', debounceMs: 0 })
-
     onMounted(() => {
         const loaded = loadCurrencyFilters()
+        searchDraft.value = String(filters.searchQuery || '')
         if (loaded) reload()
-        const loadedPerPage = loadPerPage()
-        if (loadedPerPage && typeof perPageState.itemsPerPage === 'number') {
-            itemsPerPage.value = perPageState.itemsPerPage
-        }
     })
 </script>
 
@@ -248,8 +274,10 @@
                         :count="selectedCount"
                         :open="selectedCount > 0"
                         :busy="bulkBusy"
+                        :select-all-visible="selectAllVisible"
                         @delete="bulkDeleteSelected"
-                        @clear="clearAll" />
+                        @clear="clearAll"
+                        @select-all="selectAllAcrossTable" />
                     <UTable
                         ref="table"
                         :data="tableRowsSel"
