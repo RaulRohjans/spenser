@@ -30,7 +30,7 @@
         "scule": "^1.3.0",
         "tsconfig-paths": "^4.2.0",
         "unhead": "^2.0.8",
-        "vue-echarts": "8.0.0-beta.2",
+        "vue-echarts": "8.0.0-beta.3",
         "vuedraggable": "^4.1.0",
         "xlsx": "^0.18.5",
         "yaml": "^2.8.1",
@@ -2635,7 +2635,7 @@
 
     "vue-devtools-stub": ["vue-devtools-stub@0.1.0", "", {}, "sha512-RutnB7X8c5hjq39NceArgXg28WZtZpGc3+J16ljMiYnFhKvd8hITxSWQSQ5bvldxMDU6gG5mkxl1MTQLXckVSQ=="],
 
-    "vue-echarts": ["vue-echarts@8.0.0-beta.2", "", { "peerDependencies": { "echarts": "^6.0.0", "vue": "^3.3.0" } }, "sha512-ZZzdknCvY5iuuSZzjFeDoLwFuJru131vDO0oqP1rL6TJp3g7WyC3vJ5f1ZbuwrOZ7y0umL0/T8IVLrh/mKM9Jw=="],
+    "vue-echarts": ["vue-echarts@8.0.0-beta.3", "", { "peerDependencies": { "echarts": "^6.0.0", "vue": "^3.3.0" } }, "sha512-5shW3HP7EDPFDO9cL1tR1uZgXXzsuletBSiMmX4VZZnyr7AZXR0DFfs11rCRXXkxck61RhTFGNt9w2N8ULbe+w=="],
 
     "vue-eslint-parser": ["vue-eslint-parser@10.2.0", "", { "dependencies": { "debug": "^4.4.0", "eslint-scope": "^8.2.0", "eslint-visitor-keys": "^4.2.0", "espree": "^10.3.0", "esquery": "^1.6.0", "semver": "^7.6.3" }, "peerDependencies": { "eslint": "^8.57.0 || ^9.0.0" } }, "sha512-CydUvFOQKD928UzZhTp4pr2vWz1L+H99t7Pkln2QSPdvmURT0MoC4wUccfCnuEaihNsu9aYYyk+bep8rlfkUXw=="],
 
