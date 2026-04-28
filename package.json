@@ -63,7 +63,7 @@
         "jszip": "^3.10.1",
         "lodash-es": "^4.17.21",
         "mammoth": "^1.10.0",
-        "officeparser": "^5.2.0",
+        "officeparser": "^6.0.0",
         "ollama-ai-provider-v2": "^1.1.2",
         "pg": "^8.11.5",
         "pinia": "^3.0.2",
