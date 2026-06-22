@@ -48,7 +48,7 @@
     "dependencies": {
         "@ai-sdk/anthropic": "^2.0.6",
         "@ai-sdk/google": "^2.0.8",
-        "@ai-sdk/openai": "^2.0.19",
+        "@ai-sdk/openai": "^3.0.0",
         "@compodium/nuxt": "^0.1.0-beta.11",
         "@openrouter/ai-sdk-provider": "^1.1.2",
         "@vuepic/vue-datepicker": "^11.0.2",
