@@ -36,9 +36,6 @@
 
 <template>
     <div class="flex flex-col items-center gap-4">
-        <h2 class="text-3xl font-semibold mb-2">
-            {{ `${$t('Welcome')} ${getUsername}` }}!
-        </h2>
         <div class="w-full flex flex-col gap-4">
             <div class="w-full">
                 <DashboardDateScope />
