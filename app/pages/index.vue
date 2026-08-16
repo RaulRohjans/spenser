@@ -36,9 +36,6 @@
 
 <template>
     <div class="flex flex-col items-center gap-4">
-        <h2 class="text-3xl font-semibold mb-2">
-            {{ `${$t('Welcome')} ${getUsername}` }}!
-        </h2>
         <div class="w-full flex flex-col gap-4">
             <div class="w-full">
                 <DashboardDateScope />
@@ -49,13 +46,13 @@
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                <DashboardSpendingOverTime class="xl:col-span-2" />
                 <DashboardCategoryBreakdown />
+                <DashboardCashflow class="xl:col-span-2" />
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 <DashboardCategoryMoM />
-                <DashboardCashflow />
+                <DashboardSpendingOverTime />
             </div>
         </div>
     </div>
