@@ -46,13 +46,13 @@
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-                <DashboardSpendingOverTime class="xl:col-span-2" />
                 <DashboardCategoryBreakdown />
+                <DashboardCashflow class="xl:col-span-2" />
             </div>
 
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
                 <DashboardCategoryMoM />
-                <DashboardCashflow />
+                <DashboardSpendingOverTime />
             </div>
         </div>
     </div>
