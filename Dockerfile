@@ -1,5 +1,5 @@
-# Use an official node image as the base image
-FROM oven/bun:1 AS builder
+# Use the same Bun version that generated the lockfile so installs stay reproducible
+FROM oven/bun:1.2.19 AS builder
 
 # Set the working directory
 WORKDIR /app
@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy package.json
 COPY package*.json bun.lock ./
 
-# Install dependencies
-RUN bun i --frozen-lockfile
+# Limit concurrent downloads to make installs more reliable on slower registries
+RUN bun install --frozen-lockfile --network-concurrency 8
 
 # Copy the rest of the application files
 COPY . .
