@@ -50,7 +50,7 @@
         "@ai-sdk/google": "^2.0.8",
         "@ai-sdk/openai": "^2.0.19",
         "@compodium/nuxt": "^0.1.0-beta.11",
-        "@openrouter/ai-sdk-provider": "^1.1.2",
+        "@openrouter/ai-sdk-provider": "^3.0.0",
         "@vuepic/vue-datepicker": "^11.0.2",
         "ai": "^5.0.21",
         "bcrypt": "^6.0.0",
