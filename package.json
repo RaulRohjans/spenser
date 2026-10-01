@@ -52,7 +52,7 @@
         "@compodium/nuxt": "^0.1.0-beta.11",
         "@openrouter/ai-sdk-provider": "^1.1.2",
         "@vuepic/vue-datepicker": "^11.0.2",
-        "ai": "^5.0.21",
+        "ai": "^7.0.0",
         "bcrypt": "^6.0.0",
         "caniuse-lite": "^1.0.30001715",
         "drizzle-orm": "^0.44.4",
